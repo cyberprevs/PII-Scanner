@@ -1,0 +1,188 @@
+using System.Collections.Concurrent;
+using Microsoft.AspNetCore.SignalR;
+using PiiScanner.Api.DTOs;
+using PiiScanner.Api.Hubs;
+using PiiScanner.Models;
+using PiiScanner.Scanner;
+using PiiScanner.Reporting;
+
+namespace PiiScanner.Api.Services;
+
+public class ScanService
+{
+    private readonly IHubContext<ScanHub> _hubContext;
+    private readonly ConcurrentDictionary<string, ScanSession> _activeScans = new();
+
+    public ScanService(IHubContext<ScanHub> hubContext)
+    {
+        _hubContext = hubContext;
+    }
+
+    public string StartScan(ScanRequest request)
+    {
+        var scanId = Guid.NewGuid().ToString();
+        var session = new ScanSession
+        {
+            ScanId = scanId,
+            DirectoryPath = request.DirectoryPath,
+            Status = "processing",
+            StartTime = DateTime.UtcNow
+        };
+
+        _activeScans[scanId] = session;
+
+        // Démarrer le scan en arrière-plan
+        Task.Run(() => ExecuteScan(scanId, request));
+
+        return scanId;
+    }
+
+    private async Task ExecuteScan(string scanId, ScanRequest request)
+    {
+        try
+        {
+            var session = _activeScans[scanId];
+            var scanner = new FileScanner();
+
+            // S'abonner aux événements de progression
+            scanner.ProgressUpdated += async (current, total) =>
+            {
+                session.ProcessedFiles = current;
+                session.TotalFiles = total;
+
+                // Envoyer la progression via SignalR
+                await _hubContext.Clients.All.SendAsync("ReceiveProgress", scanId, current, total);
+            };
+
+            // Exécuter le scan
+            var results = scanner.ScanDirectory(request.DirectoryPath);
+
+            // Stocker les résultats
+            session.Results = results;
+            session.TotalFiles = scanner.TotalFilesScanned;
+            session.ProcessedFiles = scanner.TotalFilesScanned;
+            session.Status = "completed";
+            session.EndTime = DateTime.UtcNow;
+
+            // Générer les rapports
+            var reportsDir = Path.Combine(Path.GetTempPath(), "PiiScanner", scanId);
+            Directory.CreateDirectory(reportsDir);
+
+            CsvReport.Generate(results, Path.Combine(reportsDir, "rapport.csv"), scanner.TotalFilesScanned);
+            JsonReport.Generate(results, Path.Combine(reportsDir, "rapport.json"), scanner.TotalFilesScanned);
+            HtmlReport.Generate(results, Path.Combine(reportsDir, "rapport.html"), scanner.TotalFilesScanned);
+            ExcelReport.Generate(results, Path.Combine(reportsDir, "rapport.xlsx"), scanner.TotalFilesScanned);
+
+            session.ReportsDirectory = reportsDir;
+
+            // Notifier la completion
+            await _hubContext.Clients.All.SendAsync("ScanComplete", scanId);
+        }
+        catch (Exception ex)
+        {
+            var session = _activeScans[scanId];
+            session.Status = "error";
+            session.ErrorMessage = ex.Message;
+            session.EndTime = DateTime.UtcNow;
+
+            await _hubContext.Clients.All.SendAsync("ScanError", scanId, ex.Message);
+        }
+    }
+
+    public ScanProgressResponse? GetProgress(string scanId)
+    {
+        if (!_activeScans.TryGetValue(scanId, out var session))
+            return null;
+
+        return new ScanProgressResponse
+        {
+            ScanId = scanId,
+            Status = session.Status,
+            ProcessedFiles = session.ProcessedFiles,
+            TotalFiles = session.TotalFiles,
+            PiiFound = session.Results?.Count ?? 0
+        };
+    }
+
+    public ScanResultResponse? GetResults(string scanId)
+    {
+        if (!_activeScans.TryGetValue(scanId, out var session) || session.Results == null)
+            return null;
+
+        var stats = ScanStatistics.Calculate(session.Results, session.TotalFiles);
+
+        return new ScanResultResponse
+        {
+            ScanId = scanId,
+            Statistics = new ScanStatisticsDto
+            {
+                TotalFilesScanned = stats.TotalFilesScanned,
+                FilesWithPii = stats.FilesWithPii,
+                TotalPiiFound = stats.TotalPiiFound,
+                PiiByType = stats.PiiByType,
+                TopRiskyFiles = stats.TopRiskyFiles.Select(f => new RiskyFileDto
+                {
+                    FilePath = f.FilePath,
+                    PiiCount = f.PiiCount,
+                    RiskLevel = f.RiskLevel
+                }).ToList()
+            },
+            Detections = session.Results.Select(r => new ScanDetectionDto
+            {
+                FilePath = r.FilePath,
+                PiiType = r.PiiType,
+                Match = r.Match
+            }).ToList()
+        };
+    }
+
+    public string? GetReportPath(string scanId, string format)
+    {
+        if (!_activeScans.TryGetValue(scanId, out var session) || session.ReportsDirectory == null)
+            return null;
+
+        var fileName = format.ToLower() switch
+        {
+            "csv" => "rapport.csv",
+            "json" => "rapport.json",
+            "html" => "rapport.html",
+            "excel" => "rapport.xlsx",
+            _ => null
+        };
+
+        if (fileName == null)
+            return null;
+
+        var filePath = Path.Combine(session.ReportsDirectory, fileName);
+        return File.Exists(filePath) ? filePath : null;
+    }
+
+    public void CleanupScan(string scanId)
+    {
+        if (_activeScans.TryRemove(scanId, out var session) && session.ReportsDirectory != null)
+        {
+            try
+            {
+                Directory.Delete(session.ReportsDirectory, true);
+            }
+            catch
+            {
+                // Ignore cleanup errors
+            }
+        }
+    }
+}
+
+public class ScanSession
+{
+    public required string ScanId { get; set; }
+    public required string DirectoryPath { get; set; }
+    public required string Status { get; set; }
+    public int ProcessedFiles { get; set; }
+    public int TotalFiles { get; set; }
+    public List<ScanResult>? Results { get; set; }
+    public DateTime StartTime { get; set; }
+    public DateTime? EndTime { get; set; }
+    public string? ErrorMessage { get; set; }
+    public string? ReportsDirectory { get; set; }
+}

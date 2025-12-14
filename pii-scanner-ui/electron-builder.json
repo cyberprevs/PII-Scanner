@@ -1,0 +1,29 @@
+{
+  "appId": "com.piiscanner.app",
+  "productName": "PII Scanner",
+  "directories": {
+    "output": "release"
+  },
+  "files": [
+    "dist/**/*",
+    "dist-electron/**/*"
+  ],
+  "extraResources": [
+    {
+      "from": "../PiiScanner.Api/bin/Release/net8.0/publish",
+      "to": "api",
+      "filter": [
+        "**/*"
+      ]
+    }
+  ],
+  "win": {
+    "target": [
+      "portable"
+    ],
+    "icon": "public/icon.ico"
+  },
+  "portable": {
+    "artifactName": "PII-Scanner-Portable.exe"
+  }
+}
