@@ -7,7 +7,8 @@
       "Bash(dotnet publish:*)",
       "Bash(npm run electron:build:win:*)",
       "Bash(timeout /t 30)",
-      "Bash(set CSC_IDENTITY_AUTO_DISCOVERY=false)"
+      "Bash(set CSC_IDENTITY_AUTO_DISCOVERY=false)",
+      "Bash(if exist \"PiiScanner\\.git\" rmdir /s /q \"PiiScanner\\.git\")"
     ]
   }
 }
