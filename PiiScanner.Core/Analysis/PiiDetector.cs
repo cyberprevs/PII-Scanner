@@ -1,6 +1,7 @@
 
 using System.Text.RegularExpressions;
 using PiiScanner.Models;
+using PiiScanner.Utils;
 
 namespace PiiScanner.Analysis;
 
@@ -39,10 +40,33 @@ public static class PiiDetector
         { "CarteBancaire", @"\b(?:\d{4}[\s-]?){3}\d{4}\b" },
 
         // Adresse IP valide (chaque octet entre 0-255)
-        { "AdresseIP", @"\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b" }
+        { "AdresseIP", @"\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b" },
+
+        // ========== NOUVEAUX DÉTECTEURS CRITIQUES ==========
+
+        // Numéro de Passeport (format international: 2 lettres + 6-9 chiffres)
+        { "Passeport", @"\b[A-Z]{2}[0-9]{6,9}\b" },
+
+        // Mots de passe en clair dans les fichiers de configuration
+        { "MotDePasse", @"(?i)\b(password|pwd|passwd|secret|api[_-]?key|access[_-]?token|auth[_-]?token|private[_-]?key)\s*[:=]\s*[^\s;,""')\]]{4,}\b" },
+
+        // Clés API AWS
+        { "CleAPI_AWS", @"\bAKIA[0-9A-Z]{16}\b" },
+
+        // Clés API Google
+        { "CleAPI_Google", @"\bAIza[0-9A-Za-z\-_]{35}\b" },
+
+        // Token GitHub
+        { "Token_GitHub", @"\bghp_[0-9a-zA-Z]{36}\b" },
+
+        // Clé Stripe
+        { "CleAPI_Stripe", @"\bsk_live_[0-9a-zA-Z]{24,}\b" },
+
+        // Token JWT (JSON Web Token)
+        { "Token_JWT", @"\beyJ[A-Za-z0-9-_]+\.eyJ[A-Za-z0-9-_]+\.[A-Za-z0-9-_.+/=]*\b" }
     };
 
-    public static List<ScanResult> Detect(string content, string filePath)
+    public static List<ScanResult> Detect(string content, string filePath, DateTime? lastAccessedDate = null, FilePermissionAnalyzer.PermissionInfo? permissionInfo = null)
     {
         var results = new List<ScanResult>();
 
@@ -57,7 +81,12 @@ public static class PiiDetector
                     {
                         FilePath = filePath,
                         PiiType = pattern.Key,
-                        Match = match.Value
+                        Match = match.Value,
+                        LastAccessedDate = lastAccessedDate,
+                        ExposureLevel = permissionInfo != null ? FilePermissionAnalyzer.GetExposureLevelLabel(permissionInfo.ExposureLevel) : null,
+                        AccessibleToEveryone = permissionInfo?.AccessibleToEveryone,
+                        IsNetworkShare = permissionInfo?.IsNetworkShare,
+                        UserGroupCount = permissionInfo?.UserGroupCount
                     });
                 }
             }
@@ -75,6 +104,9 @@ public static class PiiDetector
             "CarteBancaire" => IsValidCreditCard(value),
             "NumeroFiscalFR" => IsValidNumeroFiscal(value),
             "IBAN_FR" => IsValidIbanFR(value),
+            "Passeport" => IsValidPassport(value),
+            "MotDePasse" => IsValidPassword(value),
+            "CleAPI_AWS" => IsValidAwsKey(value),
             _ => true
         };
     }
@@ -141,5 +173,70 @@ public static class PiiDetector
 
         // IBAN français doit avoir exactement 27 caractères (FR + 2 chiffres + 23 caractères)
         return cleaned.Length == 27 && cleaned.StartsWith("FR");
+    }
+
+    private static bool IsValidPassport(string value)
+    {
+        // Éviter les faux positifs comme "AB123456" qui pourrait être autre chose
+        // Vérifier que c'est bien 2 lettres majuscules suivies de 6-9 chiffres
+        if (value.Length < 8 || value.Length > 11)
+            return false;
+
+        // Les deux premiers caractères doivent être des lettres
+        if (!char.IsLetter(value[0]) || !char.IsLetter(value[1]))
+            return false;
+
+        // Le reste doit être des chiffres
+        for (int i = 2; i < value.Length; i++)
+        {
+            if (!char.IsDigit(value[i]))
+                return false;
+        }
+
+        return true;
+    }
+
+    private static bool IsValidPassword(string value)
+    {
+        // Éviter les faux positifs où le mot clé est détecté mais pas vraiment un mot de passe
+        // Par exemple: "password: " sans valeur, ou "password_reset" (fonction)
+
+        // Extraire la partie après le séparateur
+        var match = Regex.Match(value, @"[:=]\s*(.+)$");
+        if (!match.Success)
+            return false;
+
+        string passwordPart = match.Groups[1].Value.Trim();
+
+        // Doit avoir au moins 4 caractères pour être considéré comme un mot de passe
+        if (passwordPart.Length < 4)
+            return false;
+
+        // Éviter les valeurs placeholder courantes
+        string[] placeholders = { "****", "xxxx", "your_password", "changeme", "example", "null", "none", "false", "true" };
+        if (placeholders.Any(p => passwordPart.Equals(p, StringComparison.OrdinalIgnoreCase)))
+            return false;
+
+        return true;
+    }
+
+    private static bool IsValidAwsKey(string value)
+    {
+        // Les clés AWS commencent toujours par AKIA
+        if (!value.StartsWith("AKIA"))
+            return false;
+
+        // Doivent avoir exactement 20 caractères (AKIA + 16 caractères)
+        if (value.Length != 20)
+            return false;
+
+        // Tous les caractères après AKIA doivent être alphanumériques majuscules
+        for (int i = 4; i < value.Length; i++)
+        {
+            if (!char.IsLetterOrDigit(value[i]) || char.IsLower(value[i]))
+                return false;
+        }
+
+        return true;
     }
 }

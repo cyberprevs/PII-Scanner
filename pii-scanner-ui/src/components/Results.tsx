@@ -16,6 +16,10 @@ import {
   Alert,
   Tabs,
   Tab,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
 } from '@mui/material';
 import {
   BarChart,
@@ -60,8 +64,26 @@ const getRiskColor = (riskLevel: string) => {
 
 export default function Results({ results, onDownloadReport, onNewScan }: ResultsProps) {
   const [activeTab, setActiveTab] = useState(0);
+  const [stalenessFilter, setStalenessFilter] = useState<string>('all');
 
   const { statistics, detections } = results;
+
+  // Filtrer les fichiers par ancienneté
+  const filteredRiskyFiles = statistics.topRiskyFiles.filter(file => {
+    if (stalenessFilter === 'all') return true;
+    return file.stalenessLevel === stalenessFilter;
+  });
+
+  // Filtrer les détections par ancienneté
+  const filteredDetections = detections.filter(detection => {
+    if (stalenessFilter === 'all') return true;
+
+    // Trouver le niveau d'ancienneté pour ce fichier
+    const file = statistics.topRiskyFiles.find(f => f.filePath === detection.filePath);
+    if (!file) return stalenessFilter === 'all';
+
+    return file.stalenessLevel === stalenessFilter;
+  });
 
   // Préparer les données pour les graphiques
   const chartData = Object.entries(statistics.piiByType).map(([type, count]) => ({
@@ -75,7 +97,7 @@ export default function Results({ results, onDownloadReport, onNewScan }: Result
   }));
 
   // Limiter les détections affichées pour les performances
-  const displayedDetections = detections.slice(0, 500);
+  const displayedDetections = filteredDetections.slice(0, 500);
 
   return (
     <Box>
@@ -232,10 +254,27 @@ export default function Results({ results, onDownloadReport, onNewScan }: Result
           {/* Tab 2: Fichiers à risque */}
           {activeTab === 1 && (
             <Box>
-              <Typography variant="h6" gutterBottom fontWeight={600}>
-                Top {statistics.topRiskyFiles.length} fichiers à risque
-              </Typography>
-              {statistics.topRiskyFiles.length > 0 ? (
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                <Typography variant="h6" fontWeight={600}>
+                  Top {statistics.topRiskyFiles.length} fichiers à risque
+                </Typography>
+                <FormControl size="small" sx={{ minWidth: 200 }}>
+                  <InputLabel>Filtrer par ancienneté</InputLabel>
+                  <Select
+                    value={stalenessFilter}
+                    label="Filtrer par ancienneté"
+                    onChange={(e) => setStalenessFilter(e.target.value)}
+                  >
+                    <MenuItem value="all">Tous les fichiers</MenuItem>
+                    <MenuItem value="Récent">Récent (&lt; 6 mois)</MenuItem>
+                    <MenuItem value="6 mois">6 mois - 1 an</MenuItem>
+                    <MenuItem value="1 an">1 an - 3 ans</MenuItem>
+                    <MenuItem value="3 ans">3 ans - 5 ans</MenuItem>
+                    <MenuItem value="+5 ans">Plus de 5 ans</MenuItem>
+                  </Select>
+                </FormControl>
+              </Box>
+              {filteredRiskyFiles.length > 0 ? (
                 <TableContainer component={Paper} sx={{ mt: 2, maxHeight: 600 }}>
                   <Table stickyHeader>
                     <TableHead>
@@ -243,29 +282,62 @@ export default function Results({ results, onDownloadReport, onNewScan }: Result
                         <TableCell><strong>Niveau de risque</strong></TableCell>
                         <TableCell><strong>Fichier</strong></TableCell>
                         <TableCell align="right"><strong>Nombre de PII</strong></TableCell>
+                        <TableCell><strong>Ancienneté</strong></TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {statistics.topRiskyFiles.map((file, index) => (
-                        <TableRow key={index} hover>
-                          <TableCell>
-                            <Chip
-                              label={file.riskLevel}
-                              color={getRiskColor(file.riskLevel)}
-                              size="small"
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <Typography variant="body2" fontFamily="monospace">
-                              {file.filePath.length > 80
-                                ? '...' + file.filePath.slice(-80)
-                                : file.filePath}
-                            </Typography>
-                          </TableCell>
-                          <TableCell align="right">
-                            <Chip label={file.piiCount} color="primary" size="small" />
-                          </TableCell>
-                        </TableRow>
+                      {filteredRiskyFiles.map((file, index) => (
+                        <>
+                          <TableRow key={index} hover>
+                            <TableCell>
+                              <Chip
+                                label={file.riskLevel}
+                                color={getRiskColor(file.riskLevel)}
+                                size="small"
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <Typography variant="body2" fontFamily="monospace">
+                                {file.filePath.length > 80
+                                  ? '...' + file.filePath.slice(-80)
+                                  : file.filePath}
+                              </Typography>
+                            </TableCell>
+                            <TableCell align="right">
+                              <Chip label={file.piiCount} color="primary" size="small" />
+                            </TableCell>
+                            <TableCell>
+                              {file.stalenessLevel && (
+                                <Chip
+                                  label={file.stalenessLevel}
+                                  size="small"
+                                  color={
+                                    file.stalenessLevel === '+5 ans' ? 'error' :
+                                    file.stalenessLevel === '3 ans' ? 'warning' :
+                                    file.stalenessLevel === '1 an' ? 'warning' :
+                                    'default'
+                                  }
+                                  variant="outlined"
+                                />
+                              )}
+                            </TableCell>
+                          </TableRow>
+                          {file.staleDataWarning && (
+                            <TableRow key={`${index}-warning`}>
+                              <TableCell colSpan={4} sx={{ py: 0.5, backgroundColor: 'rgba(255, 152, 0, 0.08)' }}>
+                                <Alert
+                                  severity="warning"
+                                  sx={{
+                                    py: 0,
+                                    '& .MuiAlert-message': { fontSize: '0.875rem' }
+                                  }}
+                                >
+                                  {file.staleDataWarning}
+                                </Alert>
+                              </TableCell>
+                            </TableRow>
+                          )}
+                        </>
                       ))}
                     </TableBody>
                   </Table>
@@ -281,13 +353,36 @@ export default function Results({ results, onDownloadReport, onNewScan }: Result
           {/* Tab 3: Détections */}
           {activeTab === 2 && (
             <Box>
-              <Typography variant="h6" gutterBottom fontWeight={600}>
-                Détails des détections
-              </Typography>
-              {detections.length > 500 && (
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                <Typography variant="h6" fontWeight={600}>
+                  Détails des détections
+                </Typography>
+                <FormControl size="small" sx={{ minWidth: 200 }}>
+                  <InputLabel>Filtrer par ancienneté</InputLabel>
+                  <Select
+                    value={stalenessFilter}
+                    label="Filtrer par ancienneté"
+                    onChange={(e) => setStalenessFilter(e.target.value)}
+                  >
+                    <MenuItem value="all">Tous les fichiers</MenuItem>
+                    <MenuItem value="Récent">Récent (&lt; 6 mois)</MenuItem>
+                    <MenuItem value="6 mois">6 mois - 1 an</MenuItem>
+                    <MenuItem value="1 an">1 an - 3 ans</MenuItem>
+                    <MenuItem value="3 ans">3 ans - 5 ans</MenuItem>
+                    <MenuItem value="+5 ans">Plus de 5 ans</MenuItem>
+                  </Select>
+                </FormControl>
+              </Box>
+              {filteredDetections.length > 500 && (
                 <Alert severity="info" sx={{ mb: 2 }}>
-                  Affichage des 500 premières détections sur {detections.length} au total.
+                  Affichage des 500 premières détections sur {filteredDetections.length} au total
+                  {stalenessFilter !== 'all' && ` (filtrées par: ${stalenessFilter})`}.
                   Téléchargez les rapports pour voir toutes les détections.
+                </Alert>
+              )}
+              {stalenessFilter !== 'all' && filteredDetections.length <= 500 && filteredDetections.length > 0 && (
+                <Alert severity="info" sx={{ mb: 2 }}>
+                  {filteredDetections.length} détection(s) trouvée(s) pour les fichiers de {stalenessFilter}.
                 </Alert>
               )}
               <TableContainer component={Paper} sx={{ mt: 2, maxHeight: 600 }}>

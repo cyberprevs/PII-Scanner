@@ -1,6 +1,7 @@
 using PiiScanner.Analysis;
 using PiiScanner.Models;
 using PiiScanner.Reader;
+using PiiScanner.Utils;
 using System.Collections.Concurrent;
 
 namespace PiiScanner.Scanner;
@@ -55,7 +56,29 @@ public class FileScanner
                 string content = DocumentReader.ReadFile(file);
                 if (!string.IsNullOrEmpty(content))
                 {
-                    var detections = PiiDetector.Detect(content, file);
+                    // Récupérer la date du dernier accès
+                    DateTime? lastAccessedDate = null;
+                    try
+                    {
+                        lastAccessedDate = File.GetLastAccessTime(file);
+                    }
+                    catch
+                    {
+                        // Si impossible d'obtenir la date, continuer sans
+                    }
+
+                    // Analyser les permissions du fichier
+                    FilePermissionAnalyzer.PermissionInfo? permissionInfo = null;
+                    try
+                    {
+                        permissionInfo = FilePermissionAnalyzer.AnalyzeFilePermissions(file);
+                    }
+                    catch
+                    {
+                        // Si impossible d'analyser les permissions, continuer sans
+                    }
+
+                    var detections = PiiDetector.Detect(content, file, lastAccessedDate, permissionInfo);
                     foreach (var detection in detections)
                     {
                         results.Add(detection);

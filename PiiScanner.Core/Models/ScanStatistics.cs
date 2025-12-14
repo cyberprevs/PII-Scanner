@@ -1,3 +1,5 @@
+using PiiScanner.Utils;
+
 namespace PiiScanner.Models;
 
 public class ScanStatistics
@@ -29,14 +31,25 @@ public class ScanStatistics
         // Top fichiers avec le plus de PII
         stats.TopRiskyFiles = results
             .GroupBy(r => r.FilePath)
-            .Select(g => new FileRiskInfo
+            .Select(g =>
             {
-                FilePath = g.Key,
-                PiiCount = g.Count(),
-                RiskLevel = CalculateRiskLevel(g.Count(), g.Select(r => r.PiiType).Distinct().ToList())
+                var lastAccessedDate = g.FirstOrDefault()?.LastAccessedDate;
+                var piiCount = g.Count();
+                var stalenessLevel = StaleDataCalculator.GetStalenessLevel(lastAccessedDate);
+                var staleDataWarning = StaleDataCalculator.GetStaleDataMessage(piiCount, lastAccessedDate);
+
+                return new FileRiskInfo
+                {
+                    FilePath = g.Key,
+                    PiiCount = piiCount,
+                    RiskLevel = CalculateRiskLevel(piiCount, g.Select(r => r.PiiType).Distinct().ToList()),
+                    LastAccessedDate = lastAccessedDate,
+                    StalenessLevel = StaleDataCalculator.GetStalenessLevelLabel(stalenessLevel),
+                    StaleDataWarning = staleDataWarning
+                };
             })
             .OrderByDescending(f => f.PiiCount)
-            .Take(10)
+            .Take(20)
             .ToList();
 
         return stats;
@@ -83,4 +96,7 @@ public class FileRiskInfo
     public required string FilePath { get; init; }
     public int PiiCount { get; init; }
     public required string RiskLevel { get; init; }
+    public DateTime? LastAccessedDate { get; init; }
+    public string? StalenessLevel { get; init; }
+    public string? StaleDataWarning { get; init; }
 }

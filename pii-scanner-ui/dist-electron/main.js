@@ -38,14 +38,15 @@ const path = __importStar(require("path"));
 const child_process_1 = require("child_process");
 let mainWindow = null;
 let apiProcess = null;
-const API_PORT = 5000;
+const API_PORT = 5169;
 function createWindow() {
     mainWindow = new electron_1.BrowserWindow({
         width: 1400,
         height: 900,
         webPreferences: {
-            nodeIntegration: true,
-            contextIsolation: false,
+            nodeIntegration: false,
+            contextIsolation: true,
+            preload: path.join(__dirname, 'preload.js'),
         },
         icon: path.join(__dirname, '../public/icon.png'),
         title: 'PII Scanner',

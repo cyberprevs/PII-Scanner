@@ -1,0 +1,65 @@
+========================================
+TEST DONNÉES DE SÉCURITÉ CRITIQUES
+========================================
+
+=== NUMÉROS DE PASSEPORT ===
+FR1234567
+US987654321
+GB12345678
+DE987654321
+
+=== MOTS DE PASSE EN CLAIR (CONFIGURATIONS) ===
+password: MySecureP@ss123
+pwd=admin2024!
+DATABASE_PASSWORD: SuperSecret999
+api_key: sk_test_abcdef123456
+secret=MyPrivateToken2024
+auth_token: Bearer_abc123xyz789
+
+=== CLÉS API AWS ===
+AKIAIOSFODNN7EXAMPLE
+AKIAJKLMNOPQRSTUVWXY
+
+=== CLÉS API GOOGLE ===
+AIzaSyD1234567890abcdefghijklmnopqr
+AIzaBCDEFGHIJKLMNOPQRSTUVWXYZ12345
+
+=== TOKENS GITHUB ===
+ghp_1234567890abcdefghijklmnopqrstuvw
+ghp_ABCDEFGHIJKLMNOPQRSTUVWXYZ123456
+
+=== CLÉS STRIPE ===
+sk_live_1234567890abcdefghij
+sk_live_ABCDEFGHIJKLMNOPQRSTUVWXYZ123456
+
+=== TOKENS JWT ===
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+
+=== FICHIER DE CONFIGURATION RÉALISTE ===
+[Database]
+host=localhost
+port=5432
+username=admin
+password=DBPassword123!
+
+[AWS]
+access_key=AKIAIOSFODNN7EXAMPLE
+secret_key=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+region=eu-west-1
+
+[API_Keys]
+stripe_secret=sk_live_1234567890abcdefghij
+google_api_key=AIzaSyD1234567890abcdefghijklmnopqr
+github_token=ghp_1234567890abcdefghijklmnopqrstuvw
+
+[JWT]
+secret=MyJWTSecretKey2024
+token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+
+=== FAUX POSITIFS À ÉVITER ===
+password_reset()
+api_key_validation()
+secret_handshake
+password: ****
+pwd=
+token: null

@@ -43,6 +43,9 @@ public class RiskyFileDto
     public required string FilePath { get; set; }
     public int PiiCount { get; set; }
     public required string RiskLevel { get; set; }
+    public DateTime? LastAccessedDate { get; set; }
+    public string? StalenessLevel { get; set; }
+    public string? StaleDataWarning { get; set; }
 }
 
 public class ScanDetectionDto
@@ -50,4 +53,5 @@ public class ScanDetectionDto
     public required string FilePath { get; set; }
     public required string PiiType { get; set; }
     public required string Match { get; set; }
+    public DateTime? LastAccessedDate { get; set; }
 }

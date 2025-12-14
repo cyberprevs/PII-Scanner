@@ -124,14 +124,18 @@ public class ScanService
                 {
                     FilePath = f.FilePath,
                     PiiCount = f.PiiCount,
-                    RiskLevel = f.RiskLevel
+                    RiskLevel = f.RiskLevel,
+                    LastAccessedDate = f.LastAccessedDate,
+                    StalenessLevel = f.StalenessLevel,
+                    StaleDataWarning = f.StaleDataWarning
                 }).ToList()
             },
             Detections = session.Results.Select(r => new ScanDetectionDto
             {
                 FilePath = r.FilePath,
                 PiiType = r.PiiType,
-                Match = r.Match
+                Match = r.Match,
+                LastAccessedDate = r.LastAccessedDate
             }).ToList()
         };
     }

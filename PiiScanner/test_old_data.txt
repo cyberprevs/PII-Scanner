@@ -1,0 +1,23 @@
+========================================
+TEST FICHIER ANCIEN AVEC PII
+========================================
+
+Ce fichier contient des données sensibles anciennes pour tester
+la détection de données obsolètes (stale data detection).
+
+=== INFORMATIONS PERSONNELLES ===
+Email: jean.dupont@example.fr
+Téléphone: 01 23 45 67 89
+Date de naissance: 15/03/1985
+Numéro de sécurité sociale: 1 85 03 75 123 456 78
+
+=== DONNÉES BANCAIRES ===
+IBAN France: FR76 1234 5678 9012 3456 7890 123
+Carte bancaire: 4532 1234 5678 9012
+
+=== CLÉS ET SECRETS ===
+password: MyOldPassword2020!
+api_key: AKIAIOSFODNN7EXAMPLE
+Token GitHub: ghp_ABCDEFGHIJKLMNOPQRSTUVWXYZ123456
+
+Ce fichier devrait être signalé comme contenant des PII anciennes.

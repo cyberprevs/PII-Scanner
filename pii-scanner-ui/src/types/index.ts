@@ -35,12 +35,16 @@ export interface RiskyFile {
   filePath: string;
   piiCount: number;
   riskLevel: string;
+  lastAccessedDate?: string;
+  stalenessLevel?: string;
+  staleDataWarning?: string;
 }
 
 export interface ScanDetection {
   filePath: string;
   piiType: string;
   match: string;
+  lastAccessedDate?: string;
 }
 
 export interface ElectronAPI {
