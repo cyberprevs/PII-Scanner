@@ -127,7 +127,12 @@ public class ScanService
                     RiskLevel = f.RiskLevel,
                     LastAccessedDate = f.LastAccessedDate,
                     StalenessLevel = f.StalenessLevel,
-                    StaleDataWarning = f.StaleDataWarning
+                    StaleDataWarning = f.StaleDataWarning,
+                    ExposureLevel = f.ExposureLevel,
+                    AccessibleToEveryone = f.AccessibleToEveryone,
+                    IsNetworkShare = f.IsNetworkShare,
+                    UserGroupCount = f.UserGroupCount,
+                    ExposureWarning = f.ExposureWarning
                 }).ToList()
             },
             Detections = session.Results.Select(r => new ScanDetectionDto
@@ -135,7 +140,9 @@ public class ScanService
                 FilePath = r.FilePath,
                 PiiType = r.PiiType,
                 Match = r.Match,
-                LastAccessedDate = r.LastAccessedDate
+                LastAccessedDate = r.LastAccessedDate,
+                ExposureLevel = r.ExposureLevel,
+                AccessibleToEveryone = r.AccessibleToEveryone
             }).ToList()
         };
     }

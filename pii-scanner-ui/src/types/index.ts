@@ -38,6 +38,13 @@ export interface RiskyFile {
   lastAccessedDate?: string;
   stalenessLevel?: string;
   staleDataWarning?: string;
+
+  // Informations d'exposition
+  exposureLevel?: string;
+  accessibleToEveryone?: boolean;
+  isNetworkShare?: boolean;
+  userGroupCount?: number;
+  exposureWarning?: string;
 }
 
 export interface ScanDetection {
@@ -45,6 +52,10 @@ export interface ScanDetection {
   piiType: string;
   match: string;
   lastAccessedDate?: string;
+
+  // Informations d'exposition
+  exposureLevel?: string;
+  accessibleToEveryone?: boolean;
 }
 
 export interface ElectronAPI {

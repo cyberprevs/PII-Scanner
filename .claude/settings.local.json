@@ -8,7 +8,11 @@
       "Bash(npm run electron:build:win:*)",
       "Bash(timeout /t 30)",
       "Bash(set CSC_IDENTITY_AUTO_DISCOVERY=false)",
-      "Bash(if exist \"PiiScanner\\.git\" rmdir /s /q \"PiiScanner\\.git\")"
+      "Bash(if exist \"PiiScanner\\.git\" rmdir /s /q \"PiiScanner\\.git\")",
+      "Bash(dotnet build:*)",
+      "Bash(npm run build:*)",
+      "Bash(if exist \"C:\\Users\\samir\\AppData\\Local\\electron-builder\\Cache\\winCodeSign\" rmdir /s /q \"C:\\Users\\samir\\AppData\\Local\\electron-builder\\Cache\\winCodeSign\")",
+      "Bash($env:CSC_IDENTITY_AUTO_DISCOVERY=\"false\")"
     ]
   }
 }

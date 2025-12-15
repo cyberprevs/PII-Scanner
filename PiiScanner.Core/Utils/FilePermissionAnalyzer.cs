@@ -33,7 +33,8 @@ public static class FilePermissionAnalyzer
             info.IsNetworkShare = IsNetworkPath(filePath);
 
             // Analyser les permissions NTFS
-            var fileSecurity = File.GetAccessControl(filePath);
+            var fileInfo = new FileInfo(filePath);
+            var fileSecurity = fileInfo.GetAccessControl();
             var accessRules = fileSecurity.GetAccessRules(true, true, typeof(NTAccount));
 
             var groups = new HashSet<string>();

@@ -62,16 +62,33 @@ const getRiskColor = (riskLevel: string) => {
   }
 };
 
+const getExposureColor = (exposureLevel?: string) => {
+  switch (exposureLevel) {
+    case 'Critique':
+      return 'error';
+    case 'Élevé':
+      return 'warning';
+    case 'Moyen':
+      return 'warning';
+    case 'Faible':
+      return 'success';
+    default:
+      return 'default';
+  }
+};
+
 export default function Results({ results, onDownloadReport, onNewScan }: ResultsProps) {
   const [activeTab, setActiveTab] = useState(0);
   const [stalenessFilter, setStalenessFilter] = useState<string>('all');
+  const [exposureFilter, setExposureFilter] = useState<string>('all');
 
   const { statistics, detections } = results;
 
-  // Filtrer les fichiers par ancienneté
+  // Filtrer les fichiers par ancienneté et exposition
   const filteredRiskyFiles = statistics.topRiskyFiles.filter(file => {
-    if (stalenessFilter === 'all') return true;
-    return file.stalenessLevel === stalenessFilter;
+    const matchesStaleness = stalenessFilter === 'all' || file.stalenessLevel === stalenessFilter;
+    const matchesExposure = exposureFilter === 'all' || file.exposureLevel === exposureFilter;
+    return matchesStaleness && matchesExposure;
   });
 
   // Filtrer les détections par ancienneté
@@ -254,25 +271,41 @@ export default function Results({ results, onDownloadReport, onNewScan }: Result
           {/* Tab 2: Fichiers à risque */}
           {activeTab === 1 && (
             <Box>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, flexWrap: 'wrap', gap: 2 }}>
                 <Typography variant="h6" fontWeight={600}>
                   Top {statistics.topRiskyFiles.length} fichiers à risque
                 </Typography>
-                <FormControl size="small" sx={{ minWidth: 200 }}>
-                  <InputLabel>Filtrer par ancienneté</InputLabel>
-                  <Select
-                    value={stalenessFilter}
-                    label="Filtrer par ancienneté"
-                    onChange={(e) => setStalenessFilter(e.target.value)}
-                  >
-                    <MenuItem value="all">Tous les fichiers</MenuItem>
-                    <MenuItem value="Récent">Récent (&lt; 6 mois)</MenuItem>
-                    <MenuItem value="6 mois">6 mois - 1 an</MenuItem>
-                    <MenuItem value="1 an">1 an - 3 ans</MenuItem>
-                    <MenuItem value="3 ans">3 ans - 5 ans</MenuItem>
-                    <MenuItem value="+5 ans">Plus de 5 ans</MenuItem>
-                  </Select>
-                </FormControl>
+                <Box sx={{ display: 'flex', gap: 2 }}>
+                  <FormControl size="small" sx={{ minWidth: 200 }}>
+                    <InputLabel>Filtrer par ancienneté</InputLabel>
+                    <Select
+                      value={stalenessFilter}
+                      label="Filtrer par ancienneté"
+                      onChange={(e) => setStalenessFilter(e.target.value)}
+                    >
+                      <MenuItem value="all">Tous les fichiers</MenuItem>
+                      <MenuItem value="Récent">Récent (&lt; 6 mois)</MenuItem>
+                      <MenuItem value="6 mois">6 mois - 1 an</MenuItem>
+                      <MenuItem value="1 an">1 an - 3 ans</MenuItem>
+                      <MenuItem value="3 ans">3 ans - 5 ans</MenuItem>
+                      <MenuItem value="+5 ans">Plus de 5 ans</MenuItem>
+                    </Select>
+                  </FormControl>
+                  <FormControl size="small" sx={{ minWidth: 200 }}>
+                    <InputLabel>Filtrer par exposition</InputLabel>
+                    <Select
+                      value={exposureFilter}
+                      label="Filtrer par exposition"
+                      onChange={(e) => setExposureFilter(e.target.value)}
+                    >
+                      <MenuItem value="all">Tous les niveaux</MenuItem>
+                      <MenuItem value="Critique">🔴 Critique</MenuItem>
+                      <MenuItem value="Élevé">🟠 Élevé</MenuItem>
+                      <MenuItem value="Moyen">🟡 Moyen</MenuItem>
+                      <MenuItem value="Faible">✅ Faible</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Box>
               </Box>
               {filteredRiskyFiles.length > 0 ? (
                 <TableContainer component={Paper} sx={{ mt: 2, maxHeight: 600 }}>
@@ -283,6 +316,7 @@ export default function Results({ results, onDownloadReport, onNewScan }: Result
                         <TableCell><strong>Fichier</strong></TableCell>
                         <TableCell align="right"><strong>Nombre de PII</strong></TableCell>
                         <TableCell><strong>Ancienneté</strong></TableCell>
+                        <TableCell><strong>Exposition</strong></TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -321,10 +355,40 @@ export default function Results({ results, onDownloadReport, onNewScan }: Result
                                 />
                               )}
                             </TableCell>
+                            <TableCell>
+                              {file.exposureLevel && (
+                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                                  <Chip
+                                    label={file.exposureLevel}
+                                    size="small"
+                                    color={getExposureColor(file.exposureLevel)}
+                                    variant="filled"
+                                  />
+                                  {file.accessibleToEveryone && (
+                                    <Chip
+                                      label="Everyone"
+                                      size="small"
+                                      color="error"
+                                      variant="outlined"
+                                      sx={{ fontSize: '0.7rem' }}
+                                    />
+                                  )}
+                                  {file.isNetworkShare && (
+                                    <Chip
+                                      label="Réseau"
+                                      size="small"
+                                      color="warning"
+                                      variant="outlined"
+                                      sx={{ fontSize: '0.7rem' }}
+                                    />
+                                  )}
+                                </Box>
+                              )}
+                            </TableCell>
                           </TableRow>
                           {file.staleDataWarning && (
-                            <TableRow key={`${index}-warning`}>
-                              <TableCell colSpan={4} sx={{ py: 0.5, backgroundColor: 'rgba(255, 152, 0, 0.08)' }}>
+                            <TableRow key={`${index}-stale-warning`}>
+                              <TableCell colSpan={5} sx={{ py: 0.5, backgroundColor: 'rgba(255, 152, 0, 0.08)' }}>
                                 <Alert
                                   severity="warning"
                                   sx={{
@@ -333,6 +397,21 @@ export default function Results({ results, onDownloadReport, onNewScan }: Result
                                   }}
                                 >
                                   {file.staleDataWarning}
+                                </Alert>
+                              </TableCell>
+                            </TableRow>
+                          )}
+                          {file.exposureWarning && (
+                            <TableRow key={`${index}-exposure-warning`}>
+                              <TableCell colSpan={5} sx={{ py: 0.5, backgroundColor: 'rgba(244, 67, 54, 0.08)' }}>
+                                <Alert
+                                  severity={file.exposureLevel === 'Critique' ? 'error' : 'warning'}
+                                  sx={{
+                                    py: 0,
+                                    '& .MuiAlert-message': { fontSize: '0.875rem' }
+                                  }}
+                                >
+                                  {file.exposureWarning}
                                 </Alert>
                               </TableCell>
                             </TableRow>

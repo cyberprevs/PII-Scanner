@@ -33,10 +33,27 @@ public class ScanStatistics
             .GroupBy(r => r.FilePath)
             .Select(g =>
             {
-                var lastAccessedDate = g.FirstOrDefault()?.LastAccessedDate;
+                var firstResult = g.FirstOrDefault();
+                var lastAccessedDate = firstResult?.LastAccessedDate;
                 var piiCount = g.Count();
                 var stalenessLevel = StaleDataCalculator.GetStalenessLevel(lastAccessedDate);
                 var staleDataWarning = StaleDataCalculator.GetStaleDataMessage(piiCount, lastAccessedDate);
+
+                // Informations d'exposition
+                var exposureLevel = firstResult?.ExposureLevel ?? "Faible";
+                var accessibleToEveryone = firstResult?.AccessibleToEveryone ?? false;
+                var isNetworkShare = firstResult?.IsNetworkShare ?? false;
+                var userGroupCount = firstResult?.UserGroupCount ?? 0;
+
+                // Créer PermissionInfo pour générer le message d'exposition
+                var permInfo = new FilePermissionAnalyzer.PermissionInfo
+                {
+                    ExposureLevel = ParseExposureLevel(exposureLevel),
+                    AccessibleToEveryone = accessibleToEveryone,
+                    IsNetworkShare = isNetworkShare,
+                    UserGroupCount = userGroupCount
+                };
+                var exposureWarning = FilePermissionAnalyzer.GetExposureWarning(piiCount, permInfo);
 
                 return new FileRiskInfo
                 {
@@ -45,7 +62,12 @@ public class ScanStatistics
                     RiskLevel = CalculateRiskLevel(piiCount, g.Select(r => r.PiiType).Distinct().ToList()),
                     LastAccessedDate = lastAccessedDate,
                     StalenessLevel = StaleDataCalculator.GetStalenessLevelLabel(stalenessLevel),
-                    StaleDataWarning = staleDataWarning
+                    StaleDataWarning = staleDataWarning,
+                    ExposureLevel = exposureLevel,
+                    AccessibleToEveryone = accessibleToEveryone,
+                    IsNetworkShare = isNetworkShare,
+                    UserGroupCount = userGroupCount,
+                    ExposureWarning = exposureWarning
                 };
             })
             .OrderByDescending(f => f.PiiCount)
@@ -66,6 +88,17 @@ public class ScanStatistics
             return "MOYEN";
 
         return "FAIBLE";
+    }
+
+    private static FilePermissionAnalyzer.ExposureLevel ParseExposureLevel(string level)
+    {
+        return level switch
+        {
+            "Critique" => FilePermissionAnalyzer.ExposureLevel.Critique,
+            "Élevé" => FilePermissionAnalyzer.ExposureLevel.Élevé,
+            "Moyen" => FilePermissionAnalyzer.ExposureLevel.Moyen,
+            _ => FilePermissionAnalyzer.ExposureLevel.Faible
+        };
     }
 
     public string GetSummary()
@@ -99,4 +132,11 @@ public class FileRiskInfo
     public DateTime? LastAccessedDate { get; init; }
     public string? StalenessLevel { get; init; }
     public string? StaleDataWarning { get; init; }
+
+    // Informations d'exposition
+    public string? ExposureLevel { get; init; }
+    public bool? AccessibleToEveryone { get; init; }
+    public bool? IsNetworkShare { get; init; }
+    public int? UserGroupCount { get; init; }
+    public string? ExposureWarning { get; init; }
 }

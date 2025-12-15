@@ -46,6 +46,13 @@ public class RiskyFileDto
     public DateTime? LastAccessedDate { get; set; }
     public string? StalenessLevel { get; set; }
     public string? StaleDataWarning { get; set; }
+
+    // Informations d'exposition
+    public string? ExposureLevel { get; set; }
+    public bool? AccessibleToEveryone { get; set; }
+    public bool? IsNetworkShare { get; set; }
+    public int? UserGroupCount { get; set; }
+    public string? ExposureWarning { get; set; }
 }
 
 public class ScanDetectionDto
@@ -54,4 +61,8 @@ public class ScanDetectionDto
     public required string PiiType { get; set; }
     public required string Match { get; set; }
     public DateTime? LastAccessedDate { get; set; }
+
+    // Informations d'exposition
+    public string? ExposureLevel { get; set; }
+    public bool? AccessibleToEveryone { get; set; }
 }
