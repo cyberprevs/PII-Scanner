@@ -4,35 +4,67 @@ Application de bureau pour détecter et analyser les données personnelles ident
 
 ## Fonctionnalités
 
-- **Détection complète de PII** : 11 types de données personnelles détectés
-  - Emails
-  - Téléphones (France et Bénin)
-  - Dates de naissance
-  - Numéros de Sécurité Sociale
-  - Adresses IP
-  - IBAN (France et Bénin)
-  - Numéros fiscaux (France)
-  - IFU (Bénin)
-  - Cartes bancaires (avec validation Luhn)
-  - Noms complets
-  - Adresses postales
+### Détection de PII (18 types)
 
+**Données personnelles classiques** :
+- Emails
+- Téléphones (France et Bénin)
+- Dates de naissance
+- Numéros de Sécurité Sociale
+- Adresses IP
+- IBAN (France et Bénin)
+- Numéros fiscaux (France)
+- IFU (Bénin)
+- Cartes bancaires (avec validation Luhn)
+- Noms complets
+- Adresses postales
+
+**Données de sécurité critiques** :
+- Numéros de passeport (format international)
+- Mots de passe en clair
+- Clés API AWS (Access Key ID et Secret Access Key)
+- Tokens GitHub
+- Clés API Google
+- Clés API Stripe
+- Identifiants de confidentialité (confidential, secret, etc.)
+
+### Fonctionnalités avancées
+
+- **Stale Data Detection** : Identification des fichiers avec PII non accédés depuis longtemps
+  - Fichiers récents (< 6 mois)
+  - Ancienneté moyenne (6 mois - 1 an)
+  - Anciens (1-3 ans)
+  - Très anciens (3-5 ans)
+  - Obsolètes (> 5 ans)
+  - Filtrage par ancienneté dans l'interface
+  - Messages d'alerte : "Ce fichier contient 50 PII mais n'a pas été ouvert depuis 3 ans"
+
+- **Over-Exposed Data Detection** : Analyse des permissions Windows (NTFS ACL)
+  - 4 niveaux d'exposition : Critique, Élevé, Moyen, Faible
+  - Détection de fichiers accessibles à "Everyone"
+  - Détection de fichiers accessibles à "Authenticated Users"
+  - Analyse du nombre de groupes avec accès au fichier
+  - Détection des partages réseau (UNC paths)
+  - Filtrage par niveau d'exposition
+  - Messages d'alerte : "Ce fichier contient 50 PII et est accessible à TOUS les utilisateurs (Everyone)"
+
+- **Top 20 fichiers à risque** : Affichage des 20 fichiers les plus critiques (au lieu de 10)
+- **Filtrage multi-critères** : Filtres combinés par ancienneté ET exposition
 - **Performance optimale** : Traitement parallèle des fichiers
 - **100% local et sécurisé** : Aucune donnée n'est envoyée en ligne
 - **Rapports multiples formats** : CSV, JSON, HTML, Excel
 - **Analyse de risque** : Classification automatique des fichiers (Faible/Moyen/Élevé)
-- **Interface moderne** : Application Electron avec React et Material-UI
+- **Interface moderne** : Application Electron avec React 19 et Material-UI v7
 - **Temps réel** : Mise à jour du scan en direct via SignalR
 
 ## Installation
 
 ### Option 1 : Version portable (recommandé)
 
-1. Téléchargez `PII-Scanner-Portable.zip` depuis le dossier `pii-scanner-ui/release/`
-2. Extrayez l'archive dans un dossier de votre choix
-3. Lancez `PII Scanner.exe`
+1. Allez dans le dossier [pii-scanner-ui/release](pii-scanner-ui/release/)
+2. Lancez directement `PII Scanner 1.0.0.exe`
 
-Aucune installation requise ! L'application est entièrement autonome.
+Aucune installation requise ! L'application est entièrement autonome et portable.
 
 ### Option 2 : Compilation depuis les sources
 
@@ -52,9 +84,7 @@ Aucune installation requise ! L'application est entièrement autonome.
 
 2. **Compiler l'API .NET**
    ```bash
-   cd PiiScanner.Api
-   dotnet publish -c Release -o bin/Release/net8.0/publish
-   cd ..
+   dotnet publish PiiScanner.Api/PiiScanner.Api.csproj -c Release -o resources/api
    ```
 
 3. **Installer et compiler l'interface Electron**
@@ -62,24 +92,40 @@ Aucune installation requise ! L'application est entièrement autonome.
    cd pii-scanner-ui
    npm install
    npm run build
-   npm run electron:build:win
+   npx electron-builder --win --config electron-builder.yml
    cd ..
    ```
 
-4. L'application sera disponible dans `pii-scanner-ui/release/win-unpacked/`
+4. L'application sera disponible dans [pii-scanner-ui/release](pii-scanner-ui/release/):
+   - `PII Scanner 1.0.0.exe` : Exécutable portable
+   - `win-unpacked/` : Version non compressée
 
 ## Utilisation
 
 ### Avec l'application Electron (interface graphique)
 
-1. Lancez `PII Scanner.exe`
+1. Lancez `PII Scanner 1.0.0.exe`
 2. Cliquez sur "Sélectionner un dossier" pour choisir le répertoire à scanner
 3. Cliquez sur "Démarrer le scan"
 4. Attendez la fin du scan (la progression s'affiche en temps réel)
-5. Consultez les résultats :
+5. Consultez les résultats dans les 3 onglets :
+
+   **Onglet 1 - Vue d'ensemble** :
+   - Statistiques globales (fichiers scannés, PII trouvées)
    - Graphiques de répartition par type de PII
-   - Liste des fichiers à risque
-   - Détails de chaque détection
+
+   **Onglet 2 - Fichiers à risque** (Top 20) :
+   - Filtrage par ancienneté : Récent / 6 mois / 1 an / 3 ans / +5 ans
+   - Filtrage par exposition : Critique / Élevé / Moyen / Faible
+   - Alertes d'ancienneté : "Ce fichier contient 50 PII mais n'a pas été ouvert depuis 3 ans"
+   - Alertes d'exposition : "CRITIQUE: Ce fichier est accessible à TOUS les utilisateurs (Everyone)"
+   - Badges visuels : "Everyone", "Réseau" pour les fichiers sur-exposés
+
+   **Onglet 3 - Détections détaillées** :
+   - Liste complète de toutes les détections de PII
+   - Filtrage par ancienneté (même qu'onglet 2)
+   - Informations sur le type de PII et le fichier concerné
+
 6. Exportez les rapports dans le format de votre choix (CSV, JSON, HTML, Excel)
 
 ### Avec l'application console
@@ -113,6 +159,8 @@ Le projet est composé de 4 parties :
 ### 1. PiiScanner.Core
 Bibliothèque .NET contenant la logique métier :
 - Détecteurs de PII avec validation (Luhn, dates, formats)
+- Analyse des permissions NTFS (Windows ACL) - [FilePermissionAnalyzer.cs](PiiScanner.Core/Utils/FilePermissionAnalyzer.cs)
+- Calcul de l'ancienneté des fichiers - [StaleDataCalculator.cs](PiiScanner.Core/Utils/StaleDataCalculator.cs)
 - Traitement parallèle des fichiers
 - Génération de rapports (CSV, JSON, HTML, Excel)
 - Calcul de score de risque
