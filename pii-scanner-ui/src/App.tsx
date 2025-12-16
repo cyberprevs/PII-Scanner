@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Alert, Snackbar } from '@mui/material';
+import { AuthProvider } from './contexts/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import Login from './components/Login';
+import UserManagement from './components/UserManagement';
 import MainLayout from './components/Layout/MainLayout';
-import Home from './components/pages/Home';
 import DashboardPage from './components/pages/DashboardPage';
 import Scanner from './components/pages/Scanner';
 import RiskyFiles from './components/pages/RiskyFiles';
@@ -13,6 +16,9 @@ import Reports from './components/pages/Reports';
 import Exports from './components/pages/Exports';
 import Settings from './components/pages/Settings';
 import DataRetention from './components/pages/DataRetention';
+import ScanHistory from './components/pages/ScanHistory';
+import Profile from './components/pages/Profile';
+import DatabaseManagement from './components/pages/DatabaseManagement';
 import { scanApi } from './services/apiClient';
 import type { ScanResultResponse } from './types';
 
@@ -114,76 +120,105 @@ function App() {
   };
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<MainLayout />}>
-          <Route index element={<Home />} />
+    <AuthProvider>
+      <Router>
+        <Routes>
+          {/* Route publique : Login */}
+          <Route path="/login" element={<Login />} />
+
+          {/* Routes protégées */}
           <Route
-            path="dashboard"
+            path="/"
             element={
-              results ? (
+              <ProtectedRoute>
+                <MainLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<Navigate to="/dashboard" replace />} />
+            <Route
+              path="dashboard"
+              element={
                 <DashboardPage
                   results={results}
                   onDownloadReport={handleDownloadReport}
                   onNewScan={handleNewScan}
                 />
-              ) : (
-                <Home />
-              )
-            }
-          />
-          <Route
-            path="scanner"
-            element={
-              <Scanner
-                scanning={scanning}
-                scanId={scanId}
-                onStartScan={handleStartScan}
-              />
-            }
-          />
-          <Route path="risky-files" element={<RiskyFiles results={results} />} />
-          <Route path="detections" element={<Detections results={results} />} />
-          <Route path="staleness" element={<Staleness results={results} />} />
-          <Route path="exposure" element={<Exposure results={results} />} />
-          <Route path="reports" element={<Reports results={results} />} />
-          <Route
-            path="exports"
-            element={
-              <Exports
-                scanId={scanId}
-                onDownloadReport={handleDownloadReport}
-              />
-            }
-          />
-          <Route path="data-retention" element={<DataRetention />} />
-          <Route path="settings" element={<Settings />} />
-        </Route>
-      </Routes>
+              }
+            />
+            <Route
+              path="scanner"
+              element={
+                <Scanner
+                  scanning={scanning}
+                  scanId={scanId}
+                  onStartScan={handleStartScan}
+                />
+              }
+            />
+            <Route path="risky-files" element={<RiskyFiles results={results} />} />
+            <Route path="detections" element={<Detections results={results} />} />
+            <Route path="staleness" element={<Staleness results={results} />} />
+            <Route path="exposure" element={<Exposure results={results} />} />
+            <Route path="reports" element={<Reports results={results} />} />
+            <Route
+              path="exports"
+              element={
+                <Exports
+                  scanId={scanId}
+                  onDownloadReport={handleDownloadReport}
+                />
+              }
+            />
+            <Route path="data-retention" element={<DataRetention />} />
+            <Route path="history" element={<ScanHistory />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="settings" element={<Settings />} />
 
-      {/* Notifications */}
-      <Snackbar
-        open={!!error}
-        autoHideDuration={6000}
-        onClose={() => setError(null)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert onClose={() => setError(null)} severity="error" sx={{ width: '100%' }}>
-          {error}
-        </Alert>
-      </Snackbar>
+            {/* Routes Admin uniquement */}
+            <Route
+              path="users"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <UserManagement />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="database"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <DatabaseManagement />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
+        </Routes>
 
-      <Snackbar
-        open={!!successMessage}
-        autoHideDuration={3000}
-        onClose={() => setSuccessMessage(null)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert onClose={() => setSuccessMessage(null)} severity="success" sx={{ width: '100%' }}>
-          {successMessage}
-        </Alert>
-      </Snackbar>
-    </Router>
+        {/* Notifications */}
+        <Snackbar
+          open={!!error}
+          autoHideDuration={6000}
+          onClose={() => setError(null)}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        >
+          <Alert onClose={() => setError(null)} severity="error" sx={{ width: '100%' }}>
+            {error}
+          </Alert>
+        </Snackbar>
+
+        <Snackbar
+          open={!!successMessage}
+          autoHideDuration={3000}
+          onClose={() => setSuccessMessage(null)}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        >
+          <Alert onClose={() => setSuccessMessage(null)} severity="success" sx={{ width: '100%' }}>
+            {successMessage}
+          </Alert>
+        </Snackbar>
+      </Router>
+    </AuthProvider>
   );
 }
 

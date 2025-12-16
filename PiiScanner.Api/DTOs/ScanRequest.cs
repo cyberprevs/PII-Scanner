@@ -66,3 +66,23 @@ public class ScanDetectionDto
     public string? ExposureLevel { get; set; }
     public bool? AccessibleToEveryone { get; set; }
 }
+
+public class ScanHistoryDto
+{
+    public int Id { get; set; }
+    public required string ScanId { get; set; }
+    public required string DirectoryPath { get; set; }
+    public required string Status { get; set; }
+    public int? FilesScanned { get; set; }
+    public int? PiiDetected { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime? CompletedAt { get; set; }
+    public required string UserName { get; set; }
+}
+
+public class UpdateScanStatusDto
+{
+    public required string Status { get; set; }
+    public int? FilesScanned { get; set; }
+    public int? PiiDetected { get; set; }
+}
