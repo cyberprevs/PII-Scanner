@@ -33,7 +33,15 @@ public static class JsonReport
                     filePath = f.FilePath,
                     fileName = Path.GetFileName(f.FilePath),
                     piiCount = f.PiiCount,
-                    riskLevel = f.RiskLevel
+                    riskLevel = f.RiskLevel,
+                    lastAccessedDate = f.LastAccessedDate,
+                    stalenessLevel = f.StalenessLevel,
+                    staleDataWarning = f.StaleDataWarning,
+                    exposureLevel = f.ExposureLevel,
+                    accessibleToEveryone = f.AccessibleToEveryone,
+                    isNetworkShare = f.IsNetworkShare,
+                    userGroupCount = f.UserGroupCount,
+                    exposureWarning = f.ExposureWarning
                 }).ToList()
             },
             detections = results.Select(r => new

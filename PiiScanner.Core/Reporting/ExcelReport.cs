@@ -82,13 +82,36 @@ public static class ExcelReport
         var sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>()!;
 
         // En-tête
-        AppendRow(sheetData, "Niveau de risque", "Fichier", "Nombre de PII", "Chemin complet");
+        AppendRow(sheetData, "Niveau de risque", "Fichier", "Nombre de PII", "Ancienneté", "Niveau d'exposition",
+                  "Everyone", "Réseau", "Groupes d'accès", "Avertissement ancienneté", "Avertissement exposition", "Chemin complet");
 
         foreach (var file in stats.TopRiskyFiles)
         {
             var fileName = Path.GetFileName(file.FilePath);
-            AppendRow(sheetData, file.RiskLevel, fileName, file.PiiCount.ToString(), file.FilePath);
+            var accessibleToEveryone = file.AccessibleToEveryone == true ? "OUI" : "NON";
+            var isNetworkShare = file.IsNetworkShare == true ? "OUI" : "NON";
+            var userGroupCount = file.UserGroupCount?.ToString() ?? "0";
+
+            AppendRow(sheetData,
+                file.RiskLevel,
+                fileName,
+                file.PiiCount.ToString(),
+                file.StalenessLevel ?? "",
+                file.ExposureLevel ?? "",
+                accessibleToEveryone,
+                isNetworkShare,
+                userGroupCount,
+                file.StaleDataWarning ?? "",
+                file.ExposureWarning ?? "",
+                file.FilePath);
         }
+
+        // Ajouter l'auto-filtre sur la première ligne
+        var autoFilter = new AutoFilter
+        {
+            Reference = $"A1:K{stats.TopRiskyFiles.Count + 1}"
+        };
+        worksheetPart.Worksheet.Append(autoFilter);
     }
 
     private static void CreateDetectionsSheet(WorkbookPart workbookPart, Sheets sheets, List<ScanResult> results, uint sheetId)
