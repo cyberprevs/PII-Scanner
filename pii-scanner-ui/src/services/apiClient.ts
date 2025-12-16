@@ -18,6 +18,20 @@ const apiClient = axios.create({
   },
 });
 
+// Intercepteur pour ajouter le token JWT à toutes les requêtes
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 export class ScanApiClient {
   private hubConnection: signalR.HubConnection | null = null;
 
@@ -52,8 +66,12 @@ export class ScanApiClient {
     onComplete: (scanId: string) => void,
     onError: (scanId: string, error: string) => void
   ): Promise<void> {
+    const token = localStorage.getItem('token');
+
     this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl(SIGNALR_URL)
+      .withUrl(SIGNALR_URL, {
+        accessTokenFactory: () => token || ''
+      })
       .withAutomaticReconnect()
       .build();
 

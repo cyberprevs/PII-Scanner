@@ -13,9 +13,11 @@ import {
   Switch,
   FormControlLabel,
   Tooltip,
+  Avatar,
+  Button,
+  Chip,
 } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
-import HomeIcon from '@mui/icons-material/Home';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import SearchIcon from '@mui/icons-material/Search';
 import FolderIcon from '@mui/icons-material/Folder';
@@ -30,6 +32,13 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
+import PeopleIcon from '@mui/icons-material/People';
+import LogoutIcon from '@mui/icons-material/Logout';
+import PersonIcon from '@mui/icons-material/Person';
+import HistoryIcon from '@mui/icons-material/History';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import { useAuth } from '../../contexts/AuthContext';
 
 const DRAWER_WIDTH = 240;
 const DRAWER_WIDTH_COLLAPSED = 65;
@@ -48,16 +57,28 @@ interface MenuItem {
 }
 
 const menuItems: MenuItem[] = [
-  { id: 'home', label: 'Accueil', icon: <HomeIcon />, path: '/' },
+  // Section Scan
   { id: 'dashboard', label: 'Tableau de bord', icon: <DashboardIcon />, path: '/dashboard' },
-  { id: 'scanner', label: 'Scanner', icon: <SearchIcon />, path: '/scanner', divider: true },
+  { id: 'scanner', label: 'Nouveau Scan', icon: <SearchIcon />, path: '/scanner' },
+  { id: 'history', label: 'Historique', icon: <HistoryIcon />, path: '/history', divider: true },
+
+  // Section Analyse
   { id: 'risky-files', label: 'Fichiers à risque', icon: <FolderIcon />, path: '/risky-files' },
   { id: 'detections', label: 'Données sensibles', icon: <SecurityIcon />, path: '/detections' },
   { id: 'staleness', label: 'Ancienneté', icon: <AccessTimeIcon />, path: '/staleness' },
   { id: 'exposure', label: 'Exposition', icon: <LockOpenIcon />, path: '/exposure', divider: true },
-  { id: 'reports', label: 'Rapports & Analytics', icon: <AssessmentIcon />, path: '/reports' },
+
+  // Section Rapports
+  { id: 'reports', label: 'Rapports', icon: <AssessmentIcon />, path: '/reports' },
   { id: 'exports', label: 'Exports', icon: <DownloadIcon />, path: '/exports' },
-  { id: 'data-retention', label: 'Rétention des données', icon: <DeleteSweepIcon />, path: '/data-retention', divider: true },
+  { id: 'data-retention', label: 'Rétention', icon: <DeleteSweepIcon />, path: '/data-retention', divider: true },
+
+  // Section Administration
+  { id: 'users', label: 'Utilisateurs', icon: <PeopleIcon />, path: '/users' },
+  { id: 'database', label: 'Base de données', icon: <AdminPanelSettingsIcon />, path: '/database', divider: true },
+
+  // Section Profil
+  { id: 'profile', label: 'Mon Profil', icon: <AccountCircleIcon />, path: '/profile' },
   { id: 'settings', label: 'Paramètres', icon: <SettingsIcon />, path: '/settings' },
 ];
 
@@ -65,12 +86,27 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, isAdmin, logout } = useAuth();
 
   const drawerWidth = collapsed ? DRAWER_WIDTH_COLLAPSED : DRAWER_WIDTH;
 
   const handleNavigate = (path: string) => {
     navigate(path);
   };
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
+
+  // Filter menu items based on user role
+  const filteredMenuItems = menuItems.filter(item => {
+    // Admin-only menu items
+    if ((item.id === 'users' || item.id === 'database') && !isAdmin) {
+      return false;
+    }
+    return true;
+  });
 
   return (
     <Drawer
@@ -122,7 +158,7 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
 
       {/* Menu Items */}
       <List sx={{ px: 1, py: 2 }}>
-        {menuItems.map((item) => (
+        {filteredMenuItems.map((item) => (
           <Box key={item.id}>
             <Tooltip title={collapsed ? item.label : ''} placement="right">
               <ListItem disablePadding sx={{ mb: 0.5 }}>
@@ -167,9 +203,106 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
         ))}
       </List>
 
-      {/* Footer - Dark Mode Toggle */}
+      {/* Footer - User Info & Actions */}
       <Box sx={{ mt: 'auto', p: 2 }}>
         <Divider sx={{ mb: 2, opacity: 0.3 }} />
+
+        {/* User Info */}
+        {user && (
+          <Box sx={{ mb: 2 }}>
+            {collapsed ? (
+              <Tooltip title={`${user.fullName} (${user.role})`} placement="right">
+                <Avatar
+                  sx={{
+                    width: 40,
+                    height: 40,
+                    mx: 'auto',
+                    bgcolor: 'primary.main',
+                    cursor: 'default',
+                  }}
+                >
+                  <PersonIcon />
+                </Avatar>
+              </Tooltip>
+            ) : (
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1.5,
+                  p: 1.5,
+                  borderRadius: 2,
+                  bgcolor: darkMode ? 'rgba(102, 126, 234, 0.1)' : 'rgba(102, 126, 234, 0.08)',
+                }}
+              >
+                <Avatar
+                  sx={{
+                    width: 40,
+                    height: 40,
+                    bgcolor: 'primary.main',
+                  }}
+                >
+                  <PersonIcon />
+                </Avatar>
+                <Box sx={{ flex: 1, minWidth: 0 }}>
+                  <Typography
+                    variant="body2"
+                    fontWeight={600}
+                    noWrap
+                    sx={{ lineHeight: 1.2 }}
+                  >
+                    {user.fullName}
+                  </Typography>
+                  <Chip
+                    label={user.role}
+                    size="small"
+                    color={user.role === 'Admin' ? 'secondary' : 'primary'}
+                    sx={{ mt: 0.5, height: 20, fontSize: '0.7rem' }}
+                  />
+                </Box>
+              </Box>
+            )}
+          </Box>
+        )}
+
+        {/* Logout Button */}
+        <Box sx={{ mb: 2 }}>
+          {collapsed ? (
+            <Tooltip title="Déconnexion" placement="right">
+              <IconButton
+                onClick={handleLogout}
+                sx={{
+                  width: '100%',
+                  color: darkMode ? '#ff6b6b' : '#dc2626',
+                  '&:hover': {
+                    bgcolor: darkMode ? 'rgba(255, 107, 107, 0.1)' : 'rgba(220, 38, 38, 0.1)',
+                  },
+                }}
+              >
+                <LogoutIcon />
+              </IconButton>
+            </Tooltip>
+          ) : (
+            <Button
+              fullWidth
+              variant="outlined"
+              startIcon={<LogoutIcon />}
+              onClick={handleLogout}
+              sx={{
+                borderColor: darkMode ? '#ff6b6b' : '#dc2626',
+                color: darkMode ? '#ff6b6b' : '#dc2626',
+                '&:hover': {
+                  borderColor: darkMode ? '#ff5252' : '#b91c1c',
+                  bgcolor: darkMode ? 'rgba(255, 107, 107, 0.1)' : 'rgba(220, 38, 38, 0.1)',
+                },
+              }}
+            >
+              Déconnexion
+            </Button>
+          )}
+        </Box>
+
+        {/* Dark Mode Toggle */}
         {collapsed ? (
           <Tooltip title={darkMode ? 'Mode clair' : 'Mode sombre'} placement="right">
             <IconButton onClick={onToggleDarkMode} sx={{ width: '100%' }}>

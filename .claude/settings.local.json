@@ -16,7 +16,13 @@
       "Bash(npx electron-builder:*)",
       "Bash(ls:*)",
       "Bash(npm run build:electron:*)",
-      "Bash(powershell -Command \"Stop-Process -Id 24728 -Force\")"
+      "Bash(powershell -Command \"Stop-Process -Id 24728 -Force\")",
+      "Bash(dotnet add package:*)",
+      "Bash(dotnet add:*)",
+      "Bash(dotnet tool install:*)",
+      "Bash(powershell:*)",
+      "Bash(dotnet ef migrations:*)",
+      "Bash(dotnet run)"
     ]
   }
 }

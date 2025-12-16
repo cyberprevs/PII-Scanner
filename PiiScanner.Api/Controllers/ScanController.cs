@@ -1,20 +1,27 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using PiiScanner.Api.Data;
 using PiiScanner.Api.DTOs;
+using PiiScanner.Api.Models;
 using PiiScanner.Api.Services;
 
 namespace PiiScanner.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize] // Protéger tous les endpoints du scan
 public class ScanController : ControllerBase
 {
     private readonly ScanService _scanService;
     private readonly ILogger<ScanController> _logger;
+    private readonly AppDbContext _db;
 
-    public ScanController(ScanService scanService, ILogger<ScanController> logger)
+    public ScanController(ScanService scanService, ILogger<ScanController> logger, AppDbContext db)
     {
         _scanService = scanService;
         _logger = logger;
+        _db = db;
     }
 
     /// <summary>
@@ -47,7 +54,19 @@ public class ScanController : ControllerBase
 
             var scanId = _scanService.StartScan(request);
 
-            _logger.LogInformation("Scan démarré: {ScanId} pour le dossier {Path}", scanId, request.DirectoryPath);
+            // Enregistrer le scan dans la base de données
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
+            _db.Scans.Add(new ScanRecord
+            {
+                ScanId = scanId,
+                UserId = userId,
+                DirectoryPath = request.DirectoryPath,
+                Status = "Running",
+                CreatedAt = DateTime.UtcNow
+            });
+            _db.SaveChanges();
+
+            _logger.LogInformation("Scan démarré: {ScanId} pour le dossier {Path} par utilisateur {UserId}", scanId, request.DirectoryPath, userId);
 
             return Ok(new ScanResponse
             {
@@ -138,6 +157,68 @@ public class ScanController : ControllerBase
     public ActionResult CleanupScan(string scanId)
     {
         _scanService.CleanupScan(scanId);
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Obtenir l'historique des scans
+    /// </summary>
+    [HttpGet("history")]
+    public async Task<ActionResult<IEnumerable<ScanHistoryDto>>> GetScanHistory()
+    {
+        var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
+        var isAdmin = User.IsInRole(Roles.Admin);
+
+        IQueryable<ScanRecord> query = _db.Scans.Include(s => s.User);
+
+        // Les opérateurs ne voient que leurs propres scans
+        if (!isAdmin)
+        {
+            query = query.Where(s => s.UserId == userId);
+        }
+
+        var scans = await query
+            .OrderByDescending(s => s.CreatedAt)
+            .Select(s => new ScanHistoryDto
+            {
+                Id = s.Id,
+                ScanId = s.ScanId,
+                DirectoryPath = s.DirectoryPath,
+                Status = s.Status,
+                FilesScanned = s.FilesScanned,
+                PiiDetected = s.PiiDetected,
+                CreatedAt = s.CreatedAt,
+                CompletedAt = s.CompletedAt,
+                UserName = s.User != null ? s.User.FullName : "Unknown"
+            })
+            .ToListAsync();
+
+        return Ok(scans);
+    }
+
+    /// <summary>
+    /// Mettre à jour le statut d'un scan
+    /// </summary>
+    [HttpPut("{scanId}/status")]
+    public async Task<ActionResult> UpdateScanStatus(string scanId, [FromBody] UpdateScanStatusDto dto)
+    {
+        var scan = await _db.Scans.FirstOrDefaultAsync(s => s.ScanId == scanId);
+        if (scan == null)
+        {
+            return NotFound(new { message = "Scan non trouvé" });
+        }
+
+        scan.Status = dto.Status;
+        scan.FilesScanned = dto.FilesScanned;
+        scan.PiiDetected = dto.PiiDetected;
+
+        if (dto.Status == "Completed" && scan.CompletedAt == null)
+        {
+            scan.CompletedAt = DateTime.UtcNow;
+        }
+
+        await _db.SaveChangesAsync();
+
         return NoContent();
     }
 }

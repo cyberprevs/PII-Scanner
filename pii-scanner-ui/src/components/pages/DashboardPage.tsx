@@ -42,7 +42,7 @@ import TableChartIcon from '@mui/icons-material/TableChart';
 import type { ScanResultResponse } from '../../types';
 
 interface ResultsProps {
-  results: ScanResultResponse;
+  results: ScanResultResponse | null;
   onDownloadReport: (format: 'csv' | 'json' | 'html' | 'excel') => void;
   onNewScan: () => void;
 }
@@ -81,6 +81,32 @@ export default function Results({ results, onDownloadReport, onNewScan }: Result
   const [activeTab, setActiveTab] = useState(0);
   const [stalenessFilter, setStalenessFilter] = useState<string>('all');
   const [exposureFilter, setExposureFilter] = useState<string>('all');
+
+  // Si aucun résultat, afficher un message d'accueil
+  if (!results) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Card sx={{ textAlign: 'center', py: 8 }}>
+          <CardContent>
+            <Typography variant="h4" gutterBottom fontWeight={600}>
+              Bienvenue dans PII Scanner
+            </Typography>
+            <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
+              Aucun scan récent disponible. Lancez un nouveau scan pour commencer.
+            </Typography>
+            <Button
+              variant="contained"
+              size="large"
+              onClick={onNewScan}
+              startIcon={<RefreshIcon />}
+            >
+              Nouveau Scan
+            </Button>
+          </CardContent>
+        </Card>
+      </Box>
+    );
+  }
 
   const { statistics, detections } = results;
 
