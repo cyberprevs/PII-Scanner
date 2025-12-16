@@ -7,62 +7,84 @@ namespace PiiScanner.Analysis;
 
 public static class PiiDetector
 {
+    // ========== CONFIGURATION BÉNIN ==========
+    // Détection des données personnelles selon la Loi N°2017-20 du Bénin
+    // Autorité: APDP (Autorité de Protection des Données Personnelles)
+
     private static readonly Dictionary<string, string> Patterns = new()
     {
-        // Email avec validation stricte (pas de chiffres avant @)
+        // ========== DONNÉES UNIVERSELLES ==========
+
+        // Email avec validation stricte
         { "Email", @"\b[a-zA-Z][a-zA-Z0-9._%+-]*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\b" },
 
-        // Téléphone France: 01-05 + 8 chiffres, ou 06-07 (mobile), ou +33
-        { "TelephoneFR", @"\b(?:\+33|0)[1-9](?:[\s.-]?\d{2}){4}\b" },
-
-        // Téléphone Bénin: +229 suivi de 8 chiffres
-        { "TelephoneBJ", @"\b\+229[\s.-]?\d{2}[\s.-]?\d{2}[\s.-]?\d{2}[\s.-]?\d{2}\b" },
-
-        // Date de naissance au format JJ/MM/AAAA avec validation
+        // Date de naissance au format JJ/MM/AAAA
         { "DateNaissance", @"\b(?:0[1-9]|[12][0-9]|3[01])/(?:0[1-9]|1[0-2])/(?:19|20)\d{2}\b" },
 
-        // Numéro de sécurité sociale français (15 chiffres)
-        { "NumeroSecu", @"\b[1-478]\s?\d{2}\s?\d{2}\s?\d{2}\s?\d{3}\s?\d{3}\s?\d{2}\b" },
-
-        // Numéro fiscal français (13 chiffres)
-        { "NumeroFiscalFR", @"\b\d{13}\b" },
-
-        // IFU Bénin (Identifiant Fiscal Unique - 13 chiffres commençant par 0, 1, 2, 3)
-        { "IFU_Benin", @"\b[0-3]\d{12}\b" },
-
-        // IBAN France (FR + 2 chiffres + 23 caractères alphanumériques)
-        { "IBAN_FR", @"\bFR\s?\d{2}\s?(?:\d{4}\s?){5}\d{3}\b" },
-
-        // IBAN Bénin (BJ + 2 chiffres + 24 caractères alphanumériques)
-        { "IBAN_BJ", @"\bBJ\s?\d{2}\s?[A-Z0-9\s]{24,28}\b" },
-
-        // Carte bancaire (16 chiffres avec espaces optionnels)
-        { "CarteBancaire", @"\b(?:\d{4}[\s-]?){3}\d{4}\b" },
-
-        // Adresse IP valide (chaque octet entre 0-255)
+        // Adresse IP
         { "AdresseIP", @"\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b" },
 
-        // ========== NOUVEAUX DÉTECTEURS CRITIQUES ==========
+        // Carte bancaire (16 chiffres avec validation Luhn)
+        { "CarteBancaire", @"\b(?:\d{4}[\s-]?){3}\d{4}\b" },
 
-        // Numéro de Passeport (format international: 2 lettres + 6-9 chiffres)
-        { "Passeport", @"\b[A-Z]{2}[0-9]{6,9}\b" },
+        // ========== IDENTITÉ & DOCUMENTS BÉNINOIS ==========
 
-        // Mots de passe en clair dans les fichiers de configuration
+        // IFU - Identifiant Fiscal Unique (13 chiffres commençant par 0, 1, 2, 3)
+        { "IFU", @"\b[0-3]\d{12}\b" },
+
+        // CNI - Carte Nationale d'Identité béninoise (format: lettres + chiffres)
+        { "CNI_Benin", @"\b[A-Z]{2}\d{6,10}\b" },
+
+        // Passeport béninois (BJ suivi de 7 chiffres)
+        { "Passeport_Benin", @"\bBJ\d{7}\b" },
+
+        // RCCM - Registre du Commerce et du Crédit Mobilier (RB/XXX/YYYY/X/X)
+        { "RCCM", @"\bRB/[A-Z]{3}/\d{4}/[A-Z]/\d{1,5}\b" },
+
+        // Acte de naissance (numéro avec format N° XXX/YYYY ou XXX/AAAA/Département)
+        { "ActeNaissance", @"\b(?:N°\s?)?\d{1,5}/\d{4}/[A-Z]{2,}\b" },
+
+        // ========== CONTACT BÉNIN ==========
+
+        // Téléphone Bénin: +229 ou 00229 suivi de 8 chiffres
+        { "Telephone", @"\b(?:\+229|00229|229)?[\s.-]?(?:0[1-9]|[2-9]\d)[\s.-]?\d{2}[\s.-]?\d{2}[\s.-]?\d{2}\b" },
+
+        // ========== DONNÉES BANCAIRES BÉNIN ==========
+
+        // IBAN Bénin (BJ + 2 chiffres + 24 caractères)
+        { "IBAN", @"\bBJ\s?\d{2}\s?[A-Z0-9\s]{24,28}\b" },
+
+        // Mobile Money - MTN MoMo (commence par 96, 97, 66, 67)
+        { "MobileMoney_MTN", @"\b(?:96|97|66|67)\s?\d{2}\s?\d{2}\s?\d{2}\b" },
+
+        // Mobile Money - Moov Money (commence par 98, 99, 68, 69)
+        { "MobileMoney_Moov", @"\b(?:98|99|68|69)\s?\d{2}\s?\d{2}\s?\d{2}\b" },
+
+        // ========== SANTÉ & SÉCURITÉ SOCIALE BÉNIN ==========
+
+        // Numéro CNSS - Caisse Nationale de Sécurité Sociale (10-12 chiffres)
+        { "CNSS", @"\b\d{10,12}\b" },
+
+        // Carte RAMU - Régime d'Assurance Maladie Universelle
+        { "RAMU", @"\bRAMU[\s-]?\d{8,10}\b" },
+
+        // ========== ÉDUCATION BÉNIN ==========
+
+        // INE - Identifiant National de l'Élève (format variable selon année)
+        { "INE", @"\bINE[\s-]?\d{8,12}\b" },
+
+        // Matricule fonctionnaire (commence par F ou M)
+        { "Matricule_Fonctionnaire", @"\b[FM]\d{6,10}\b" },
+
+        // ========== SÉCURITÉ - CLÉS & TOKENS ==========
+
+        // Mots de passe en clair
         { "MotDePasse", @"(?i)\b(password|pwd|passwd|secret|api[_-]?key|access[_-]?token|auth[_-]?token|private[_-]?key)\s*[:=]\s*[^\s;,""')\]]{4,}\b" },
 
         // Clés API AWS
         { "CleAPI_AWS", @"\bAKIA[0-9A-Z]{16}\b" },
 
-        // Clés API Google
-        { "CleAPI_Google", @"\bAIza[0-9A-Za-z\-_]{35}\b" },
-
-        // Token GitHub
-        { "Token_GitHub", @"\bghp_[0-9a-zA-Z]{36}\b" },
-
-        // Clé Stripe
-        { "CleAPI_Stripe", @"\bsk_live_[0-9a-zA-Z]{24,}\b" },
-
-        // Token JWT (JSON Web Token)
+        // Token JWT
         { "Token_JWT", @"\beyJ[A-Za-z0-9-_]+\.eyJ[A-Za-z0-9-_]+\.[A-Za-z0-9-_.+/=]*\b" }
     };
 
@@ -102,9 +124,10 @@ public static class PiiDetector
             "DateNaissance" => IsValidDate(value),
             "Email" => IsValidEmail(value),
             "CarteBancaire" => IsValidCreditCard(value),
-            "NumeroFiscalFR" => IsValidNumeroFiscal(value),
-            "IBAN_FR" => IsValidIbanFR(value),
-            "Passeport" => IsValidPassport(value),
+            "IFU" => IsValidIFU(value),
+            "IBAN" => IsValidIbanBenin(value),
+            "CNI_Benin" => IsValidCNI(value),
+            "CNSS" => IsValidCNSS(value),
             "MotDePasse" => IsValidPassword(value),
             "CleAPI_AWS" => IsValidAwsKey(value),
             _ => true
@@ -159,39 +182,55 @@ public static class PiiDetector
         return sum % 10 == 0;
     }
 
-    private static bool IsValidNumeroFiscal(string numero)
+    private static bool IsValidIFU(string ifu)
     {
-        // Éviter les numéros qui sont probablement autre chose (numéro de téléphone, etc.)
-        // Un numéro fiscal français commence généralement par 0, 1, 2, ou 3
-        return numero.Length == 13 && (numero[0] == '0' || numero[0] == '1' || numero[0] == '2' || numero[0] == '3');
+        // IFU béninois: 13 chiffres commençant par 0, 1, 2, ou 3
+        // Éviter les faux positifs
+        if (ifu.Length != 13)
+            return false;
+
+        return ifu[0] == '0' || ifu[0] == '1' || ifu[0] == '2' || ifu[0] == '3';
     }
 
-    private static bool IsValidIbanFR(string iban)
+    private static bool IsValidIbanBenin(string iban)
     {
         // Enlever les espaces
         string cleaned = iban.Replace(" ", "");
 
-        // IBAN français doit avoir exactement 27 caractères (FR + 2 chiffres + 23 caractères)
-        return cleaned.Length == 27 && cleaned.StartsWith("FR");
+        // IBAN béninois doit avoir BJ + 2 chiffres + 24 caractères (26 caractères minimum)
+        return cleaned.Length >= 26 && cleaned.StartsWith("BJ");
     }
 
-    private static bool IsValidPassport(string value)
+    private static bool IsValidCNI(string cni)
     {
-        // Éviter les faux positifs comme "AB123456" qui pourrait être autre chose
-        // Vérifier que c'est bien 2 lettres majuscules suivies de 6-9 chiffres
-        if (value.Length < 8 || value.Length > 11)
+        // CNI béninoise: 2 lettres majuscules suivies de chiffres
+        if (cni.Length < 8)
             return false;
 
         // Les deux premiers caractères doivent être des lettres
-        if (!char.IsLetter(value[0]) || !char.IsLetter(value[1]))
+        if (!char.IsLetter(cni[0]) || !char.IsLetter(cni[1]))
             return false;
 
         // Le reste doit être des chiffres
-        for (int i = 2; i < value.Length; i++)
+        for (int i = 2; i < cni.Length; i++)
         {
-            if (!char.IsDigit(value[i]))
+            if (!char.IsDigit(cni[i]))
                 return false;
         }
+
+        return true;
+    }
+
+    private static bool IsValidCNSS(string cnss)
+    {
+        // Numéro CNSS: 10-12 chiffres
+        // Éviter les numéros trop génériques (dates, etc.)
+        if (cnss.Length < 10 || cnss.Length > 12)
+            return false;
+
+        // Ne doit pas être une suite répétitive simple
+        if (cnss.All(c => c == cnss[0]))
+            return false;
 
         return true;
     }
