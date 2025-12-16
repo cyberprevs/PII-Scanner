@@ -12,7 +12,9 @@
       "Bash(dotnet build:*)",
       "Bash(npm run build:*)",
       "Bash(if exist \"C:\\Users\\samir\\AppData\\Local\\electron-builder\\Cache\\winCodeSign\" rmdir /s /q \"C:\\Users\\samir\\AppData\\Local\\electron-builder\\Cache\\winCodeSign\")",
-      "Bash($env:CSC_IDENTITY_AUTO_DISCOVERY=\"false\")"
+      "Bash($env:CSC_IDENTITY_AUTO_DISCOVERY=\"false\")",
+      "Bash(npx electron-builder:*)",
+      "Bash(ls:*)"
     ]
   }
 }
