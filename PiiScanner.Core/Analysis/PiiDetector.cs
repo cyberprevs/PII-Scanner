@@ -21,9 +21,6 @@ public static class PiiDetector
         // Date de naissance au format JJ/MM/AAAA
         { "DateNaissance", @"\b(?:0[1-9]|[12][0-9]|3[01])/(?:0[1-9]|1[0-2])/(?:19|20)\d{2}\b" },
 
-        // Adresse IP
-        { "AdresseIP", @"\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b" },
-
         // Carte bancaire (16 chiffres avec validation Luhn)
         { "CarteBancaire", @"\b(?:\d{4}[\s-]?){3}\d{4}\b" },
 
@@ -46,8 +43,8 @@ public static class PiiDetector
 
         // ========== CONTACT BÉNIN ==========
 
-        // Téléphone Bénin: +229 ou 00229 suivi de 8 chiffres
-        { "Telephone", @"\b(?:\+229|00229|229)?[\s.-]?(?:0[1-9]|[2-9]\d)[\s.-]?\d{2}[\s.-]?\d{2}[\s.-]?\d{2}\b" },
+        // Téléphone Bénin: +229 obligatoire OU 8 chiffres commençant par préfixes valides (sans ponctuation isolée)
+        { "Telephone", @"\b(?:\+229|00229)\s?(?:4[0-9]|5[0-9]|6[0-79]|9[0-79])\s?\d{2}\s?\d{2}\s?\d{2}\b" },
 
         // ========== DONNÉES BANCAIRES BÉNIN ==========
 
@@ -62,8 +59,8 @@ public static class PiiDetector
 
         // ========== SANTÉ & SÉCURITÉ SOCIALE BÉNIN ==========
 
-        // Numéro CNSS - Caisse Nationale de Sécurité Sociale (10-12 chiffres)
-        { "CNSS", @"\b\d{10,12}\b" },
+        // Numéro CNSS - Caisse Nationale de Sécurité Sociale (11 chiffres exactement, commence par 0-9)
+        { "CNSS", @"\b[0-9]\d{10}\b" },
 
         // Carte RAMU - Régime d'Assurance Maladie Universelle
         { "RAMU", @"\bRAMU[\s-]?\d{8,10}\b" },
@@ -139,7 +136,12 @@ public static class PiiDetector
         // Vérifier que la date n'est pas dans le futur et pas trop ancienne
         if (DateTime.TryParseExact(date, "dd/MM/yyyy", null, System.Globalization.DateTimeStyles.None, out DateTime parsedDate))
         {
-            return parsedDate >= new DateTime(1900, 1, 1) && parsedDate <= DateTime.Now;
+            // Une date de naissance doit être au minimum 5 ans dans le passé (enfants)
+            // et au maximum 120 ans (personnes très âgées)
+            var minDate = DateTime.Now.AddYears(-120); // Personnes de 120 ans max
+            var maxDate = DateTime.Now.AddYears(-5);   // Enfants de minimum 5 ans
+
+            return parsedDate >= minDate && parsedDate <= maxDate;
         }
         return false;
     }
@@ -147,8 +149,45 @@ public static class PiiDetector
     private static bool IsValidEmail(string email)
     {
         // Vérifier que l'email ne se termine pas par des caractères étranges
-        return !email.EndsWith("PARIS", StringComparison.OrdinalIgnoreCase)
-            && !Regex.IsMatch(email, @"[A-Z]{2,}$");
+        if (email.EndsWith("PARIS", StringComparison.OrdinalIgnoreCase) || Regex.IsMatch(email, @"[A-Z]{2,}$"))
+            return false;
+
+        // Rejeter les noms de fichiers (extensions d'image/fichier)
+        string[] fileExtensions = { ".png", ".jpg", ".jpeg", ".gif", ".svg", ".ico", ".art", ".json", ".js", ".ts", ".tsx", ".jsx", ".pdf", ".docx" };
+        foreach (var ext in fileExtensions)
+        {
+            if (email.EndsWith(ext, StringComparison.OrdinalIgnoreCase))
+                return false;
+        }
+
+        // Rejeter les patterns de noms de fichiers iOS/Android (Icon-App-*, ItunesArtwork@*, framework@*)
+        if (Regex.IsMatch(email, @"^(Icon-|iTunes|Itunes|framework).*@.*\.(png|json|art)", RegexOptions.IgnoreCase))
+            return false;
+
+        // Rejeter les emails malformés (domaine invalide)
+        if (!email.Contains("@") || !email.Contains("."))
+            return false;
+
+        // Vérifier que le domaine est valide (après @)
+        var parts = email.Split('@');
+        if (parts.Length != 2)
+            return false;
+
+        var domain = parts[1];
+
+        // Rejeter si le domaine contient des mots français/texte (pas un vrai domaine)
+        if (Regex.IsMatch(domain, @"[A-Z][a-z]+[A-Z]") || domain.Contains("http"))
+            return false;
+
+        // Rejeter si le domaine se termine par des chiffres + extension de fichier
+        if (Regex.IsMatch(domain, @"\d+\.(png|jpg|json|art|com[A-Z])"))
+            return false;
+
+        // Rejeter emails factices dans exemples (t@tedt.com, user@test.com)
+        if (Regex.IsMatch(email, @"^[a-z]@[a-z]{3,5}\.(com|org|net)$", RegexOptions.IgnoreCase))
+            return false;
+
+        return true;
     }
 
     private static bool IsValidCreditCard(string cardNumber)
@@ -223,13 +262,41 @@ public static class PiiDetector
 
     private static bool IsValidCNSS(string cnss)
     {
-        // Numéro CNSS: 10-12 chiffres
-        // Éviter les numéros trop génériques (dates, etc.)
-        if (cnss.Length < 10 || cnss.Length > 12)
+        // Numéro CNSS: exactement 11 chiffres
+        if (cnss.Length != 11)
             return false;
 
         // Ne doit pas être une suite répétitive simple
         if (cnss.All(c => c == cnss[0]))
+            return false;
+
+        // Rejeter les numéros factices (99999, 12345, etc.)
+        if (cnss == "95999999996" || cnss == "12345678901" || cnss == "01234567890")
+            return false;
+
+        // Rejeter les numéros d'exemple dans documentation (07123456789, 00001760268, etc.)
+        if (cnss == "07123456789" || cnss == "00001760268" || cnss == "35492213230")
+            return false;
+
+        // Rejeter les timestamps Unix (commence par 1 ou 2 suivi de 9 chiffres)
+        if ((cnss[0] == '1' || cnss[0] == '2') && long.TryParse(cnss, out long val) && val > 1000000000 && val < 9999999999)
+            return false;
+
+        // Rejeter INT32_MAX et valeurs système connues
+        if (cnss == "21474836470" || cnss == "21474836480" || cnss == "21474836471")
+            return false;
+
+        // Rejeter les patterns de dates (YYYYMMDDXXX)
+        if (cnss.StartsWith("20") && cnss.Substring(0, 4).All(char.IsDigit))
+        {
+            int year = int.Parse(cnss.Substring(0, 4));
+            int month = int.Parse(cnss.Substring(4, 2));
+            if (year >= 1900 && year <= 2100 && month >= 1 && month <= 12)
+                return false; // Probablement un timestamp YYYYMMDD
+        }
+
+        // Rejeter les numéros commençant par 00000 ou 99999
+        if (cnss.StartsWith("00000") || cnss.StartsWith("99999"))
             return false;
 
         return true;

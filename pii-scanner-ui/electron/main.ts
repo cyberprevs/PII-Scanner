@@ -5,7 +5,7 @@ import { spawn, ChildProcessWithoutNullStreams } from 'child_process';
 let mainWindow: BrowserWindow | null = null;
 let apiProcess: ChildProcessWithoutNullStreams | null = null;
 
-const API_PORT = 5169;
+const API_PORT = 5000;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -23,7 +23,7 @@ function createWindow() {
 
   // En développement, charger depuis Vite
   if (process.env.NODE_ENV === 'development') {
-    mainWindow.loadURL('http://localhost:5173');
+    mainWindow.loadURL('http://localhost:3000');
     mainWindow.webContents.openDevTools();
   } else {
     // En production, charger le build

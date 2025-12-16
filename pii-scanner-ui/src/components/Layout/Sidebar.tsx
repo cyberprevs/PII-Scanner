@@ -25,6 +25,7 @@ import LockOpenIcon from '@mui/icons-material/LockOpen';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import DownloadIcon from '@mui/icons-material/Download';
 import SettingsIcon from '@mui/icons-material/Settings';
+import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
@@ -55,7 +56,8 @@ const menuItems: MenuItem[] = [
   { id: 'staleness', label: 'Ancienneté', icon: <AccessTimeIcon />, path: '/staleness' },
   { id: 'exposure', label: 'Exposition', icon: <LockOpenIcon />, path: '/exposure', divider: true },
   { id: 'reports', label: 'Rapports & Analytics', icon: <AssessmentIcon />, path: '/reports' },
-  { id: 'exports', label: 'Exports', icon: <DownloadIcon />, path: '/exports', divider: true },
+  { id: 'exports', label: 'Exports', icon: <DownloadIcon />, path: '/exports' },
+  { id: 'data-retention', label: 'Rétention des données', icon: <DeleteSweepIcon />, path: '/data-retention', divider: true },
   { id: 'settings', label: 'Paramètres', icon: <SettingsIcon />, path: '/settings' },
 ];
 

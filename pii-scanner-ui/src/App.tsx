@@ -12,6 +12,7 @@ import Exposure from './components/pages/Exposure';
 import Reports from './components/pages/Reports';
 import Exports from './components/pages/Exports';
 import Settings from './components/pages/Settings';
+import DataRetention from './components/pages/DataRetention';
 import { scanApi } from './services/apiClient';
 import type { ScanResultResponse } from './types';
 
@@ -155,6 +156,7 @@ function App() {
               />
             }
           />
+          <Route path="data-retention" element={<DataRetention />} />
           <Route path="settings" element={<Settings />} />
         </Route>
       </Routes>

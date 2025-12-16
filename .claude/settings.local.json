@@ -14,7 +14,9 @@
       "Bash(if exist \"C:\\Users\\samir\\AppData\\Local\\electron-builder\\Cache\\winCodeSign\" rmdir /s /q \"C:\\Users\\samir\\AppData\\Local\\electron-builder\\Cache\\winCodeSign\")",
       "Bash($env:CSC_IDENTITY_AUTO_DISCOVERY=\"false\")",
       "Bash(npx electron-builder:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(npm run build:electron:*)",
+      "Bash(powershell -Command \"Stop-Process -Id 24728 -Force\")"
     ]
   }
 }

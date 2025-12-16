@@ -7,8 +7,8 @@ import type {
   ScanResultResponse,
 } from '../types';
 
-const API_BASE_URL = 'http://localhost:5169/api';
-const SIGNALR_URL = 'http://localhost:5169/scanhub';
+const API_BASE_URL = 'http://localhost:5000/api';
+const SIGNALR_URL = 'http://localhost:5000/scanhub';
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -76,6 +76,53 @@ export class ScanApiClient {
       this.hubConnection = null;
     }
   }
+
+  // ===== Data Retention API =====
+  async scanForOldFiles(directoryPath: string, retentionPolicies?: Record<string, number>): Promise<RetentionScanResponse> {
+    const response = await apiClient.post<RetentionScanResponse>('/dataretention/scan', {
+      directoryPath,
+      retentionPolicies: retentionPolicies || {
+        banking: 5,
+        identity: 3,
+        health: 5,
+        education: 2,
+        contact: 1
+      }
+    });
+    return response.data;
+  }
+
+  async deleteOldFiles(filePaths: string[]): Promise<DeleteFilesResponse> {
+    const response = await apiClient.post<DeleteFilesResponse>('/dataretention/delete', {
+      filePaths
+    });
+    return response.data;
+  }
 }
 
 export const scanApi = new ScanApiClient();
+
+// ===== Types for Data Retention =====
+export interface RetentionScanResponse {
+  success: boolean;
+  filesFound: number;
+  totalPii: number;
+  files: OldFileInfo[];
+}
+
+export interface OldFileInfo {
+  path: string;
+  age: number;
+  lastModified: string;
+  piiCount: number;
+  reason: string;
+  sizeBytes: number;
+}
+
+export interface DeleteFilesResponse {
+  success: boolean;
+  deletedCount: number;
+  failedCount: number;
+  deletedFiles: string[];
+  failedFiles: string[];
+}

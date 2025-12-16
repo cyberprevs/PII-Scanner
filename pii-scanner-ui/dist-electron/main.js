@@ -38,7 +38,7 @@ const path = __importStar(require("path"));
 const child_process_1 = require("child_process");
 let mainWindow = null;
 let apiProcess = null;
-const API_PORT = 5169;
+const API_PORT = 5000;
 function createWindow() {
     mainWindow = new electron_1.BrowserWindow({
         width: 1400,
@@ -54,7 +54,7 @@ function createWindow() {
     });
     // En développement, charger depuis Vite
     if (process.env.NODE_ENV === 'development') {
-        mainWindow.loadURL('http://localhost:5173');
+        mainWindow.loadURL('http://localhost:3000');
         mainWindow.webContents.openDevTools();
     }
     else {
