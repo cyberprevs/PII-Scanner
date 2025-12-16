@@ -40,11 +40,28 @@ public static class CsvReport
             foreach (var file in stats.TopRiskyFiles.Take(5))
             {
                 var shortName = Path.GetFileName(file.FilePath);
-                sb.AppendLine($"#   [{file.RiskLevel}] {shortName} - {file.PiiCount} PII");
+                sb.AppendLine($"#   [{file.RiskLevel}] {shortName} - {file.PiiCount} PII - Ancienneté: {file.StalenessLevel ?? "N/A"} - Exposition: {file.ExposureLevel ?? "N/A"}");
             }
             sb.AppendLine("#");
         }
 
+        sb.AppendLine("# === FICHIERS À RISQUE (DÉTAILS COMPLETS) ===");
+        sb.AppendLine("Niveau de risque;Fichier;Nombre de PII;Ancienneté;Exposition;Everyone;Réseau;Groupes d'accès;Avertissement ancienneté;Avertissement exposition;Chemin complet");
+
+        foreach (var fileRisk in stats.TopRiskyFiles)
+        {
+            var fileRiskName = Path.GetFileName(fileRisk.FilePath);
+            var accessibleToEveryone = fileRisk.AccessibleToEveryone == true ? "OUI" : "NON";
+            var isNetworkShare = fileRisk.IsNetworkShare == true ? "OUI" : "NON";
+            var userGroupCount = fileRisk.UserGroupCount?.ToString() ?? "0";
+
+            var staleDataWarning = fileRisk.StaleDataWarning?.Replace(";", ",") ?? "";
+            var exposureWarning = fileRisk.ExposureWarning?.Replace(";", ",") ?? "";
+
+            sb.AppendLine($"{fileRisk.RiskLevel};{fileRiskName};{fileRisk.PiiCount};{fileRisk.StalenessLevel ?? ""};{fileRisk.ExposureLevel ?? ""};{accessibleToEveryone};{isNetworkShare};{userGroupCount};{staleDataWarning};{exposureWarning};{fileRisk.FilePath}");
+        }
+
+        sb.AppendLine();
         sb.AppendLine("# === DÉTAILS DES DÉTECTIONS ===");
         sb.AppendLine("Fichier;Type;Valeur");
 
