@@ -416,11 +416,19 @@ builder.Services.AddCors(options =>
 - **Fichier** : `piiscanner.db` (chiffré avec SQLCipher)
 - **Algorithme** : AES-256 en mode CBC
 - **Clé de chiffrement** : 256 bits (32 bytes) générée cryptographiquement
-- **Stockage de la clé** :
-  - Fichier `db_encryption.key` (caché et en lecture seule)
-  - Ou variable d'environnement `Database:EncryptionKey` (production)
-- **Permissions** : Lecture/Écriture pour l'application uniquement
-- **Protection** : Base de données entièrement chiffrée au repos
+- **Stockage sécurisé de la clé** :
+  - **Fichier** `db_encryption.key` avec ACL NTFS restrictives (Windows) :
+    - Accès limité à : Utilisateur exécutant l'API + SYSTEM
+    - Héritage des permissions désactivé
+    - Attributs : Hidden + ReadOnly
+    - Logs au démarrage : "Fichier de clé sécurisé avec ACL restrictives"
+  - **Variable d'environnement** `Database:EncryptionKey` (recommandé production)
+  - **Azure Key Vault / AWS Secrets Manager** (optionnel, sécurité maximale)
+- **Hiérarchie de chargement** : Variable env → Fichier sécurisé → Génération auto
+- **Protection multi-niveaux** :
+  - Chiffrement AES-256 de toutes les données
+  - ACL NTFS bloquant les autres utilisateurs Windows
+  - Fallback gracieux si ACL échouent
 
 ### Sauvegardes
 

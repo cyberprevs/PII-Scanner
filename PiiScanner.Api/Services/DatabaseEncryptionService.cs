@@ -1,4 +1,6 @@
 using System.Security.Cryptography;
+using System.Security.AccessControl;
+using System.Security.Principal;
 using System.Text;
 using Microsoft.Data.Sqlite;
 
@@ -58,11 +60,10 @@ public class DatabaseEncryptionService
             // Sauvegarder la clé pour une utilisation future
             File.WriteAllText(keyFilePath, newKey);
 
-            // Définir les permissions (Windows)
+            // Définir les permissions sécurisées (Windows)
             if (OperatingSystem.IsWindows())
             {
-                var fileInfo = new FileInfo(keyFilePath);
-                fileInfo.Attributes = FileAttributes.Hidden | FileAttributes.ReadOnly;
+                SecureKeyFile(keyFilePath);
             }
 
             _logger.LogWarning(
@@ -217,6 +218,70 @@ public class DatabaseEncryptionService
         {
             // Autre erreur - supposer non chiffrée
             return false;
+        }
+    }
+
+    /// <summary>
+    /// Sécurise le fichier de clé avec des ACL NTFS restrictives (Windows uniquement)
+    /// Retire tous les accès sauf pour l'utilisateur actuel et SYSTEM
+    /// </summary>
+    private void SecureKeyFile(string keyFilePath)
+    {
+        try
+        {
+            var fileInfo = new FileInfo(keyFilePath);
+
+            // 1. Obtenir l'identité de l'utilisateur actuel
+            var currentUser = WindowsIdentity.GetCurrent();
+            var currentUserSid = currentUser.User;
+
+            // 2. Créer une nouvelle ACL vide (supprime tous les accès existants)
+            var fileSecurity = new FileSecurity();
+
+            // 3. Désactiver l'héritage des permissions (important!)
+            fileSecurity.SetAccessRuleProtection(isProtected: true, preserveInheritance: false);
+
+            // 4. Ajouter l'accès complet uniquement pour l'utilisateur actuel
+            var currentUserRule = new FileSystemAccessRule(
+                currentUserSid,
+                FileSystemRights.FullControl,
+                AccessControlType.Allow);
+            fileSecurity.AddAccessRule(currentUserRule);
+
+            // 5. Ajouter l'accès pour SYSTEM (requis pour certaines opérations)
+            var systemSid = new SecurityIdentifier(WellKnownSidType.LocalSystemSid, null);
+            var systemRule = new FileSystemAccessRule(
+                systemSid,
+                FileSystemRights.FullControl,
+                AccessControlType.Allow);
+            fileSecurity.AddAccessRule(systemRule);
+
+            // 6. Appliquer les nouvelles ACL au fichier
+            fileInfo.SetAccessControl(fileSecurity);
+
+            // 7. Définir les attributs cachés et lecture seule
+            fileInfo.Attributes = FileAttributes.Hidden | FileAttributes.ReadOnly;
+
+            _logger.LogInformation(
+                "Fichier de clé sécurisé avec ACL restrictives. Accès limité à: {User}",
+                currentUser.Name);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex,
+                "Impossible de sécuriser le fichier de clé avec ACL. " +
+                "Le fichier sera protégé uniquement par les attributs Hidden/ReadOnly.");
+
+            // Fallback: au moins définir les attributs de base
+            try
+            {
+                var fileInfo = new FileInfo(keyFilePath);
+                fileInfo.Attributes = FileAttributes.Hidden | FileAttributes.ReadOnly;
+            }
+            catch
+            {
+                // Ignorer si même cela échoue
+            }
         }
     }
 }
