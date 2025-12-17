@@ -5,6 +5,7 @@ using PiiScanner.Api.Data;
 using PiiScanner.Api.DTOs;
 using PiiScanner.Api.Models;
 using PiiScanner.Api.Services;
+using PiiScanner.Api.Utils;
 
 namespace PiiScanner.Api.Controllers;
 
@@ -42,13 +43,17 @@ public class ScanController : ControllerBase
                 });
             }
 
-            if (!Directory.Exists(request.DirectoryPath))
+            // SÉCURITÉ: Valider le chemin pour prévenir les attaques de type Path Traversal
+            if (!PathValidator.ValidateDirectoryPath(request.DirectoryPath, out var validationError, mustExist: true))
             {
+                _logger.LogWarning("Tentative de scan avec un chemin invalide: {Path} - Erreur: {Error}",
+                    request.DirectoryPath, validationError);
+
                 return BadRequest(new ScanResponse
                 {
                     ScanId = string.Empty,
                     Status = "error",
-                    Message = "Le dossier spécifié n'existe pas"
+                    Message = $"Chemin de répertoire invalide: {validationError}"
                 });
             }
 

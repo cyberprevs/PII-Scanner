@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PiiScanner.Api.Data;
 using PiiScanner.Api.Models;
+using PiiScanner.Api.Utils;
 using System.IO;
 
 namespace PiiScanner.Api.Controllers;
@@ -332,9 +333,25 @@ public class DatabaseController : ControllerBase
     {
         try
         {
+            // SÉCURITÉ: Valider le nom de fichier pour prévenir les attaques de type Path Traversal
+            if (!PathValidator.ValidateFileName(fileName, out var validationError))
+            {
+                _logger.LogWarning("Tentative de téléchargement avec un nom de fichier invalide: {FileName} - Erreur: {Error}",
+                    fileName, validationError);
+                return BadRequest(new { error = $"Nom de fichier invalide: {validationError}" });
+            }
+
             var dbPath = GetDatabasePath();
             var backupDir = Path.Combine(Path.GetDirectoryName(dbPath) ?? "", "backups");
-            var backupPath = Path.Combine(backupDir, fileName);
+            var backupPath = Path.GetFullPath(Path.Combine(backupDir, fileName));
+
+            // SÉCURITÉ: Vérifier que le fichier est bien dans le répertoire de sauvegarde
+            if (!PathValidator.ValidateFileInDirectory(backupPath, backupDir, out validationError))
+            {
+                _logger.LogWarning("Tentative d'accès à un fichier hors du répertoire de sauvegarde: {Path}",
+                    backupPath);
+                return BadRequest(new { error = "Accès non autorisé au fichier" });
+            }
 
             if (!System.IO.File.Exists(backupPath))
             {
@@ -359,15 +376,25 @@ public class DatabaseController : ControllerBase
     {
         try
         {
-            // Valider le nom de fichier pour éviter path traversal
-            if (fileName.Contains("..") || fileName.Contains("/") || fileName.Contains("\\"))
+            // SÉCURITÉ: Valider le nom de fichier pour prévenir les attaques de type Path Traversal
+            if (!PathValidator.ValidateFileName(fileName, out var validationError))
             {
-                return BadRequest(new { error = "Nom de fichier invalide" });
+                _logger.LogWarning("Tentative de suppression avec un nom de fichier invalide: {FileName} - Erreur: {Error}",
+                    fileName, validationError);
+                return BadRequest(new { error = $"Nom de fichier invalide: {validationError}" });
             }
 
             var dbPath = GetDatabasePath();
             var backupDir = Path.Combine(Path.GetDirectoryName(dbPath) ?? "", "backups");
             var backupPath = Path.GetFullPath(Path.Combine(backupDir, fileName));
+
+            // SÉCURITÉ: Vérifier que le fichier est bien dans le répertoire de sauvegarde
+            if (!PathValidator.ValidateFileInDirectory(backupPath, backupDir, out validationError))
+            {
+                _logger.LogWarning("Tentative de suppression d'un fichier hors du répertoire de sauvegarde: {Path}",
+                    backupPath);
+                return BadRequest(new { error = "Accès non autorisé au fichier" });
+            }
 
             _logger.LogInformation("Attempting to delete backup: {BackupPath}", backupPath);
 

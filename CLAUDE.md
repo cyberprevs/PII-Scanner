@@ -303,7 +303,63 @@ The French language is used for end-user facing elements to comply with RGPD ter
 
 ## Security Notes
 
-- All scanning is local - no data sent to external services
-- Reports contain sensitive PII - handle with care
-- CORS policy in API is permissive (`AllowAnyOrigin`) - tighten for production deployment
-- Temp directory cleanup is automatic but may fail - consider adding periodic cleanup task
+### Data Protection
+- **100% local processing** : No data sent to external services
+- **Reports contain sensitive PII** : Handle with care, secure storage required
+- **In-memory processing** : Files analyzed without modification
+
+### Application Security
+For comprehensive security documentation, see [SECURITY.md](SECURITY.md).
+
+#### Path Traversal Protection
+All file/directory paths are validated using the `PathValidator` utility class ([PiiScanner.Api/Utils/PathValidator.cs](PiiScanner.Api/Utils/PathValidator.cs)):
+
+**Protected endpoints:**
+- `POST /api/scan/start` - Validates scan directory path
+- `POST /api/dataretention/scan` - Validates retention scan directory
+- `POST /api/dataretention/delete` - Validates each file path
+- `GET /api/database/backup/download/{fileName}` - Validates backup filename and confinement
+- `DELETE /api/database/backup/{fileName}` - Validates backup filename and confinement
+
+**Validation features:**
+- Rejects path traversal sequences (`.., /, \`)
+- Blocks system directory access (`C:\Windows`, `/etc`, etc.)
+- Validates file names against reserved names (CON, PRN, AUX, etc.)
+- Ensures files stay within authorized directories
+- Logs all invalid access attempts
+
+#### Authentication & Authorization
+- **JWT tokens** : Secure authentication with 7-day expiration
+- **Refresh tokens** : 30-day validity, stored in database, revocable
+- **Role-Based Access Control (RBAC)** :
+  - Admin: Full access (users, database, scans)
+  - User: Scans, reports, data retention, profile
+- **Password security** : BCrypt hashing with automatic salt
+
+#### Audit Logging
+All sensitive operations are logged to `AuditLogs` table:
+- User authentication (login, logout, password changes)
+- User management (create, update, delete, role changes)
+- Database operations (backup, restore, delete, optimize)
+- Scan operations (start, complete, fail)
+
+**Log fields:** UserId, Action, EntityType, EntityId, IpAddress, Details, CreatedAt
+
+#### SQL Injection Protection
+- Entity Framework Core with parameterized queries
+- No string concatenation in SQL
+- LINQ-based queries only
+
+#### CORS Configuration
+- Configured in [Program.cs](PiiScanner.Api/Program.cs)
+- Development: Allows localhost origins (3000, 5173-5175)
+- **Production**: Replace with specific allowed origins
+
+#### Recommendations for Production
+1. Enable HTTPS only
+2. Implement rate limiting (login attempts)
+3. Add security headers (X-Frame-Options, CSP, etc.)
+4. Rotate JWT secret periodically
+5. Enable database encryption (SQLCipher)
+6. Regular security audits (OWASP ZAP, Burp Suite)
+7. Dependency vulnerability scanning (Snyk, npm audit)
