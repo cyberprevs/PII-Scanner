@@ -13,6 +13,16 @@ SQLitePCL.raw.SetProvider(new SQLitePCL.SQLite3Provider_e_sqlcipher());
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configure Kestrel to use HTTPS by default
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.ListenLocalhost(5001, listenOptions =>
+    {
+        listenOptions.UseHttps();
+    });
+    serverOptions.ListenLocalhost(5000);
+});
+
 // Add services to the container
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

@@ -19,6 +19,7 @@ import DataRetention from './components/pages/DataRetention';
 import ScanHistory from './components/pages/ScanHistory';
 import Profile from './components/pages/Profile';
 import DatabaseManagement from './components/pages/DatabaseManagement';
+import AuditTrail from './components/pages/AuditTrail';
 import Support from './components/pages/Support';
 import { scanApi } from './services/apiClient';
 import type { ScanResultResponse } from './types';
@@ -191,6 +192,14 @@ function App() {
               element={
                 <ProtectedRoute requireAdmin>
                   <DatabaseManagement />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="audit-trail"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <AuditTrail />
                 </ProtectedRoute>
               }
             />

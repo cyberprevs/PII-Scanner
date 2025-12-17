@@ -90,6 +90,7 @@ const menuItems: MenuItem[] = [
     subItems: [
       { id: 'users', label: 'Utilisateurs', icon: <PeopleIcon />, path: '/users', adminOnly: true },
       { id: 'database', label: 'Base de données', icon: <AdminPanelSettingsIcon />, path: '/database', adminOnly: true },
+      { id: 'audit-trail', label: 'Audit Trail', icon: <HistoryIcon />, path: '/audit-trail', adminOnly: true },
       { id: 'settings', label: 'Paramètres', icon: <SettingsIcon />, path: '/settings' },
     ],
   },
@@ -127,7 +128,7 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
   });
 
   // Check if current path is under maintenance
-  const isMaintenancePath = ['/users', '/database', '/settings'].includes(location.pathname);
+  const isMaintenancePath = ['/users', '/database', '/audit-trail', '/settings'].includes(location.pathname);
 
   return (
     <Drawer
