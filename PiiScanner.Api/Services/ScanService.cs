@@ -1,5 +1,7 @@
 using System.Collections.Concurrent;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
+using PiiScanner.Api.Data;
 using PiiScanner.Api.DTOs;
 using PiiScanner.Api.Hubs;
 using PiiScanner.Models;
@@ -11,11 +13,13 @@ namespace PiiScanner.Api.Services;
 public class ScanService
 {
     private readonly IHubContext<ScanHub> _hubContext;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly ConcurrentDictionary<string, ScanSession> _activeScans = new();
 
-    public ScanService(IHubContext<ScanHub> hubContext)
+    public ScanService(IHubContext<ScanHub> hubContext, IServiceScopeFactory serviceScopeFactory)
     {
         _hubContext = hubContext;
+        _serviceScopeFactory = serviceScopeFactory;
     }
 
     public string StartScan(ScanRequest request)
@@ -75,6 +79,9 @@ public class ScanService
 
             session.ReportsDirectory = reportsDir;
 
+            // Mettre à jour la base de données
+            await UpdateScanInDatabase(scanId, "Completed", scanner.TotalFilesScanned, results.Count);
+
             // Notifier la completion
             await _hubContext.Clients.All.SendAsync("ScanComplete", scanId);
         }
@@ -85,7 +92,39 @@ public class ScanService
             session.ErrorMessage = ex.Message;
             session.EndTime = DateTime.UtcNow;
 
+            // Mettre à jour la base de données avec le statut d'erreur
+            await UpdateScanInDatabase(scanId, "Failed", session.TotalFiles, 0);
+
             await _hubContext.Clients.All.SendAsync("ScanError", scanId, ex.Message);
+        }
+    }
+
+    private async Task UpdateScanInDatabase(string scanId, string status, int filesScanned, int piiDetected)
+    {
+        try
+        {
+            using var scope = _serviceScopeFactory.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+            var scan = await db.Scans.FirstOrDefaultAsync(s => s.ScanId == scanId);
+            if (scan != null)
+            {
+                scan.Status = status;
+                scan.FilesScanned = filesScanned;
+                scan.PiiDetected = piiDetected;
+
+                if (status == "Completed" || status == "Failed")
+                {
+                    scan.CompletedAt = DateTime.UtcNow;
+                }
+
+                await db.SaveChangesAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log mais ne pas faire échouer le scan
+            Console.WriteLine($"Erreur lors de la mise à jour de la BDD pour le scan {scanId}: {ex.Message}");
         }
     }
 

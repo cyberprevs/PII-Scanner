@@ -47,10 +47,14 @@ public class CsrfProtectionMiddleware
             context.Response.Cookies.Append(CSRF_TOKEN_COOKIE, csrfToken, new CookieOptions
             {
                 HttpOnly = false,  // JavaScript doit pouvoir lire ce cookie
-                SameSite = SameSiteMode.Strict,
-                Secure = !context.RequestServices.GetRequiredService<IWebHostEnvironment>().IsDevelopment(),
+                SameSite = SameSiteMode.None,  // None pour permettre les requêtes cross-origin depuis Electron
+                Secure = true,  // Requis avec SameSite=None
+                Path = "/",  // Cookie accessible pour toutes les routes
                 MaxAge = TimeSpan.FromHours(1)
             });
+
+            // AUSSI envoyer le token dans un header pour faciliter la lecture par JavaScript
+            context.Response.Headers["X-CSRF-Token"] = csrfToken;
 
             await _next(context);
             return;
