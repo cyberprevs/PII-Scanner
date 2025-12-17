@@ -38,6 +38,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import HistoryIcon from '@mui/icons-material/History';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import HelpIcon from '@mui/icons-material/Help';
 import { useAuth } from '../../contexts/AuthContext';
 
 const DRAWER_WIDTH = 240;
@@ -80,6 +81,7 @@ const menuItems: MenuItem[] = [
   // Section Profil
   { id: 'profile', label: 'Mon Profil', icon: <AccountCircleIcon />, path: '/profile' },
   { id: 'settings', label: 'Paramètres', icon: <SettingsIcon />, path: '/settings' },
+  { id: 'support', label: 'Support', icon: <HelpIcon />, path: '/support' },
 ];
 
 export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
