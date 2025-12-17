@@ -16,6 +16,7 @@ import {
   Avatar,
   Button,
   Chip,
+  Collapse,
 } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import DashboardIcon from '@mui/icons-material/Dashboard';
@@ -39,6 +40,9 @@ import HistoryIcon from '@mui/icons-material/History';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import HelpIcon from '@mui/icons-material/Help';
+import BuildIcon from '@mui/icons-material/Build';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
 import { useAuth } from '../../contexts/AuthContext';
 
 const DRAWER_WIDTH = 240;
@@ -53,8 +57,10 @@ interface MenuItem {
   id: string;
   label: string;
   icon: React.ReactElement;
-  path: string;
+  path?: string;
   divider?: boolean;
+  subItems?: MenuItem[];
+  adminOnly?: boolean;
 }
 
 const menuItems: MenuItem[] = [
@@ -74,18 +80,28 @@ const menuItems: MenuItem[] = [
   { id: 'exports', label: 'Exports', icon: <DownloadIcon />, path: '/exports' },
   { id: 'data-retention', label: 'Rétention', icon: <DeleteSweepIcon />, path: '/data-retention', divider: true },
 
-  // Section Administration
-  { id: 'users', label: 'Utilisateurs', icon: <PeopleIcon />, path: '/users' },
-  { id: 'database', label: 'Base de données', icon: <AdminPanelSettingsIcon />, path: '/database', divider: true },
+  // Section Maintenance (avec sous-menu)
+  {
+    id: 'maintenance',
+    label: 'Maintenance',
+    icon: <BuildIcon />,
+    adminOnly: true,
+    divider: true,
+    subItems: [
+      { id: 'users', label: 'Utilisateurs', icon: <PeopleIcon />, path: '/users', adminOnly: true },
+      { id: 'database', label: 'Base de données', icon: <AdminPanelSettingsIcon />, path: '/database', adminOnly: true },
+      { id: 'settings', label: 'Paramètres', icon: <SettingsIcon />, path: '/settings' },
+    ],
+  },
 
   // Section Profil
   { id: 'profile', label: 'Mon Profil', icon: <AccountCircleIcon />, path: '/profile' },
-  { id: 'settings', label: 'Paramètres', icon: <SettingsIcon />, path: '/settings' },
   { id: 'support', label: 'Support', icon: <HelpIcon />, path: '/support' },
 ];
 
 export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
+  const [maintenanceOpen, setMaintenanceOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { user, isAdmin, logout } = useAuth();
@@ -104,11 +120,14 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
   // Filter menu items based on user role
   const filteredMenuItems = menuItems.filter(item => {
     // Admin-only menu items
-    if ((item.id === 'users' || item.id === 'database') && !isAdmin) {
+    if (item.adminOnly && !isAdmin) {
       return false;
     }
     return true;
   });
+
+  // Check if current path is under maintenance
+  const isMaintenancePath = ['/users', '/database', '/settings'].includes(location.pathname);
 
   return (
     <Drawer
@@ -162,44 +181,147 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
       <List sx={{ px: 1, py: 2 }}>
         {filteredMenuItems.map((item) => (
           <Box key={item.id}>
-            <Tooltip title={collapsed ? item.label : ''} placement="right">
-              <ListItem disablePadding sx={{ mb: 0.5 }}>
-                <ListItemButton
-                  selected={location.pathname === item.path}
-                  onClick={() => handleNavigate(item.path)}
-                  sx={{
-                    borderRadius: 2,
-                    minHeight: 48,
-                    justifyContent: collapsed ? 'center' : 'flex-start',
-                    '&.Mui-selected': {
-                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                      color: 'white',
-                      '&:hover': {
-                        background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
-                      },
-                      '& .MuiListItemIcon-root': {
-                        color: 'white',
-                      },
-                    },
-                    '&:hover': {
-                      backgroundColor: darkMode ? 'rgba(102, 126, 234, 0.1)' : 'rgba(102, 126, 234, 0.08)',
-                    },
-                  }}
-                >
-                  <ListItemIcon
+            {item.subItems ? (
+              // Menu avec sous-items (Maintenance)
+              <>
+                <Tooltip title={collapsed ? item.label : ''} placement="right">
+                  <ListItem disablePadding sx={{ mb: 0.5 }}>
+                    <ListItemButton
+                      selected={isMaintenancePath}
+                      onClick={() => !collapsed && setMaintenanceOpen(!maintenanceOpen)}
+                      sx={{
+                        borderRadius: 2,
+                        minHeight: 48,
+                        justifyContent: collapsed ? 'center' : 'flex-start',
+                        '&.Mui-selected': {
+                          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                          color: 'white',
+                          '&:hover': {
+                            background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+                          },
+                          '& .MuiListItemIcon-root': {
+                            color: 'white',
+                          },
+                        },
+                        '&:hover': {
+                          backgroundColor: darkMode ? 'rgba(102, 126, 234, 0.1)' : 'rgba(102, 126, 234, 0.08)',
+                        },
+                      }}
+                    >
+                      <ListItemIcon
+                        sx={{
+                          minWidth: 0,
+                          mr: collapsed ? 0 : 2,
+                          justifyContent: 'center',
+                          color: isMaintenancePath ? 'white' : (darkMode ? '#a0a4c1' : '#6b7280'),
+                        }}
+                      >
+                        {item.icon}
+                      </ListItemIcon>
+                      {!collapsed && (
+                        <>
+                          <ListItemText primary={item.label} />
+                          {maintenanceOpen ? <ExpandLess /> : <ExpandMore />}
+                        </>
+                      )}
+                    </ListItemButton>
+                  </ListItem>
+                </Tooltip>
+
+                {/* Sous-menu */}
+                {!collapsed && (
+                  <Collapse in={maintenanceOpen} timeout="auto" unmountOnExit>
+                    <List component="div" disablePadding>
+                      {item.subItems
+                        .filter(subItem => !subItem.adminOnly || isAdmin)
+                        .map((subItem) => (
+                          <Tooltip key={subItem.id} title={''} placement="right">
+                            <ListItem disablePadding sx={{ mb: 0.5 }}>
+                              <ListItemButton
+                                selected={location.pathname === subItem.path}
+                                onClick={() => subItem.path && handleNavigate(subItem.path)}
+                                sx={{
+                                  borderRadius: 2,
+                                  minHeight: 40,
+                                  pl: 4,
+                                  '&.Mui-selected': {
+                                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                    color: 'white',
+                                    '&:hover': {
+                                      background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+                                    },
+                                    '& .MuiListItemIcon-root': {
+                                      color: 'white',
+                                    },
+                                  },
+                                  '&:hover': {
+                                    backgroundColor: darkMode ? 'rgba(102, 126, 234, 0.1)' : 'rgba(102, 126, 234, 0.08)',
+                                  },
+                                }}
+                              >
+                                <ListItemIcon
+                                  sx={{
+                                    minWidth: 0,
+                                    mr: 2,
+                                    justifyContent: 'center',
+                                    color: location.pathname === subItem.path ? 'white' : (darkMode ? '#a0a4c1' : '#6b7280'),
+                                  }}
+                                >
+                                  {subItem.icon}
+                                </ListItemIcon>
+                                <ListItemText
+                                  primary={subItem.label}
+                                  primaryTypographyProps={{ fontSize: '0.9rem' }}
+                                />
+                              </ListItemButton>
+                            </ListItem>
+                          </Tooltip>
+                        ))}
+                    </List>
+                  </Collapse>
+                )}
+              </>
+            ) : (
+              // Menu item normal (sans sous-items)
+              <Tooltip title={collapsed ? item.label : ''} placement="right">
+                <ListItem disablePadding sx={{ mb: 0.5 }}>
+                  <ListItemButton
+                    selected={location.pathname === item.path}
+                    onClick={() => item.path && handleNavigate(item.path)}
                     sx={{
-                      minWidth: 0,
-                      mr: collapsed ? 0 : 2,
-                      justifyContent: 'center',
-                      color: location.pathname === item.path ? 'white' : (darkMode ? '#a0a4c1' : '#6b7280'),
+                      borderRadius: 2,
+                      minHeight: 48,
+                      justifyContent: collapsed ? 'center' : 'flex-start',
+                      '&.Mui-selected': {
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        color: 'white',
+                        '&:hover': {
+                          background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+                        },
+                        '& .MuiListItemIcon-root': {
+                          color: 'white',
+                        },
+                      },
+                      '&:hover': {
+                        backgroundColor: darkMode ? 'rgba(102, 126, 234, 0.1)' : 'rgba(102, 126, 234, 0.08)',
+                      },
                     }}
                   >
-                    {item.icon}
-                  </ListItemIcon>
-                  {!collapsed && <ListItemText primary={item.label} />}
-                </ListItemButton>
-              </ListItem>
-            </Tooltip>
+                    <ListItemIcon
+                      sx={{
+                        minWidth: 0,
+                        mr: collapsed ? 0 : 2,
+                        justifyContent: 'center',
+                        color: location.pathname === item.path ? 'white' : (darkMode ? '#a0a4c1' : '#6b7280'),
+                      }}
+                    >
+                      {item.icon}
+                    </ListItemIcon>
+                    {!collapsed && <ListItemText primary={item.label} />}
+                  </ListItemButton>
+                </ListItem>
+              </Tooltip>
+            )}
             {item.divider && <Divider sx={{ my: 1, opacity: 0.3 }} />}
           </Box>
         ))}
