@@ -99,7 +99,38 @@ const UserManagement: React.FC = () => {
     setEditingUser(null);
   };
 
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const handleSubmit = async () => {
+    // Validation côté client
+    if (!formData.username || formData.username.length < 3) {
+      setError('Le nom d\'utilisateur doit contenir au moins 3 caractères');
+      return;
+    }
+
+    if (!formData.email || !validateEmail(formData.email)) {
+      setError('Veuillez entrer une adresse email valide');
+      return;
+    }
+
+    if (!formData.fullName || formData.fullName.length < 2) {
+      setError('Le nom complet doit contenir au moins 2 caractères');
+      return;
+    }
+
+    if (!editingUser && (!formData.password || formData.password.length < 6)) {
+      setError('Le mot de passe doit contenir au moins 6 caractères');
+      return;
+    }
+
+    if (editingUser && formData.password && formData.password.length < 6) {
+      setError('Le mot de passe doit contenir au moins 6 caractères');
+      return;
+    }
+
     try {
       if (editingUser) {
         // Update
@@ -215,6 +246,7 @@ const UserManagement: React.FC = () => {
           {editingUser ? 'Modifier l\'utilisateur' : 'Nouvel utilisateur'}
         </DialogTitle>
         <DialogContent>
+          {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
           <TextField
             fullWidth
             label="Nom d'utilisateur"
