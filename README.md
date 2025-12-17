@@ -67,10 +67,10 @@ Application de bureau pour détecter et analyser les données personnelles ident
   - Détection des partages réseau (UNC paths)
 
 #### Interface utilisateur moderne
-- **10 pages spécialisées** :
-  1. Accueil : Vue d'ensemble et démarrage rapide
-  2. Tableau de bord : Statistiques et métriques clés
-  3. Scanner : Lancement et suivi des scans en temps réel
+- **14 pages spécialisées** :
+  1. Tableau de bord : Statistiques et métriques clés
+  2. Scanner : Lancement et suivi des scans en temps réel
+  3. Historique : Consultation de tous les scans effectués
   4. Fichiers à risque : Top 20 fichiers critiques avec filtrage
   5. Données sensibles : Liste détaillée de toutes les détections
   6. Ancienneté : Analyse des fichiers obsolètes
@@ -78,7 +78,11 @@ Application de bureau pour détecter et analyser les données personnelles ident
   8. Rapports & Analytics : Visualisations et tendances
   9. Exports : Téléchargement des rapports (CSV, JSON, HTML, Excel)
   10. Rétention des données : Gestion des politiques de rétention et suppression
-  11. Paramètres : Configuration des types PII et exclusions
+  11. Utilisateurs : Gestion des comptes utilisateurs (Admin uniquement)
+  12. Base de données : Sauvegardes et restauration (Admin uniquement)
+  13. Mon Profil : Gestion du profil utilisateur
+  14. Paramètres : Configuration des types PII et exclusions
+  15. Support : Centre d'aide, FAQ et contact
 
 - **Thème sombre** : Interface Material-UI v7 avec thème sombre élégant
 - **Temps réel** : Mise à jour du scan en direct via SignalR
@@ -314,21 +318,39 @@ Fichier .xlsx avec 3 onglets :
 
 ## Sécurité et confidentialité
 
+### Protection des données
 - **100% local** : Aucune donnée n'est envoyée sur Internet
-- **Pas de base de données** : Les données scannées ne sont jamais sauvegardées
 - **Traitement en mémoire** : Analyse sans modification des fichiers
 - **APDP compliant** : Détection conforme à la Loi N°2017-20 du Bénin
 - **Validation stricte** : 87% de réduction des faux positifs
 - **Suppression sécurisée** : Confirmation requise avant suppression
+
+### Sécurité applicative
+- **Authentification JWT** : Système de connexion sécurisé avec tokens
+- **Gestion des rôles** : Séparation Admin/Utilisateur standard
+- **Protection Path Traversal** : Validation stricte des chemins de fichiers
+  - Rejet des caractères `..`, `/`, `\` dans les noms de fichiers
+  - Utilisation de `Path.GetFullPath()` pour résolution absolue
+  - Logs détaillés des tentatives d'accès aux fichiers
+- **Base de données SQLite** : Stockage sécurisé des utilisateurs et audits
+- **Sauvegardes protégées** :
+  - Vérification d'existence avant suppression
+  - Encodage URL pour noms de fichiers spéciaux
+  - Logs d'audit pour toutes les opérations critiques
+- **Sessions sécurisées** : Gestion automatique de l'expiration des tokens
 
 ## Améliorations par rapport à la version RGPD
 
 1. **Adaptation Bénin** : 19 types PII spécifiques au Bénin (IFU, CNI, RCCM, Mobile Money, etc.)
 2. **Rétention des données** : Fonctionnalité complète de gestion de la rétention selon APDP
 3. **Réduction faux positifs** : Validation stricte éliminant ~87% des faux positifs
-4. **Interface enrichie** : 11 pages spécialisées vs 3 pages initiales
+4. **Interface enrichie** : 15 pages spécialisées vs 3 pages initiales
 5. **Thème sombre** : Interface moderne Material-UI v7
 6. **Suppression type AdresseIP** : Les IPs ne sont pas considérées comme PII selon APDP
+7. **Authentification et rôles** : Système complet de gestion des utilisateurs
+8. **Base de données intégrée** : SQLite avec sauvegardes et restauration
+9. **Page Support** : Centre d'aide avec FAQ, contact email et liens documentation
+10. **Sécurité renforcée** : Protection path traversal, validation stricte, logs d'audit
 
 ## Structure des fichiers
 
@@ -350,12 +372,14 @@ MVP-PII-Scanner/
 │   ├── src/
 │   │   ├── components/
 │   │   │   ├── Layout/       # Sidebar, navigation
-│   │   │   └── pages/        # 11 pages spécialisées
+│   │   │   └── pages/        # 15 pages spécialisées
+│   │   ├── contexts/         # AuthContext (JWT)
 │   │   ├── services/         # apiClient.ts (API + SignalR)
 │   │   └── types/            # TypeScript types
 │   ├── electron/             # main.ts, preload.js
 │   └── public/               # Assets
-└── CLAUDE.md                 # Documentation pour Claude Code
+├── CLAUDE.md                 # Documentation pour Claude Code
+└── SUPPORT_CONFIGURATION.md  # Guide de configuration de la page Support
 ```
 
 ## Référence légale
@@ -401,12 +425,43 @@ dotnet run -- test_data.txt
 - Nécessite .NET 8.0 Runtime pour fonctionner
 - Les emails dans `node_modules/` sont des emails légitimes de développeurs npm (non-PII)
 
+## Sécurité
+
+Pour des informations détaillées sur la sécurité de l'application, consultez [SECURITY.md](SECURITY.md).
+
+### Résumé des protections
+
+1. **Protection Path Traversal** : Validation stricte de tous les chemins de fichiers et répertoires
+2. **Authentification JWT** : Tokens sécurisés avec expiration et révocation
+3. **Gestion des rôles (RBAC)** : Séparation Admin/Utilisateur
+4. **Audit Logging** : Traçabilité complète de toutes les opérations sensibles
+5. **Validation des entrées** : Tous les inputs utilisateur sont validés
+6. **Protection SQL Injection** : Requêtes paramétrées avec Entity Framework
+7. **Hashage des mots de passe** : BCrypt avec salt automatique
+8. **CORS configuré** : Politique stricte d'origine croisée
+
+### Signaler une vulnérabilité
+
+Si vous découvrez une vulnérabilité de sécurité, veuillez consulter [SECURITY.md](SECURITY.md) pour les instructions de signalement responsable.
+
 ## Support
 
-Pour toute question ou problème :
-1. Consultez [CLAUDE.md](CLAUDE.md) pour la documentation technique complète
-2. Contactez l'APDP : contact@apdp.bj
-3. Référez-vous à la Loi N°2017-20 du Bénin
+### Centre d'aide intégré
+L'application dispose d'une **page Support complète** accessible depuis le menu latéral, comprenant :
+- **Formulaire de contact** : Envoi d'email avec pré-remplissage automatique
+- **FAQ interactive** : 8 questions fréquentes avec réponses détaillées
+- **Liens vers la documentation** : GitHub, Wiki, guides techniques
+- **Signalement de bugs** : Lien direct vers GitHub Issues
+- **Ressources supplémentaires** : Guides RGPD, API Reference, tutoriels
+
+### Configuration du Support
+Pour personnaliser la page Support (URLs GitHub, email de contact, etc.), consultez :
+- [SUPPORT_CONFIGURATION.md](SUPPORT_CONFIGURATION.md) - Guide complet de configuration
+
+### Ressources externes
+1. **Documentation technique** : [CLAUDE.md](CLAUDE.md) pour les développeurs
+2. **APDP (Bénin)** : contact@apdp.bj - Autorité de Protection des Données Personnelles
+3. **Loi N°2017-20** : Référence légale sur la protection des données au Bénin
 
 ## Licence
 

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using PiiScanner.Scanner;
 using PiiScanner.Analysis;
 using PiiScanner.Reader;
+using PiiScanner.Api.Utils;
 
 namespace PiiScanner.Api.Controllers;
 
@@ -24,9 +25,13 @@ public class DataRetentionController : ControllerBase
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(request.DirectoryPath) || !Directory.Exists(request.DirectoryPath))
+            // SÉCURITÉ: Valider le chemin pour prévenir les attaques de type Path Traversal
+            if (!PathValidator.ValidateDirectoryPath(request.DirectoryPath, out var validationError, mustExist: true))
             {
-                return BadRequest(new { error = "Répertoire invalide ou inexistant" });
+                _logger.LogWarning("Tentative de scan de rétention avec un chemin invalide: {Path} - Erreur: {Error}",
+                    request.DirectoryPath, validationError);
+
+                return BadRequest(new { error = $"Répertoire invalide: {validationError}" });
             }
 
             var filesToDelete = new List<OldFileInfo>();
@@ -103,6 +108,15 @@ public class DataRetentionController : ControllerBase
             {
                 try
                 {
+                    // SÉCURITÉ: Valider le chemin du fichier pour prévenir les attaques de type Path Traversal
+                    if (!PathValidator.ValidateFilePath(filePath, out var validationError, mustExist: false))
+                    {
+                        _logger.LogWarning("Tentative de suppression d'un fichier avec un chemin invalide: {Path} - Erreur: {Error}",
+                            filePath, validationError);
+                        failedFiles.Add(filePath);
+                        continue;
+                    }
+
                     if (System.IO.File.Exists(filePath))
                     {
                         System.IO.File.Delete(filePath);
