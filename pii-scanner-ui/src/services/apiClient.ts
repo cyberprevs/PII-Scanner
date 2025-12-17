@@ -7,8 +7,9 @@ import type {
   ScanResultResponse,
 } from '../types';
 
-const API_BASE_URL = 'http://localhost:5000/api';
-const SIGNALR_URL = 'http://localhost:5000/scanhub';
+// SÉCURITÉ: Utiliser HTTPS pour toutes les communications
+const API_BASE_URL = 'https://localhost:5001/api';
+const SIGNALR_URL = 'https://localhost:5001/scanhub';
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,

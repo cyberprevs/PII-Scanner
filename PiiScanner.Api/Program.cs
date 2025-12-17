@@ -57,12 +57,23 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // Add SignalR
 builder.Services.AddSignalR();
 
-// Add CORS pour permettre Electron de se connecter
+// Add CORS pour permettre Electron de se connecter (HTTP et HTTPS)
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowElectron", policy =>
     {
-        policy.WithOrigins("http://localhost:3000", "http://localhost:5173", "http://localhost:5174", "http://localhost:5175")
+        policy.WithOrigins(
+                // Origines HTTP (développement)
+                "http://localhost:3000",
+                "http://localhost:5173",
+                "http://localhost:5174",
+                "http://localhost:5175",
+                // Origines HTTPS (sécurisé)
+                "https://localhost:3000",
+                "https://localhost:5173",
+                "https://localhost:5174",
+                "https://localhost:5175"
+              )
               .AllowAnyMethod()
               .AllowAnyHeader()
               .AllowCredentials();
@@ -89,6 +100,33 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// SÉCURITÉ: HTTPS Redirection - Forcer HTTPS pour toutes les requêtes
+app.UseHttpsRedirection();
+
+// SÉCURITÉ: Headers de sécurité HTTP
+app.Use(async (context, next) =>
+{
+    // Empêche l'interprétation MIME incorrecte
+    context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+
+    // Empêche l'affichage dans une iframe (protection clickjacking)
+    context.Response.Headers["X-Frame-Options"] = "DENY";
+
+    // Active la protection XSS du navigateur
+    context.Response.Headers["X-XSS-Protection"] = "1; mode=block";
+
+    // Désactive les fonctionnalités dangereuses
+    context.Response.Headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()";
+
+    // HSTS: Force HTTPS pendant 1 an (seulement en production)
+    if (context.Request.IsHttps || !app.Environment.IsDevelopment())
+    {
+        context.Response.Headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains";
+    }
+
+    await next();
+});
+
 app.UseCors("AllowElectron");
 
 // SÉCURITÉ: Rate Limiting - Doit être avant l'authentification
@@ -96,12 +134,6 @@ app.UseRateLimiting();
 
 // SÉCURITÉ: Protection CSRF - Après CORS, avant authentification
 app.UseCsrfProtection();
-
-// Désactiver HTTPS redirect en développement pour SignalR
-if (!app.Environment.IsDevelopment())
-{
-    app.UseHttpsRedirection();
-}
 
 app.UseAuthentication();
 app.UseAuthorization();
