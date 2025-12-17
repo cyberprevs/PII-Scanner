@@ -382,7 +382,7 @@ export default function Support() {
                   primary="API Reference"
                   secondary="Documentation complète de l'API pour les développeurs"
                 />
-                <IconButton onClick={() => openExternalLink('http://localhost:5000/swagger')}>
+                <IconButton onClick={() => openExternalLink('https://localhost:5001/swagger')}>
                   <OpenInNewIcon />
                 </IconButton>
               </ListItem>

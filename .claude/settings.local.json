@@ -23,7 +23,8 @@
       "Bash(powershell:*)",
       "Bash(dotnet ef migrations:*)",
       "Bash(dotnet run)",
-      "Bash(timeout /t 5)"
+      "Bash(timeout /t 5)",
+      "Bash(dotnet run:*)"
     ]
   }
 }

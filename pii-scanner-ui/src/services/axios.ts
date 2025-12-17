@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Instance axios configurée avec le token JWT
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: 'https://localhost:5001/api',
   headers: {
     'Content-Type': 'application/json',
   },

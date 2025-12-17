@@ -52,7 +52,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (username: string, password: string) => {
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', {
+      const response = await axios.post('https://localhost:5001/api/auth/login', {
         username,
         password
       });
@@ -80,7 +80,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const refreshToken = localStorage.getItem('refreshToken');
       if (refreshToken) {
-        await axios.post('http://localhost:5000/api/auth/logout', { refreshToken });
+        await axios.post('https://localhost:5001/api/auth/logout', { refreshToken });
       }
     } catch (error) {
       console.error('Logout error:', error);
