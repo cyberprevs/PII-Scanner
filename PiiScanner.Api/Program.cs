@@ -5,6 +5,11 @@ using Microsoft.IdentityModel.Tokens;
 using PiiScanner.Api.Data;
 using PiiScanner.Api.Hubs;
 using PiiScanner.Api.Services;
+using PiiScanner.Api.Middleware;
+
+// SÉCURITÉ: Initialiser SQLCipher pour le chiffrement de la base de données
+SQLitePCL.Batteries_V2.Init();
+SQLitePCL.raw.SetProvider(new SQLitePCL.SQLite3Provider_e_sqlcipher());
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,9 +18,21 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Add Database
+// Add Database Encryption Service
+builder.Services.AddSingleton<DatabaseEncryptionService>();
+
+// Add Database avec chiffrement SQLCipher
+var baseConnectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException("Connection string not configured");
+
+// Créer un logger temporaire pour l'initialisation
+using var loggerFactory = LoggerFactory.Create(logging => logging.AddConsole());
+var logger = loggerFactory.CreateLogger<DatabaseEncryptionService>();
+var encryptionService = new DatabaseEncryptionService(logger, builder.Configuration);
+var encryptedConnectionString = encryptionService.GetEncryptedConnectionString(baseConnectionString);
+
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlite(encryptedConnectionString));
 
 // Add JWT Authentication
 var jwtSecret = builder.Configuration["Jwt:Secret"] ?? throw new InvalidOperationException("JWT Secret not configured");
@@ -73,6 +90,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("AllowElectron");
+
+// SÉCURITÉ: Rate Limiting - Doit être avant l'authentification
+app.UseRateLimiting();
+
+// SÉCURITÉ: Protection CSRF - Après CORS, avant authentification
+app.UseCsrfProtection();
 
 // Désactiver HTTPS redirect en développement pour SignalR
 if (!app.Environment.IsDevelopment())

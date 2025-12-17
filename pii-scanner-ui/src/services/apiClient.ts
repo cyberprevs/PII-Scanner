@@ -18,13 +18,36 @@ const apiClient = axios.create({
   },
 });
 
-// Intercepteur pour ajouter le token JWT à toutes les requêtes
+// Fonction helper pour récupérer le token CSRF depuis les cookies
+function getCsrfToken(): string | null {
+  const cookies = document.cookie.split(';');
+  for (const cookie of cookies) {
+    const [name, value] = cookie.trim().split('=');
+    if (name === 'XSRF-TOKEN') {
+      return value;
+    }
+  }
+  return null;
+}
+
+// Intercepteur pour ajouter le token JWT et CSRF à toutes les requêtes
 apiClient.interceptors.request.use(
   (config) => {
+    // Ajouter le token JWT
     const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
+    // Ajouter le token CSRF pour les requêtes de modification (POST, PUT, DELETE, PATCH)
+    const modifyingMethods = ['post', 'put', 'delete', 'patch'];
+    if (config.method && modifyingMethods.includes(config.method.toLowerCase())) {
+      const csrfToken = getCsrfToken();
+      if (csrfToken) {
+        config.headers['X-CSRF-Token'] = csrfToken;
+      }
+    }
+
     return config;
   },
   (error) => {

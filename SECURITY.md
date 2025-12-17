@@ -279,7 +279,111 @@ var passwordHash = BCrypt.Net.BCrypt.HashPassword(password, workFactor: 12);
 - Révocables individuellement
 - Durée limitée (30 jours)
 
-## 8. Protection CORS
+## 8. Protection CSRF (Cross-Site Request Forgery)
+
+### Middleware CSRF personnalisé
+
+L'application implémente une protection CSRF via le pattern **Double-Submit Cookie** :
+
+1. **Génération de tokens** :
+   - Token cryptographiquement sécurisé (32 bytes, base64)
+   - Généré pour chaque requête GET
+   - Stocké dans cookie `XSRF-TOKEN` (HttpOnly=false)
+
+2. **Validation des requêtes** :
+   - Toutes les requêtes POST, PUT, DELETE, PATCH sont vérifiées
+   - Le header `X-CSRF-Token` doit correspondre au cookie `XSRF-TOKEN`
+   - Réponse HTTP 403 si les tokens ne correspondent pas
+
+3. **Endpoints protégés** :
+```csharp
+- /api/users                 // Gestion utilisateurs
+- /api/database/backup       // Création backup
+- /api/database/restore      // Restauration
+- /api/database/optimize     // Optimisation
+- /api/database/cleanup      // Nettoyage
+- /api/dataretention/delete  // Suppression fichiers
+- /api/auth/change-password  // Changement mot de passe
+```
+
+4. **Endpoints exemptés** :
+   - `/api/auth/login` - Pas encore de session établie
+   - `/api/auth/refresh` - Renouvellement de token JWT
+
+5. **Intégration frontend** :
+   - Le client Axios ajoute automatiquement le header `X-CSRF-Token`
+   - Extrait le cookie via `document.cookie`
+   - Appliqué seulement aux méthodes modifiant les données
+
+### Logs de sécurité CSRF
+
+Toutes les tentatives de CSRF sont loggées :
+
+```csharp
+_logger.LogWarning(
+    "Tentative CSRF détectée: Token invalide pour {Method} {Path} depuis {IpAddress}",
+    method, path, GetClientIpAddress(context));
+```
+
+## 9. Rate Limiting
+
+### Protection contre le brute force et les abus
+
+L'application implémente un rate limiting à trois niveaux via `RateLimitingMiddleware` :
+
+#### 1. Login (très restrictif)
+- **Limite** : 5 requêtes par 15 minutes
+- **Endpoint** : `/api/auth/login`
+- **Protection** : Brute force sur les mots de passe
+
+#### 2. Endpoints sensibles (restrictif)
+- **Limite** : 20 requêtes par 5 minutes
+- **Endpoints** :
+  - `/api/users` - Gestion utilisateurs
+  - `/api/database/backup` - Création de sauvegardes
+  - `/api/database/restore` - Restauration
+  - `/api/dataretention/delete` - Suppression de fichiers
+
+#### 3. API générale (normal)
+- **Limite** : 100 requêtes par minute
+- **Tous les autres endpoints**
+
+### Fonctionnalités du rate limiting
+
+1. **Comptage par IP + endpoint** :
+   - Clé : `{ipAddress}:{endpoint}`
+   - Support des proxies (X-Forwarded-For, X-Real-IP)
+
+2. **Sliding window** :
+   - Les requêtes sont supprimées après expiration de la fenêtre
+   - Calcul dynamique du temps d'attente restant
+
+3. **Réponses HTTP 429** :
+```json
+{
+  "error": "Trop de requêtes",
+  "message": "Vous avez dépassé la limite de 5 requêtes par 15 minute(s). Veuillez réessayer dans 342 secondes.",
+  "retryAfter": 342,
+  "type": "login"
+}
+```
+
+4. **Headers standard** :
+   - `X-RateLimit-Limit`: Limite maximale
+   - `X-RateLimit-Remaining`: Requêtes restantes
+   - `X-RateLimit-Reset`: Timestamp de réinitialisation
+   - `Retry-After`: Secondes avant de réessayer
+
+5. **Nettoyage automatique** :
+   - Exécuté aléatoirement (1% des requêtes)
+   - Supprime les compteurs obsolètes
+   - Évite les fuites mémoire
+
+6. **Thread-safe** :
+   - Utilise `SemaphoreSlim` pour async/await
+   - Support de la concurrence élevée
+
+## 10. Protection CORS
 
 ### Configuration
 
@@ -307,11 +411,16 @@ builder.Services.AddCors(options =>
 
 ## 9. Sécurité de la base de données
 
-### SQLite
+### SQLite avec chiffrement SQLCipher
 
-- **Fichier** : `piiscanner.db`
+- **Fichier** : `piiscanner.db` (chiffré avec SQLCipher)
+- **Algorithme** : AES-256 en mode CBC
+- **Clé de chiffrement** : 256 bits (32 bytes) générée cryptographiquement
+- **Stockage de la clé** :
+  - Fichier `db_encryption.key` (caché et en lecture seule)
+  - Ou variable d'environnement `Database:EncryptionKey` (production)
 - **Permissions** : Lecture/Écriture pour l'application uniquement
-- **Chiffrement** : Non implémenté (fichier local)
+- **Protection** : Base de données entièrement chiffrée au repos
 
 ### Sauvegardes
 
@@ -336,8 +445,13 @@ builder.Services.AddCors(options =>
 
 ### Protection CSRF
 
-- Tokens JWT dans les headers (pas de cookies)
-- Pas de formulaires traditionnels susceptibles au CSRF
+- **Middleware CSRF personnalisé** : Protection Double-Submit Cookie Pattern
+- Tokens JWT dans les headers (pas de cookies pour l'authentification)
+- Tokens CSRF générés automatiquement pour chaque session
+- Validation stricte pour toutes les opérations de modification (POST, PUT, DELETE, PATCH)
+- Cookie `XSRF-TOKEN` (HttpOnly=false) + Header `X-CSRF-Token` requis
+- Endpoints protégés : Gestion utilisateurs, backups, suppressions, changements de mots de passe
+- Login exempt de CSRF (pas encore de session établie)
 
 ### URL Encoding
 
@@ -355,9 +469,11 @@ await axios.delete(`/database/backup/${encodeURIComponent(fileName)}`);
    - Certificat SSL/TLS valide
    - Redirection HTTP → HTTPS
 
-2. **Rate Limiting**
-   - Limiter les tentatives de login
-   - Protéger contre le brute force
+2. **Rate Limiting** ✅ **IMPLÉMENTÉ**
+   - Login : 5 tentatives par 15 minutes
+   - Endpoints sensibles : 20 requêtes par 5 minutes
+   - API générale : 100 requêtes par minute
+   - Détection IP avec support proxies
 
 3. **Rotation des secrets**
    - Changer périodiquement le secret JWT
@@ -371,9 +487,10 @@ await axios.delete(`/database/backup/${encodeURIComponent(fileName)}`);
    - Sauvegardes régulières chiffrées
    - Stockage hors site
 
-6. **Chiffrement de la base de données**
-   - SQLCipher pour chiffrer piiscanner.db
-   - Protection des sauvegardes
+6. **Chiffrement de la base de données** ✅ **IMPLÉMENTÉ**
+   - SQLCipher avec AES-256
+   - Clé de 256 bits générée automatiquement
+   - Protection de tous les logs d'audit et données utilisateurs
 
 7. **En-têtes de sécurité HTTP**
    ```csharp

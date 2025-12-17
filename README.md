@@ -326,13 +326,25 @@ Fichier .xlsx avec 3 onglets :
 - **Suppression sécurisée** : Confirmation requise avant suppression
 
 ### Sécurité applicative
-- **Authentification JWT** : Système de connexion sécurisé avec tokens
-- **Gestion des rôles** : Séparation Admin/Utilisateur standard
+- **Authentification JWT** : Système de connexion sécurisé avec tokens et expiration
+- **Gestion des rôles (RBAC)** : Séparation Admin/Utilisateur standard
 - **Protection Path Traversal** : Validation stricte des chemins de fichiers
   - Rejet des caractères `..`, `/`, `\` dans les noms de fichiers
   - Utilisation de `Path.GetFullPath()` pour résolution absolue
   - Logs détaillés des tentatives d'accès aux fichiers
-- **Base de données SQLite** : Stockage sécurisé des utilisateurs et audits
+- **Protection CSRF** : Middleware Double-Submit Cookie Pattern
+  - Tokens cryptographiquement sécurisés pour toutes les opérations de modification
+  - Validation stricte POST/PUT/DELETE/PATCH
+  - Logs des tentatives d'attaque CSRF
+- **Rate Limiting** : Protection contre brute force et abus
+  - Login : 5 tentatives / 15 minutes
+  - Endpoints sensibles : 20 requêtes / 5 minutes
+  - API générale : 100 requêtes / minute
+  - Réponses HTTP 429 avec headers standard
+- **Base de données chiffrée SQLite** :
+  - Chiffrement AES-256 avec SQLCipher
+  - Clé de 256 bits générée automatiquement
+  - Protection complète des données au repos
 - **Sauvegardes protégées** :
   - Vérification d'existence avant suppression
   - Encodage URL pour noms de fichiers spéciaux
@@ -434,11 +446,14 @@ Pour des informations détaillées sur la sécurité de l'application, consultez
 1. **Protection Path Traversal** : Validation stricte de tous les chemins de fichiers et répertoires
 2. **Authentification JWT** : Tokens sécurisés avec expiration et révocation
 3. **Gestion des rôles (RBAC)** : Séparation Admin/Utilisateur
-4. **Audit Logging** : Traçabilité complète de toutes les opérations sensibles
-5. **Validation des entrées** : Tous les inputs utilisateur sont validés
-6. **Protection SQL Injection** : Requêtes paramétrées avec Entity Framework
-7. **Hashage des mots de passe** : BCrypt avec salt automatique
-8. **CORS configuré** : Politique stricte d'origine croisée
+4. **Protection CSRF** : Double-Submit Cookie Pattern avec tokens cryptographiques
+5. **Rate Limiting** : Protection brute force (5 login/15min, 20 ops sensibles/5min, 100 API/min)
+6. **Chiffrement base de données** : SQLCipher avec AES-256 (clé 256 bits)
+7. **Audit Logging** : Traçabilité complète de toutes les opérations sensibles
+8. **Validation des entrées** : Tous les inputs utilisateur sont validés
+9. **Protection SQL Injection** : Requêtes paramétrées avec Entity Framework
+10. **Hashage des mots de passe** : BCrypt avec salt automatique
+11. **CORS configuré** : Politique stricte d'origine croisée
 
 ### Signaler une vulnérabilité
 

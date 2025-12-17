@@ -22,7 +22,8 @@
       "Bash(dotnet tool install:*)",
       "Bash(powershell:*)",
       "Bash(dotnet ef migrations:*)",
-      "Bash(dotnet run)"
+      "Bash(dotnet run)",
+      "Bash(timeout /t 5)"
     ]
   }
 }
