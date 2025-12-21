@@ -25,7 +25,8 @@
       "Bash(dotnet run)",
       "Bash(timeout /t 5)",
       "Bash(dotnet run:*)",
-      "Bash(taskkill:*)"
+      "Bash(taskkill:*)",
+      "Bash(npm outdated:*)"
     ]
   }
 }

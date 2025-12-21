@@ -99,33 +99,106 @@ The core library contains all PII detection logic and is referenced by both the 
 ASP.NET Core Web API providing REST endpoints and real-time SignalR updates.
 
 **Endpoints:**
+
+*Scan Operations:*
 - `POST /api/scan/start` - Initiate a scan job
 - `GET /api/scan/{scanId}/progress` - Get scan progress
 - `GET /api/scan/{scanId}/results` - Get scan results with statistics
 - `GET /api/scan/{scanId}/report/{format}` - Download report (csv, json, html, excel)
 - `DELETE /api/scan/{scanId}` - Cleanup scan resources
 
+*Scheduled Scans:*
+- `GET /api/scheduledscans` - Get all scheduled scans for current user
+- `POST /api/scheduledscans` - Create a new scheduled scan
+- `PUT /api/scheduledscans/{id}` - Update a scheduled scan
+- `DELETE /api/scheduledscans/{id}` - Delete a scheduled scan
+- `PATCH /api/scheduledscans/{id}/toggle` - Toggle active/inactive status
+
+*Authentication:*
+- `POST /api/auth/login` - User login (returns JWT + refresh token)
+- `POST /api/auth/refresh` - Refresh access token
+- `POST /api/auth/logout` - Logout and revoke refresh token
+
+*Initialization:*
+- `GET /api/initialization/status` - Check if app is initialized (user exists)
+- `POST /api/initialization/setup` - Create first admin account
+
 **SignalR Hub** ([PiiScanner.Api/Hubs/ScanHub.cs](PiiScanner.Api/Hubs/ScanHub.cs)):
 - `/scanhub` - Real-time progress updates
 - Events: `ReceiveProgress`, `ScanComplete`, `ScanError`
 
 **Key Components:**
-- [Controllers/ScanController.cs](PiiScanner.Api/Controllers/ScanController.cs) - REST API endpoints
+- [Controllers/ScanController.cs](PiiScanner.Api/Controllers/ScanController.cs) - Scan REST API endpoints
+- [Controllers/ScheduledScansController.cs](PiiScanner.Api/Controllers/ScheduledScansController.cs) - Scheduled scans CRUD
+- [Controllers/InitializationController.cs](PiiScanner.Api/Controllers/InitializationController.cs) - First-run setup
+- [Controllers/AuthController.cs](PiiScanner.Api/Controllers/AuthController.cs) - Authentication endpoints
 - [Services/ScanService.cs](PiiScanner.Api/Services/ScanService.cs) - Background scan orchestration
-- [Program.cs](PiiScanner.Api/Program.cs) - CORS enabled for Electron, Swagger in dev mode
+- [Services/SchedulerService.cs](PiiScanner.Api/Services/SchedulerService.cs) - Schedule calculation logic
+- [Services/BackgroundSchedulerService.cs](PiiScanner.Api/Services/BackgroundSchedulerService.cs) - Background service (checks every minute)
+- [Services/AuthService.cs](PiiScanner.Api/Services/AuthService.cs) - JWT token generation and validation
+- [Data/AppDbContext.cs](PiiScanner.Api/Data/AppDbContext.cs) - EF Core DbContext with SQLite + SQLCipher
+- [Models/ScheduledScan.cs](PiiScanner.Api/Models/ScheduledScan.cs) - Scheduled scan entity
+- [Middleware/CsrfProtectionMiddleware.cs](PiiScanner.Api/Middleware/CsrfProtectionMiddleware.cs) - CSRF protection
+- [Middleware/RateLimitingMiddleware.cs](PiiScanner.Api/Middleware/RateLimitingMiddleware.cs) - Rate limiting
+- [Program.cs](PiiScanner.Api/Program.cs) - CORS enabled for Electron, Swagger in dev mode, DB initialization
 
 **Configuration:**
 - Port: 5000 (configured in launchSettings.json)
 - CORS: `AllowElectron` policy allows any origin for local development
 - Swagger UI: Available in development mode at `/swagger`
 
-**Scan Flow:**
+**Manual Scan Flow:**
 1. Client posts scan request to `/api/scan/start`
 2. API generates unique scanId and returns immediately
 3. `ScanService` executes scan in background with `Task.Run()`
 4. Progress updates sent via SignalR to all connected clients
 5. Reports generated in temp directory: `%TEMP%/PiiScanner/{scanId}/`
 6. Client polls `/api/scan/{scanId}/results` or receives `ScanComplete` event
+
+**Scheduled Scans System:**
+
+The application includes a complete scheduled scans feature for automated periodic scanning:
+
+*Data Model* ([Models/ScheduledScan.cs](PiiScanner.Api/Models/ScheduledScan.cs)):
+- **Frequency**: Daily, Weekly, Monthly, Quarterly (enum)
+- **DayOfWeek**: 0-6 (Sunday-Saturday) for weekly scans
+- **DayOfMonth**: 1-28 for monthly/quarterly scans
+- **HourOfDay**: 0-23 for execution time
+- **IsActive**: Enable/disable without deleting
+- **NextRunAt**: Calculated next execution timestamp
+- **LastRunAt**: Timestamp of last execution
+- **LastScanId**: Reference to last scan result
+- **NotifyOnCompletion**: Flag for completion notifications
+- **NotifyOnNewPii**: Flag for new PII detection notifications
+
+*Schedule Calculation* ([Services/SchedulerService.cs](PiiScanner.Api/Services/SchedulerService.cs)):
+- `CalculateNextRunAt(schedule, fromDate)`: Calculates next execution time based on frequency
+- `InitializeNextRunAt(schedule)`: Sets initial NextRunAt when creating schedule
+- `UpdateAfterExecution(schedule, scanId)`: Updates LastRunAt, LastScanId, recalculates NextRunAt
+- Handles edge cases: month-end dates (limited to day 28), daylight saving time, timezone
+
+*Background Execution* ([Services/BackgroundSchedulerService.cs](PiiScanner.Api/Services/BackgroundSchedulerService.cs)):
+- Runs as `IHostedService` (starts with API)
+- Checks database every 1 minute for due scans (`NextRunAt <= now`)
+- Validates directory exists before executing
+- Launches scan via `ScanService.StartScan()`
+- Updates schedule after execution
+- Deactivates schedule if directory validation fails
+- Creates audit log for each automatic execution
+- Error handling: continues checking even if individual scan fails
+
+*API Endpoints* ([Controllers/ScheduledScansController.cs](PiiScanner.Api/Controllers/ScheduledScansController.cs)):
+- All endpoints require JWT authentication
+- Users can only modify their own schedules (except Admin)
+- Path validation prevents traversal attacks
+- Directory existence validation before creating/updating
+- Full CRUD operations with audit logging
+
+*Security & Validation:*
+- Path traversal protection via `PathValidator.ValidateDirectoryPath()`
+- RBAC: Users see only their schedules, Admin sees all
+- Audit logs for Create, Update, Delete, Toggle operations
+- Directory existence check to prevent invalid scans
 
 ### 3. pii-scanner-ui (Electron Desktop App)
 
@@ -141,8 +214,13 @@ Modern desktop application built with React 19, Material-UI, and Electron.
 - Electron for desktop packaging
 
 **Key Files:**
-- [src/App.tsx](pii-scanner-ui/src/App.tsx) - Main app component with SignalR connection
+- [src/App.tsx](pii-scanner-ui/src/App.tsx) - Main app component with initialization check and SignalR connection
+- [src/components/InitialSetup.tsx](pii-scanner-ui/src/components/InitialSetup.tsx) - First-run admin account creation
+- [src/components/Login.tsx](pii-scanner-ui/src/components/Login.tsx) - User authentication page
+- [src/components/ScheduledScans.tsx](pii-scanner-ui/src/components/ScheduledScans.tsx) - Scheduled scans management UI
 - [src/services/apiClient.ts](pii-scanner-ui/src/services/apiClient.ts) - API client with SignalR hub
+- [src/services/axios.ts](pii-scanner-ui/src/services/axios.ts) - Axios instance with JWT interceptors
+- [src/contexts/AuthContext.tsx](pii-scanner-ui/src/contexts/AuthContext.tsx) - Authentication state management
 - [src/components/Dashboard.tsx](pii-scanner-ui/src/components/Dashboard.tsx) - Scan initiation UI
 - [src/components/Results.tsx](pii-scanner-ui/src/components/Results.tsx) - Results display
 
@@ -150,6 +228,36 @@ Modern desktop application built with React 19, Material-UI, and Electron.
 - Base URL: `http://localhost:5000/api`
 - SignalR Hub: `http://localhost:5000/scanhub`
 - Automatic reconnection enabled
+
+**Application Initialization Flow:**
+
+The app has NO default credentials for security. First-run setup is required:
+
+1. **App Startup** ([App.tsx](pii-scanner-ui/src/App.tsx)):
+   - Calls `/api/initialization/status` to check if any users exist
+   - Shows loading spinner during check
+   - Routes to InitialSetup if `isInitialized === false`
+   - Routes to Login if `isInitialized === true`
+
+2. **Initial Setup** ([InitialSetup.tsx](pii-scanner-ui/src/components/InitialSetup.tsx)):
+   - Form fields: username (3+ chars), email, fullName, password, confirmPassword
+   - Password validation: 8+ chars with uppercase, lowercase, number, special character
+   - Calls `POST /api/initialization/setup` with credentials
+   - Backend creates first admin user with BCrypt password hash
+   - Redirects to `/login` after successful creation
+
+3. **Authentication** ([Login.tsx](pii-scanner-ui/src/components/Login.tsx)):
+   - User enters **username** (not email or full name) and password
+   - Calls `POST /api/auth/login`
+   - Receives JWT access token (7-day expiry) and refresh token (30-day expiry)
+   - Tokens stored in AuthContext and localStorage
+   - Axios interceptor auto-adds Bearer token to all requests
+
+4. **Token Refresh** ([axios.ts](pii-scanner-ui/src/services/axios.ts)):
+   - Intercepts 401 responses
+   - Automatically calls `/api/auth/refresh` with refresh token
+   - Updates access token and retries failed request
+   - Logs out if refresh fails
 
 **Build Process:**
 - `npm run build` - Compiles TypeScript and bundles with Vite
@@ -275,9 +383,21 @@ Four report formats are generated simultaneously:
    cd pii-scanner-ui
    npm run electron:dev
    ```
-3. API will be available at `http://localhost:5000`
-4. Swagger UI at `http://localhost:5000/swagger`
-5. Electron app will connect automatically
+3. On first run, create admin account via InitialSetup page
+4. Login with your username (not email or full name)
+5. API will be available at `http://localhost:5000`
+6. Swagger UI at `http://localhost:5000/swagger`
+7. Electron app will connect automatically
+
+### Testing Scheduled Scans
+
+1. **Create a scheduled scan** via UI (Scans planifiés page) or API
+2. **Set NextRunAt to near future** for immediate testing:
+   - Option A: Directly modify database `NextRunAt` to `DateTime.UtcNow.AddMinutes(2)`
+   - Option B: Use Swagger to POST with calculated time
+3. **Watch API logs** - BackgroundSchedulerService logs every check (every minute)
+4. **Verify execution** - Check logs for "Scan planifié démarré avec succès"
+5. **Check updates** - `LastRunAt`, `LastScanId`, `NextRunAt` should update after execution
 
 ### Debugging SignalR Connection Issues
 
@@ -316,6 +436,8 @@ All file/directory paths are validated using the `PathValidator` utility class (
 
 **Protected endpoints:**
 - `POST /api/scan/start` - Validates scan directory path
+- `POST /api/scheduledscans` - Validates scheduled scan directory path
+- `PUT /api/scheduledscans/{id}` - Validates directory path when updating
 - `POST /api/dataretention/scan` - Validates retention scan directory
 - `POST /api/dataretention/delete` - Validates each file path
 - `GET /api/database/backup/download/{fileName}` - Validates backup filename and confinement
@@ -339,6 +461,7 @@ All file/directory paths are validated using the `PathValidator` utility class (
 #### Audit Logging
 All sensitive operations are logged to `AuditLogs` table:
 - User authentication (login, logout, password changes)
+- Scheduled scans operations (create, update, delete, toggle, automatic execution)
 - User management (create, update, delete, role changes)
 - Database operations (backup, restore, delete, optimize)
 - Scan operations (start, complete, fail)

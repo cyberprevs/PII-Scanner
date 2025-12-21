@@ -26,8 +26,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\Users\\samir\\OneDrive\\Desktop\\MVP-PII-Scanner\\PiiScanner.Core\\PiiScanner.Core.csproj": {
-                "projectPath": "C:\\Users\\samir\\OneDrive\\Desktop\\MVP-PII-Scanner\\PiiScanner.Core\\PiiScanner.Core.csproj"
+              "c:\\Users\\samir\\OneDrive\\Desktop\\MVP-PII-Scanner\\PiiScanner.Core\\PiiScanner.Core.csproj": {
+                "projectPath": "c:\\Users\\samir\\OneDrive\\Desktop\\MVP-PII-Scanner\\PiiScanner.Core\\PiiScanner.Core.csproj"
               }
             }
           }
@@ -105,14 +105,14 @@
         }
       }
     },
-    "C:\\Users\\samir\\OneDrive\\Desktop\\MVP-PII-Scanner\\PiiScanner.Core\\PiiScanner.Core.csproj": {
+    "c:\\Users\\samir\\OneDrive\\Desktop\\MVP-PII-Scanner\\PiiScanner.Core\\PiiScanner.Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\samir\\OneDrive\\Desktop\\MVP-PII-Scanner\\PiiScanner.Core\\PiiScanner.Core.csproj",
+        "projectUniqueName": "c:\\Users\\samir\\OneDrive\\Desktop\\MVP-PII-Scanner\\PiiScanner.Core\\PiiScanner.Core.csproj",
         "projectName": "PiiScanner.Core",
-        "projectPath": "C:\\Users\\samir\\OneDrive\\Desktop\\MVP-PII-Scanner\\PiiScanner.Core\\PiiScanner.Core.csproj",
+        "projectPath": "c:\\Users\\samir\\OneDrive\\Desktop\\MVP-PII-Scanner\\PiiScanner.Core\\PiiScanner.Core.csproj",
         "packagesPath": "C:\\Users\\samir\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\samir\\OneDrive\\Desktop\\MVP-PII-Scanner\\PiiScanner.Core\\obj\\",
+        "outputPath": "c:\\Users\\samir\\OneDrive\\Desktop\\MVP-PII-Scanner\\PiiScanner.Core\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\samir\\AppData\\Roaming\\NuGet\\NuGet.Config"

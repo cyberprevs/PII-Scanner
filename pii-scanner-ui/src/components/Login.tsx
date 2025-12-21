@@ -96,16 +96,6 @@ const Login: React.FC = () => {
               {isLoading ? <CircularProgress size={24} /> : 'Se connecter'}
             </Button>
           </form>
-
-          <Box sx={{ mt: 3, p: 2, bgcolor: 'grey.100', borderRadius: 1 }}>
-            <Typography variant="caption" color="text.secondary">
-              <strong>Compte par défaut :</strong>
-              <br />
-              Utilisateur : admin
-              <br />
-              Mot de passe : Admin@123
-            </Typography>
-          </Box>
         </Paper>
       </Box>
     </Container>

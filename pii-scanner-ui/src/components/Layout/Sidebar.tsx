@@ -41,6 +41,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import HelpIcon from '@mui/icons-material/Help';
 import BuildIcon from '@mui/icons-material/Build';
+import ScheduleIcon from '@mui/icons-material/Schedule';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import { useAuth } from '../../contexts/AuthContext';
@@ -67,7 +68,8 @@ const menuItems: MenuItem[] = [
   // Section Scan
   { id: 'dashboard', label: 'Tableau de bord', icon: <DashboardIcon />, path: '/dashboard' },
   { id: 'scanner', label: 'Nouveau Scan', icon: <SearchIcon />, path: '/scanner' },
-  { id: 'history', label: 'Historique', icon: <HistoryIcon />, path: '/history', divider: true },
+  { id: 'history', label: 'Historique', icon: <HistoryIcon />, path: '/history' },
+  { id: 'scheduled-scans', label: 'Scans Planifiés', icon: <ScheduleIcon />, path: '/scheduled-scans', divider: true },
 
   // Section Analyse
   { id: 'risky-files', label: 'Fichiers à risque', icon: <FolderIcon />, path: '/risky-files' },

@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Alert, Snackbar } from '@mui/material';
+import { Alert, Snackbar, CircularProgress, Box } from '@mui/material';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Login from './components/Login';
+import InitialSetup from './components/InitialSetup';
 import UserManagement from './components/UserManagement';
 import MainLayout from './components/Layout/MainLayout';
 import DashboardPage from './components/pages/DashboardPage';
@@ -21,8 +22,10 @@ import Profile from './components/pages/Profile';
 import DatabaseManagement from './components/pages/DatabaseManagement';
 import AuditTrail from './components/pages/AuditTrail';
 import Support from './components/pages/Support';
+import ScheduledScans from './components/ScheduledScans';
 import { scanApi } from './services/apiClient';
 import type { ScanResultResponse } from './types';
+import axiosInstance from './services/axios';
 
 function App() {
   const [scanning, setScanning] = useState(false);
@@ -30,6 +33,26 @@ function App() {
   const [results, setResults] = useState<ScanResultResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [isInitialized, setIsInitialized] = useState<boolean | null>(null);
+  const [checkingInit, setCheckingInit] = useState(true);
+
+  // Vérifier si l'application est initialisée
+  useEffect(() => {
+    const checkInitialization = async () => {
+      try {
+        const response = await axiosInstance.get('/initialization/status');
+        setIsInitialized(response.data.isInitialized);
+      } catch (err) {
+        console.error('Erreur lors de la vérification de l\'initialisation:', err);
+        // En cas d'erreur, on assume que l'app n'est pas initialisée
+        setIsInitialized(false);
+      } finally {
+        setCheckingInit(false);
+      }
+    };
+
+    checkInitialization();
+  }, []);
 
   useEffect(() => {
     // Connecter SignalR au démarrage
@@ -121,6 +144,44 @@ function App() {
     setScanning(false);
   };
 
+  // Afficher un loader pendant la vérification
+  if (checkingInit) {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: '100vh',
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+        }}
+      >
+        <CircularProgress size={60} sx={{ color: 'white' }} />
+      </Box>
+    );
+  }
+
+  // Si l'app n'est pas initialisée, rediriger vers le setup
+  if (isInitialized === false) {
+    return (
+      <Router>
+        <Routes>
+          <Route
+            path="*"
+            element={
+              <InitialSetup
+                onSetupComplete={() => {
+                  // Forcer une revérification après la création du compte
+                  setIsInitialized(true);
+                }}
+              />
+            }
+          />
+        </Routes>
+      </Router>
+    );
+  }
+
   return (
     <AuthProvider>
       <Router>
@@ -174,6 +235,7 @@ function App() {
             />
             <Route path="data-retention" element={<DataRetention />} />
             <Route path="history" element={<ScanHistory />} />
+            <Route path="scheduled-scans" element={<ScheduledScans />} />
             <Route path="profile" element={<Profile />} />
             <Route path="settings" element={<Settings />} />
             <Route path="support" element={<Support />} />
