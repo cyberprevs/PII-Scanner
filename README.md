@@ -67,22 +67,24 @@ Application de bureau pour détecter et analyser les données personnelles ident
   - Détection des partages réseau (UNC paths)
 
 #### Interface utilisateur moderne
-- **14 pages spécialisées** :
+- **16 pages spécialisées** :
   1. Tableau de bord : Statistiques et métriques clés
   2. Scanner : Lancement et suivi des scans en temps réel
   3. Historique : Consultation de tous les scans effectués
-  4. Fichiers à risque : Top 20 fichiers critiques avec filtrage
-  5. Données sensibles : Liste détaillée de toutes les détections
-  6. Ancienneté : Analyse des fichiers obsolètes
-  7. Exposition : Analyse des fichiers sur-exposés
-  8. Rapports & Analytics : Visualisations et tendances
-  9. Exports : Téléchargement des rapports (CSV, JSON, HTML, Excel)
-  10. Rétention des données : Gestion des politiques de rétention et suppression
-  11. Utilisateurs : Gestion des comptes utilisateurs (Admin uniquement)
-  12. Base de données : Sauvegardes et restauration (Admin uniquement)
-  13. Mon Profil : Gestion du profil utilisateur
-  14. Paramètres : Configuration des types PII et exclusions
-  15. Support : Centre d'aide, FAQ et contact
+  4. Scans planifiés : Planification automatique (quotidien, hebdomadaire, mensuel, trimestriel)
+  5. Fichiers à risque : Top 20 fichiers critiques avec filtrage
+  6. Données sensibles : Liste détaillée de toutes les détections
+  7. Ancienneté : Analyse des fichiers obsolètes
+  8. Exposition : Analyse des fichiers sur-exposés
+  9. Rapports & Analytics : Visualisations et tendances
+  10. Exports : Téléchargement des rapports (CSV, JSON, HTML, Excel)
+  11. Rétention des données : Gestion des politiques de rétention et suppression
+  12. Utilisateurs : Gestion des comptes utilisateurs (Admin uniquement)
+  13. Base de données : Sauvegardes et restauration (Admin uniquement)
+  14. Journal d'audit : Traçabilité complète des opérations (Admin uniquement)
+  15. Mon Profil : Gestion du profil utilisateur
+  16. Paramètres : Configuration des types PII et exclusions
+  17. Support : Centre d'aide, FAQ et contact
 
 - **Thème sombre** : Interface Material-UI v7 avec thème sombre élégant
 - **Temps réel** : Mise à jour du scan en direct via SignalR
@@ -128,6 +130,18 @@ Application de bureau pour détecter et analyser les données personnelles ident
 
 ## Utilisation
 
+### Première utilisation
+
+1. **Lancer l'application** pour la première fois
+2. **Créer votre compte administrateur** avec :
+   - Nom d'utilisateur (minimum 3 caractères)
+   - Adresse email
+   - Nom complet
+   - Mot de passe fort (8+ caractères avec majuscule, minuscule, chiffre et caractère spécial)
+3. **Se connecter** avec le nom d'utilisateur et mot de passe créés
+
+⚠️ **Important** : Il n'y a **pas de compte par défaut**. Chaque installation nécessite la création d'un compte administrateur unique pour des raisons de sécurité.
+
 ### Mode développement
 
 1. **Démarrer l'API** (terminal 1) :
@@ -146,9 +160,10 @@ Application de bureau pour détecter et analyser les données personnelles ident
 ### Utiliser l'application
 
 1. **Scanner** : Sélectionnez un dossier et lancez le scan
-2. **Analyser** : Consultez les détections dans les différentes pages
-3. **Gérer la rétention** : Identifiez et supprimez les fichiers obsolètes
-4. **Exporter** : Téléchargez les rapports au format souhaité
+2. **Planifier** : Configurez des scans automatiques (quotidien, hebdomadaire, mensuel, trimestriel)
+3. **Analyser** : Consultez les détections dans les différentes pages
+4. **Gérer la rétention** : Identifiez et supprimez les fichiers obsolètes
+5. **Exporter** : Téléchargez les rapports au format souhaité
 
 ## Architecture
 
@@ -169,16 +184,24 @@ Application console .NET pour les tests et l'automatisation.
 ### 3. PiiScanner.Api
 API REST ASP.NET Core avec :
 - Endpoints pour lancer des scans (`/api/scan/start`, `/api/scan/{scanId}`)
+- Endpoints de scans planifiés (`/api/scheduledscans`) - CRUD complet
 - Endpoints de rétention (`/api/dataretention/scan`, `/api/dataretention/delete`)
+- Endpoints d'authentification (`/api/auth/login`, `/api/auth/refresh`)
+- Endpoint d'initialisation (`/api/initialization/status`, `/api/initialization/setup`)
 - SignalR Hub pour les mises à jour en temps réel (`/scanhub`)
+- Service d'arrière-plan pour exécution automatique des scans planifiés
 - Support CORS pour Electron
 - Génération de rapports à la demande
+- Base de données SQLite chiffrée avec SQLCipher
 
 ### 4. pii-scanner-ui
 Application de bureau Electron avec :
 - Interface React 19 + TypeScript
 - Material-UI v7 pour le design (thème sombre)
-- 11 pages spécialisées avec navigation sidebar
+- 17 pages spécialisées avec navigation sidebar
+- Système d'authentification JWT avec gestion des rôles
+- Page de configuration initiale pour création du compte admin
+- Page de scans planifiés avec interface de planification
 - Graphiques avec Recharts
 - Intégration SignalR pour le temps réel
 - API .NET intégrée (lancée automatiquement)
@@ -355,14 +378,16 @@ Fichier .xlsx avec 3 onglets :
 
 1. **Adaptation Bénin** : 19 types PII spécifiques au Bénin (IFU, CNI, RCCM, Mobile Money, etc.)
 2. **Rétention des données** : Fonctionnalité complète de gestion de la rétention selon APDP
-3. **Réduction faux positifs** : Validation stricte éliminant ~87% des faux positifs
-4. **Interface enrichie** : 15 pages spécialisées vs 3 pages initiales
-5. **Thème sombre** : Interface moderne Material-UI v7
-6. **Suppression type AdresseIP** : Les IPs ne sont pas considérées comme PII selon APDP
-7. **Authentification et rôles** : Système complet de gestion des utilisateurs
-8. **Base de données intégrée** : SQLite avec sauvegardes et restauration
-9. **Page Support** : Centre d'aide avec FAQ, contact email et liens documentation
-10. **Sécurité renforcée** : Protection path traversal, validation stricte, logs d'audit
+3. **Scans planifiés** : Planification automatique des scans (quotidien, hebdomadaire, mensuel, trimestriel)
+4. **Configuration initiale sécurisée** : Création obligatoire du compte admin au premier lancement (pas de compte par défaut)
+5. **Réduction faux positifs** : Validation stricte éliminant ~87% des faux positifs
+6. **Interface enrichie** : 17 pages spécialisées vs 3 pages initiales
+7. **Thème sombre** : Interface moderne Material-UI v7
+8. **Suppression type AdresseIP** : Les IPs ne sont pas considérées comme PII selon APDP
+9. **Authentification et rôles** : Système complet de gestion des utilisateurs avec JWT
+10. **Base de données intégrée** : SQLite chiffrée (SQLCipher) avec sauvegardes et restauration
+11. **Page Support** : Centre d'aide avec FAQ, contact email et liens documentation
+12. **Sécurité renforcée** : Protection path traversal, validation stricte, logs d'audit, rate limiting, CSRF protection
 
 ## Structure des fichiers
 
@@ -377,16 +402,23 @@ MVP-PII-Scanner/
 │   └── Utils/                # FilePermissionAnalyzer, StaleDataCalculator
 ├── PiiScanner/               # Application console
 ├── PiiScanner.Api/           # API REST + SignalR
-│   ├── Controllers/          # ScanController, DataRetentionController
+│   ├── Controllers/          # ScanController, ScheduledScansController, InitializationController, AuthController, etc.
 │   ├── Hubs/                 # ScanHub (SignalR)
-│   └── Services/             # ScanService
+│   ├── Services/             # ScanService, SchedulerService, BackgroundSchedulerService, AuthService
+│   ├── Data/                 # AppDbContext (SQLite + SQLCipher)
+│   ├── Models/               # User, Session, ScheduledScan, AuditLog, etc.
+│   └── Middleware/           # CsrfProtectionMiddleware, RateLimitingMiddleware
 ├── pii-scanner-ui/           # Application Electron
 │   ├── src/
 │   │   ├── components/
 │   │   │   ├── Layout/       # Sidebar, navigation
-│   │   │   └── pages/        # 15 pages spécialisées
+│   │   │   ├── pages/        # 17 pages spécialisées
+│   │   │   ├── Login.tsx     # Page de connexion
+│   │   │   ├── InitialSetup.tsx  # Configuration première utilisation
+│   │   │   ├── ScheduledScans.tsx  # Gestion scans planifiés
+│   │   │   └── ...           # Autres composants
 │   │   ├── contexts/         # AuthContext (JWT)
-│   │   ├── services/         # apiClient.ts (API + SignalR)
+│   │   ├── services/         # apiClient.ts (API + SignalR), axios.ts (intercepteurs)
 │   │   └── types/            # TypeScript types
 │   ├── electron/             # main.ts, preload.js
 │   └── public/               # Assets

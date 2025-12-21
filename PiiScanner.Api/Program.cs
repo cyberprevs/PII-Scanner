@@ -93,6 +93,10 @@ builder.Services.AddCors(options =>
 // Add custom services
 builder.Services.AddSingleton<ScanService>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<SchedulerService>();
+
+// Add Background Services
+builder.Services.AddHostedService<BackgroundSchedulerService>();
 
 var app = builder.Build();
 

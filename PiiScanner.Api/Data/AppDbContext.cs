@@ -45,20 +45,7 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<AuditLog>()
             .HasIndex(a => a.CreatedAt);
 
-        // Seed: Créer un compte admin par défaut
-        modelBuilder.Entity<User>().HasData(new User
-        {
-            Id = 1,
-            Username = "admin",
-            Email = "admin@piiscanner.local",
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin@123"), // Mot de passe par défaut
-            FullName = "Administrateur Système",
-            Role = Roles.Admin,
-            IsActive = true,
-            CreatedAt = DateTime.UtcNow
-        });
-
-        // Seed: Créer les paramètres par défaut
+        // Seed: Créer les paramètres par défaut (pas de compte admin par défaut)
         modelBuilder.Entity<AppSettings>().HasData(new AppSettings
         {
             Id = 1,

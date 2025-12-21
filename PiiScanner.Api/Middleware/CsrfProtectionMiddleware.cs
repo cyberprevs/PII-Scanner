@@ -19,6 +19,7 @@ public class CsrfProtectionMiddleware
     {
         // Authentification (login exempt car pas encore de token)
         "/api/users",                    // Gestion utilisateurs
+        "/api/scheduledscans",           // Scans planifiés (POST, PUT, DELETE, PATCH)
         "/api/database/backup",          // Création backup
         "/api/database/restore",         // Restauration
         "/api/database/optimize",        // Optimisation
