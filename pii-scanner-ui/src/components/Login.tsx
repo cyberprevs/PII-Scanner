@@ -96,6 +96,45 @@ const Login: React.FC = () => {
               {isLoading ? <CircularProgress size={24} /> : 'Se connecter'}
             </Button>
           </form>
+
+          {/* Cyberprevs Branding */}
+          <Box sx={{ mt: 4, textAlign: 'center' }}>
+            <Typography
+              variant="caption"
+              sx={{
+                color: 'text.secondary',
+                fontSize: '0.75rem',
+                display: 'block',
+                mb: 0.5,
+              }}
+            >
+              Développé par
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: 700,
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                fontSize: '1rem',
+                letterSpacing: '0.5px',
+              }}
+            >
+              Cyberprevs
+            </Typography>
+            <Typography
+              variant="caption"
+              sx={{
+                color: 'text.secondary',
+                fontSize: '0.7rem',
+                display: 'block',
+                mt: 0.5,
+              }}
+            >
+              v1.0.0 • © 2025
+            </Typography>
+          </Box>
         </Paper>
       </Box>
     </Container>

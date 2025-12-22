@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "PcOfFm2BFPI=",
+  "dgSpecHash": "nScDU6xdTS4=",
   "success": true,
-  "projectFilePath": "c:\\Users\\samir\\OneDrive\\Desktop\\MVP-PII-Scanner\\PiiScanner.Core\\PiiScanner.Core.csproj",
+  "projectFilePath": "C:\\Users\\samir\\OneDrive\\Desktop\\MVP-PII-Scanner\\PiiScanner.Core\\PiiScanner.Core.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\samir\\.nuget\\packages\\documentformat.openxml\\3.3.0\\documentformat.openxml.3.3.0.nupkg.sha512",
     "C:\\Users\\samir\\.nuget\\packages\\documentformat.openxml.framework\\3.3.0\\documentformat.openxml.framework.3.3.0.nupkg.sha512",

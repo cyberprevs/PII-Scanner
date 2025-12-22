@@ -4835,8 +4835,8 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "c:\\Users\\samir\\OneDrive\\Desktop\\MVP-PII-Scanner\\PiiScanner.Core\\PiiScanner.Core.csproj": {
-              "projectPath": "c:\\Users\\samir\\OneDrive\\Desktop\\MVP-PII-Scanner\\PiiScanner.Core\\PiiScanner.Core.csproj"
+            "C:\\Users\\samir\\OneDrive\\Desktop\\MVP-PII-Scanner\\PiiScanner.Core\\PiiScanner.Core.csproj": {
+              "projectPath": "C:\\Users\\samir\\OneDrive\\Desktop\\MVP-PII-Scanner\\PiiScanner.Core\\PiiScanner.Core.csproj"
             }
           }
         }
