@@ -512,10 +512,47 @@ Pour personnaliser la page Support (URLs GitHub, email de contact, etc.), consul
 
 ## Licence
 
-Ce projet est fourni à des fins de conformité avec la Loi N°2017-20 du Bénin sur la protection des données personnelles.
+Ce projet est sous licence **Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)**.
+
+### Ce que vous pouvez faire :
+- ✅ **Utiliser** le logiciel gratuitement
+- ✅ **Modifier** le code source
+- ✅ **Distribuer** des copies (modifiées ou non)
+- ✅ **Étudier** le fonctionnement du logiciel
+
+### Ce que vous ne pouvez PAS faire :
+- ❌ **Vendre** ce logiciel ou des copies
+- ❌ **Usage commercial** sans autorisation écrite
+- ❌ **Retirer** l'attribution à Cyberprevs
+
+### Attribution Requise
+
+Vous devez :
+- Créditer **Cyberprevs** comme auteur original
+- Fournir un lien vers la licence
+- Indiquer si des modifications ont été apportées
+
+### Utilisation Commerciale
+
+Pour toute demande d'utilisation commerciale ou de licence propriétaire, veuillez contacter **Cyberprevs**.
+
+Voir le fichier [LICENSE](LICENSE) pour les détails complets.
+
+---
+
+## Développé par Cyberprevs
+
+**PII Scanner** a été développé par **[Cyberprevs](https://cyberprevs.com)** pour assurer la conformité avec la Loi N°2017-20 du Bénin sur la protection des données personnelles (APDP).
+
+### 🌐 Cyberprevs
+- Spécialiste en cybersécurité et protection des données
+- Conforme aux réglementations APDP (Bénin) et RGPD (Europe)
+- Solutions sur mesure pour entreprises et organisations
 
 ---
 
 **Version** : 1.0.0
 **Dernière mise à jour** : Décembre 2025
 **Conformité** : Loi N°2017-20 du Bénin (APDP)
+**Développé par** : [Cyberprevs](https://cyberprevs.com)
+**Licence** : [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/)

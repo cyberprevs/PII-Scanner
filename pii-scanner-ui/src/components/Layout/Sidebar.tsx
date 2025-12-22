@@ -450,6 +450,55 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
             sx={{ width: '100%', ml: 0 }}
           />
         )}
+
+        {/* Cyberprevs Branding */}
+        {!collapsed && (
+          <Box
+            sx={{
+              mt: 2,
+              pt: 2,
+              borderTop: '1px solid',
+              borderColor: 'divider',
+              textAlign: 'center',
+            }}
+          >
+            <Typography
+              variant="caption"
+              sx={{
+                color: 'text.secondary',
+                fontSize: '0.7rem',
+                display: 'block',
+                mb: 0.5,
+              }}
+            >
+              Développé par
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: 700,
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                fontSize: '0.95rem',
+                letterSpacing: '0.5px',
+              }}
+            >
+              Cyberprevs
+            </Typography>
+            <Typography
+              variant="caption"
+              sx={{
+                color: 'text.secondary',
+                fontSize: '0.65rem',
+                display: 'block',
+                mt: 0.5,
+              }}
+            >
+              v1.0.0 • © 2025
+            </Typography>
+          </Box>
+        )}
       </Box>
     </Drawer>
   );
