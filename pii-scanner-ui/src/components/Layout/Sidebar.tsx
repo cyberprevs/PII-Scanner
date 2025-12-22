@@ -40,6 +40,7 @@ import HistoryIcon from '@mui/icons-material/History';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import HelpIcon from '@mui/icons-material/Help';
+import InfoIcon from '@mui/icons-material/Info';
 import BuildIcon from '@mui/icons-material/Build';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import ExpandLess from '@mui/icons-material/ExpandLess';
@@ -100,6 +101,7 @@ const menuItems: MenuItem[] = [
   // Section Profil
   { id: 'profile', label: 'Mon Profil', icon: <AccountCircleIcon />, path: '/profile' },
   { id: 'support', label: 'Support', icon: <HelpIcon />, path: '/support' },
+  { id: 'about', label: 'À propos', icon: <InfoIcon />, path: '/about' },
 ];
 
 export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
