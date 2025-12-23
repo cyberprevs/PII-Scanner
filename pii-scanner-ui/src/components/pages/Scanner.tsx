@@ -10,10 +10,23 @@ import {
   Grid,
   Alert,
   Divider,
+  Paper,
+  Chip,
+  Stack,
+  IconButton,
+  Tooltip,
+  Stepper,
+  Step,
+  StepLabel,
 } from '@mui/material';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import SearchIcon from '@mui/icons-material/Search';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import HistoryIcon from '@mui/icons-material/History';
+import DeleteIcon from '@mui/icons-material/Delete';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import SecurityIcon from '@mui/icons-material/Security';
 import { scanApi } from '../../services/apiClient';
 import type { ScanProgressResponse } from '../../types';
 
@@ -26,6 +39,20 @@ interface ScannerProps {
 export default function Scanner({ scanning, scanId, onStartScan }: ScannerProps) {
   const [directoryPath, setDirectoryPath] = useState('');
   const [progress, setProgress] = useState<ScanProgressResponse | null>(null);
+  const [recentPaths, setRecentPaths] = useState<string[]>([]);
+  const [pathError, setPathError] = useState('');
+
+  // Load recent paths from localStorage on mount
+  useEffect(() => {
+    const stored = localStorage.getItem('recentScanPaths');
+    if (stored) {
+      try {
+        setRecentPaths(JSON.parse(stored));
+      } catch (err) {
+        console.error('Error loading recent paths:', err);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (!scanning || !scanId) return;
@@ -42,11 +69,24 @@ export default function Scanner({ scanning, scanId, onStartScan }: ScannerProps)
     return () => clearInterval(interval);
   }, [scanning, scanId]);
 
+  const saveRecentPath = (path: string) => {
+    const updated = [path, ...recentPaths.filter(p => p !== path)].slice(0, 5);
+    setRecentPaths(updated);
+    localStorage.setItem('recentScanPaths', JSON.stringify(updated));
+  };
+
+  const removeRecentPath = (path: string) => {
+    const updated = recentPaths.filter(p => p !== path);
+    setRecentPaths(updated);
+    localStorage.setItem('recentScanPaths', JSON.stringify(updated));
+  };
+
   const handleSelectDirectory = async () => {
     if (window.electronAPI) {
       const path = await window.electronAPI.selectDirectory();
       if (path) {
         setDirectoryPath(path);
+        setPathError('');
       }
     } else {
       console.log('Electron API non disponible, entrez le chemin manuellement');
@@ -54,14 +94,26 @@ export default function Scanner({ scanning, scanId, onStartScan }: ScannerProps)
   };
 
   const handleStartScan = () => {
-    if (directoryPath) {
-      onStartScan(directoryPath);
+    if (!directoryPath) {
+      setPathError('Veuillez sélectionner un dossier à scanner');
+      return;
     }
+
+    setPathError('');
+    saveRecentPath(directoryPath);
+    onStartScan(directoryPath);
+  };
+
+  const handlePathChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDirectoryPath(e.target.value);
+    if (pathError) setPathError('');
   };
 
   const percentage = progress
     ? Math.floor((progress.processedFiles / progress.totalFiles) * 100)
     : 0;
+
+  const activeStep = scanning ? 1 : 0;
 
   return (
     <Box>
@@ -70,138 +122,203 @@ export default function Scanner({ scanning, scanId, onStartScan }: ScannerProps)
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
           <SearchIcon sx={{ fontSize: 40, mr: 2, color: 'primary.main' }} />
           <Typography variant="h4" fontWeight={700}>
-            Scanner de Fichiers
+            Nouveau Scan
           </Typography>
         </Box>
         <Typography variant="body1" color="text.secondary">
-          Lancez un nouveau scan pour détecter les données personnelles (PII) dans vos fichiers
+          Démarrez un scan pour détecter automatiquement les données personnelles (PII) dans vos documents
         </Typography>
       </Box>
+
+      {/* Stepper */}
+      <Paper sx={{ p: 3, mb: 4 }}>
+        <Stepper activeStep={activeStep} alternativeLabel>
+          <Step completed={activeStep > 0}>
+            <StepLabel>Configuration</StepLabel>
+          </Step>
+          <Step completed={activeStep > 1}>
+            <StepLabel>Analyse en cours</StepLabel>
+          </Step>
+          <Step>
+            <StepLabel>Résultats</StepLabel>
+          </Step>
+        </Stepper>
+      </Paper>
 
       <Divider sx={{ mb: 4 }} />
 
       {!scanning ? (
         <Grid container spacing={3}>
-          {/* Configuration */}
-          <Grid item xs={12} md={8}>
-            <Card>
-              <CardContent sx={{ p: 3 }}>
-                <Typography variant="h6" fontWeight={600} gutterBottom>
-                  Configuration du scan
-                </Typography>
-
-                <Box sx={{ mt: 3 }}>
-                  <Typography variant="body2" color="text.secondary" gutterBottom fontWeight={500}>
-                    Dossier à scanner *
+          {/* Configuration principale */}
+          <Grid item xs={12} lg={8}>
+            <Card sx={{ mb: 3 }}>
+              <CardContent sx={{ p: 4 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                  <FolderOpenIcon sx={{ fontSize: 28, mr: 1.5, color: 'primary.main' }} />
+                  <Typography variant="h6" fontWeight={600}>
+                    Sélection du dossier
                   </Typography>
-                  <Box sx={{ display: 'flex', gap: 2, mt: 1 }}>
+                </Box>
+
+                {/* Path input */}
+                <Box sx={{ mb: 3 }}>
+                  <Box sx={{ display: 'flex', gap: 2 }}>
                     <TextField
                       fullWidth
                       variant="outlined"
                       value={directoryPath}
-                      onChange={(e) => setDirectoryPath(e.target.value)}
-                      placeholder="Sélectionnez un dossier à scanner..."
+                      onChange={handlePathChange}
+                      placeholder="C:\Documents\MonDossier ou /home/user/documents"
                       disabled={scanning}
+                      error={!!pathError}
+                      helperText={pathError || 'Sélectionnez ou saisissez le chemin complet du dossier à analyser'}
                       sx={{ flex: 1 }}
+                      InputProps={{
+                        sx: { fontSize: '0.95rem' }
+                      }}
                     />
                     <Button
                       variant="outlined"
                       onClick={handleSelectDirectory}
                       startIcon={<FolderOpenIcon />}
                       disabled={scanning}
-                      sx={{ minWidth: 140 }}
+                      sx={{
+                        minWidth: 160,
+                        height: 56,
+                        fontWeight: 600,
+                      }}
                     >
                       Parcourir
                     </Button>
                   </Box>
                 </Box>
 
-                <Alert severity="info" sx={{ mt: 3 }}>
-                  <strong>Formats supportés :</strong> .txt, .log, .csv, .json, .docx, .xlsx, .pdf
-                </Alert>
+                {/* Recent paths */}
+                {recentPaths.length > 0 && (
+                  <Box sx={{ mb: 3 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
+                      <HistoryIcon sx={{ fontSize: 20, mr: 1, color: 'text.secondary' }} />
+                      <Typography variant="body2" color="text.secondary" fontWeight={500}>
+                        Dossiers récents
+                      </Typography>
+                    </Box>
+                    <Stack spacing={1}>
+                      {recentPaths.map((path, index) => (
+                        <Paper
+                          key={index}
+                          sx={{
+                            p: 1.5,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            cursor: 'pointer',
+                            border: '1px solid',
+                            borderColor: directoryPath === path ? 'primary.main' : 'divider',
+                            bgcolor: directoryPath === path ? 'rgba(102, 126, 234, 0.05)' : 'background.paper',
+                            transition: 'all 0.2s',
+                            '&:hover': {
+                              borderColor: 'primary.main',
+                              bgcolor: 'rgba(102, 126, 234, 0.05)',
+                            },
+                          }}
+                          onClick={() => setDirectoryPath(path)}
+                        >
+                          <Box sx={{ display: 'flex', alignItems: 'center', flex: 1, minWidth: 0 }}>
+                            <FolderOpenIcon sx={{ fontSize: 20, mr: 1.5, color: 'primary.main' }} />
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap',
+                              }}
+                            >
+                              {path}
+                            </Typography>
+                          </Box>
+                          <Tooltip title="Supprimer de l'historique">
+                            <IconButton
+                              size="small"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                removeRecentPath(path);
+                              }}
+                              sx={{ ml: 1 }}
+                            >
+                              <DeleteIcon fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                        </Paper>
+                      ))}
+                    </Stack>
+                  </Box>
+                )}
 
-                <Box sx={{ mt: 4 }}>
-                  <Button
-                    variant="contained"
-                    size="large"
-                    fullWidth
-                    onClick={handleStartScan}
-                    disabled={!directoryPath || scanning}
-                    startIcon={<PlayArrowIcon />}
-                    sx={{
-                      py: 2,
-                      fontSize: '1.1rem',
-                      fontWeight: 600,
-                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                      '&:hover': {
-                        background: 'linear-gradient(135deg, #5568d3 0%, #653a8b 100%)',
-                      },
-                      '&:disabled': {
-                        background: 'rgba(0, 0, 0, 0.12)',
-                      },
-                    }}
-                  >
-                    Démarrer le scan
-                  </Button>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-
-          {/* Types de PII détectés */}
-          <Grid item xs={12} md={4}>
-            <Card>
-              <CardContent sx={{ p: 3 }}>
-                <Typography variant="h6" fontWeight={600} gutterBottom>
-                  Types de PII détectés
-                </Typography>
-                <Typography variant="body2" color="text.secondary" paragraph>
-                  Le scanner détecte 20 types de données personnelles spécifiques au Bénin :
-                </Typography>
-
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 2 }}>
-                  {[
-                    '📧 Adresses email',
-                    '📞 Téléphones (+229)',
-                    '💳 Cartes bancaires',
-                    '🏦 IBAN (BJ)',
-                    '💰 Mobile Money (MTN/Moov)',
-                    '🆔 IFU (13 chiffres)',
-                    '📇 CNI Bénin',
-                    '🛂 Passeport béninois',
-                    '🏢 RCCM',
-                    '📜 Acte de naissance',
-                    '🏥 CNSS (11 chiffres)',
-                    '💊 RAMU',
-                    '🎓 INE',
-                    '👨‍💼 Matricule fonctionnaire',
-                    '📅 Dates de naissance',
-                    '🔑 Mots de passe',
-                    '🔐 Clés API AWS',
-                    '🎫 Tokens JWT',
-                  ].map((item, index) => (
-                    <Typography
-                      key={index}
-                      variant="body2"
-                      sx={{
-                        py: 0.5,
-                        px: 1.5,
-                        borderRadius: 1,
-                        bgcolor: 'rgba(103, 126, 234, 0.05)',
-                        border: '1px solid',
-                        borderColor: 'rgba(103, 126, 234, 0.1)',
-                      }}
+                {/* Info boxes */}
+                <Grid container spacing={2} sx={{ mb: 3 }}>
+                  <Grid item xs={12} sm={6}>
+                    <Alert
+                      severity="info"
+                      icon={<InfoOutlinedIcon />}
+                      sx={{ height: '100%' }}
                     >
-                      {item}
-                    </Typography>
-                  ))}
-                </Box>
+                      <Typography variant="caption" fontWeight={600} display="block" gutterBottom>
+                        Formats supportés
+                      </Typography>
+                      <Typography variant="caption">
+                        .txt, .log, .csv, .json, .docx, .xlsx, .pdf
+                      </Typography>
+                    </Alert>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Alert
+                      severity="success"
+                      icon={<CheckCircleIcon />}
+                      sx={{ height: '100%' }}
+                    >
+                      <Typography variant="caption" fontWeight={600} display="block" gutterBottom>
+                        Traitement sécurisé
+                      </Typography>
+                      <Typography variant="caption">
+                        100% local - aucune donnée n'est envoyée en ligne
+                      </Typography>
+                    </Alert>
+                  </Grid>
+                </Grid>
+
+                {/* Start button */}
+                <Button
+                  variant="contained"
+                  size="large"
+                  fullWidth
+                  onClick={handleStartScan}
+                  disabled={!directoryPath || scanning}
+                  startIcon={<PlayArrowIcon />}
+                  sx={{
+                    py: 2,
+                    fontSize: '1.1rem',
+                    fontWeight: 700,
+                    background: directoryPath
+                      ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                      : 'rgba(0, 0, 0, 0.12)',
+                    boxShadow: directoryPath ? 3 : 0,
+                    '&:hover': {
+                      background: directoryPath
+                        ? 'linear-gradient(135deg, #5568d3 0%, #653a8b 100%)'
+                        : 'rgba(0, 0, 0, 0.12)',
+                      boxShadow: directoryPath ? 4 : 0,
+                    },
+                    '&:disabled': {
+                      background: 'rgba(0, 0, 0, 0.12)',
+                    },
+                  }}
+                >
+                  Démarrer le scan
+                </Button>
               </CardContent>
             </Card>
-          </Grid>
 
-          {/* Caractéristiques */}
-          <Grid item xs={12}>
+            {/* Caractéristiques */}
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6} md={3}>
                 <Card sx={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
@@ -253,119 +370,199 @@ export default function Scanner({ scanning, scanId, onStartScan }: ScannerProps)
               </Grid>
             </Grid>
           </Grid>
+
+          {/* Types de PII - Sidebar */}
+          <Grid item xs={12} lg={4}>
+            <Card>
+              <CardContent sx={{ p: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <SecurityIcon sx={{ fontSize: 28, mr: 1.5, color: 'secondary.main' }} />
+                  <Typography variant="h6" fontWeight={600}>
+                    20 types de PII détectés
+                  </Typography>
+                </Box>
+                <Typography variant="body2" color="text.secondary" paragraph>
+                  Données personnelles détectées automatiquement :
+                </Typography>
+
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.75, mt: 2 }}>
+                  {[
+                    { label: 'Adresses email', icon: '📧' },
+                    { label: 'Téléphones (+229)', icon: '📞' },
+                    { label: 'Cartes bancaires', icon: '💳' },
+                    { label: 'IBAN (BJ)', icon: '🏦' },
+                    { label: 'Mobile Money', icon: '💰' },
+                    { label: 'IFU (13 chiffres)', icon: '🆔' },
+                    { label: 'CNI Bénin', icon: '📇' },
+                    { label: 'Passeport béninois', icon: '🛂' },
+                    { label: 'RCCM', icon: '🏢' },
+                    { label: 'Acte de naissance', icon: '📜' },
+                    { label: 'CNSS (11 chiffres)', icon: '🏥' },
+                    { label: 'RAMU', icon: '💊' },
+                    { label: 'INE', icon: '🎓' },
+                    { label: 'Matricule fonctionnaire', icon: '👨‍💼' },
+                    { label: 'Dates de naissance', icon: '📅' },
+                    { label: 'Mots de passe', icon: '🔑' },
+                    { label: 'Clés API AWS', icon: '🔐' },
+                    { label: 'Tokens JWT', icon: '🎫' },
+                  ].map((item, index) => (
+                    <Chip
+                      key={index}
+                      label={`${item.icon} ${item.label}`}
+                      size="small"
+                      sx={{
+                        justifyContent: 'flex-start',
+                        py: 1.5,
+                        px: 1.5,
+                        bgcolor: 'rgba(103, 126, 234, 0.05)',
+                        border: '1px solid',
+                        borderColor: 'rgba(103, 126, 234, 0.15)',
+                        fontSize: '0.85rem',
+                        '&:hover': {
+                          bgcolor: 'rgba(103, 126, 234, 0.1)',
+                        },
+                      }}
+                    />
+                  ))}
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
         </Grid>
       ) : (
         <Grid container spacing={3}>
-          <Grid item xs={12} md={8}>
+          <Grid item xs={12} lg={8}>
             <Card>
-              <CardContent sx={{ p: 3 }}>
-                <Typography variant="h6" fontWeight={600} gutterBottom>
-                  Scan en cours...
-                </Typography>
+              <CardContent sx={{ p: 4 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                  <SearchIcon sx={{ fontSize: 28, mr: 1.5, color: 'primary.main' }} />
+                  <Typography variant="h6" fontWeight={600}>
+                    Scan en cours...
+                  </Typography>
+                </Box>
 
-                <Box sx={{ mt: 3, p: 3, bgcolor: 'background.default', borderRadius: 2 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                    <Box sx={{ flex: 1 }}>
-                      <Typography variant="h2" fontWeight={700} color="primary">
-                        {percentage}%
-                      </Typography>
-                      <Typography variant="body1" color="text.secondary" sx={{ mt: 1 }}>
-                        {progress
-                          ? `${progress.processedFiles.toLocaleString()} / ${progress.totalFiles.toLocaleString()} fichiers traités`
-                          : 'Initialisation du scan...'}
-                      </Typography>
-                    </Box>
-                    {progress && (
-                      <Box sx={{ textAlign: 'right' }}>
-                        <Typography variant="h2" fontWeight={700} color="secondary">
-                          {progress.piiFound.toLocaleString()}
+                <Box sx={{ mb: 4, p: 4, bgcolor: 'background.default', borderRadius: 2 }}>
+                  <Grid container spacing={4}>
+                    <Grid item xs={12} md={6}>
+                      <Box sx={{ textAlign: 'center' }}>
+                        <Typography variant="h1" fontWeight={700} color="primary" sx={{ fontSize: '4rem' }}>
+                          {percentage}%
                         </Typography>
                         <Typography variant="body1" color="text.secondary" sx={{ mt: 1 }}>
-                          PII détectées
+                          Progression globale
                         </Typography>
                       </Box>
-                    )}
-                  </Box>
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <Stack spacing={2}>
+                        <Box>
+                          <Typography variant="caption" color="text.secondary" fontWeight={500}>
+                            FICHIERS TRAITÉS
+                          </Typography>
+                          <Typography variant="h5" fontWeight={700}>
+                            {progress
+                              ? `${progress.processedFiles.toLocaleString()} / ${progress.totalFiles.toLocaleString()}`
+                              : 'Initialisation...'}
+                          </Typography>
+                        </Box>
+                        <Box>
+                          <Typography variant="caption" color="text.secondary" fontWeight={500}>
+                            PII DÉTECTÉES
+                          </Typography>
+                          <Typography variant="h5" fontWeight={700} color="secondary">
+                            {progress ? progress.piiFound.toLocaleString() : '0'}
+                          </Typography>
+                        </Box>
+                      </Stack>
+                    </Grid>
+                  </Grid>
 
-                  <LinearProgress
-                    variant="determinate"
-                    value={percentage}
-                    sx={{
-                      height: 12,
-                      borderRadius: 6,
-                      bgcolor: 'rgba(103, 126, 234, 0.1)',
-                      '& .MuiLinearProgress-bar': {
-                        borderRadius: 6,
-                        background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)',
-                      },
-                    }}
-                  />
-
-                  <Box sx={{ mt: 3, p: 2, bgcolor: 'background.paper', borderRadius: 1 }}>
-                    <Typography variant="caption" color="text.secondary" fontWeight={500}>
-                      DOSSIER SCANNÉ
-                    </Typography>
-                    <Typography variant="body2" sx={{ mt: 0.5, wordBreak: 'break-all' }}>
-                      📁 {directoryPath}
-                    </Typography>
+                  <Box sx={{ mt: 3 }}>
+                    <LinearProgress
+                      variant="determinate"
+                      value={percentage}
+                      sx={{
+                        height: 16,
+                        borderRadius: 8,
+                        bgcolor: 'rgba(103, 126, 234, 0.1)',
+                        '& .MuiLinearProgress-bar': {
+                          borderRadius: 8,
+                          background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)',
+                        },
+                      }}
+                    />
                   </Box>
                 </Box>
 
+                <Box sx={{ p: 2.5, bgcolor: 'rgba(102, 126, 234, 0.05)', borderRadius: 2, border: '1px solid', borderColor: 'rgba(102, 126, 234, 0.15)' }}>
+                  <Typography variant="caption" color="text.secondary" fontWeight={600}>
+                    DOSSIER SCANNÉ
+                  </Typography>
+                  <Typography variant="body2" sx={{ mt: 0.5, wordBreak: 'break-all', fontWeight: 500 }}>
+                    📁 {directoryPath}
+                  </Typography>
+                </Box>
+
                 <Alert severity="warning" sx={{ mt: 3 }}>
-                  <strong>Scan en cours :</strong> Veuillez patienter pendant l'analyse. Ne fermez pas cette fenêtre.
+                  <Typography variant="body2" fontWeight={500}>
+                    Scan en cours : Veuillez patienter pendant l'analyse. Ne fermez pas cette fenêtre.
+                  </Typography>
                 </Alert>
               </CardContent>
             </Card>
           </Grid>
 
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} lg={4}>
             <Card>
               <CardContent sx={{ p: 3 }}>
                 <Typography variant="h6" fontWeight={600} gutterBottom>
-                  Statut du scan
+                  Statut en temps réel
                 </Typography>
 
                 <Box sx={{ mt: 3 }}>
-                  <Box sx={{ mb: 3 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-                      <Typography variant="body2" color="text.secondary">
-                        Fichiers traités
+                  <Stack spacing={2.5}>
+                    <Box sx={{ p: 2, bgcolor: 'background.default', borderRadius: 2 }}>
+                      <Typography variant="caption" color="text.secondary" fontWeight={600}>
+                        FICHIERS TRAITÉS
                       </Typography>
-                      <Typography variant="body1" fontWeight={600}>
+                      <Typography variant="h6" fontWeight={700} sx={{ mt: 0.5 }}>
                         {progress ? progress.processedFiles.toLocaleString() : '0'}
                       </Typography>
                     </Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-                      <Typography variant="body2" color="text.secondary">
-                        Fichiers totaux
+
+                    <Box sx={{ p: 2, bgcolor: 'background.default', borderRadius: 2 }}>
+                      <Typography variant="caption" color="text.secondary" fontWeight={600}>
+                        FICHIERS TOTAUX
                       </Typography>
-                      <Typography variant="body1" fontWeight={600}>
+                      <Typography variant="h6" fontWeight={700} sx={{ mt: 0.5 }}>
                         {progress ? progress.totalFiles.toLocaleString() : '0'}
                       </Typography>
                     </Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-                      <Typography variant="body2" color="text.secondary">
-                        PII détectées
+
+                    <Box sx={{ p: 2, bgcolor: 'rgba(118, 75, 162, 0.1)', borderRadius: 2, border: '1px solid', borderColor: 'rgba(118, 75, 162, 0.2)' }}>
+                      <Typography variant="caption" color="secondary.main" fontWeight={600}>
+                        PII DÉTECTÉES
                       </Typography>
-                      <Typography variant="body1" fontWeight={600} color="secondary.main">
+                      <Typography variant="h6" fontWeight={700} color="secondary.main" sx={{ mt: 0.5 }}>
                         {progress ? progress.piiFound.toLocaleString() : '0'}
                       </Typography>
                     </Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <Typography variant="body2" color="text.secondary">
-                        Progression
+
+                    <Box sx={{ p: 2, bgcolor: 'rgba(102, 126, 234, 0.1)', borderRadius: 2, border: '1px solid', borderColor: 'rgba(102, 126, 234, 0.2)' }}>
+                      <Typography variant="caption" color="primary.main" fontWeight={600}>
+                        PROGRESSION
                       </Typography>
-                      <Typography variant="body1" fontWeight={600} color="primary.main">
+                      <Typography variant="h6" fontWeight={700} color="primary.main" sx={{ mt: 0.5 }}>
                         {percentage}%
                       </Typography>
                     </Box>
-                  </Box>
+                  </Stack>
 
-                  <Divider sx={{ my: 2 }} />
+                  <Divider sx={{ my: 3 }} />
 
-                  <Alert severity="info" icon={false}>
-                    <Typography variant="caption" color="text.secondary">
-                      Les résultats seront disponibles sur la page "Tableau de bord" une fois le scan terminé.
+                  <Alert severity="info" icon={<InfoOutlinedIcon />}>
+                    <Typography variant="caption">
+                      Les résultats complets seront disponibles sur le tableau de bord une fois le scan terminé.
                     </Typography>
                   </Alert>
                 </Box>

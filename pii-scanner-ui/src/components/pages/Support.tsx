@@ -296,7 +296,7 @@ export default function Support() {
 
             <Typography variant="body2" color="text.secondary" align="center">
               Ou écrivez-nous directement à{' '}
-              <Link href="mailto:support@piiscanner.com" underline="hover">
+              <Link href="mailto:contact@cyberpervs.fr" underline="hover">
                 support@piiscanner.com
               </Link>
             </Typography>
