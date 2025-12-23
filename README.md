@@ -68,23 +68,22 @@ Application de bureau pour détecter et analyser les données personnelles ident
 
 #### Interface utilisateur moderne
 - **16 pages spécialisées** :
-  1. Tableau de bord : Statistiques et métriques clés
-  2. Scanner : Lancement et suivi des scans en temps réel
-  3. Historique : Consultation de tous les scans effectués
-  4. Scans planifiés : Planification automatique (quotidien, hebdomadaire, mensuel, trimestriel)
-  5. Fichiers à risque : Top 20 fichiers critiques avec filtrage
-  6. Données sensibles : Liste détaillée de toutes les détections
-  7. Ancienneté : Analyse des fichiers obsolètes
-  8. Exposition : Analyse des fichiers sur-exposés
-  9. Rapports & Analytics : Visualisations et tendances
-  10. Exports : Téléchargement des rapports (CSV, JSON, HTML, Excel)
-  11. Rétention des données : Gestion des politiques de rétention et suppression
-  12. Utilisateurs : Gestion des comptes utilisateurs (Admin uniquement)
-  13. Base de données : Sauvegardes et restauration (Admin uniquement)
-  14. Journal d'audit : Traçabilité complète des opérations (Admin uniquement)
-  15. Mon Profil : Gestion du profil utilisateur
-  16. Paramètres : Configuration des types PII et exclusions
-  17. Support : Centre d'aide, FAQ et contact
+  1. **Tableau de bord** : Statistiques et métriques clés
+  2. **Scanner** : Lancement et suivi des scans en temps réel
+  3. **Historique** : Consultation de tous les scans effectués
+  4. **Scans planifiés** : Planification automatique (quotidien, hebdomadaire, mensuel, trimestriel)
+  5. **Fichiers à risque** : Top 20 fichiers critiques avec filtrage
+  6. **Données sensibles** : Liste détaillée de toutes les détections
+  7. **Ancienneté** : Analyse des fichiers obsolètes
+  8. **Exposition** : Analyse des fichiers sur-exposés (NTFS ACL)
+  9. **Rapports & Analytics** : Visualisations et tendances
+  10. **Exports** : Téléchargement des rapports (CSV, JSON, HTML, Excel)
+  11. **Rétention des données** : Gestion des politiques de rétention et suppression
+  12. **Utilisateurs** : Gestion des comptes utilisateurs (Admin uniquement)
+  13. **Base de données** : Sauvegardes et restauration (Admin uniquement)
+  14. **Journal d'audit** : Traçabilité complète des opérations (Admin uniquement)
+  15. **Mon Profil** : Gestion du profil utilisateur
+  16. **Support** : Centre d'aide, FAQ et contact
 
 - **Thème sombre** : Interface Material-UI v7 avec thème sombre élégant
 - **Temps réel** : Mise à jour du scan en direct via SignalR
@@ -96,6 +95,36 @@ Application de bureau pour détecter et analyser les données personnelles ident
 - **Traitement parallèle** : Utilisation optimale des CPU multi-cœurs
 - **Validation avancée** : Réduction des faux positifs (~87% éliminés)
 - **Rapports multiples formats** : CSV, JSON, HTML, Excel avec statistiques
+
+## 🚀 Démarrage rapide
+
+Pour les développeurs qui veulent tester rapidement :
+
+```bash
+# 1. Cloner le projet
+git clone <repository-url>
+cd PII-Scanner
+
+# 2. Démarrer l'API (terminal 1)
+cd PiiScanner.Api
+dotnet run
+
+# 3. Démarrer l'UI (terminal 2 - dans un nouveau terminal)
+cd pii-scanner-ui
+npm install
+npm run electron:dev
+```
+
+**Première utilisation** : L'application vous demandera de créer un compte administrateur (aucun compte par défaut pour des raisons de sécurité).
+
+**Accès** :
+- Application Electron : Se lance automatiquement
+- API : `http://localhost:5000` (HTTP) ou `https://localhost:5001` (HTTPS)
+- Swagger : `http://localhost:5000/swagger`
+
+Pour plus de détails, consultez la section [Installation](#installation) ci-dessous.
+
+---
 
 ## Installation
 
@@ -149,13 +178,19 @@ Application de bureau pour détecter et analyser les données personnelles ident
    cd PiiScanner.Api
    dotnet run
    ```
-   L'API démarre sur `http://localhost:5000`
+   L'API démarre sur :
+   - HTTP : `http://localhost:5000`
+   - HTTPS : `https://localhost:5001`
+   - Swagger : `http://localhost:5000/swagger`
 
 2. **Démarrer l'interface Electron** (terminal 2) :
    ```bash
    cd pii-scanner-ui
+   npm install  # Première fois uniquement
    npm run electron:dev
    ```
+
+   **Note** : Si `npm install` n'a pas été exécuté, vous obtiendrez une erreur `'concurrently' n'est pas reconnu`.
 
 ### Utiliser l'application
 
@@ -171,48 +206,69 @@ Le projet est composé de 4 parties :
 
 ### 1. PiiScanner.Core
 Bibliothèque .NET contenant la logique métier :
-- **20 détecteurs de PII** adaptés au Bénin avec validation stricte
-- Analyse des permissions NTFS (Windows ACL)
-- Calcul de l'ancienneté des fichiers
-- Traitement parallèle des fichiers
+- **19 détecteurs de PII** adaptés au Bénin avec validation stricte (~87% de faux positifs éliminés)
+- Analyse des permissions NTFS (Windows ACL) pour détection des fichiers sur-exposés
+- Calcul de l'ancienneté des fichiers (Stale Data Detection)
+- Traitement parallèle des fichiers (utilisation optimale des CPU multi-cœurs)
 - Génération de rapports (CSV, JSON, HTML, Excel)
-- Calcul de score de risque
+- Calcul automatique de score de risque (Faible, Moyen, Élevé)
 
 ### 2. PiiScanner (Console)
 Application console .NET pour les tests et l'automatisation.
 
 ### 3. PiiScanner.Api
-API REST ASP.NET Core avec :
-- Endpoints pour lancer des scans (`/api/scan/start`, `/api/scan/{scanId}`)
-- Endpoints de scans planifiés (`/api/scheduledscans`) - CRUD complet
-- Endpoints de rétention (`/api/dataretention/scan`, `/api/dataretention/delete`)
-- Endpoints d'authentification (`/api/auth/login`, `/api/auth/refresh`)
-- Endpoint d'initialisation (`/api/initialization/status`, `/api/initialization/setup`)
-- SignalR Hub pour les mises à jour en temps réel (`/scanhub`)
-- Service d'arrière-plan pour exécution automatique des scans planifiés
-- Support CORS pour Electron
-- Génération de rapports à la demande
-- Base de données SQLite chiffrée avec SQLCipher
+API REST ASP.NET Core avec sécurité renforcée :
+- **Endpoints de scan** : `/api/scan/start`, `/api/scan/{scanId}/results`, `/api/scan/{scanId}/report/{format}`
+- **Scans planifiés** : `/api/scheduledscans` - CRUD complet avec service d'arrière-plan
+- **Rétention des données** : `/api/dataretention/scan`, `/api/dataretention/delete`, `/api/dataretention/policies`
+- **Authentification JWT** : `/api/auth/login`, `/api/auth/refresh`, `/api/auth/logout`, `/api/auth/me`
+- **Gestion utilisateurs** : `/api/users` - CRUD complet (Admin uniquement)
+- **Gestion base de données** : `/api/database/backup`, `/api/database/restore`, `/api/database/optimize` (Admin uniquement)
+- **Journal d'audit** : `/api/audit` - Traçabilité complète (Admin uniquement)
+- **Initialisation** : `/api/initialization/status`, `/api/initialization/setup`
+- **SignalR Hub** : `/scanhub` - Mises à jour en temps réel
+- **Sécurité** :
+  - HTTPS/TLS 1.2+ avec certificat auto-signé (dev) ou Let's Encrypt (prod)
+  - Base de données SQLite chiffrée avec SQLCipher (AES-256)
+  - Protection CSRF (Double-Submit Cookie Pattern)
+  - Rate Limiting (5 login/15min, 20 ops sensibles/5min, 100 API/min)
+  - Protection Path Traversal
+  - Mots de passe hashés avec BCrypt
+  - RBAC (Admin / User)
+  - Headers de sécurité (HSTS, X-Frame-Options, etc.)
 
 ### 4. pii-scanner-ui
-Application de bureau Electron avec :
-- Interface React 19 + TypeScript
-- Material-UI v7 pour le design (thème sombre)
-- 17 pages spécialisées avec navigation sidebar
-- Système d'authentification JWT avec gestion des rôles
-- Page de configuration initiale pour création du compte admin
-- Page de scans planifiés avec interface de planification
-- Graphiques avec Recharts
-- Intégration SignalR pour le temps réel
-- API .NET intégrée (lancée automatiquement)
+Application de bureau Electron avec interface moderne :
+- **Stack** : React 19 + TypeScript + Material-UI v7 (thème sombre)
+- **16 pages spécialisées** avec navigation sidebar
+- **Authentification sécurisée** :
+  - Système JWT avec refresh tokens
+  - Gestion des rôles (Admin / User)
+  - Intercepteurs Axios pour auto-refresh des tokens
+  - Gestion CSRF tokens automatique
+- **Pages clés** :
+  - Configuration initiale (création compte admin)
+  - Tableau de bord avec métriques
+  - Scanner avec suivi temps réel (SignalR)
+  - Scans planifiés (quotidien, hebdomadaire, mensuel, trimestriel)
+  - Gestion rétention des données
+  - Gestion utilisateurs (Admin)
+  - Sauvegardes base de données (Admin)
+  - Journal d'audit (Admin)
+  - Support & FAQ
+- **Graphiques** : Recharts pour visualisations interactives
+- **API intégrée** : .NET API bundlée et lancée automatiquement
 
 ## Configuration
 
 ### Ports utilisés
 
-- **API REST** : `http://localhost:5000`
-- **SignalR Hub** : `http://localhost:5000/scanhub`
+- **API REST** :
+  - HTTP : `http://localhost:5000`
+  - HTTPS : `https://localhost:5001` (recommandé)
+- **SignalR Hub** : `http://localhost:5000/scanhub` ou `https://localhost:5001/scanhub`
 - **Interface dev** : `http://localhost:3000` (mode développement uniquement)
+- **Swagger UI** : `http://localhost:5000/swagger` (développement uniquement)
 
 ### CORS
 
@@ -376,18 +432,20 @@ Fichier .xlsx avec 3 onglets :
 
 ## Améliorations par rapport à la version RGPD
 
-1. **Adaptation Bénin** : 19 types PII spécifiques au Bénin (IFU, CNI, RCCM, Mobile Money, etc.)
-2. **Rétention des données** : Fonctionnalité complète de gestion de la rétention selon APDP
-3. **Scans planifiés** : Planification automatique des scans (quotidien, hebdomadaire, mensuel, trimestriel)
+1. **Adaptation Bénin** : 19 types PII spécifiques au Bénin (IFU, CNI, RCCM, CNSS, RAMU, INE, Mobile Money MTN/Moov, etc.)
+2. **Rétention des données** : Système complet de gestion de la rétention selon APDP (5 catégories, 1-10 ans)
+3. **Scans planifiés** : Planification automatique avec service d'arrière-plan (quotidien, hebdomadaire, mensuel, trimestriel)
 4. **Configuration initiale sécurisée** : Création obligatoire du compte admin au premier lancement (pas de compte par défaut)
-5. **Réduction faux positifs** : Validation stricte éliminant ~87% des faux positifs
-6. **Interface enrichie** : 17 pages spécialisées vs 3 pages initiales
-7. **Thème sombre** : Interface moderne Material-UI v7
-8. **Suppression type AdresseIP** : Les IPs ne sont pas considérées comme PII selon APDP
-9. **Authentification et rôles** : Système complet de gestion des utilisateurs avec JWT
-10. **Base de données intégrée** : SQLite chiffrée (SQLCipher) avec sauvegardes et restauration
-11. **Page Support** : Centre d'aide avec FAQ, contact email et liens documentation
-12. **Sécurité renforcée** : Protection path traversal, validation stricte, logs d'audit, rate limiting, CSRF protection
+5. **Réduction faux positifs** : Validation stricte éliminant ~87% des faux positifs (téléphone +95.7%, email ~90%, dates ~85.7%)
+6. **Interface enrichie** : 16 pages spécialisées Material-UI v7 avec thème sombre
+7. **Suppression AdresseIP** : Les IPs ne sont pas considérées comme PII selon APDP
+8. **Authentification complète** : JWT + refresh tokens, RBAC (Admin/User), auto-refresh tokens
+9. **Base de données sécurisée** : SQLite chiffrée SQLCipher (AES-256) avec sauvegardes/restauration
+10. **Page Support** : Centre d'aide avec FAQ, contact email et liens documentation
+11. **Sécurité renforcée** : 11 protections (HTTPS/TLS, CSRF, Rate Limiting, Path Traversal, Audit Logs, BCrypt, etc.)
+12. **HTTPS natif** : TLS 1.2+ avec certificats auto-signés (dev) ou Let's Encrypt (prod)
+13. **Analyse avancée** : Stale Data Detection (ancienneté) + Over-Exposed Data (NTFS ACL)
+14. **Détection secrets** : Mots de passe en clair, clés API AWS, tokens JWT dans le code
 
 ## Structure des fichiers
 
@@ -462,12 +520,77 @@ cd PiiScanner
 dotnet run -- test_data.txt
 ```
 
+## Dépannage
+
+### Problèmes courants
+
+**1. Erreur `'concurrently' n'est pas reconnu`**
+```bash
+cd pii-scanner-ui
+npm install
+```
+Les dépendances npm n'étaient pas installées. Exécutez `npm install` avant `npm run electron:dev`.
+
+**2. Erreur `SQLite Error 26: 'file is not a database'`**
+```bash
+cd PiiScanner.Api
+rm piiscanner.db db_encryption.key  # Linux/Mac
+# OU
+del piiscanner.db db_encryption.key  # Windows PowerShell
+```
+La base de données est corrompue ou la clé de chiffrement ne correspond pas. Supprimez les fichiers et relancez l'API.
+
+**3. Erreur `Failed to bind to address https://127.0.0.1:5001: address already in use`**
+```bash
+# Trouver le processus utilisant le port
+netstat -ano | findstr :5001
+
+# Arrêter le processus (remplacer PID par l'ID du processus)
+taskkill /F /PID <PID>
+# OU
+powershell -Command "Stop-Process -Id <PID> -Force"
+```
+
+**4. L'application Electron ne se connecte pas à l'API**
+- Vérifiez que l'API est bien démarrée sur le port 5000 ou 5001
+- Consultez la console de l'API pour les erreurs
+- Pour HTTPS: Faites confiance au certificat dev avec `dotnet dev-certs https --trust`
+- Vérifiez les paramètres CORS dans `PiiScanner.Api/Program.cs`
+
+**5. SignalR ne se connecte pas (pas de mises à jour en temps réel)**
+- Vérifiez que WebSockets n'est pas bloqué par un pare-feu
+- Consultez la console du navigateur/Electron pour les erreurs
+- Essayez HTTP au lieu de HTTPS pour le développement local
+
+**6. Base de données verrouillée**
+- Une seule instance de l'API peut accéder à la base de données chiffrée à la fois
+- Fermez les autres instances de l'API
+- Vérifiez les processus zombies : `tasklist | findstr PiiScanner.Api`
+
+**7. Build frontend échoue**
+```bash
+cd pii-scanner-ui
+rm -rf node_modules  # Linux/Mac
+# OU
+rmdir /s /q node_modules  # Windows
+
+npm install
+npm run build
+```
+
+**8. Scans planifiés ne s'exécutent pas**
+- Vérifiez les logs de l'API pour `BackgroundSchedulerService`
+- Assurez-vous que `NextRunAt` est dans le passé (UTC)
+- Vérifiez que `IsActive` est à `true`
+- Assurez-vous que le répertoire existe et est accessible
+
 ## Limitations connues
 
 - L'application détecte les PII mais ne peut pas déterminer si elles sont réelles ou fictives
-- Optimisée pour Windows (permissions NTFS)
-- Nécessite .NET 8.0 Runtime pour fonctionner
+- Optimisée pour Windows (permissions NTFS pour analyse Over-Exposed Data)
+- Nécessite .NET 8.0 SDK pour développement, .NET 8.0 Runtime pour production
 - Les emails dans `node_modules/` sont des emails légitimes de développeurs npm (non-PII)
+- Le chiffrement de la base de données nécessite SQLCipher (inclus via Microsoft.Data.Sqlite package)
 
 ## Sécurité
 
@@ -506,7 +629,10 @@ Pour personnaliser la page Support (URLs GitHub, email de contact, etc.), consul
 - [SUPPORT_CONFIGURATION.md](SUPPORT_CONFIGURATION.md) - Guide complet de configuration
 
 ### Ressources externes
-1. **Documentation technique** : [CLAUDE.md](CLAUDE.md) pour les développeurs
+1. **Documentation technique** :
+   - [CLAUDE.md](CLAUDE.md) - Guide complet pour développeurs (architecture, API, commandes)
+   - [SECURITY.md](SECURITY.md) - Documentation de sécurité détaillée
+   - [SUPPORT_CONFIGURATION.md](SUPPORT_CONFIGURATION.md) - Configuration de la page Support
 2. **APDP (Bénin)** : contact@apdp.bj - Autorité de Protection des Données Personnelles
 3. **Loi N°2017-20** : Référence légale sur la protection des données au Bénin
 
