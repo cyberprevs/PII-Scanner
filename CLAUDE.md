@@ -183,7 +183,10 @@ ASP.NET Core Web API providing REST endpoints and real-time SignalR updates.
 - Ports:
   - HTTP: 5000 (development)
   - HTTPS: 5001 (development and production)
-- CORS: `AllowElectron` policy allows localhost origins (3000, 5173-5175) for development
+- CORS: `AllowElectron` policy allows localhost and 127.0.0.1 origins for development:
+  - HTTP: ports 3000, 3001, 5173-5175
+  - HTTPS: ports 3000, 3001, 5173-5175
+  - Both `localhost` and `127.0.0.1` variants supported
 - Swagger UI: Available in development mode at `/swagger`
 - Database: SQLite with SQLCipher encryption (AES-256)
   - Database file: `piiscanner.db` (encrypted)
@@ -625,8 +628,10 @@ All sensitive operations are logged to `AuditLogs` table:
 - LINQ-based queries only
 
 #### CORS Configuration
-- Configured in [Program.cs](PiiScanner.Api/Program.cs)
-- Development: Allows localhost origins (3000, 5173-5175)
+- Configured in [Program.cs](PiiScanner.Api/Program.cs) lines 71-91
+- Development: Allows both `localhost` and `127.0.0.1` origins
+  - HTTP ports: 3000, 3001, 5173, 5174, 5175
+  - HTTPS ports: 3000, 3001, 5173, 5174, 5175
 - **Production**: Replace with specific allowed origins
 
 #### Security Features Summary

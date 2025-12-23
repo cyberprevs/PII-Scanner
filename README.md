@@ -267,18 +267,18 @@ Application de bureau Electron avec interface moderne :
   - HTTP : `http://localhost:5000`
   - HTTPS : `https://localhost:5001` (recommandé)
 - **SignalR Hub** : `http://localhost:5000/scanhub` ou `https://localhost:5001/scanhub`
-- **Interface dev** : `http://localhost:3000` (mode développement uniquement)
+- **Interface dev** : `http://localhost:3000`, `http://localhost:3001` (mode développement uniquement)
 - **Swagger UI** : `http://localhost:5000/swagger` (développement uniquement)
 
 ### CORS
 
 L'API autorise les connexions depuis :
-- `http://localhost:3000`
-- `http://localhost:5173`
-- `http://localhost:5174`
-- `http://localhost:5175`
+- `http://localhost:3000`, `http://localhost:3001`
+- `http://localhost:5173`, `http://localhost:5174`, `http://localhost:5175`
+- `http://127.0.0.1:3000`, `http://127.0.0.1:3001`
+- Versions HTTPS : `https://localhost:*` et `https://127.0.0.1:*` pour tous les ports ci-dessus
 
-Configuration dans [Program.cs](PiiScanner.Api/Program.cs:15-24).
+Configuration dans [Program.cs](PiiScanner.Api/Program.cs:75-92).
 
 ### Types de fichiers supportés
 
