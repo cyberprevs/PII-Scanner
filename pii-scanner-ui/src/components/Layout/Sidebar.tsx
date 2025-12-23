@@ -68,18 +68,36 @@ interface MenuItem {
 const menuItems: MenuItem[] = [
   // Section Scan
   { id: 'dashboard', label: 'Tableau de bord', icon: <DashboardIcon />, path: '/dashboard' },
-  { id: 'scanner', label: 'Nouveau Scan', icon: <SearchIcon />, path: '/scanner' },
-  { id: 'history', label: 'Historique', icon: <HistoryIcon />, path: '/history' },
-  { id: 'scheduled-scans', label: 'Scans Planifiés', icon: <ScheduleIcon />, path: '/scheduled-scans', divider: true },
 
-  // Section Analyse
-  { id: 'risky-files', label: 'Fichiers à risque', icon: <FolderIcon />, path: '/risky-files' },
-  { id: 'detections', label: 'Données sensibles', icon: <SecurityIcon />, path: '/detections' },
-  { id: 'staleness', label: 'Ancienneté', icon: <AccessTimeIcon />, path: '/staleness' },
-  { id: 'exposure', label: 'Exposition', icon: <LockOpenIcon />, path: '/exposure', divider: true },
+  // Section Scans (avec sous-menu)
+  {
+    id: 'scans',
+    label: 'Scans',
+    icon: <SearchIcon />,
+    divider: true,
+    subItems: [
+      { id: 'scanner', label: 'Nouveau Scan', icon: <SearchIcon />, path: '/scanner' },
+      { id: 'history', label: 'Historique', icon: <HistoryIcon />, path: '/history' },
+      { id: 'scheduled-scans', label: 'Scans Planifiés', icon: <ScheduleIcon />, path: '/scheduled-scans' },
+    ],
+  },
 
-  // Section Rapports
-  { id: 'reports', label: 'Rapports', icon: <AssessmentIcon />, path: '/reports' },
+  // Section Analyse des résultats (avec sous-menu)
+  {
+    id: 'analysis',
+    label: 'Analyse des résultats',
+    icon: <AssessmentIcon />,
+    divider: true,
+    subItems: [
+      { id: 'risky-files', label: 'Fichiers à risque', icon: <FolderIcon />, path: '/risky-files' },
+      { id: 'detections', label: 'Données sensibles', icon: <SecurityIcon />, path: '/detections' },
+      { id: 'staleness', label: 'Ancienneté', icon: <AccessTimeIcon />, path: '/staleness' },
+      { id: 'exposure', label: 'Exposition', icon: <LockOpenIcon />, path: '/exposure' },
+    ],
+  },
+
+  // Section Rapports & Exports
+  { id: 'reports', label: 'Rapports & Analytics', icon: <AssessmentIcon />, path: '/reports' },
   { id: 'exports', label: 'Exports', icon: <DownloadIcon />, path: '/exports' },
   { id: 'data-retention', label: 'Rétention', icon: <DeleteSweepIcon />, path: '/data-retention', divider: true },
 
@@ -106,7 +124,9 @@ const menuItems: MenuItem[] = [
 
 export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
+  const [scansOpen, setScansOpen] = useState(false);
   const [maintenanceOpen, setMaintenanceOpen] = useState(false);
+  const [analysisOpen, setAnalysisOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { user, isAdmin, logout } = useAuth();
@@ -131,8 +151,14 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
     return true;
   });
 
+  // Check if current path is under scans
+  const isScansPath = ['/scanner', '/history', '/scheduled-scans'].includes(location.pathname);
+
   // Check if current path is under maintenance
   const isMaintenancePath = ['/users', '/database', '/audit-trail', '/settings'].includes(location.pathname);
+
+  // Check if current path is under analysis
+  const isAnalysisPath = ['/risky-files', '/detections', '/staleness', '/exposure'].includes(location.pathname);
 
   return (
     <Drawer
@@ -187,13 +213,21 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
         {filteredMenuItems.map((item) => (
           <Box key={item.id}>
             {item.subItems ? (
-              // Menu avec sous-items (Maintenance)
+              // Menu avec sous-items (Scans, Analyse, ou Maintenance)
               <>
                 <Tooltip title={collapsed ? item.label : ''} placement="right">
                   <ListItem disablePadding sx={{ mb: 0.5 }}>
                     <ListItemButton
-                      selected={isMaintenancePath}
-                      onClick={() => !collapsed && setMaintenanceOpen(!maintenanceOpen)}
+                      selected={
+                        item.id === 'scans' ? isScansPath :
+                        item.id === 'analysis' ? isAnalysisPath :
+                        item.id === 'maintenance' ? isMaintenancePath : false
+                      }
+                      onClick={() => !collapsed && (
+                        item.id === 'scans' ? setScansOpen(!scansOpen) :
+                        item.id === 'analysis' ? setAnalysisOpen(!analysisOpen) :
+                        setMaintenanceOpen(!maintenanceOpen)
+                      )}
                       sx={{
                         borderRadius: 2,
                         minHeight: 48,
@@ -218,7 +252,11 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
                           minWidth: 0,
                           mr: collapsed ? 0 : 2,
                           justifyContent: 'center',
-                          color: isMaintenancePath ? 'white' : (darkMode ? '#a0a4c1' : '#6b7280'),
+                          color: (
+                            item.id === 'scans' ? isScansPath :
+                            item.id === 'analysis' ? isAnalysisPath :
+                            item.id === 'maintenance' ? isMaintenancePath : false
+                          ) ? 'white' : (darkMode ? '#a0a4c1' : '#6b7280'),
                         }}
                       >
                         {item.icon}
@@ -226,7 +264,11 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
                       {!collapsed && (
                         <>
                           <ListItemText primary={item.label} />
-                          {maintenanceOpen ? <ExpandLess /> : <ExpandMore />}
+                          {(
+                            item.id === 'scans' ? scansOpen :
+                            item.id === 'analysis' ? analysisOpen :
+                            maintenanceOpen
+                          ) ? <ExpandLess /> : <ExpandMore />}
                         </>
                       )}
                     </ListItemButton>
@@ -235,7 +277,11 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
 
                 {/* Sous-menu */}
                 {!collapsed && (
-                  <Collapse in={maintenanceOpen} timeout="auto" unmountOnExit>
+                  <Collapse in={
+                    item.id === 'scans' ? scansOpen :
+                    item.id === 'analysis' ? analysisOpen :
+                    maintenanceOpen
+                  } timeout="auto" unmountOnExit>
                     <List component="div" disablePadding>
                       {item.subItems
                         .filter(subItem => !subItem.adminOnly || isAdmin)
