@@ -26,7 +26,11 @@
       "Bash(timeout /t 5)",
       "Bash(dotnet run:*)",
       "Bash(taskkill:*)",
-      "Bash(npm outdated:*)"
+      "Bash(npm outdated:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run electron:dev:*)",
+      "Bash(del:*)",
+      "Bash(del db_encryption.key)"
     ]
   }
 }

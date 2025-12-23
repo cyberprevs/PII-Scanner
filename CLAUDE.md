@@ -118,6 +118,35 @@ ASP.NET Core Web API providing REST endpoints and real-time SignalR updates.
 - `POST /api/auth/login` - User login (returns JWT + refresh token)
 - `POST /api/auth/refresh` - Refresh access token
 - `POST /api/auth/logout` - Logout and revoke refresh token
+- `GET /api/auth/me` - Get current user profile
+- `PUT /api/auth/change-password` - Change user password
+
+*User Management (Admin only):*
+- `GET /api/users` - Get all users
+- `GET /api/users/{id}` - Get user by ID
+- `POST /api/users` - Create new user
+- `PUT /api/users/{id}` - Update user
+- `DELETE /api/users/{id}` - Delete user
+- `PATCH /api/users/{id}/toggle` - Toggle user active status
+
+*Database Management (Admin only):*
+- `GET /api/database/info` - Get database information
+- `POST /api/database/backup` - Create database backup
+- `GET /api/database/backup` - List all backups
+- `GET /api/database/backup/download/{fileName}` - Download backup file
+- `POST /api/database/restore` - Restore from backup
+- `DELETE /api/database/backup/{fileName}` - Delete backup file
+- `POST /api/database/optimize` - Optimize database (VACUUM)
+- `POST /api/database/cleanup` - Clean expired sessions and old audit logs
+
+*Data Retention:*
+- `POST /api/dataretention/scan` - Scan directory for files violating retention policies
+- `POST /api/dataretention/delete` - Delete files based on retention policy
+- `GET /api/dataretention/policies` - Get current retention policies
+- `PUT /api/dataretention/policies` - Update retention policies
+
+*Audit Logs (Admin only):*
+- `GET /api/audit` - Get audit logs with filtering and pagination
 
 *Initialization:*
 - `GET /api/initialization/status` - Check if app is initialized (user exists)
@@ -132,20 +161,34 @@ ASP.NET Core Web API providing REST endpoints and real-time SignalR updates.
 - [Controllers/ScheduledScansController.cs](PiiScanner.Api/Controllers/ScheduledScansController.cs) - Scheduled scans CRUD
 - [Controllers/InitializationController.cs](PiiScanner.Api/Controllers/InitializationController.cs) - First-run setup
 - [Controllers/AuthController.cs](PiiScanner.Api/Controllers/AuthController.cs) - Authentication endpoints
+- [Controllers/UsersController.cs](PiiScanner.Api/Controllers/UsersController.cs) - User management (Admin only)
+- [Controllers/DatabaseController.cs](PiiScanner.Api/Controllers/DatabaseController.cs) - Database backup/restore/optimize (Admin only)
+- [Controllers/DataRetentionController.cs](PiiScanner.Api/Controllers/DataRetentionController.cs) - Data retention policy management
+- [Controllers/AuditController.cs](PiiScanner.Api/Controllers/AuditController.cs) - Audit log viewing (Admin only)
 - [Services/ScanService.cs](PiiScanner.Api/Services/ScanService.cs) - Background scan orchestration
 - [Services/SchedulerService.cs](PiiScanner.Api/Services/SchedulerService.cs) - Schedule calculation logic
 - [Services/BackgroundSchedulerService.cs](PiiScanner.Api/Services/BackgroundSchedulerService.cs) - Background service (checks every minute)
 - [Services/AuthService.cs](PiiScanner.Api/Services/AuthService.cs) - JWT token generation and validation
-- [Data/AppDbContext.cs](PiiScanner.Api/Data/AppDbContext.cs) - EF Core DbContext with SQLite + SQLCipher
+- [Services/DatabaseEncryptionService.cs](PiiScanner.Api/Services/DatabaseEncryptionService.cs) - SQLCipher encryption key management
+- [Data/AppDbContext.cs](PiiScanner.Api/Data/AppDbContext.cs) - EF Core DbContext with SQLite + SQLCipher encryption
+- [Models/User.cs](PiiScanner.Api/Models/User.cs) - User entity with BCrypt password hashing
 - [Models/ScheduledScan.cs](PiiScanner.Api/Models/ScheduledScan.cs) - Scheduled scan entity
+- [Models/AuditLog.cs](PiiScanner.Api/Models/AuditLog.cs) - Audit log entity for security tracking
 - [Middleware/CsrfProtectionMiddleware.cs](PiiScanner.Api/Middleware/CsrfProtectionMiddleware.cs) - CSRF protection
 - [Middleware/RateLimitingMiddleware.cs](PiiScanner.Api/Middleware/RateLimitingMiddleware.cs) - Rate limiting
-- [Program.cs](PiiScanner.Api/Program.cs) - CORS enabled for Electron, Swagger in dev mode, DB initialization
+- [Utils/PathValidator.cs](PiiScanner.Api/Utils/PathValidator.cs) - Path traversal protection
+- [Program.cs](PiiScanner.Api/Program.cs) - CORS enabled for Electron, Swagger in dev mode, DB initialization, HTTPS configuration
 
 **Configuration:**
-- Port: 5000 (configured in launchSettings.json)
-- CORS: `AllowElectron` policy allows any origin for local development
+- Ports:
+  - HTTP: 5000 (development)
+  - HTTPS: 5001 (development and production)
+- CORS: `AllowElectron` policy allows localhost origins (3000, 5173-5175) for development
 - Swagger UI: Available in development mode at `/swagger`
+- Database: SQLite with SQLCipher encryption (AES-256)
+  - Database file: `piiscanner.db` (encrypted)
+  - Encryption key: Auto-generated 256-bit key stored in `db_encryption.key` with NTFS ACL protection
+  - Or via environment variable `Database:EncryptionKey`
 
 **Manual Scan Flow:**
 1. Client posts scan request to `/api/scan/start`
@@ -200,6 +243,37 @@ The application includes a complete scheduled scans feature for automated period
 - Audit logs for Create, Update, Delete, Toggle operations
 - Directory existence check to prevent invalid scans
 
+**Data Retention System:**
+
+The application includes a comprehensive data retention management system compliant with Loi N°2017-20 (APDP):
+
+*Retention Policies* ([Models/RetentionPolicy.cs](PiiScanner.Api/Models/RetentionPolicy.cs)):
+- **5 categories** of PII data with configurable retention periods (1-10 years):
+  - Banking data (IBAN, Mobile Money, CarteBancaire): 5 years default
+  - Identity data (IFU, CNI, Passeport, RCCM, ActeNaissance): 3 years default
+  - Health data (CNSS, RAMU): 5 years default
+  - Education data (INE, Matricule_Fonctionnaire): 2 years default
+  - Contact data (Email, Telephone): 1 year default
+
+*Retention Scanning*:
+- Identifies files containing PII that exceed retention periods
+- Based on file last modified date
+- Categorizes violations by data type
+- Provides detailed reports of violating files
+
+*Secure Deletion*:
+- Multi-step confirmation process
+- Validation of file paths (PathValidator)
+- Audit logging of all deletions
+- Tracks success/failure for each file
+- Returns detailed results (deleted count, failed files)
+
+*API Endpoints*:
+- `POST /api/dataretention/scan` - Scan directory for retention violations
+- `POST /api/dataretention/delete` - Delete files violating retention policies
+- `GET /api/dataretention/policies` - Get current retention policies
+- `PUT /api/dataretention/policies` - Update retention periods
+
 ### 3. pii-scanner-ui (Electron Desktop App)
 
 Modern desktop application built with React 19, Material-UI, and Electron.
@@ -217,12 +291,27 @@ Modern desktop application built with React 19, Material-UI, and Electron.
 - [src/App.tsx](pii-scanner-ui/src/App.tsx) - Main app component with initialization check and SignalR connection
 - [src/components/InitialSetup.tsx](pii-scanner-ui/src/components/InitialSetup.tsx) - First-run admin account creation
 - [src/components/Login.tsx](pii-scanner-ui/src/components/Login.tsx) - User authentication page
-- [src/components/ScheduledScans.tsx](pii-scanner-ui/src/components/ScheduledScans.tsx) - Scheduled scans management UI
 - [src/services/apiClient.ts](pii-scanner-ui/src/services/apiClient.ts) - API client with SignalR hub
-- [src/services/axios.ts](pii-scanner-ui/src/services/axios.ts) - Axios instance with JWT interceptors
+- [src/services/axios.ts](pii-scanner-ui/src/services/axios.ts) - Axios instance with JWT interceptors and CSRF token handling
 - [src/contexts/AuthContext.tsx](pii-scanner-ui/src/contexts/AuthContext.tsx) - Authentication state management
-- [src/components/Dashboard.tsx](pii-scanner-ui/src/components/Dashboard.tsx) - Scan initiation UI
-- [src/components/Results.tsx](pii-scanner-ui/src/components/Results.tsx) - Results display
+
+**UI Pages (16 specialized pages):**
+1. [Dashboard.tsx](pii-scanner-ui/src/components/Dashboard.tsx) - Key metrics and statistics
+2. [Scanner.tsx](pii-scanner-ui/src/components/Scanner.tsx) - Scan initiation and real-time progress
+3. [History.tsx](pii-scanner-ui/src/components/History.tsx) - All past scans
+4. [ScheduledScans.tsx](pii-scanner-ui/src/components/ScheduledScans.tsx) - Automated scan scheduling
+5. [RiskyFiles.tsx](pii-scanner-ui/src/components/RiskyFiles.tsx) - Top 20 high-risk files
+6. [SensitiveData.tsx](pii-scanner-ui/src/components/SensitiveData.tsx) - All PII detections
+7. [StaleData.tsx](pii-scanner-ui/src/components/StaleData.tsx) - Old/obsolete files analysis
+8. [OverExposedData.tsx](pii-scanner-ui/src/components/OverExposedData.tsx) - Over-exposed files (NTFS ACL analysis)
+9. [Analytics.tsx](pii-scanner-ui/src/components/Analytics.tsx) - Charts and visualizations
+10. [Exports.tsx](pii-scanner-ui/src/components/Exports.tsx) - Download reports (CSV, JSON, HTML, Excel)
+11. [DataRetention.tsx](pii-scanner-ui/src/components/DataRetention.tsx) - Retention policy management and file deletion
+12. [Users.tsx](pii-scanner-ui/src/components/Users.tsx) - User management (Admin only)
+13. [Database.tsx](pii-scanner-ui/src/components/Database.tsx) - Database backup/restore (Admin only)
+14. [AuditLogs.tsx](pii-scanner-ui/src/components/AuditLogs.tsx) - Security audit trail (Admin only)
+15. [Profile.tsx](pii-scanner-ui/src/components/Profile.tsx) - User profile management
+16. [Support.tsx](pii-scanner-ui/src/components/Support.tsx) - Help center, FAQ, contact
 
 **API Connection:**
 - Base URL: `http://localhost:5000/api`
@@ -277,28 +366,42 @@ dotnet run
 
 ## PII Detection Patterns
 
-The system detects **11 types of PII** with advanced post-validation:
+The system detects **19 types of PII** with advanced post-validation, specifically adapted for Bénin compliance (Loi N°2017-20):
 
-**Identity & Contact:**
-- **Email**: RFC-compliant format with additional validation
-- **TelephoneFR**: French phone numbers (01-09, +33 formats)
-- **TelephoneBJ**: Bénin phone numbers (+229 XX XX XX XX)
-- **DateNaissance**: Birth dates (DD/MM/YYYY, validated 1900-today)
-
-**Administrative IDs:**
-- **NumeroSecu**: French social security (15 digits, validated format)
-- **NumeroFiscalFR**: French tax ID (13 digits)
-- **IFU_Benin**: Bénin tax ID (13 digits)
-
-**Banking Data** (triggers high-risk classification):
+**Universal Data:**
+- **Email**: RFC-compliant format with strict domain validation
+- **DateNaissance**: Birth dates (DD/MM/YYYY, age 5-120 years)
 - **CarteBancaire**: Credit cards (16 digits, Luhn algorithm validated)
-- **IBAN_FR**: French IBAN (FR + 2 digits + 23 alphanumeric)
-- **IBAN_BJ**: Bénin IBAN (BJ + 2 digits + 24 alphanumeric)
 
-**Technical Data:**
-- **AdresseIP**: IPv4 addresses (validated octet ranges)
+**Bénin Identity & Documents:**
+- **IFU**: Identifiant Fiscal Unique (13 digits, starts with 0-3)
+- **CNI_Benin**: Carte Nationale d'Identité (2 letters + 6-10 digits)
+- **Passeport_Benin**: Bénin passport (BJ + 7 digits)
+- **RCCM**: Registre du Commerce (RB/XXX/YYYY/X/NNNNN)
+- **ActeNaissance**: Birth certificate (N°XXX/YYYY/Département)
 
-All patterns are defined in [PiiScanner.Core/Analysis/PiiDetector.cs](PiiScanner.Core/Analysis/PiiDetector.cs) with extensive validation logic to minimize false positives.
+**Bénin Contact:**
+- **Telephone**: Bénin phone numbers (+229/00229 required, prefixes 40-59, 60-69, 90-99)
+
+**Bénin Banking Data** (triggers high-risk classification):
+- **IBAN**: Bénin IBAN (BJ + 2 digits + 24 characters)
+- **MobileMoney_MTN**: MTN MoMo (starts with 96, 97, 66, 67)
+- **MobileMoney_Moov**: Moov Money (starts with 98, 99, 68, 69)
+
+**Bénin Health & Social Security:**
+- **CNSS**: Caisse Nationale de Sécurité Sociale (11 digits)
+- **RAMU**: Régime d'Assurance Maladie Universelle (RAMU-XXXXXXXX)
+
+**Bénin Education:**
+- **INE**: Identifiant National de l'Élève (INE-XXXXXXXX)
+- **Matricule_Fonctionnaire**: Civil servant ID (F/M + 6-10 digits)
+
+**Security - Keys & Tokens:**
+- **MotDePasse**: Plain-text passwords detected in code
+- **CleAPI_AWS**: AWS API keys (Access Key ID)
+- **Token_JWT**: JWT tokens (format eyJ...)
+
+All patterns are defined in [PiiScanner.Core/Analysis/PiiDetector.cs](PiiScanner.Core/Analysis/PiiDetector.cs) with extensive validation logic to minimize false positives (~87% reduction).
 
 ## Risk Scoring System
 
@@ -399,12 +502,60 @@ Four report formats are generated simultaneously:
 4. **Verify execution** - Check logs for "Scan planifié démarré avec succès"
 5. **Check updates** - `LastRunAt`, `LastScanId`, `NextRunAt` should update after execution
 
+### Database Migrations
+
+The application uses Entity Framework Core with SQLite + SQLCipher. Migrations are automatically applied on startup.
+
+**Creating new migrations:**
+```bash
+cd PiiScanner.Api
+dotnet ef migrations add MigrationName
+dotnet ef database update
+```
+
+**Reverting a migration:**
+```bash
+dotnet ef migrations remove
+```
+
+**Note:** The database is encrypted with SQLCipher. The encryption key is automatically generated and stored securely.
+
+### Testing Data Retention
+
+1. **Configure retention policies** via UI (Rétention des données page) or API
+2. **Scan for violations:**
+   ```bash
+   curl -X POST http://localhost:5000/api/dataretention/scan \
+     -H "Authorization: Bearer $TOKEN" \
+     -d '{"directoryPath":"C:\\Test"}'
+   ```
+3. **Review results** - Files violating retention policies will be flagged
+4. **Delete violating files** - Use UI or API to delete files after confirmation
+
+### Testing Database Operations
+
+**Create backup (Admin only):**
+```bash
+curl -X POST https://localhost:5001/api/database/backup \
+  -H "Authorization: Bearer $ADMIN_TOKEN" \
+  -H "X-CSRF-Token: $CSRF_TOKEN"
+```
+
+**Restore from backup (Admin only):**
+```bash
+curl -X POST https://localhost:5001/api/database/restore \
+  -H "Authorization: Bearer $ADMIN_TOKEN" \
+  -H "X-CSRF-Token: $CSRF_TOKEN" \
+  -d '{"fileName":"backup_20241217.db"}'
+```
+
 ### Debugging SignalR Connection Issues
 
-- Check that API is running on port 5000
+- Check that API is running on port 5000 (or 5001 for HTTPS)
 - Verify CORS policy allows connections
 - Check browser/Electron console for SignalR connection errors
 - SignalR uses WebSockets - ensure no firewall blocking
+- For HTTPS: Ensure certificate is trusted (dev certificate may require acceptance)
 
 ## Language & Localization
 
@@ -478,11 +629,132 @@ All sensitive operations are logged to `AuditLogs` table:
 - Development: Allows localhost origins (3000, 5173-5175)
 - **Production**: Replace with specific allowed origins
 
-#### Recommendations for Production
-1. Enable HTTPS only
-2. Implement rate limiting (login attempts)
-3. Add security headers (X-Frame-Options, CSP, etc.)
-4. Rotate JWT secret periodically
-5. Enable database encryption (SQLCipher)
-6. Regular security audits (OWASP ZAP, Burp Suite)
-7. Dependency vulnerability scanning (Snyk, npm audit)
+#### Security Features Summary
+
+**Implemented (Production-Ready):**
+1. ✅ **HTTPS/TLS 1.2+** - Encrypted communication with security headers
+2. ✅ **Rate Limiting** - Login (5/15min), Sensitive ops (20/5min), General (100/min)
+3. ✅ **Database Encryption** - SQLCipher with AES-256, 256-bit key, NTFS ACL protection
+4. ✅ **CSRF Protection** - Double-Submit Cookie Pattern with cryptographic tokens
+5. ✅ **Path Traversal Protection** - PathValidator blocks directory traversal attacks
+6. ✅ **Audit Logging** - Complete trail of all sensitive operations
+7. ✅ **Password Security** - BCrypt hashing with automatic salt
+8. ✅ **JWT Authentication** - 7-day access tokens + 30-day refresh tokens
+9. ✅ **Role-Based Access Control (RBAC)** - Admin vs User separation
+10. ✅ **Security Headers** - HSTS, X-Frame-Options, X-Content-Type-Options, etc.
+11. ✅ **SQL Injection Protection** - Entity Framework parameterized queries only
+
+**Recommended for Production:**
+1. Rotate JWT secret periodically (every 90 days)
+2. Set up automated database backups
+3. Configure monitoring and alerting for security events
+4. Regular security audits (OWASP ZAP, Burp Suite)
+5. Dependency vulnerability scanning (Snyk, npm audit, dotnet list package --vulnerable)
+6. Update CORS to specific production origins
+7. Consider Azure Key Vault or AWS Secrets Manager for encryption key storage
+
+## Quick Reference
+
+### Common Build Commands
+
+```bash
+# Build entire solution
+dotnet build PiiScanner.sln
+
+# Build for release
+dotnet build -c Release PiiScanner.sln
+
+# Publish API for production
+cd PiiScanner.Api
+dotnet publish -c Release -o bin/Release/net8.0/publish
+
+# Frontend build
+cd pii-scanner-ui
+npm install
+npm run build
+npm run electron:build:win
+```
+
+### Development Workflow
+
+```bash
+# Terminal 1: Start API
+cd PiiScanner.Api
+dotnet run
+
+# Terminal 2: Start Electron UI
+cd pii-scanner-ui
+npm run electron:dev
+```
+
+### Database Commands
+
+```bash
+# Create migration
+cd PiiScanner.Api
+dotnet ef migrations add MigrationName
+
+# Apply migrations
+dotnet ef database update
+
+# Remove last migration
+dotnet ef migrations remove
+```
+
+### Troubleshooting
+
+**API won't start:**
+- Check if port 5000/5001 is already in use
+- Verify .NET 8.0 SDK is installed: `dotnet --version`
+- Check database encryption key permissions
+- Review logs in console output
+
+**Electron app can't connect to API:**
+- Ensure API is running on port 5000 (or 5001 for HTTPS)
+- Check CORS configuration in [Program.cs](PiiScanner.Api/Program.cs)
+- Verify firewall isn't blocking connections
+- For HTTPS: Trust dev certificate with `dotnet dev-certs https --trust`
+
+**SignalR connection fails:**
+- Verify WebSocket support (not blocked by firewall/proxy)
+- Check browser console for connection errors
+- Ensure CORS allows the origin
+- Try HTTP instead of HTTPS for local testing
+
+**Database locked errors:**
+- Only one instance of the API can access the encrypted database at a time
+- Close other instances or use different database files for testing
+- Check for zombie processes: `tasklist | findstr PiiScanner`
+
+**Frontend build fails:**
+- Clear node_modules and reinstall: `rm -rf node_modules && npm install`
+- Check Node.js version: `node --version` (requires 18+)
+- Clear Vite cache: `rm -rf node_modules/.vite`
+
+**Scheduled scans not executing:**
+- Check `BackgroundSchedulerService` logs in API console
+- Verify `NextRunAt` is in the past (UTC time)
+- Ensure directory path is valid and accessible
+- Check `IsActive` flag is true
+
+### Useful Endpoints for Testing
+
+```bash
+# Check initialization status
+curl http://localhost:5000/api/initialization/status
+
+# Login (get JWT token)
+curl -X POST http://localhost:5000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"yourpassword"}'
+
+# Start a scan (requires auth)
+curl -X POST http://localhost:5000/api/scan/start \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"directoryPath":"C:\\Test"}'
+
+# Get scan results
+curl http://localhost:5000/api/scan/{scanId}/results \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
