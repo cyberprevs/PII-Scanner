@@ -22,7 +22,72 @@ export default function MainLayout() {
       },
     },
     typography: {
-      fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+      fontFamily: '"Plus Jakarta Sans", "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+      h1: {
+        fontWeight: 800,
+        letterSpacing: '-0.02em',
+        lineHeight: 1.2,
+      },
+      h2: {
+        fontWeight: 700,
+        letterSpacing: '-0.01em',
+        lineHeight: 1.25,
+      },
+      h3: {
+        fontWeight: 700,
+        letterSpacing: '-0.01em',
+        lineHeight: 1.3,
+      },
+      h4: {
+        fontWeight: 700,
+        letterSpacing: '-0.005em',
+        lineHeight: 1.35,
+      },
+      h5: {
+        fontWeight: 600,
+        letterSpacing: '0em',
+        lineHeight: 1.4,
+      },
+      h6: {
+        fontWeight: 600,
+        letterSpacing: '0em',
+        lineHeight: 1.4,
+      },
+      subtitle1: {
+        fontWeight: 600,
+        letterSpacing: '0.005em',
+        lineHeight: 1.5,
+      },
+      subtitle2: {
+        fontWeight: 600,
+        letterSpacing: '0.005em',
+        lineHeight: 1.5,
+      },
+      body1: {
+        fontWeight: 400,
+        letterSpacing: '0.01em',
+        lineHeight: 1.6,
+      },
+      body2: {
+        fontWeight: 400,
+        letterSpacing: '0.01em',
+        lineHeight: 1.5,
+      },
+      button: {
+        fontWeight: 600,
+        letterSpacing: '0.02em',
+        textTransform: 'none',
+      },
+      caption: {
+        fontWeight: 400,
+        letterSpacing: '0.02em',
+        lineHeight: 1.4,
+      },
+      overline: {
+        fontWeight: 600,
+        letterSpacing: '0.08em',
+        lineHeight: 1.5,
+      },
     },
     components: {
       MuiButton: {
@@ -31,6 +96,20 @@ export default function MainLayout() {
             borderRadius: 8,
             textTransform: 'none',
             fontWeight: 600,
+            letterSpacing: '0.02em',
+            padding: '8px 16px',
+          },
+          sizeLarge: {
+            padding: '12px 24px',
+            fontSize: '1rem',
+          },
+          sizeMedium: {
+            padding: '8px 16px',
+            fontSize: '0.9375rem',
+          },
+          sizeSmall: {
+            padding: '6px 12px',
+            fontSize: '0.875rem',
           },
         },
       },
@@ -41,6 +120,23 @@ export default function MainLayout() {
             boxShadow: darkMode
               ? '0 4px 6px rgba(0, 0, 0, 0.3)'
               : '0 4px 6px rgba(0, 0, 0, 0.07)',
+          },
+        },
+      },
+      MuiChip: {
+        styleOverrides: {
+          root: {
+            fontWeight: 500,
+            letterSpacing: '0.01em',
+          },
+        },
+      },
+      MuiTypography: {
+        styleOverrides: {
+          root: {
+            // Améliore le rendu des polices
+            WebkitFontSmoothing: 'antialiased',
+            MozOsxFontSmoothing: 'grayscale',
           },
         },
       },
