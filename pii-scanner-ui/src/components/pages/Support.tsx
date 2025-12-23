@@ -121,7 +121,12 @@ export default function Support() {
   };
 
   const openExternalLink = (url: string) => {
-    window.open(url, '_blank');
+    // Utilise window.location.href pour Electron qui gère automatiquement les liens externes
+    const link = document.createElement('a');
+    link.href = url;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.click();
   };
 
   return (
@@ -156,7 +161,7 @@ export default function Support() {
               fullWidth
               variant="outlined"
               endIcon={<OpenInNewIcon />}
-              onClick={() => openExternalLink('https://github.com/your-org/pii-scanner')}
+              onClick={() => openExternalLink('https://github.com/cyberprevs/pii-scanner')}
             >
               Voir sur GitHub
             </Button>
@@ -181,7 +186,7 @@ export default function Support() {
               variant="outlined"
               color="error"
               endIcon={<OpenInNewIcon />}
-              onClick={() => openExternalLink('https://github.com/your-org/pii-scanner/issues/new')}
+              onClick={() => openExternalLink('https://github.com/cyberprevs/pii-scanner/issues/new')}
             >
               Créer un ticket
             </Button>
@@ -343,7 +348,7 @@ export default function Support() {
                   primary="Guide de démarrage rapide"
                   secondary="Apprenez les bases de PII Scanner en 5 minutes"
                 />
-                <IconButton onClick={() => openExternalLink('https://github.com/your-org/pii-scanner/wiki/Quick-Start')}>
+                <IconButton onClick={() => openExternalLink('https://github.com/cyberprevs/pii-scanner/wiki/Quick-Start')}>
                   <OpenInNewIcon />
                 </IconButton>
               </ListItem>
@@ -356,7 +361,7 @@ export default function Support() {
                   primary="Architecture technique"
                   secondary="Découvrez comment fonctionne PII Scanner en interne"
                 />
-                <IconButton onClick={() => openExternalLink('https://github.com/your-org/pii-scanner/wiki/Architecture')}>
+                <IconButton onClick={() => openExternalLink('https://github.com/cyberprevs/pii-scanner/wiki/Architecture')}>
                   <OpenInNewIcon />
                 </IconButton>
               </ListItem>
@@ -369,7 +374,7 @@ export default function Support() {
                   primary="Guide de conformité RGPD"
                   secondary="Utilisez PII Scanner pour votre mise en conformité RGPD"
                 />
-                <IconButton onClick={() => openExternalLink('https://github.com/your-org/pii-scanner/wiki/GDPR-Compliance')}>
+                <IconButton onClick={() => openExternalLink('https://github.com/cyberprevs/pii-scanner/wiki/GDPR-Compliance')}>
                   <OpenInNewIcon />
                 </IconButton>
               </ListItem>
