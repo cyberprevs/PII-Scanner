@@ -26,7 +26,7 @@ import About from './components/pages/About';
 import ScheduledScans from './components/ScheduledScans';
 import { scanApi } from './services/apiClient';
 import type { ScanResultResponse } from './types';
-import axiosInstance from './services/axios';
+import axiosInstance, { initializeCsrfToken } from './services/axios';
 
 function App() {
   const [scanning, setScanning] = useState(false);
@@ -37,10 +37,13 @@ function App() {
   const [isInitialized, setIsInitialized] = useState<boolean | null>(null);
   const [checkingInit, setCheckingInit] = useState(true);
 
-  // Vérifier si l'application est initialisée
+  // Vérifier si l'application est initialisée et initialiser le token CSRF
   useEffect(() => {
     const checkInitialization = async () => {
       try {
+        // Initialiser le token CSRF en premier
+        await initializeCsrfToken();
+
         const response = await axiosInstance.get('/initialization/status');
         setIsInitialized(response.data.isInitialized);
       } catch (err) {

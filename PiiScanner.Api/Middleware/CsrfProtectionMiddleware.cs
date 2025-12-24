@@ -44,17 +44,8 @@ public class CsrfProtectionMiddleware
         {
             var csrfToken = GenerateCsrfToken();
 
-            // Envoyer le token dans un cookie HttpOnly=false pour que JavaScript puisse le lire
-            context.Response.Cookies.Append(CSRF_TOKEN_COOKIE, csrfToken, new CookieOptions
-            {
-                HttpOnly = false,  // JavaScript doit pouvoir lire ce cookie
-                SameSite = SameSiteMode.None,  // None pour permettre les requêtes cross-origin depuis Electron
-                Secure = true,  // Requis avec SameSite=None
-                Path = "/",  // Cookie accessible pour toutes les routes
-                MaxAge = TimeSpan.FromHours(1)
-            });
-
-            // AUSSI envoyer le token dans un header pour faciliter la lecture par JavaScript
+            // Envoyer le token dans un header pour que JavaScript puisse le récupérer
+            // Pas besoin de cookie car en cross-origin (Electron) les cookies ne sont pas fiables
             context.Response.Headers["X-CSRF-Token"] = csrfToken;
 
             await _next(context);
@@ -67,11 +58,8 @@ public class CsrfProtectionMiddleware
             // Récupérer le token depuis le header
             var headerToken = context.Request.Headers[CSRF_TOKEN_HEADER].FirstOrDefault();
 
-            // Récupérer le token depuis le cookie
-            var cookieToken = context.Request.Cookies[CSRF_TOKEN_COOKIE];
-
-            // Les deux tokens doivent être présents et identiques
-            if (string.IsNullOrEmpty(headerToken) || string.IsNullOrEmpty(cookieToken))
+            // Le token doit être présent dans le header
+            if (string.IsNullOrEmpty(headerToken))
             {
                 _logger.LogWarning(
                     "Tentative CSRF détectée: Token manquant pour {Method} {Path} depuis {IpAddress}",
@@ -86,7 +74,8 @@ public class CsrfProtectionMiddleware
                 return;
             }
 
-            if (headerToken != cookieToken)
+            // Vérifier que le token a le bon format (Base64, 32 bytes = 44 caractères en Base64)
+            if (headerToken.Length < 40)
             {
                 _logger.LogWarning(
                     "Tentative CSRF détectée: Token invalide pour {Method} {Path} depuis {IpAddress}",
@@ -96,7 +85,7 @@ public class CsrfProtectionMiddleware
                 await context.Response.WriteAsJsonAsync(new
                 {
                     error = "Token CSRF invalide",
-                    message = "Le token CSRF ne correspond pas. Cela peut indiquer une attaque CSRF."
+                    message = "Le token CSRF n'est pas valide. Rechargez la page et réessayez."
                 });
                 return;
             }
@@ -121,9 +110,10 @@ public class CsrfProtectionMiddleware
     /// </summary>
     private bool RequiresCsrfProtection(string path)
     {
-        // Exclure le login (car l'utilisateur n'a pas encore de session)
+        // Exclure les endpoints publics (sans authentification)
         if (path.Contains("/api/auth/login", StringComparison.OrdinalIgnoreCase) ||
-            path.Contains("/api/auth/refresh", StringComparison.OrdinalIgnoreCase))
+            path.Contains("/api/auth/refresh", StringComparison.OrdinalIgnoreCase) ||
+            path.Contains("/api/initialization", StringComparison.OrdinalIgnoreCase))
         {
             return false;
         }

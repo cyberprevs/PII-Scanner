@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import { initializeCsrfToken } from '../services/axios';
 
 interface User {
   id: number;
@@ -70,6 +71,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       // Configurer axios
       axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+
+      // Initialiser le token CSRF après connexion réussie
+      await initializeCsrfToken();
     } catch (error: any) {
       console.error('Login error:', error);
       throw new Error(error.response?.data?.error || 'Échec de la connexion');

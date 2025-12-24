@@ -11,28 +11,31 @@ const axiosInstance = axios.create({
 
 // Stocker le token CSRF en mémoire (reçu des headers de réponse)
 let csrfToken: string | null = null;
+let csrfInitialized = false;
 
-// Fonction pour récupérer le token CSRF depuis les cookies (fallback)
-const getCsrfTokenFromCookie = (): string | null => {
-  const cookies = document.cookie.split(';');
-  for (const cookie of cookies) {
-    const [name, value] = cookie.trim().split('=');
-    if (name === 'XSRF-TOKEN') {
-      // Décoder l'URL encoding (%3D -> =, etc.)
-      return decodeURIComponent(value);
-    }
-  }
-  return null;
+// Fonction pour récupérer le token CSRF (depuis la mémoire uniquement)
+const getCsrfToken = (): string | null => {
+  return csrfToken;
 };
 
-// Fonction pour récupérer le token CSRF (depuis la mémoire ou le cookie)
-const getCsrfToken = (): string | null => {
-  return csrfToken || getCsrfTokenFromCookie();
+// Fonction pour initialiser le token CSRF (appel GET initial)
+export const initializeCsrfToken = async (): Promise<void> => {
+  if (csrfInitialized) return;
+
+  try {
+    // Faire un appel GET simple pour obtenir le token CSRF
+    // On utilise l'endpoint initialization/status car il est public
+    await axiosInstance.get('/initialization/status');
+    csrfInitialized = true;
+    console.log('CSRF token initialized');
+  } catch (error) {
+    console.error('Failed to initialize CSRF token:', error);
+  }
 };
 
 // Intercepteur pour ajouter le token JWT et le token CSRF à toutes les requêtes
 axiosInstance.interceptors.request.use(
-  (config) => {
+  async (config) => {
     // Ajouter le token JWT
     const token = localStorage.getItem('token');
     if (token) {
@@ -41,13 +44,17 @@ axiosInstance.interceptors.request.use(
 
     // Ajouter le token CSRF pour les requêtes de modification
     if (config.method && ['post', 'put', 'delete', 'patch'].includes(config.method.toLowerCase())) {
+      // S'assurer que le CSRF token est initialisé
+      if (!csrfInitialized) {
+        await initializeCsrfToken();
+      }
+
       const csrfToken = getCsrfToken();
       if (csrfToken) {
         config.headers['X-CSRF-Token'] = csrfToken;
-        console.log('CSRF Token from cookie:', csrfToken);
-        console.log('All cookies:', document.cookie);
+        console.log('CSRF Token added to request:', csrfToken);
       } else {
-        console.warn('No CSRF token found in cookies');
+        console.warn('No CSRF token found - initialization may have failed');
       }
     }
 
@@ -62,10 +69,14 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => {
     // Capturer le token CSRF depuis le header de réponse
-    const csrfHeader = response.headers['x-csrf-token'];
+    // Axios normalise les headers en minuscules
+    const csrfHeader = response.headers['x-csrf-token'] || response.headers['X-CSRF-Token'];
     if (csrfHeader) {
       csrfToken = csrfHeader;
+      csrfInitialized = true;
       console.log('CSRF token updated from response header:', csrfToken);
+    } else {
+      console.warn('Response headers:', Object.keys(response.headers));
     }
     return response;
   },

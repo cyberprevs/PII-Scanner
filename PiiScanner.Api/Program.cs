@@ -92,7 +92,8 @@ builder.Services.AddCors(options =>
               )
               .AllowAnyMethod()
               .AllowAnyHeader()
-              .AllowCredentials();
+              .AllowCredentials()
+              .WithExposedHeaders("X-CSRF-Token"); // IMPORTANT: Exposer le header CSRF
     });
 });
 
