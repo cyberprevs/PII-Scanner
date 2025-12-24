@@ -457,13 +457,17 @@ public class DatabaseController : ControllerBase
             var backupPath = Path.Combine(backupDir, backupFileName);
             System.IO.File.Copy(dbPath, backupPath, true);
 
-            // Supprimer TOUTES les données
-            _db.Scans.RemoveRange(await _db.Scans.ToListAsync());
-            _db.AuditLogs.RemoveRange(await _db.AuditLogs.ToListAsync());
-            _db.Sessions.RemoveRange(await _db.Sessions.ToListAsync());
+            // Supprimer TOUTES les données et compter
+            var scans = await _db.Scans.ToListAsync();
+            var auditLogs = await _db.AuditLogs.ToListAsync();
+            var sessions = await _db.Sessions.ToListAsync();
 
-            // Supprimer tous les utilisateurs SAUF l'admin par défaut (ID = 1)
-            var usersToDelete = await _db.Users.Where(u => u.Id != 1).ToListAsync();
+            _db.Scans.RemoveRange(scans);
+            _db.AuditLogs.RemoveRange(auditLogs);
+            _db.Sessions.RemoveRange(sessions);
+
+            // Supprimer tous les utilisateurs SAUF l'utilisateur actuel qui fait le reset
+            var usersToDelete = await _db.Users.Where(u => u.Id != userId).ToListAsync();
             _db.Users.RemoveRange(usersToDelete);
 
             // Réinitialiser les paramètres aux valeurs par défaut
@@ -501,7 +505,9 @@ public class DatabaseController : ControllerBase
                 backupFile = backupFileName,
                 details = new
                 {
-                    scansDeleted = _db.Scans.Count(),
+                    scansDeleted = scans.Count,
+                    auditLogsDeleted = auditLogs.Count,
+                    sessionsDeleted = sessions.Count,
                     usersDeleted = usersToDelete.Count,
                     backupPath = backupPath
                 }

@@ -87,15 +87,10 @@ builder.Services.AddCors(options =>
 // Add custom services
 builder.Services.AddSingleton<ScanService>();
 builder.Services.AddScoped<AuthService>();
-builder.Services.AddScoped<SchedulerService>();
-
-// Add Background Services
-builder.Services.AddHostedService<BackgroundSchedulerService>();
 
 // Add Health Checks
 builder.Services.AddHealthChecks()
-    .AddDbContextCheck<AppDbContext>("database")
-    .AddCheck("signalr", () => Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Healthy("SignalR is running"));
+    .AddCheck("api", () => Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Healthy("API is running"));
 
 var app = builder.Build();
 

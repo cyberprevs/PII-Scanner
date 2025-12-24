@@ -1,55 +1,8 @@
-# 🚀 AMÉLIORATIONS IMPLÉMENTÉES
+# 🚀 AMÉLIORATIONS RECOMMANDÉES
 
-Ce document liste les améliorations apportées au projet PII Scanner.
+Ce document liste les améliorations recommandées pour le projet PII Scanner.
 
-## ✅ Implémenté (Décembre 2024)
-
-### 1. Logger personnalisé (Frontend)
-- **Fichier** : `pii-scanner-ui/src/utils/logger.ts`
-- **Avantage** : Logs désactivés automatiquement en production
-- **Usage** :
-  ```typescript
-  import { logger } from './utils/logger';
-  logger.info('Message informatif');  // Dev uniquement
-  logger.error('Erreur critique');    // Toujours affiché
-  ```
-
-### 2. Error Boundary React
-- **Fichier** : `pii-scanner-ui/src/components/ErrorBoundary.tsx`
-- **Avantage** : Empêche l'application de crasher complètement
-- **Intégration** : Wrap dans `App.tsx`
-- **Features** :
-  - Affichage d'un écran d'erreur élégant
-  - Stack trace en mode développement
-  - Boutons "Recharger" et "Retour accueil"
-
-### 3. Configuration CORS par environnement (Backend)
-- **Fichiers** :
-  - `PiiScanner.Api/appsettings.json` (dev)
-  - `PiiScanner.Api/appsettings.Production.json` (prod)
-- **Avantage** : Sécurité renforcée en production
-- **Configuration** : Origines CORS depuis JSON au lieu de code en dur
-
-### 4. Health Checks (Backend)
-- **Endpoints** :
-  - `GET /health` - Status global de l'API
-  - `GET /health/ready` - Ready pour recevoir du trafic
-- **Checks** :
-  - Base de données (connexion SQLite)
-  - SignalR (service actif)
-- **Usage** : Monitoring, Load Balancer, Kubernetes
-
-### 5. .gitignore pour sécurité
-- **Fichier** : `PiiScanner.Api/.gitignore`
-- **Protège** :
-  - Base de données (`*.db`)
-  - Clé de chiffrement (`db_encryption.key`)
-  - Configuration production (`appsettings.Production.json`)
-  - Logs et backups
-
----
-
-## 📋 PROCHAINES AMÉLIORATIONS RECOMMANDÉES
+## 📋 AMÉLIORATIONS RECOMMANDÉES
 
 ### URGENT (Sprint 1 - 1 semaine)
 
@@ -157,17 +110,12 @@ snyk test
 
 ---
 
-## 📊 SCORE AMÉLIORATIONS
+## 📊 OBJECTIFS
 
-### Avant
-- Code quality: 7/10
-- DevOps readiness: 4/10
-- Production readiness: 5/10
-
-### Après (avec Quick Wins)
-- Code quality: 8/10 ⬆️ (+1)
-- DevOps readiness: 5.5/10 ⬆️ (+1.5)
-- Production readiness: 6.5/10 ⬆️ (+1.5)
+### État actuel
+- Code quality: 8/10
+- DevOps readiness: 6/10
+- Production readiness: 7/10
 
 ### Objectif final (après tous les sprints)
 - Code quality: 9/10

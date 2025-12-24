@@ -24,7 +24,6 @@ import DatabaseManagement from './components/pages/DatabaseManagement';
 import AuditTrail from './components/pages/AuditTrail';
 import Support from './components/pages/Support';
 import About from './components/pages/About';
-import ScheduledScans from './components/ScheduledScans';
 import { scanApi } from './services/apiClient';
 import type { ScanResultResponse } from './types';
 import axiosInstance, { initializeCsrfToken } from './services/axios';
@@ -241,7 +240,6 @@ function App() {
             />
             <Route path="data-retention" element={<DataRetention />} />
             <Route path="history" element={<ScanHistory />} />
-            <Route path="scheduled-scans" element={<ScheduledScans />} />
             <Route path="profile" element={<Profile />} />
             <Route path="settings" element={<Settings />} />
             <Route path="support" element={<Support />} />

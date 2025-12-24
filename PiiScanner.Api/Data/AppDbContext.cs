@@ -14,7 +14,6 @@ public class AppDbContext : DbContext
     public DbSet<ScanRecord> Scans { get; set; }
     public DbSet<AuditLog> AuditLogs { get; set; }
     public DbSet<AppSettings> AppSettings { get; set; }
-    public DbSet<ScheduledScan> ScheduledScans { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

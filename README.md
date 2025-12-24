@@ -67,23 +67,22 @@ Application de bureau pour détecter et analyser les données personnelles ident
   - Détection des partages réseau (UNC paths)
 
 #### Interface utilisateur moderne
-- **16 pages spécialisées** :
+- **15 pages spécialisées** :
   1. **Tableau de bord** : Statistiques et métriques clés
   2. **Scanner** : Lancement et suivi des scans en temps réel
   3. **Historique** : Consultation de tous les scans effectués
-  4. **Scans planifiés** : Planification automatique (quotidien, hebdomadaire, mensuel, trimestriel)
-  5. **Fichiers à risque** : Top 20 fichiers critiques avec filtrage
-  6. **Données sensibles** : Liste détaillée de toutes les détections
-  7. **Ancienneté** : Analyse des fichiers obsolètes
-  8. **Exposition** : Analyse des fichiers sur-exposés (NTFS ACL)
-  9. **Rapports & Analytics** : Visualisations et tendances
-  10. **Exports** : Téléchargement des rapports (CSV, JSON, HTML, Excel)
-  11. **Rétention des données** : Gestion des politiques de rétention et suppression
-  12. **Utilisateurs** : Gestion des comptes utilisateurs (Admin uniquement)
-  13. **Base de données** : Sauvegardes et restauration (Admin uniquement)
-  14. **Journal d'audit** : Traçabilité complète des opérations (Admin uniquement)
-  15. **Mon Profil** : Gestion du profil utilisateur
-  16. **Support** : Centre d'aide, FAQ et contact
+  4. **Fichiers à risque** : Top 20 fichiers critiques avec filtrage
+  5. **Données sensibles** : Liste détaillée de toutes les détections
+  6. **Ancienneté** : Analyse des fichiers obsolètes
+  7. **Exposition** : Analyse des fichiers sur-exposés (NTFS ACL)
+  8. **Rapports & Analytics** : Visualisations et tendances
+  9. **Exports** : Téléchargement des rapports (CSV, JSON, HTML, Excel)
+  10. **Rétention des données** : Gestion des politiques de rétention et suppression
+  11. **Utilisateurs** : Gestion des comptes utilisateurs (Admin uniquement)
+  12. **Base de données** : Sauvegardes et restauration (Admin uniquement)
+  13. **Journal d'audit** : Traçabilité complète des opérations (Admin uniquement)
+  14. **Mon Profil** : Gestion du profil utilisateur
+  15. **Support** : Centre d'aide, FAQ et contact
 
 - **Thème sombre** : Interface Material-UI v7 avec thème sombre élégant
 - **Temps réel** : Mise à jour du scan en direct via SignalR
@@ -195,10 +194,9 @@ Pour plus de détails, consultez la section [Installation](#installation) ci-des
 ### Utiliser l'application
 
 1. **Scanner** : Sélectionnez un dossier et lancez le scan
-2. **Planifier** : Configurez des scans automatiques (quotidien, hebdomadaire, mensuel, trimestriel)
-3. **Analyser** : Consultez les détections dans les différentes pages
-4. **Gérer la rétention** : Identifiez et supprimez les fichiers obsolètes
-5. **Exporter** : Téléchargez les rapports au format souhaité
+2. **Analyser** : Consultez les détections dans les différentes pages
+3. **Gérer la rétention** : Identifiez et supprimez les fichiers obsolètes
+4. **Exporter** : Téléchargez les rapports au format souhaité
 
 ## Architecture
 
@@ -219,7 +217,6 @@ Application console .NET pour les tests et l'automatisation.
 ### 3. PiiScanner.Api
 API REST ASP.NET Core avec sécurité renforcée :
 - **Endpoints de scan** : `/api/scan/start`, `/api/scan/{scanId}/results`, `/api/scan/{scanId}/report/{format}`
-- **Scans planifiés** : `/api/scheduledscans` - CRUD complet avec service d'arrière-plan
 - **Rétention des données** : `/api/dataretention/scan`, `/api/dataretention/delete`, `/api/dataretention/policies`
 - **Authentification JWT** : `/api/auth/login`, `/api/auth/refresh`, `/api/auth/logout`, `/api/auth/me`
 - **Gestion utilisateurs** : `/api/users` - CRUD complet (Admin uniquement)
@@ -250,7 +247,6 @@ Application de bureau Electron avec interface moderne :
   - Configuration initiale (création compte admin)
   - Tableau de bord avec métriques
   - Scanner avec suivi temps réel (SignalR)
-  - Scans planifiés (quotidien, hebdomadaire, mensuel, trimestriel)
   - Gestion rétention des données
   - Gestion utilisateurs (Admin)
   - Sauvegardes base de données (Admin)
@@ -436,18 +432,17 @@ Fichier .xlsx avec 3 onglets :
 
 1. **Adaptation Bénin** : 19 types PII spécifiques au Bénin (IFU, CNI, RCCM, CNSS, RAMU, INE, Mobile Money MTN/Moov, etc.)
 2. **Rétention des données** : Système complet de gestion de la rétention selon APDP (5 catégories, 1-10 ans)
-3. **Scans planifiés** : Planification automatique avec service d'arrière-plan (quotidien, hebdomadaire, mensuel, trimestriel)
-4. **Configuration initiale sécurisée** : Création obligatoire du compte admin au premier lancement (pas de compte par défaut)
-5. **Réduction faux positifs** : Validation stricte éliminant ~87% des faux positifs (téléphone +95.7%, email ~90%, dates ~85.7%)
-6. **Interface enrichie** : 16 pages spécialisées Material-UI v7 avec thème sombre
-7. **Suppression AdresseIP** : Les IPs ne sont pas considérées comme PII selon APDP
-8. **Authentification complète** : JWT + refresh tokens, RBAC (Admin/User), auto-refresh tokens
-9. **Base de données sécurisée** : SQLite chiffrée SQLCipher (AES-256) avec sauvegardes/restauration
-10. **Page Support** : Centre d'aide avec FAQ, contact email et liens documentation
-11. **Sécurité renforcée** : 11 protections (HTTPS/TLS, CSRF, Rate Limiting, Path Traversal, Audit Logs, BCrypt, etc.)
-12. **HTTPS natif** : TLS 1.2+ avec certificats auto-signés (dev) ou Let's Encrypt (prod)
-13. **Analyse avancée** : Stale Data Detection (ancienneté) + Over-Exposed Data (NTFS ACL)
-14. **Détection secrets** : Mots de passe en clair, clés API AWS, tokens JWT dans le code
+3. **Configuration initiale sécurisée** : Création obligatoire du compte admin au premier lancement (pas de compte par défaut)
+4. **Réduction faux positifs** : Validation stricte éliminant ~87% des faux positifs (téléphone +95.7%, email ~90%, dates ~85.7%)
+5. **Interface enrichie** : 15 pages spécialisées Material-UI v7 avec thème sombre
+6. **Suppression AdresseIP** : Les IPs ne sont pas considérées comme PII selon APDP
+7. **Authentification complète** : JWT + refresh tokens, RBAC (Admin/User), auto-refresh tokens
+8. **Base de données sécurisée** : SQLite chiffrée SQLCipher (AES-256) avec sauvegardes/restauration
+9. **Page Support** : Centre d'aide avec FAQ, contact email et liens documentation
+10. **Sécurité renforcée** : 11 protections (HTTPS/TLS, CSRF, Rate Limiting, Path Traversal, Audit Logs, BCrypt, etc.)
+11. **HTTPS natif** : TLS 1.2+ avec certificats auto-signés (dev) ou Let's Encrypt (prod)
+12. **Analyse avancée** : Stale Data Detection (ancienneté) + Over-Exposed Data (NTFS ACL)
+13. **Détection secrets** : Mots de passe en clair, clés API AWS, tokens JWT dans le code
 
 ## Structure des fichiers
 
@@ -462,20 +457,19 @@ MVP-PII-Scanner/
 │   └── Utils/                # FilePermissionAnalyzer, StaleDataCalculator
 ├── PiiScanner/               # Application console
 ├── PiiScanner.Api/           # API REST + SignalR
-│   ├── Controllers/          # ScanController, ScheduledScansController, InitializationController, AuthController, etc.
+│   ├── Controllers/          # ScanController, InitializationController, AuthController, etc.
 │   ├── Hubs/                 # ScanHub (SignalR)
-│   ├── Services/             # ScanService, SchedulerService, BackgroundSchedulerService, AuthService
+│   ├── Services/             # ScanService, AuthService
 │   ├── Data/                 # AppDbContext (SQLite + SQLCipher)
-│   ├── Models/               # User, Session, ScheduledScan, AuditLog, etc.
+│   ├── Models/               # User, Session, AuditLog, etc.
 │   └── Middleware/           # CsrfProtectionMiddleware, RateLimitingMiddleware
 ├── pii-scanner-ui/           # Application Electron
 │   ├── src/
 │   │   ├── components/
 │   │   │   ├── Layout/       # Sidebar, navigation
-│   │   │   ├── pages/        # 17 pages spécialisées
+│   │   │   ├── pages/        # 15 pages spécialisées
 │   │   │   ├── Login.tsx     # Page de connexion
 │   │   │   ├── InitialSetup.tsx  # Configuration première utilisation
-│   │   │   ├── ScheduledScans.tsx  # Gestion scans planifiés
 │   │   │   └── ...           # Autres composants
 │   │   ├── contexts/         # AuthContext (JWT)
 │   │   ├── services/         # apiClient.ts (API + SignalR), axios.ts (intercepteurs)
@@ -580,12 +574,6 @@ npm install
 npm run build
 ```
 
-**8. Scans planifiés ne s'exécutent pas**
-- Vérifiez les logs de l'API pour `BackgroundSchedulerService`
-- Assurez-vous que `NextRunAt` est dans le passé (UTC)
-- Vérifiez que `IsActive` est à `true`
-- Assurez-vous que le répertoire existe et est accessible
-
 ## Limitations connues
 
 - L'application détecte les PII mais ne peut pas déterminer si elles sont réelles ou fictives
@@ -683,11 +671,10 @@ Voir le fichier [LICENSE](LICENSE) pour les détails complets.
 
 **Nouvelles fonctionnalités** :
 - ✅ Détection de 19 types de PII spécifiques au Bénin avec validation avancée
-- ✅ Interface moderne avec 16 pages spécialisées (Material-UI v7 Dark Theme)
+- ✅ Interface moderne avec 15 pages spécialisées (Material-UI v7 Dark Theme)
 - ✅ Dashboard redessiné avec KPIs modernes et graphiques interactifs (donut charts, area charts)
 - ✅ Page Reports & Analytics avec 3 vues (Overview, Detailed, Comparison) et graphiques avancés (treemap, radar)
 - ✅ Typographie modernisée avec Plus Jakarta Sans
-- ✅ Scans planifiés automatiques (quotidien, hebdomadaire, mensuel, trimestriel)
 - ✅ Système de rétention des données conforme APDP
 - ✅ Analyse ancienneté (Stale Data) et exposition (Over-Exposed Data)
 - ✅ Authentification JWT avec refresh tokens

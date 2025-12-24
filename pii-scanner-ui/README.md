@@ -106,7 +106,6 @@ pii-scanner-ui/
 - **Dashboard** : Vue d'ensemble avec KPIs et graphiques
 - **Scanner** : Lancement de scans manuels avec progression temps réel
 - **Historique** : Consultation de tous les scans effectués
-- **Scans planifiés** : Gestion des scans automatiques (quotidien, hebdomadaire, mensuel, trimestriel)
 - **Fichiers à risque** : Top 20 fichiers critiques avec filtrage
 - **Données sensibles** : Liste détaillée de toutes les détections PII
 - **Ancienneté** : Analyse des fichiers obsolètes (Stale Data)

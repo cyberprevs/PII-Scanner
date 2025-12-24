@@ -107,13 +107,6 @@ ASP.NET Core Web API providing REST endpoints and real-time SignalR updates.
 - `GET /api/scan/{scanId}/report/{format}` - Download report (csv, json, html, excel)
 - `DELETE /api/scan/{scanId}` - Cleanup scan resources
 
-*Scheduled Scans:*
-- `GET /api/scheduledscans` - Get all scheduled scans for current user
-- `POST /api/scheduledscans` - Create a new scheduled scan
-- `PUT /api/scheduledscans/{id}` - Update a scheduled scan
-- `DELETE /api/scheduledscans/{id}` - Delete a scheduled scan
-- `PATCH /api/scheduledscans/{id}/toggle` - Toggle active/inactive status
-
 *Authentication:*
 - `POST /api/auth/login` - User login (returns JWT + refresh token)
 - `POST /api/auth/refresh` - Refresh access token
@@ -158,7 +151,6 @@ ASP.NET Core Web API providing REST endpoints and real-time SignalR updates.
 
 **Key Components:**
 - [Controllers/ScanController.cs](PiiScanner.Api/Controllers/ScanController.cs) - Scan REST API endpoints
-- [Controllers/ScheduledScansController.cs](PiiScanner.Api/Controllers/ScheduledScansController.cs) - Scheduled scans CRUD
 - [Controllers/InitializationController.cs](PiiScanner.Api/Controllers/InitializationController.cs) - First-run setup
 - [Controllers/AuthController.cs](PiiScanner.Api/Controllers/AuthController.cs) - Authentication endpoints
 - [Controllers/UsersController.cs](PiiScanner.Api/Controllers/UsersController.cs) - User management (Admin only)
@@ -166,13 +158,10 @@ ASP.NET Core Web API providing REST endpoints and real-time SignalR updates.
 - [Controllers/DataRetentionController.cs](PiiScanner.Api/Controllers/DataRetentionController.cs) - Data retention policy management
 - [Controllers/AuditController.cs](PiiScanner.Api/Controllers/AuditController.cs) - Audit log viewing (Admin only)
 - [Services/ScanService.cs](PiiScanner.Api/Services/ScanService.cs) - Background scan orchestration
-- [Services/SchedulerService.cs](PiiScanner.Api/Services/SchedulerService.cs) - Schedule calculation logic
-- [Services/BackgroundSchedulerService.cs](PiiScanner.Api/Services/BackgroundSchedulerService.cs) - Background service (checks every minute)
 - [Services/AuthService.cs](PiiScanner.Api/Services/AuthService.cs) - JWT token generation and validation
 - [Services/DatabaseEncryptionService.cs](PiiScanner.Api/Services/DatabaseEncryptionService.cs) - SQLCipher encryption key management
 - [Data/AppDbContext.cs](PiiScanner.Api/Data/AppDbContext.cs) - EF Core DbContext with SQLite + SQLCipher encryption
 - [Models/User.cs](PiiScanner.Api/Models/User.cs) - User entity with BCrypt password hashing
-- [Models/ScheduledScan.cs](PiiScanner.Api/Models/ScheduledScan.cs) - Scheduled scan entity
 - [Models/AuditLog.cs](PiiScanner.Api/Models/AuditLog.cs) - Audit log entity for security tracking
 - [Middleware/CsrfProtectionMiddleware.cs](PiiScanner.Api/Middleware/CsrfProtectionMiddleware.cs) - CSRF protection
 - [Middleware/RateLimitingMiddleware.cs](PiiScanner.Api/Middleware/RateLimitingMiddleware.cs) - Rate limiting
@@ -193,58 +182,13 @@ ASP.NET Core Web API providing REST endpoints and real-time SignalR updates.
   - Encryption key: Auto-generated 256-bit key stored in `db_encryption.key` with NTFS ACL protection
   - Or via environment variable `Database:EncryptionKey`
 
-**Manual Scan Flow:**
+**Scan Flow:**
 1. Client posts scan request to `/api/scan/start`
 2. API generates unique scanId and returns immediately
 3. `ScanService` executes scan in background with `Task.Run()`
 4. Progress updates sent via SignalR to all connected clients
 5. Reports generated in temp directory: `%TEMP%/PiiScanner/{scanId}/`
 6. Client polls `/api/scan/{scanId}/results` or receives `ScanComplete` event
-
-**Scheduled Scans System:**
-
-The application includes a complete scheduled scans feature for automated periodic scanning:
-
-*Data Model* ([Models/ScheduledScan.cs](PiiScanner.Api/Models/ScheduledScan.cs)):
-- **Frequency**: Daily, Weekly, Monthly, Quarterly (enum)
-- **DayOfWeek**: 0-6 (Sunday-Saturday) for weekly scans
-- **DayOfMonth**: 1-28 for monthly/quarterly scans
-- **HourOfDay**: 0-23 for execution time
-- **IsActive**: Enable/disable without deleting
-- **NextRunAt**: Calculated next execution timestamp
-- **LastRunAt**: Timestamp of last execution
-- **LastScanId**: Reference to last scan result
-- **NotifyOnCompletion**: Flag for completion notifications
-- **NotifyOnNewPii**: Flag for new PII detection notifications
-
-*Schedule Calculation* ([Services/SchedulerService.cs](PiiScanner.Api/Services/SchedulerService.cs)):
-- `CalculateNextRunAt(schedule, fromDate)`: Calculates next execution time based on frequency
-- `InitializeNextRunAt(schedule)`: Sets initial NextRunAt when creating schedule
-- `UpdateAfterExecution(schedule, scanId)`: Updates LastRunAt, LastScanId, recalculates NextRunAt
-- Handles edge cases: month-end dates (limited to day 28), daylight saving time, timezone
-
-*Background Execution* ([Services/BackgroundSchedulerService.cs](PiiScanner.Api/Services/BackgroundSchedulerService.cs)):
-- Runs as `IHostedService` (starts with API)
-- Checks database every 1 minute for due scans (`NextRunAt <= now`)
-- Validates directory exists before executing
-- Launches scan via `ScanService.StartScan()`
-- Updates schedule after execution
-- Deactivates schedule if directory validation fails
-- Creates audit log for each automatic execution
-- Error handling: continues checking even if individual scan fails
-
-*API Endpoints* ([Controllers/ScheduledScansController.cs](PiiScanner.Api/Controllers/ScheduledScansController.cs)):
-- All endpoints require JWT authentication
-- Users can only modify their own schedules (except Admin)
-- Path validation prevents traversal attacks
-- Directory existence validation before creating/updating
-- Full CRUD operations with audit logging
-
-*Security & Validation:*
-- Path traversal protection via `PathValidator.ValidateDirectoryPath()`
-- RBAC: Users see only their schedules, Admin sees all
-- Audit logs for Create, Update, Delete, Toggle operations
-- Directory existence check to prevent invalid scans
 
 **Data Retention System:**
 
@@ -298,23 +242,22 @@ Modern desktop application built with React 19, Material-UI, and Electron.
 - [src/services/axios.ts](pii-scanner-ui/src/services/axios.ts) - Axios instance with JWT interceptors and CSRF token handling
 - [src/contexts/AuthContext.tsx](pii-scanner-ui/src/contexts/AuthContext.tsx) - Authentication state management
 
-**UI Pages (16 specialized pages):**
+**UI Pages (15 specialized pages):**
 1. [Dashboard.tsx](pii-scanner-ui/src/components/Dashboard.tsx) - Key metrics and statistics
 2. [Scanner.tsx](pii-scanner-ui/src/components/Scanner.tsx) - Scan initiation and real-time progress
 3. [History.tsx](pii-scanner-ui/src/components/History.tsx) - All past scans
-4. [ScheduledScans.tsx](pii-scanner-ui/src/components/ScheduledScans.tsx) - Automated scan scheduling
-5. [RiskyFiles.tsx](pii-scanner-ui/src/components/RiskyFiles.tsx) - Top 20 high-risk files
-6. [SensitiveData.tsx](pii-scanner-ui/src/components/SensitiveData.tsx) - All PII detections
-7. [StaleData.tsx](pii-scanner-ui/src/components/StaleData.tsx) - Old/obsolete files analysis
-8. [OverExposedData.tsx](pii-scanner-ui/src/components/OverExposedData.tsx) - Over-exposed files (NTFS ACL analysis)
-9. [Analytics.tsx](pii-scanner-ui/src/components/Analytics.tsx) - Charts and visualizations
-10. [Exports.tsx](pii-scanner-ui/src/components/Exports.tsx) - Download reports (CSV, JSON, HTML, Excel)
-11. [DataRetention.tsx](pii-scanner-ui/src/components/DataRetention.tsx) - Retention policy management and file deletion
-12. [Users.tsx](pii-scanner-ui/src/components/Users.tsx) - User management (Admin only)
-13. [Database.tsx](pii-scanner-ui/src/components/Database.tsx) - Database backup/restore (Admin only)
-14. [AuditLogs.tsx](pii-scanner-ui/src/components/AuditLogs.tsx) - Security audit trail (Admin only)
-15. [Profile.tsx](pii-scanner-ui/src/components/Profile.tsx) - User profile management
-16. [Support.tsx](pii-scanner-ui/src/components/Support.tsx) - Help center, FAQ, contact
+4. [RiskyFiles.tsx](pii-scanner-ui/src/components/RiskyFiles.tsx) - Top 20 high-risk files
+5. [SensitiveData.tsx](pii-scanner-ui/src/components/SensitiveData.tsx) - All PII detections
+6. [StaleData.tsx](pii-scanner-ui/src/components/StaleData.tsx) - Old/obsolete files analysis
+7. [OverExposedData.tsx](pii-scanner-ui/src/components/OverExposedData.tsx) - Over-exposed files (NTFS ACL analysis)
+8. [Analytics.tsx](pii-scanner-ui/src/components/Analytics.tsx) - Charts and visualizations
+9. [Exports.tsx](pii-scanner-ui/src/components/Exports.tsx) - Download reports (CSV, JSON, HTML, Excel)
+10. [DataRetention.tsx](pii-scanner-ui/src/components/DataRetention.tsx) - Retention policy management and file deletion
+11. [Users.tsx](pii-scanner-ui/src/components/Users.tsx) - User management (Admin only)
+12. [Database.tsx](pii-scanner-ui/src/components/Database.tsx) - Database backup/restore (Admin only)
+13. [AuditLogs.tsx](pii-scanner-ui/src/components/AuditLogs.tsx) - Security audit trail (Admin only)
+14. [Profile.tsx](pii-scanner-ui/src/components/Profile.tsx) - User profile management
+15. [Support.tsx](pii-scanner-ui/src/components/Support.tsx) - Help center, FAQ, contact
 
 **API Connection:**
 - Base URL: `http://localhost:5000/api`
@@ -495,16 +438,6 @@ Four report formats are generated simultaneously:
 6. Swagger UI at `http://localhost:5000/swagger`
 7. Electron app will connect automatically
 
-### Testing Scheduled Scans
-
-1. **Create a scheduled scan** via UI (Scans planifiés page) or API
-2. **Set NextRunAt to near future** for immediate testing:
-   - Option A: Directly modify database `NextRunAt` to `DateTime.UtcNow.AddMinutes(2)`
-   - Option B: Use Swagger to POST with calculated time
-3. **Watch API logs** - BackgroundSchedulerService logs every check (every minute)
-4. **Verify execution** - Check logs for "Scan planifié démarré avec succès"
-5. **Check updates** - `LastRunAt`, `LastScanId`, `NextRunAt` should update after execution
-
 ### Database Migrations
 
 The application uses Entity Framework Core with SQLite + SQLCipher. Migrations are automatically applied on startup.
@@ -590,8 +523,6 @@ All file/directory paths are validated using the `PathValidator` utility class (
 
 **Protected endpoints:**
 - `POST /api/scan/start` - Validates scan directory path
-- `POST /api/scheduledscans` - Validates scheduled scan directory path
-- `PUT /api/scheduledscans/{id}` - Validates directory path when updating
 - `POST /api/dataretention/scan` - Validates retention scan directory
 - `POST /api/dataretention/delete` - Validates each file path
 - `GET /api/database/backup/download/{fileName}` - Validates backup filename and confinement
@@ -615,7 +546,6 @@ All file/directory paths are validated using the `PathValidator` utility class (
 #### Audit Logging
 All sensitive operations are logged to `AuditLogs` table:
 - User authentication (login, logout, password changes)
-- Scheduled scans operations (create, update, delete, toggle, automatic execution)
 - User management (create, update, delete, role changes)
 - Database operations (backup, restore, delete, optimize)
 - Scan operations (start, complete, fail)
@@ -735,12 +665,6 @@ dotnet ef migrations remove
 - Clear node_modules and reinstall: `rm -rf node_modules && npm install`
 - Check Node.js version: `node --version` (requires 18+)
 - Clear Vite cache: `rm -rf node_modules/.vite`
-
-**Scheduled scans not executing:**
-- Check `BackgroundSchedulerService` logs in API console
-- Verify `NextRunAt` is in the past (UTC time)
-- Ensure directory path is valid and accessible
-- Check `IsActive` flag is true
 
 ### Useful Endpoints for Testing
 

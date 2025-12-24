@@ -26,12 +26,11 @@
 Développer une application de bureau sécurisée permettant aux entreprises béninoises d'**identifier, analyser et gérer** les données personnelles identifiables (PII) stockées dans leurs fichiers, afin d'assurer la conformité avec la **Loi N°2017-20 du Bénin** sur la protection des données personnelles.
 
 ### Objectifs secondaires
-1. **Automatisation** : Planifier des scans automatiques pour une surveillance continue
-2. **Analyse des risques** : Identifier les fichiers critiques, obsolètes ou sur-exposés
-3. **Gestion de la rétention** : Appliquer les politiques de conservation des données selon l'APDP
-4. **Reporting** : Générer des rapports détaillés pour audits et conformité
-5. **Sécurité** : Protéger les données analysées avec chiffrement et authentification robuste
-6. **Confidentialité** : Garantir un traitement 100% local sans transmission externe
+1. **Analyse des risques** : Identifier les fichiers critiques, obsolètes ou sur-exposés
+2. **Gestion de la rétention** : Appliquer les politiques de conservation des données selon l'APDP
+3. **Reporting** : Générer des rapports détaillés pour audits et conformité
+4. **Sécurité** : Protéger les données analysées avec chiffrement et authentification robuste
+5. **Confidentialité** : Garantir un traitement 100% local sans transmission externe
 
 ---
 
@@ -180,39 +179,7 @@ Les entreprises béninoises font face à plusieurs défis :
 - Barre de progression en temps réel (X/Y fichiers)
 - Temps estimé basé sur vitesse de traitement
 
-#### 2.2 Scans planifiés
-
-**Fonctionnalité** : Automatiser des scans périodiques
-
-**Paramètres de planification** :
-- **Nom** : Nom descriptif du scan (ex: "Scan Comptabilité")
-- **Répertoire** : Chemin du répertoire à scanner
-- **Fréquence** : Quotidien, Hebdomadaire, Mensuel, Trimestriel
-- **Heure** : Heure d'exécution (0-23)
-- **Jour de la semaine** : Lundi-Dimanche (pour scans hebdomadaires)
-- **Jour du mois** : 1-28 (pour scans mensuels/trimestriels)
-- **Notifications** : Activer/désactiver les notifications de fin de scan
-- **Statut** : Actif/Inactif (permet de suspendre sans supprimer)
-
-**Service d'arrière-plan** :
-- Vérification toutes les 1 minute
-- Exécution automatique si `NextRunAt <= DateTime.UtcNow`
-- Validation de l'existence du répertoire avant exécution
-- Mise à jour automatique de `NextRunAt` après exécution
-- Création d'un log d'audit pour chaque exécution automatique
-
-**Notifications** :
-- Notification en cas de réussite (si activé)
-- Notification en cas d'erreur (toujours)
-- Alerte si répertoire introuvable (désactivation automatique du scan)
-
-**Gestion** :
-- CRUD complet via interface web
-- Historique des exécutions (`LastRunAt`, `LastScanId`)
-- Activation/désactivation rapide (toggle)
-- Suppression avec confirmation
-
-#### 2.3 Historique des scans
+#### 2.2 Historique des scans
 
 **Fonctionnalité** : Consultation de tous les scans effectués
 
@@ -230,7 +197,6 @@ Les entreprises béninoises font face à plusieurs défis :
 - Date (plage personnalisée)
 - Répertoire
 - Statut
-- Type de scan (Manuel, Planifié)
 
 **Actions** :
 - Consulter les résultats
@@ -524,7 +490,6 @@ Les entreprises béninoises font face à plusieurs défis :
 | Fonctionnalité | Admin | User |
 |---------------|-------|------|
 | Scanner un répertoire | ✅ | ✅ |
-| Scans planifiés (CRUD) | ✅ (tous) | ✅ (siens uniquement) |
 | Historique des scans | ✅ (tous) | ✅ (siens uniquement) |
 | Télécharger rapports | ✅ | ✅ |
 | Rétention des données | ✅ | ✅ |
@@ -588,7 +553,6 @@ Les entreprises béninoises font face à plusieurs défis :
 
 **Endpoints protégés** :
 - `/api/users` (création, modification, suppression utilisateurs)
-- `/api/scheduledscans` (CRUD scans planifiés)
 - `/api/database/backup`, `/api/database/restore`, `/api/database/optimize`
 - `/api/dataretention/delete` (suppression fichiers)
 - `/api/auth/change-password` (changement mot de passe)
@@ -618,7 +582,6 @@ Les entreprises béninoises font face à plusieurs défis :
 - `/api/users/*` (CRUD utilisateurs)
 - `/api/database/*` (backup, restore, optimize)
 - `/api/dataretention/delete` (suppression fichiers)
-- `/api/scheduledscans` (POST/PUT/DELETE)
 
 **Réponse en cas de dépassement** :
 - HTTP 429 Too Many Requests
@@ -802,15 +765,12 @@ var connectionString = $"Data Source=piiscanner.db;Password={encryptionKey}";
 │   - ScanController                  │
 │   - AuthController                  │
 │   - UsersController                 │
-│   - ScheduledScansController        │
 └────────────┬────────────────────────┘
              │
 ┌────────────▼────────────────────────┐
 │   Business Logic Layer (Services)   │
 │   - ScanService                     │
 │   - AuthService                     │
-│   - SchedulerService                │
-│   - BackgroundSchedulerService      │
 └────────────┬────────────────────────┘
              │
 ┌────────────▼────────────────────────┐
@@ -822,7 +782,7 @@ var connectionString = $"Data Source=piiscanner.db;Password={encryptionKey}";
 ┌────────────▼────────────────────────┐
 │   Database (SQLite + SQLCipher)     │
 │   - Tables: Users, Sessions,        │
-│     ScheduledScans, AuditLogs, etc. │
+│     AuditLogs, etc.                 │
 └─────────────────────────────────────┘
 
 ┌─────────────────────────────────────┐
@@ -880,24 +840,6 @@ var connectionString = $"Data Source=piiscanner.db;Password={encryptionKey}";
 - CreatedAt : datetime
 - IsRevoked : bit (0 ou 1)
 
-**ScheduledScans**
-- Id : int (PK, auto-increment)
-- UserId : int (FK → Users)
-- Name : nvarchar(100)
-- DirectoryPath : nvarchar(500)
-- Frequency : nvarchar(20) - "Daily", "Weekly", "Monthly", "Quarterly"
-- DayOfWeek : int (0-6, nullable)
-- DayOfMonth : int (1-28, nullable)
-- HourOfDay : int (0-23)
-- IsActive : bit (0 ou 1)
-- NextRunAt : datetime
-- LastRunAt : datetime (nullable)
-- LastScanId : nvarchar(50) (nullable)
-- NotifyOnCompletion : bit (0 ou 1)
-- NotifyOnNewPii : bit (0 ou 1)
-- CreatedAt : datetime
-- UpdatedAt : datetime
-
 **AuditLogs**
 - Id : int (PK, auto-increment)
 - UserId : int (FK → Users, nullable)
@@ -918,8 +860,6 @@ var connectionString = $"Data Source=piiscanner.db;Password={encryptionKey}";
 - Users(Username) - unique
 - Sessions(RefreshToken) - unique
 - Sessions(UserId, IsRevoked) - performance
-- ScheduledScans(UserId) - performance
-- ScheduledScans(NextRunAt, IsActive) - scheduler
 - AuditLogs(UserId, CreatedAt) - consultation
 - AuditLogs(Action, CreatedAt) - recherche
 
@@ -948,14 +888,6 @@ var connectionString = $"Data Source=piiscanner.db;Password={encryptionKey}";
 - `GET /scan/{scanId}/results` - Obtenir les résultats
 - `GET /scan/{scanId}/report/{format}` - Télécharger un rapport (csv, json, html, excel)
 - `DELETE /scan/{scanId}` - Nettoyer les ressources d'un scan
-
-**Scans planifiés**
-- `GET /scheduledscans` - Liste des scans planifiés (filtrés par utilisateur)
-- `POST /scheduledscans` - Créer un scan planifié
-- `GET /scheduledscans/{id}` - Détails d'un scan planifié
-- `PUT /scheduledscans/{id}` - Modifier un scan planifié
-- `DELETE /scheduledscans/{id}` - Supprimer un scan planifié
-- `PATCH /scheduledscans/{id}/toggle` - Activer/désactiver
 
 **Rétention des données**
 - `GET /dataretention/policies` - Liste des politiques de rétention
@@ -1014,22 +946,21 @@ var connectionString = $"Data Source=piiscanner.db;Password={encryptionKey}";
 3. **Dashboard** : Vue d'ensemble avec KPIs et graphiques
 4. **Scanner** : Lancement de scan manuel
 5. **Historique** : Liste des scans effectués
-6. **Scans planifiés** : Gestion des scans automatiques
-7. **Fichiers à risque** : Top 20 fichiers critiques
-8. **Données sensibles** : Liste détaillée des PII détectées
-9. **Ancienneté** : Analyse Stale Data
-10. **Exposition** : Analyse Over-Exposed Data
-11. **Rapports & Analytics** : Visualisations avancées (3 vues)
-12. **Exports** : Téléchargement des rapports
-13. **Rétention des données** : Gestion des politiques et suppression
-14. **Mon Profil** : Informations personnelles et changement de mot de passe
-15. **Support** : FAQ, contact, documentation
-16. **À propos** : Informations sur l'application
+6. **Fichiers à risque** : Top 20 fichiers critiques
+7. **Données sensibles** : Liste détaillée des PII détectées
+8. **Ancienneté** : Analyse Stale Data
+9. **Exposition** : Analyse Over-Exposed Data
+10. **Rapports & Analytics** : Visualisations avancées (3 vues)
+11. **Exports** : Téléchargement des rapports
+12. **Rétention des données** : Gestion des politiques et suppression
+13. **Mon Profil** : Informations personnelles et changement de mot de passe
+14. **Support** : FAQ, contact, documentation
+15. **À propos** : Informations sur l'application
 
 **Pages Admin uniquement** :
-17. **Utilisateurs** : Gestion des comptes utilisateurs
-18. **Base de données** : Sauvegardes et restauration
-19. **Journal d'audit** : Traçabilité des opérations
+16. **Utilisateurs** : Gestion des comptes utilisateurs
+17. **Base de données** : Sauvegardes et restauration
+18. **Journal d'audit** : Traçabilité des opérations
 
 **Thème** : Material-UI v7 Dark Theme
 - Couleur primaire : #667eea (violet)
@@ -1153,7 +1084,6 @@ var connectionString = $"Data Source=piiscanner.db;Password={encryptionKey}";
 |---------|--------|
 | **Fichiers par scan** | 100 000 max recommandé |
 | **Utilisateurs** | 50 max (base de données SQLite) |
-| **Scans planifiés** | 100 max par utilisateur |
 | **Taille fichier** | 100 MB max par fichier |
 | **Taille base de données** | 10 GB max (SQLite) |
 
@@ -1256,9 +1186,8 @@ dotnet test PiiScanner.Tests
 ### Phase 1 : MVP (Terminée)
 - ✅ Détection de 19 types de PII
 - ✅ Scan manuel avec rapports (CSV, JSON, HTML, Excel)
-- ✅ Interface Electron avec 16 pages
+- ✅ Interface Electron avec 15 pages
 - ✅ Authentification JWT
-- ✅ Scans planifiés
 - ✅ Rétention des données
 - ✅ Analyse ancienneté et exposition
 - ✅ Sécurité (CSRF, Rate Limiting, Path Traversal, etc.)

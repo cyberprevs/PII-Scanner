@@ -42,7 +42,6 @@ import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import HelpIcon from '@mui/icons-material/Help';
 import InfoIcon from '@mui/icons-material/Info';
 import BuildIcon from '@mui/icons-material/Build';
-import ScheduleIcon from '@mui/icons-material/Schedule';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import { useAuth } from '../../contexts/AuthContext';
@@ -78,7 +77,6 @@ const menuItems: MenuItem[] = [
     subItems: [
       { id: 'scanner', label: 'Nouveau Scan', icon: <SearchIcon />, path: '/scanner' },
       { id: 'history', label: 'Historique', icon: <HistoryIcon />, path: '/history' },
-      { id: 'scheduled-scans', label: 'Scans Planifiés', icon: <ScheduleIcon />, path: '/scheduled-scans' },
     ],
   },
 
@@ -152,7 +150,7 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
   });
 
   // Check if current path is under scans
-  const isScansPath = ['/scanner', '/history', '/scheduled-scans'].includes(location.pathname);
+  const isScansPath = ['/scanner', '/history'].includes(location.pathname);
 
   // Check if current path is under maintenance
   const isMaintenancePath = ['/users', '/database', '/audit-trail', '/settings'].includes(location.pathname);
