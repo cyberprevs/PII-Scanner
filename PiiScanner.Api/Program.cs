@@ -68,28 +68,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddSignalR();
 
 // Add CORS pour permettre Electron de se connecter (HTTP et HTTPS)
+// Configuration depuis appsettings.json pour sécurité multi-environnement
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+    ?? throw new InvalidOperationException("CORS AllowedOrigins non configuré dans appsettings.json");
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowElectron", policy =>
     {
-        policy.WithOrigins(
-                // Origines HTTP (développement)
-                "http://localhost:3000",
-                "http://localhost:3001",
-                "http://localhost:5173",
-                "http://localhost:5174",
-                "http://localhost:5175",
-                "http://127.0.0.1:3000",
-                "http://127.0.0.1:3001",
-                // Origines HTTPS (sécurisé)
-                "https://localhost:3000",
-                "https://localhost:3001",
-                "https://localhost:5173",
-                "https://localhost:5174",
-                "https://localhost:5175",
-                "https://127.0.0.1:3000",
-                "https://127.0.0.1:3001"
-              )
+        policy.WithOrigins(allowedOrigins)
               .AllowAnyMethod()
               .AllowAnyHeader()
               .AllowCredentials()
@@ -104,6 +91,11 @@ builder.Services.AddScoped<SchedulerService>();
 
 // Add Background Services
 builder.Services.AddHostedService<BackgroundSchedulerService>();
+
+// Add Health Checks
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<AppDbContext>("database")
+    .AddCheck("signalr", () => Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Healthy("SignalR is running"));
 
 var app = builder.Build();
 
@@ -163,5 +155,9 @@ app.MapControllers();
 
 // Map SignalR Hub
 app.MapHub<ScanHub>("/scanhub").RequireCors("AllowElectron");
+
+// Map Health Checks
+app.MapHealthChecks("/health");
+app.MapHealthChecks("/health/ready");
 
 app.Run();

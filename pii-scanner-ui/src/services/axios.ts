@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { logger } from '../utils/logger';
 
 // Instance axios configurée avec le token JWT
 const axiosInstance = axios.create({
@@ -27,9 +28,9 @@ export const initializeCsrfToken = async (): Promise<void> => {
     // On utilise l'endpoint initialization/status car il est public
     await axiosInstance.get('/initialization/status');
     csrfInitialized = true;
-    console.log('CSRF token initialized');
+    logger.info('CSRF token initialized');
   } catch (error) {
-    console.error('Failed to initialize CSRF token:', error);
+    logger.error('Failed to initialize CSRF token:', error);
   }
 };
 
@@ -52,9 +53,9 @@ axiosInstance.interceptors.request.use(
       const csrfToken = getCsrfToken();
       if (csrfToken) {
         config.headers['X-CSRF-Token'] = csrfToken;
-        console.log('CSRF Token added to request:', csrfToken);
+        logger.debug('CSRF Token added to request:', csrfToken);
       } else {
-        console.warn('No CSRF token found - initialization may have failed');
+        logger.warn('No CSRF token found - initialization may have failed');
       }
     }
 
@@ -74,9 +75,9 @@ axiosInstance.interceptors.response.use(
     if (csrfHeader) {
       csrfToken = csrfHeader;
       csrfInitialized = true;
-      console.log('CSRF token updated from response header:', csrfToken);
+      logger.debug('CSRF token updated from response header:', csrfToken);
     } else {
-      console.warn('Response headers:', Object.keys(response.headers));
+      logger.debug('Response headers:', Object.keys(response.headers));
     }
     return response;
   },

@@ -1,0 +1,19 @@
+# IMPORTANT: Ne JAMAIS versionner ces fichiers (contiennent des secrets)
+
+# Base de données et clés de chiffrement
+*.db
+*.db-shm
+*.db-wal
+db_encryption.key
+
+# Configuration avec secrets
+appsettings.Production.json
+appsettings.Local.json
+
+# Logs
+logs/
+*.log
+
+# Backups base de données
+backups/
+*.backup

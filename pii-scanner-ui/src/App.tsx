@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Alert, Snackbar, CircularProgress, Box } from '@mui/material';
 import { AuthProvider } from './contexts/AuthContext';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import ProtectedRoute from './components/ProtectedRoute';
 import Login from './components/Login';
 import InitialSetup from './components/InitialSetup';
@@ -187,8 +188,9 @@ function App() {
   }
 
   return (
-    <AuthProvider>
-      <Router>
+    <ErrorBoundary>
+      <AuthProvider>
+        <Router>
         <Routes>
           {/* Route publique : Login */}
           <Route path="/login" element={<Login />} />
@@ -295,8 +297,9 @@ function App() {
             {successMessage}
           </Alert>
         </Snackbar>
-      </Router>
-    </AuthProvider>
+        </Router>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 
