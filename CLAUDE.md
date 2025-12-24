@@ -276,7 +276,7 @@ The app has NO default credentials for security. First-run setup is required:
 
 2. **Initial Setup** ([InitialSetup.tsx](pii-scanner-ui/src/components/InitialSetup.tsx)):
    - Form fields: username (3+ chars), email, fullName, password, confirmPassword
-   - Password validation: 8+ chars with uppercase, lowercase, number, special character
+   - Password validation: 12+ chars with uppercase, lowercase, number, special character
    - Calls `POST /api/initialization/setup` with credentials
    - Backend creates first admin user with BCrypt password hash
    - Redirects to `/login` after successful creation
@@ -312,7 +312,7 @@ dotnet run
 
 ## PII Detection Patterns
 
-The system detects **19 types of PII** with advanced post-validation, specifically adapted for Bénin compliance (Loi N°2017-20):
+The system detects **17 types of PII** with advanced post-validation, specifically adapted for Bénin compliance (Loi N°2017-20):
 
 **Universal Data:**
 - **Email**: RFC-compliant format with strict domain validation
@@ -342,10 +342,8 @@ The system detects **19 types of PII** with advanced post-validation, specifical
 - **INE**: Identifiant National de l'Élève (INE-XXXXXXXX)
 - **Matricule_Fonctionnaire**: Civil servant ID (F/M + 6-10 digits)
 
-**Security - Keys & Tokens:**
-- **MotDePasse**: Plain-text passwords detected in code
-- **CleAPI_AWS**: AWS API keys (Access Key ID)
-- **Token_JWT**: JWT tokens (format eyJ...)
+**Bénin Transport:**
+- **Plaque_Immatriculation**: License plate (new format: AB 1234 CD, old format: 1234 AB)
 
 All patterns are defined in [PiiScanner.Core/Analysis/PiiDetector.cs](PiiScanner.Core/Analysis/PiiDetector.cs) with extensive validation logic to minimize false positives (~87% reduction).
 

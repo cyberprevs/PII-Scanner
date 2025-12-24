@@ -4,7 +4,7 @@ Application de bureau pour détecter et analyser les données personnelles ident
 
 ## Fonctionnalités
 
-### Détection de 19 types de PII spécifiques au Bénin
+### Détection de 17 types de PII spécifiques au Bénin
 
 #### Données universelles
 - **Email** : Adresses électroniques avec validation stricte
@@ -34,10 +34,9 @@ Application de bureau pour détecter et analyser les données personnelles ident
 - **INE** : Identifiant National de l'Élève (INE-XXXXXXXX)
 - **Matricule_Fonctionnaire** : Matricule fonctionnaire (F/M + 6-10 chiffres)
 
-#### Sécurité - Clés & Tokens
-- **MotDePasse** : Mots de passe en clair détectés dans le code
-- **CleAPI_AWS** : Clés API AWS (Access Key ID)
-- **Token_JWT** : Tokens JWT (format eyJ...)
+#### Transport Bénin
+- **Plaque_Immatriculation** : Plaque d'immatriculation (nouveau format AB 1234 CD, ancien format 1234 AB)
+
 
 ### Fonctionnalités avancées
 
@@ -165,7 +164,7 @@ Pour plus de détails, consultez la section [Installation](#installation) ci-des
    - Nom d'utilisateur (minimum 3 caractères)
    - Adresse email
    - Nom complet
-   - Mot de passe fort (8+ caractères avec majuscule, minuscule, chiffre et caractère spécial)
+   - Mot de passe fort (12+ caractères avec majuscule, minuscule, chiffre et caractère spécial)
 3. **Se connecter** avec le nom d'utilisateur et mot de passe créés
 
 ⚠️ **Important** : Il n'y a **pas de compte par défaut**. Chaque installation nécessite la création d'un compte administrateur unique pour des raisons de sécurité.
@@ -204,7 +203,7 @@ Le projet est composé de 4 parties :
 
 ### 1. PiiScanner.Core
 Bibliothèque .NET contenant la logique métier :
-- **19 détecteurs de PII** adaptés au Bénin avec validation stricte (~87% de faux positifs éliminés)
+- **17 détecteurs de PII** adaptés au Bénin avec validation stricte (~87% de faux positifs éliminés)
 - Analyse des permissions NTFS (Windows ACL) pour détection des fichiers sur-exposés
 - Calcul de l'ancienneté des fichiers (Stale Data Detection)
 - Traitement parallèle des fichiers (utilisation optimale des CPU multi-cœurs)
@@ -237,7 +236,7 @@ API REST ASP.NET Core avec sécurité renforcée :
 ### 4. pii-scanner-ui
 Application de bureau Electron avec interface moderne :
 - **Stack** : React 19 + TypeScript + Material-UI v7 (thème sombre)
-- **16 pages spécialisées** avec navigation sidebar
+- **15 pages spécialisées** avec navigation sidebar
 - **Authentification sécurisée** :
   - Système JWT avec refresh tokens
   - Gestion des rôles (Admin / User)
@@ -430,7 +429,7 @@ Fichier .xlsx avec 3 onglets :
 
 ## Améliorations par rapport à la version RGPD
 
-1. **Adaptation Bénin** : 19 types PII spécifiques au Bénin (IFU, CNI, RCCM, CNSS, RAMU, INE, Mobile Money MTN/Moov, etc.)
+1. **Adaptation Bénin** : 17 types PII spécifiques au Bénin (IFU, CNI, RCCM, CNSS, RAMU, INE, Mobile Money MTN/Moov, Plaque d'immatriculation, etc.)
 2. **Rétention des données** : Système complet de gestion de la rétention selon APDP (5 catégories, 1-10 ans)
 3. **Configuration initiale sécurisée** : Création obligatoire du compte admin au premier lancement (pas de compte par défaut)
 4. **Réduction faux positifs** : Validation stricte éliminant ~87% des faux positifs (téléphone +95.7%, email ~90%, dates ~85.7%)
@@ -449,7 +448,7 @@ Fichier .xlsx avec 3 onglets :
 ```
 MVP-PII-Scanner/
 ├── PiiScanner.Core/          # Bibliothèque de détection
-│   ├── Analysis/             # PiiDetector.cs (19 types PII)
+│   ├── Analysis/             # PiiDetector.cs (16 types PII)
 │   ├── Models/               # ScanResult, ScanStatistics
 │   ├── Scanner/              # FileScanner (traitement parallèle)
 │   ├── Reader/               # DocumentReader (PDF, Word, Excel)
@@ -670,7 +669,7 @@ Voir le fichier [LICENSE](LICENSE) pour les détails complets.
 ### Version 1.0.0 (Décembre 2024)
 
 **Nouvelles fonctionnalités** :
-- ✅ Détection de 19 types de PII spécifiques au Bénin avec validation avancée
+- ✅ Détection de 17 types de PII spécifiques au Bénin avec validation avancée
 - ✅ Interface moderne avec 15 pages spécialisées (Material-UI v7 Dark Theme)
 - ✅ Dashboard redessiné avec KPIs modernes et graphiques interactifs (donut charts, area charts)
 - ✅ Page Reports & Analytics avec 3 vues (Overview, Detailed, Comparison) et graphiques avancés (treemap, radar)

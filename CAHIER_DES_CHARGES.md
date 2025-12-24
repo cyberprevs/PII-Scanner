@@ -54,7 +54,7 @@ Les entreprises béninoises font face à plusieurs défis :
 
 ### Solution proposée
 **PII Scanner** est une application de bureau **autonome et sécurisée** qui :
-- Scanne les répertoires et détecte **19 types de PII spécifiques au Bénin**
+- Scanne les répertoires et détecte **17 types de PII spécifiques au Bénin**
 - Identifie les fichiers à risque et génère des rapports détaillés
 - Applique des politiques de rétention configurables
 - Fonctionne **100% localement** sans transmission de données externe
@@ -90,7 +90,7 @@ Les entreprises béninoises font face à plusieurs défis :
 
 ### 1. DÉTECTION DE PII
 
-#### 1.1 Types de données détectées (19 types)
+#### 1.1 Types de données détectées (17 types)
 
 **Données universelles**
 - ✅ Email : Adresses électroniques avec validation RFC
@@ -120,10 +120,9 @@ Les entreprises béninoises font face à plusieurs défis :
 - ✅ INE : Identifiant National de l'Élève (INE-XXXXXXXX)
 - ✅ Matricule_Fonctionnaire : Matricule fonctionnaire (F/M + 6-10 chiffres)
 
-**Sécurité - Clés & Tokens**
-- ✅ MotDePasse : Mots de passe en clair dans le code
-- ✅ CleAPI_AWS : Clés API AWS (Access Key ID)
-- ✅ Token_JWT : Tokens JWT (format eyJ...)
+**Transport Bénin**
+- ✅ Plaque_Immatriculation : Plaque d'immatriculation (nouveau format AB 1234 CD, ancien format 1234 AB)
+
 
 #### 1.2 Validation et réduction des faux positifs
 
@@ -515,7 +514,7 @@ Les entreprises béninoises font face à plusieurs défis :
    - **Username** : Nom d'utilisateur (min 3 caractères)
    - **Email** : Adresse email valide
    - **FullName** : Nom complet
-   - **Password** : Mot de passe fort (8+ caractères)
+   - **Password** : Mot de passe fort (12+ caractères)
      - Au moins 1 majuscule
      - Au moins 1 minuscule
      - Au moins 1 chiffre
@@ -787,7 +786,7 @@ var connectionString = $"Data Source=piiscanner.db;Password={encryptionKey}";
 
 ┌─────────────────────────────────────┐
 │   Core Library (PiiScanner.Core)   │
-│   - PiiDetector (19 types)          │
+│   - PiiDetector (16 types)          │
 │   - FileScanner (parallel)          │
 │   - DocumentReader (PDF, Word, etc.)│
 │   - ReportGenerator (CSV, JSON...)  │
@@ -936,7 +935,7 @@ var connectionString = $"Data Source=piiscanner.db;Password={encryptionKey}";
 
 **Structure de navigation** : Sidebar + Router
 
-**Pages** : 16 pages spécialisées
+**Pages** : 15 pages spécialisées
 
 **Pages publiques** (sans authentification) :
 1. **Initial Setup** : Création du compte admin
@@ -955,12 +954,11 @@ var connectionString = $"Data Source=piiscanner.db;Password={encryptionKey}";
 12. **Rétention des données** : Gestion des politiques et suppression
 13. **Mon Profil** : Informations personnelles et changement de mot de passe
 14. **Support** : FAQ, contact, documentation
-15. **À propos** : Informations sur l'application
 
 **Pages Admin uniquement** :
-16. **Utilisateurs** : Gestion des comptes utilisateurs
-17. **Base de données** : Sauvegardes et restauration
-18. **Journal d'audit** : Traçabilité des opérations
+15. **Utilisateurs** : Gestion des comptes utilisateurs
+16. **Base de données** : Sauvegardes et restauration
+17. **Journal d'audit** : Traçabilité des opérations
 
 **Thème** : Material-UI v7 Dark Theme
 - Couleur primaire : #667eea (violet)
@@ -1184,7 +1182,7 @@ dotnet test PiiScanner.Tests
 ## 📅 PLANNING ET PHASES
 
 ### Phase 1 : MVP (Terminée)
-- ✅ Détection de 19 types de PII
+- ✅ Détection de 17 types de PII
 - ✅ Scan manuel avec rapports (CSV, JSON, HTML, Excel)
 - ✅ Interface Electron avec 15 pages
 - ✅ Authentification JWT
@@ -1331,7 +1329,7 @@ dotnet test PiiScanner.Tests
 
 | Obligation APDP | Fonctionnalité PII Scanner |
 |----------------|---------------------------|
-| Identifier les données personnelles | Scan de répertoires et détection de 19 types PII |
+| Identifier les données personnelles | Scan de répertoires et détection de 16 types PII |
 | Limiter la collecte | Pas de collecte - analyse uniquement |
 | Durées de conservation | Politiques de rétention configurables (5 catégories) |
 | Sécurité des données | Chiffrement AES-256, authentification JWT, CSRF, Rate Limiting |
@@ -1344,7 +1342,7 @@ dotnet test PiiScanner.Tests
 **Pour les organisations utilisant PII Scanner** :
 
 - [x] Identifier toutes les données personnelles détenues
-- [x] Documenter les types de PII (19 types détectés)
+- [x] Documenter les types de PII (16 types détectés)
 - [x] Vérifier les durées de conservation (politiques configurables)
 - [x] Supprimer les données obsolètes (fonction de suppression sécurisée)
 - [x] Sécuriser les accès aux données (analyse des permissions NTFS)

@@ -73,16 +73,10 @@ public static class PiiDetector
         // Matricule fonctionnaire (commence par F ou M)
         { "Matricule_Fonctionnaire", @"\b[FM]\d{6,10}\b" },
 
-        // ========== SÉCURITÉ - CLÉS & TOKENS ==========
+        // ========== TRANSPORT BÉNIN ==========
 
-        // Mots de passe en clair
-        { "MotDePasse", @"(?i)\b(password|pwd|passwd|secret|api[_-]?key|access[_-]?token|auth[_-]?token|private[_-]?key)\s*[:=]\s*[^\s;,""')\]]{4,}\b" },
-
-        // Clés API AWS
-        { "CleAPI_AWS", @"\bAKIA[0-9A-Z]{16}\b" },
-
-        // Token JWT
-        { "Token_JWT", @"\beyJ[A-Za-z0-9-_]+\.eyJ[A-Za-z0-9-_]+\.[A-Za-z0-9-_.+/=]*\b" }
+        // Plaque d'immatriculation - Nouveau format (AB 1234 CD) ou ancien (1234 AB)
+        { "Plaque_Immatriculation", @"\b(?:[A-Z]{2}\s?\d{4}\s?[A-Z]{2}|\d{4}\s?[A-Z]{2})\b" }
     };
 
     public static List<ScanResult> Detect(string content, string filePath, DateTime? lastAccessedDate = null, FilePermissionAnalyzer.PermissionInfo? permissionInfo = null)
@@ -125,8 +119,6 @@ public static class PiiDetector
             "IBAN" => IsValidIbanBenin(value),
             "CNI_Benin" => IsValidCNI(value),
             "CNSS" => IsValidCNSS(value),
-            "MotDePasse" => IsValidPassword(value),
-            "CleAPI_AWS" => IsValidAwsKey(value),
             _ => true
         };
     }
@@ -298,50 +290,6 @@ public static class PiiDetector
         // Rejeter les numéros commençant par 00000 ou 99999
         if (cnss.StartsWith("00000") || cnss.StartsWith("99999"))
             return false;
-
-        return true;
-    }
-
-    private static bool IsValidPassword(string value)
-    {
-        // Éviter les faux positifs où le mot clé est détecté mais pas vraiment un mot de passe
-        // Par exemple: "password: " sans valeur, ou "password_reset" (fonction)
-
-        // Extraire la partie après le séparateur
-        var match = Regex.Match(value, @"[:=]\s*(.+)$");
-        if (!match.Success)
-            return false;
-
-        string passwordPart = match.Groups[1].Value.Trim();
-
-        // Doit avoir au moins 4 caractères pour être considéré comme un mot de passe
-        if (passwordPart.Length < 4)
-            return false;
-
-        // Éviter les valeurs placeholder courantes
-        string[] placeholders = { "****", "xxxx", "your_password", "changeme", "example", "null", "none", "false", "true" };
-        if (placeholders.Any(p => passwordPart.Equals(p, StringComparison.OrdinalIgnoreCase)))
-            return false;
-
-        return true;
-    }
-
-    private static bool IsValidAwsKey(string value)
-    {
-        // Les clés AWS commencent toujours par AKIA
-        if (!value.StartsWith("AKIA"))
-            return false;
-
-        // Doivent avoir exactement 20 caractères (AKIA + 16 caractères)
-        if (value.Length != 20)
-            return false;
-
-        // Tous les caractères après AKIA doivent être alphanumériques majuscules
-        for (int i = 4; i < value.Length; i++)
-        {
-            if (!char.IsLetterOrDigit(value[i]) || char.IsLower(value[i]))
-                return false;
-        }
 
         return true;
     }

@@ -30,6 +30,7 @@ import SendIcon from '@mui/icons-material/Send';
 import ArticleIcon from '@mui/icons-material/Article';
 import ContactSupportIcon from '@mui/icons-material/ContactSupport';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 interface FAQ {
   question: string;
@@ -213,6 +214,31 @@ export default function Support() {
               onClick={() => openExternalLink('https://www.youtube.com/@piiscanner')}
             >
               Voir les vidéos
+            </Button>
+          </CardActions>
+        </Card>
+
+        <Card sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+          <CardContent sx={{ flexGrow: 1 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+              <AddCircleOutlineIcon sx={{ fontSize: 40, color: '#27ae60', mr: 2 }} />
+              <Typography variant="h6" fontWeight={600}>
+                Suggérer un pattern
+              </Typography>
+            </Box>
+            <Typography variant="body2" color="text.secondary">
+              Vous connaissez un type de donnée personnelle non détecté ? Proposez un nouveau pattern de détection.
+            </Typography>
+          </CardContent>
+          <CardActions sx={{ p: 2, pt: 0 }}>
+            <Button
+              fullWidth
+              variant="outlined"
+              color="success"
+              endIcon={<OpenInNewIcon />}
+              onClick={() => openExternalLink('https://github.com/cyberprevs/pii-scanner/issues/new?labels=enhancement,pattern&template=suggest_pattern.md&title=[Pattern]%20')}
+            >
+              Proposer un pattern
             </Button>
           </CardActions>
         </Card>
