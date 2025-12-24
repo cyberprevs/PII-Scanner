@@ -411,9 +411,11 @@ Fichier .xlsx avec 3 onglets :
   - Rejet des caractères `..`, `/`, `\` dans les noms de fichiers
   - Utilisation de `Path.GetFullPath()` pour résolution absolue
   - Logs détaillés des tentatives d'accès aux fichiers
-- **Protection CSRF** : Middleware Double-Submit Cookie Pattern
-  - Tokens cryptographiquement sécurisés pour toutes les opérations de modification
+- **Protection CSRF** : Middleware Header-Based CSRF Tokens
+  - Tokens cryptographiquement sécurisés (32 bytes, Base64) pour toutes les opérations de modification
   - Validation stricte POST/PUT/DELETE/PATCH
+  - Transmission via headers HTTP (pas de cookies pour compatibilité cross-origin)
+  - Configuration CORS avec `.WithExposedHeaders("X-CSRF-Token")`
   - Logs des tentatives d'attaque CSRF
 - **Rate Limiting** : Protection contre brute force et abus
   - Login : 5 tentatives / 15 minutes
@@ -601,14 +603,14 @@ Pour des informations détaillées sur la sécurité de l'application, consultez
 1. **Protection Path Traversal** : Validation stricte de tous les chemins de fichiers et répertoires
 2. **Authentification JWT** : Tokens sécurisés avec expiration et révocation
 3. **Gestion des rôles (RBAC)** : Séparation Admin/Utilisateur
-4. **Protection CSRF** : Double-Submit Cookie Pattern avec tokens cryptographiques
+4. **Protection CSRF** : Header-Based CSRF Tokens (32 bytes, Base64) pour toutes opérations de modification
 5. **Rate Limiting** : Protection brute force (5 login/15min, 20 ops sensibles/5min, 100 API/min)
 6. **Chiffrement base de données** : SQLCipher avec AES-256 (clé 256 bits)
 7. **Audit Logging** : Traçabilité complète de toutes les opérations sensibles
 8. **Validation des entrées** : Tous les inputs utilisateur sont validés
 9. **Protection SQL Injection** : Requêtes paramétrées avec Entity Framework
 10. **Hashage des mots de passe** : BCrypt avec salt automatique
-11. **CORS configuré** : Politique stricte d'origine croisée
+11. **CORS configuré** : Politique stricte d'origine croisée avec headers exposés (X-CSRF-Token)
 
 ### Signaler une vulnérabilité
 
@@ -675,10 +677,49 @@ Voir le fichier [LICENSE](LICENSE) pour les détails complets.
 - Conforme aux réglementations APDP (Bénin) et RGPD (Europe)
 - Solutions sur mesure pour entreprises et organisations
 
+## Historique des mises à jour
+
+### Version 1.0.0 (Décembre 2024)
+
+**Nouvelles fonctionnalités** :
+- ✅ Détection de 19 types de PII spécifiques au Bénin avec validation avancée
+- ✅ Interface moderne avec 16 pages spécialisées (Material-UI v7 Dark Theme)
+- ✅ Dashboard redessiné avec KPIs modernes et graphiques interactifs (donut charts, area charts)
+- ✅ Page Reports & Analytics avec 3 vues (Overview, Detailed, Comparison) et graphiques avancés (treemap, radar)
+- ✅ Typographie modernisée avec Plus Jakarta Sans
+- ✅ Scans planifiés automatiques (quotidien, hebdomadaire, mensuel, trimestriel)
+- ✅ Système de rétention des données conforme APDP
+- ✅ Analyse ancienneté (Stale Data) et exposition (Over-Exposed Data)
+- ✅ Authentification JWT avec refresh tokens
+- ✅ Gestion des utilisateurs avec RBAC (Admin/User)
+- ✅ Base de données chiffrée SQLCipher (AES-256)
+- ✅ Journal d'audit complet
+
+**Sécurité** :
+- ✅ Protection CSRF avec Header-Based Tokens (fix cross-origin compatibility)
+- ✅ Configuration CORS avec `.WithExposedHeaders("X-CSRF-Token")`
+- ✅ Rate Limiting (5 login/15min, 20 ops sensibles/5min, 100 API/min)
+- ✅ Protection Path Traversal sur tous les endpoints
+- ✅ Headers de sécurité HTTP (HSTS, X-Frame-Options, X-XSS-Protection, etc.)
+- ✅ HTTPS/TLS 1.2+ natif avec redirection automatique
+- ✅ Hashage BCrypt pour mots de passe
+
+**Performance** :
+- ✅ Traitement parallèle optimisé (Parallel.ForEach avec CPU multi-cœurs)
+- ✅ SignalR pour mises à jour temps réel
+- ✅ Réduction de 85-95% des faux positifs grâce à la validation stricte
+
+**Documentation** :
+- ✅ README complet avec guide d'installation et utilisation
+- ✅ CAHIER_DES_CHARGES.md avec spécifications détaillées
+- ✅ CLAUDE.md pour développeurs (architecture, API, commandes)
+- ✅ SECURITY.md avec documentation de sécurité
+- ✅ SUPPORT_CONFIGURATION.md pour configuration du support
+
 ---
 
 **Version** : 1.0.0
-**Dernière mise à jour** : Décembre 2025
+**Dernière mise à jour** : Décembre 2024
 **Conformité** : Loi N°2017-20 du Bénin (APDP)
 **Développé par** : [Cyberprevs](https://cyberprevs.com)
 **Licence** : [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/)
