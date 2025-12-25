@@ -114,7 +114,13 @@ electron_1.ipcMain.handle('select-directory', async () => {
 });
 // Démarrer l'application
 electron_1.app.whenReady().then(() => {
-    startApiServer();
+    // Ne démarrer l'API que si la variable SKIP_API_START n'est pas définie
+    if (!process.env.SKIP_API_START) {
+        startApiServer();
+    }
+    else {
+        console.log('API start skipped (SKIP_API_START is set)');
+    }
     // Attendre un peu que l'API démarre
     setTimeout(() => {
         createWindow();

@@ -1,0 +1,417 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    PII SCANNER v2.0.0 - VERSION PORTABLE                     ║
+║                         Détecteur de Données Personnelles                    ║
+║                            Conforme Loi APDP Bénin                           ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+📦 CONTENU DU PACKAGE
+═══════════════════════════════════════════════════════════════════════════════
+
+Ce package portable contient tout le nécessaire pour exécuter PII Scanner
+sans installation :
+
+📁 PII-Scanner-Portable-Complete/
+  ├── 🚀 Démarrer PII Scanner.bat               ← Lance l'application
+  ├── 🔓 Débloquer-Fichiers.bat                  ← Débloque les fichiers (Windows)
+  ├── 🛡️ Ajouter-Exclusion-Windows-Defender.bat ← Ajoute une exclusion sécurité
+  ├── 📄 LISEZMOI.txt                            ← Ce fichier
+  ├── 📂 API/                                    ← Backend .NET (52 MB)
+  │   └── PiiScanner.Api.exe                     ← Serveur API (self-contained)
+  └── 📂 UI/                                     ← Interface Electron (144 MB)
+      └── PII Scanner.exe                        ← Interface utilisateur
+
+Taille totale : ~196 MB (tout inclus, aucune installation requise)
+
+══════════════════════════════════════════════════════════════════════════════
+
+🚀 DÉMARRAGE RAPIDE (30 SECONDES)
+═══════════════════════════════════════════════════════════════════════════════
+
+MÉTHODE RECOMMANDÉE :
+─────────────────────────────────────────────────────────────────────────────
+
+1. Extrayez le ZIP dans un dossier (exemple : C:\PII-Scanner\)
+
+2. Double-cliquez sur : Démarrer PII Scanner.bat
+
+   → Ce script lance automatiquement l'API puis l'interface
+   → Attendez 8 secondes pour que l'API démarre complètement
+
+3. Si Windows bloque l'exécution (voir section suivante ⚠️)
+
+4. L'application s'ouvre automatiquement ! 🎉
+
+══════════════════════════════════════════════════════════════════════════════
+
+⚠️ PROBLÈME FRÉQUENT : Windows SmartScreen / Smart App Control
+═══════════════════════════════════════════════════════════════════════════════
+
+Windows peut afficher ces messages d'erreur :
+
+❌ "Windows a protégé votre ordinateur"
+❌ "Une stratégie de contrôle d'application a bloqué ce fichier"
+❌ "Windows Smart App Control a bloqué une partie de cette application"
+
+POURQUOI CET AVERTISSEMENT ?
+─────────────────────────────────────────────────────────────────────────────
+
+L'application n'est pas signée numériquement avec un certificat Microsoft.
+Un certificat de signature coûte environ 300€/an.
+
+Cette application est 100% sûre, open-source, et le code est disponible sur :
+→ https://github.com/cyberprevs/pii-scanner
+
+🔍 Vous pouvez vérifier le code avant de l'exécuter.
+
+SOLUTIONS (par ordre de recommandation)
+═══════════════════════════════════════════════════════════════════════════════
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│ SOLUTION 1 : Ajouter une exclusion Windows Defender (RECOMMANDÉE)       │
+└──────────────────────────────────────────────────────────────────────────┘
+
+Cette solution est PERMANENTE et empêche tout blocage futur.
+
+Étapes :
+1. Clic droit sur : Ajouter-Exclusion-Windows-Defender.bat
+2. Sélectionnez "Exécuter en tant qu'administrateur"
+3. Confirmez l'ajout de l'exclusion dans la fenêtre UAC
+4. Fermez la fenêtre
+5. Relancez "Démarrer PII Scanner.bat"
+
+✅ L'application ne sera plus bloquée
+
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│ SOLUTION 2 : Script de déblocage automatique                            │
+└──────────────────────────────────────────────────────────────────────────┘
+
+Cette solution utilise PowerShell pour débloquer tous les fichiers.
+
+Étapes :
+1. Double-cliquez sur : Débloquer-Fichiers.bat
+2. Attendez le message "Terminé !"
+3. Fermez la fenêtre
+4. Relancez "Démarrer PII Scanner.bat"
+
+✅ Les fichiers sont débloqués (peut nécessiter de répéter après un redémarrage)
+
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│ SOLUTION 3 : Déblocage manuel (si les scripts ne fonctionnent pas)      │
+└──────────────────────────────────────────────────────────────────────────┘
+
+Étapes :
+1. Clic droit sur : UI\PII Scanner.exe
+2. Sélectionnez "Propriétés"
+3. En bas de l'onglet "Général", cochez la case "Débloquer"
+4. Cliquez sur "Appliquer" puis "OK"
+5. Répétez pour : API\PiiScanner.Api.exe
+6. Relancez "Démarrer PII Scanner.bat"
+
+✅ L'application est autorisée à s'exécuter
+
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│ SOLUTION 4 : Désactiver temporairement Smart App Control                │
+└──────────────────────────────────────────────────────────────────────────┘
+
+UNIQUEMENT si toutes les autres solutions échouent :
+
+Étapes :
+1. Ouvrez : Paramètres Windows → Confidentialité et sécurité
+2. Cliquez sur "Sécurité Windows"
+3. Cliquez sur "Contrôle des applications et du navigateur"
+4. Trouvez "Contrôle d'application intelligent" (Smart App Control)
+5. Sélectionnez "Désactivé"
+6. Redémarrez Windows
+7. Relancez "Démarrer PII Scanner.bat"
+
+⚠️ IMPORTANT : Réactivez cette fonctionnalité après avoir débloqué l'application
+
+
+NOTE : Un ticket a été ouvert auprès de Microsoft concernant ce problème.
+
+══════════════════════════════════════════════════════════════════════════════
+
+🎯 PREMIÈRE UTILISATION
+═══════════════════════════════════════════════════════════════════════════════
+
+Au premier démarrage, vous devez créer un compte administrateur :
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│  Configuration initiale                                                  │
+└──────────────────────────────────────────────────────────────────────────┘
+
+Champs requis :
+   • Nom d'utilisateur : admin (ou votre choix, 3 caractères minimum)
+   • Email : votre@email.com
+   • Nom complet : Votre Nom Complet
+   • Mot de passe : Minimum 12 caractères
+                    (majuscule + minuscule + chiffre + caractère spécial)
+
+Exemple de mot de passe fort : Admin@PiiScan2025!
+
+⚠️ IMPORTANT : Utilisez le NOM D'UTILISATEUR (pas l'email) pour vous connecter
+
+✅ Cliquez sur "Créer le compte administrateur"
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│  Connexion                                                               │
+└──────────────────────────────────────────────────────────────────────────┘
+
+1. Entrez votre nom d'utilisateur (exemple : admin)
+2. Entrez votre mot de passe
+3. Cliquez sur "Se connecter"
+
+🎉 Vous êtes maintenant connecté à PII Scanner !
+
+══════════════════════════════════════════════════════════════════════════════
+
+💡 UTILISATION QUOTIDIENNE
+═══════════════════════════════════════════════════════════════════════════════
+
+Pour utiliser l'application chaque jour :
+
+1. Double-cliquez sur : Démarrer PII Scanner.bat
+
+2. Attendez que l'interface s'ouvre (environ 8 secondes)
+
+3. Connectez-vous avec vos identifiants
+
+4. Lancez un scan depuis le menu "Scanner"
+
+C'est tout ! Pas besoin de manipulations supplémentaires.
+
+══════════════════════════════════════════════════════════════════════════════
+
+🔧 DÉMARRAGE MANUEL (pour les utilisateurs avancés)
+═══════════════════════════════════════════════════════════════════════════════
+
+Si vous préférez démarrer l'API et l'interface séparément :
+
+ÉTAPE 1 : Démarrer l'API Backend
+─────────────────────────────────────────────────────────────────────────────
+
+1. Ouvrez : API\PiiScanner.Api.exe
+
+2. Une console s'ouvre avec le message :
+   ✅ "Now listening on: https://localhost:5001"
+
+   ⚠️ NE FERMEZ PAS cette fenêtre ! L'API doit rester active.
+
+
+ÉTAPE 2 : Démarrer l'interface Frontend
+─────────────────────────────────────────────────────────────────────────────
+
+1. Attendez 5-8 secondes que l'API démarre complètement
+
+2. Ouvrez : UI\PII Scanner.exe
+
+3. L'application Electron s'ouvre et se connecte automatiquement à l'API
+
+══════════════════════════════════════════════════════════════════════════════
+
+🔒 SÉCURITÉ
+═══════════════════════════════════════════════════════════════════════════════
+
+PII Scanner implémente les meilleures pratiques de sécurité :
+
+✅ Base de données chiffrée avec SQLCipher (AES-256)
+✅ Mots de passe hashés avec BCrypt + salt automatique
+✅ Communication HTTPS/TLS 1.2+
+✅ Authentification JWT (tokens 7 jours)
+✅ Protection CSRF (Cross-Site Request Forgery)
+✅ Protection contre l'injection SQL (Entity Framework)
+✅ Validation des chemins de fichiers (path traversal)
+✅ Rate limiting sur les endpoints sensibles
+✅ Logs d'audit pour toutes les opérations critiques
+✅ Traitement 100% local (aucune donnée envoyée sur Internet)
+
+⚠️ SECRET JWT PAR DÉFAUT
+─────────────────────────────────────────────────────────────────────────────
+
+Pour les tests, cette version utilise un secret JWT par défaut.
+
+🚨 POUR UN USAGE EN PRODUCTION :
+
+1. Ouvrez : API\appsettings.json
+
+2. Générez un nouveau secret sécurisé avec PowerShell :
+
+   powershell -Command "$secret = [Convert]::ToBase64String([System.Security.Cryptography.RandomNumberGenerator]::GetBytes(64)); Write-Host $secret"
+
+3. Remplacez dans appsettings.json :
+
+   "Jwt": {
+     "Secret": "COLLEZ_VOTRE_NOUVEAU_SECRET_ICI",
+     ...
+   }
+
+4. Sauvegardez le fichier
+
+5. Redémarrez l'API (fermez la console et relancez PiiScanner.Api.exe)
+
+══════════════════════════════════════════════════════════════════════════════
+
+❓ DÉPANNAGE
+═══════════════════════════════════════════════════════════════════════════════
+
+PROBLÈME : L'API ne démarre pas
+─────────────────────────────────────────────────────────────────────────────
+
+Symptôme : Console s'ouvre et se ferme immédiatement
+
+Solution 1 : Vérifiez que le port 5001 n'est pas déjà utilisé
+
+   CMD > netstat -ano | findstr :5001
+
+   Si occupé, tuez le processus :
+   CMD > taskkill /PID <numéro> /F
+
+Solution 2 : Installez .NET 8.0 Runtime (si le package self-contained échoue)
+
+   Téléchargez : https://dotnet.microsoft.com/download/dotnet/8.0
+
+
+PROBLÈME : Page blanche après création du compte admin
+─────────────────────────────────────────────────────────────────────────────
+
+Symptôme : Écran blanc après avoir cliqué sur "Créer le compte"
+
+Solution : Ce bug a été corrigé dans la version 2.0
+
+   Si vous rencontrez toujours le problème :
+   1. Fermez complètement l'application
+   2. Relancez "Démarrer PII Scanner.bat"
+   3. Vous devriez voir l'écran de connexion
+
+
+PROBLÈME : L'interface ne se connecte pas à l'API
+─────────────────────────────────────────────────────────────────────────────
+
+Symptôme : "Impossible de se connecter au serveur" ou "Failed to fetch"
+
+✅ Vérifiez que l'API est bien démarrée (console ouverte)
+✅ Vérifiez le message "Now listening on: https://localhost:5001"
+✅ Autorisez le certificat HTTPS si le navigateur demande
+✅ Vérifiez que le pare-feu Windows n'est pas en cause
+
+
+PROBLÈME : Erreur "Database is locked"
+─────────────────────────────────────────────────────────────────────────────
+
+Symptôme : "SQLite Error 5: database is locked"
+
+Cause : Une autre instance de l'API est déjà en cours d'exécution
+
+Solution :
+   1. Fermez toutes les consoles ouvertes
+   2. Vérifiez les processus en cours :
+
+      CMD > tasklist | findstr PiiScanner
+
+   3. Tuez les processus :
+
+      CMD > taskkill /F /IM PiiScanner.Api.exe
+
+   4. Relancez "Démarrer PII Scanner.bat"
+
+
+PROBLÈME : Erreur de certificat HTTPS
+─────────────────────────────────────────────────────────────────────────────
+
+Symptôme : "SSL handshake failed" ou erreur de certificat
+
+Solution : Régénérez le certificat de développement
+
+   CMD > dotnet dev-certs https --clean
+   CMD > dotnet dev-certs https --trust
+
+
+PROBLÈME : Le pare-feu Windows bloque l'application
+─────────────────────────────────────────────────────────────────────────────
+
+Symptôme : Pop-up du pare-feu Windows lors du démarrage de l'API
+
+Solution : Autorisez l'accès réseau
+
+   1. Cochez "Réseaux privés" (recommandé)
+   2. Cliquez sur "Autoriser l'accès"
+
+   L'API n'écoute que sur localhost (127.0.0.1) et n'est pas accessible
+   depuis Internet.
+
+══════════════════════════════════════════════════════════════════════════════
+
+📚 DOCUMENTATION COMPLÈTE
+═══════════════════════════════════════════════════════════════════════════════
+
+Documentation en ligne : https://github.com/cyberprevs/pii-scanner
+
+Fichiers inclus dans le repository GitHub :
+
+- 📖 README.md          : Vue d'ensemble du projet
+- 🛠️ INSTALLATION.md    : Guide d'installation complet
+- ⚙️ CONFIGURATION.md   : Configuration pour la production
+- 🔒 SECURITY.md        : Documentation de sécurité détaillée
+- 💻 CLAUDE.md          : Guide technique pour développeurs
+- 📝 CHANGELOG.md       : Historique des versions
+
+══════════════════════════════════════════════════════════════════════════════
+
+❤️ SUPPORT & DONS
+═══════════════════════════════════════════════════════════════════════════════
+
+PII Scanner est gratuit et open-source (licence CC BY-NC 4.0).
+Soutenez le développement du projet :
+
+☕ Ko-fi (à partir de 3€) : https://ko-fi.com/Y8Y31QXZ2Y
+💳 PayPal (montant libre) : https://www.paypal.com/ncp/payment/G9FTF7NGPN8CG
+
+Support professionnel : contact@cyberprevs.fr
+
+══════════════════════════════════════════════════════════════════════════════
+
+📋 INFORMATIONS TECHNIQUES
+═══════════════════════════════════════════════════════════════════════════════
+
+Version             : 2.0.0
+Développé par       : Cyberprevs (https://cyberprevs.com)
+Licence             : CC BY-NC 4.0
+Conforme            : Loi N°2017-20 du Bénin (APDP)
+OS supportés        : Windows 10/11, Windows Server 2016/2019/2022
+Technologies        : .NET 8.0, React 19, Electron 30, TypeScript 5.9
+
+Détections PII      : 17 types de données personnelles
+- IFU, CNI, Passeport, RCCM, Acte de Naissance
+- IBAN, Mobile Money (MTN, Moov), Carte bancaire
+- CNSS, RAMU, INE, Matricule Fonctionnaire
+- Email, Téléphone, Date de naissance
+- Plaque d'immatriculation (nouveau format)
+
+Formats supportés   : .docx, .xlsx, .pdf, .txt, .log, .csv, .json
+Rapports générés    : CSV, JSON, HTML, Excel
+
+Sécurité            :
+- SQLCipher AES-256
+- BCrypt password hashing
+- JWT authentication
+- HTTPS/TLS 1.2+
+- CSRF protection
+- Rate limiting
+- Audit logging
+
+Performance         :
+- Scan parallèle (tous les cœurs CPU)
+- Mise à jour temps réel (SignalR WebSocket)
+- ~87% de réduction des faux positifs
+
+══════════════════════════════════════════════════════════════════════════════
+
+Dernière mise à jour : Décembre 2024
+© 2024 Cyberprevs - Tous droits réservés
+
+═══════════════════════════════════════════════════════════════════════════════
+                            Merci d'utiliser PII Scanner !
+═══════════════════════════════════════════════════════════════════════════════

@@ -97,12 +97,11 @@ ipcMain.handle('select-directory', async () => {
 
 // Démarrer l'application
 app.whenReady().then(() => {
-  startApiServer();
+  // API désactivée - à démarrer manuellement avec: dotnet run dans PiiScanner.Api
+  console.log('API auto-start disabled - please start manually: dotnet run in PiiScanner.Api');
 
-  // Attendre un peu que l'API démarre
-  setTimeout(() => {
-    createWindow();
-  }, 2000);
+  // Créer la fenêtre immédiatement (pas besoin d'attendre l'API)
+  createWindow();
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {

@@ -279,7 +279,7 @@ The app has NO default credentials for security. First-run setup is required:
    - Password validation: 12+ chars with uppercase, lowercase, number, special character
    - Calls `POST /api/initialization/setup` with credentials
    - Backend creates first admin user with BCrypt password hash
-   - Redirects to `/login` after successful creation
+   - **Navigation fix** ([App.tsx:179-192](pii-scanner-ui/src/App.tsx#L179-L192)): After account creation, triggers state update + API re-check to properly re-render with login Router instead of blank page
 
 3. **Authentication** ([Login.tsx](pii-scanner-ui/src/components/Login.tsx)):
    - User enters **username** (not email or full name) and password
@@ -296,8 +296,67 @@ The app has NO default credentials for security. First-run setup is required:
 
 **Build Process:**
 - `npm run build` - Compiles TypeScript and bundles with Vite
-- `npm run electron:build:win` - Creates Windows installer (NSIS)
+- `npm run electron:build:win` - Creates Windows installer (NSIS) or portable version
 - Bundles API binaries from `../PiiScanner.Api/bin/Release/net8.0/publish`
+
+**Portable Deployment:**
+
+The application can be distributed as a portable package that requires no installation.
+
+*Package Structure:*
+```
+PII-Scanner-Portable-Complete/
+├── Démarrer PII Scanner.bat               ← One-click launcher
+├── Débloquer-Fichiers.bat                  ← Unblock script (Windows SmartScreen)
+├── Ajouter-Exclusion-Windows-Defender.bat ← Defender exclusion (Admin)
+├── LISEZMOI.txt                            ← User instructions (French)
+├── API/
+│   └── PiiScanner.Api.exe                  ← Self-contained .NET (includes runtime)
+└── UI/
+    └── PII Scanner.exe                     ← Electron app (win-unpacked)
+```
+
+*Build Portable Package:*
+```bash
+# 1. Build UI
+cd pii-scanner-ui
+npx vite build
+npx electron-builder --win --dir
+
+# 2. Publish API (self-contained with runtime)
+cd ../PiiScanner.Api
+dotnet publish -c Release -r win-x64 --self-contained true -o ../Portable/API
+
+# 3. Copy UI
+cp -r ../pii-scanner-ui/release/win-unpacked ../Portable/UI
+
+# 4. Add launcher scripts
+# See scripts in PII-Scanner-Portable-Complete/ folder
+```
+
+*Windows SmartScreen Issue:*
+
+The portable application is **not code-signed** (certificate costs ~300€/year), so Windows SmartScreen and Smart App Control may block execution with errors like:
+- "Windows a protégé votre ordinateur"
+- "Une stratégie de contrôle d'application a bloqué ce fichier"
+
+**Solutions provided:**
+1. **Manual unblock**: Right-click `UI\PII Scanner.exe` → Properties → Check "Unblock" → OK
+2. **Automated unblock**: Run `Débloquer-Fichiers.bat` (uses PowerShell `Unblock-File`)
+3. **Windows Defender exclusion** (Recommended): Run `Ajouter-Exclusion-Windows-Defender.bat` as Administrator
+
+*API Auto-Start Disabled:*
+
+In `electron/main.ts`, the automatic API startup is disabled for the portable version:
+```typescript
+app.whenReady().then(() => {
+  // API auto-start disabled - must be started manually via batch script
+  console.log('API auto-start disabled - please start manually: dotnet run in PiiScanner.Api');
+  createWindow();
+});
+```
+
+The batch script handles starting both API and UI in the correct order.
 
 ### 4. PiiScanner (Console App - Legacy)
 
@@ -663,6 +722,19 @@ dotnet ef migrations remove
 - Clear node_modules and reinstall: `rm -rf node_modules && npm install`
 - Check Node.js version: `node --version` (requires 18+)
 - Clear Vite cache: `rm -rf node_modules/.vite`
+
+**Windows SmartScreen blocks portable app:**
+- **Error**: "Windows a protégé votre ordinateur" or "Une stratégie de contrôle d'application a bloqué ce fichier"
+- **Cause**: Application is not code-signed (certificate costs ~300€/year)
+- **Solution 1**: Manual unblock - Right-click `UI\PII Scanner.exe` → Properties → Check "Unblock" → OK
+- **Solution 2**: Run `Débloquer-Fichiers.bat` (automated PowerShell script)
+- **Solution 3** (Recommended): Run `Ajouter-Exclusion-Windows-Defender.bat` as Administrator
+- **Note**: User opened ticket with Microsoft regarding this issue
+
+**Portable app shows blank page after admin creation:**
+- **Cause**: React Router not re-rendering properly when initialization state changes
+- **Fix**: Implemented in [App.tsx:179-192](pii-scanner-ui/src/App.tsx#L179-L192) with state update + API re-check
+- **Workaround**: Manually restart the application if issue persists
 
 ### Useful Endpoints for Testing
 

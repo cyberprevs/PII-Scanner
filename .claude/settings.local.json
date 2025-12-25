@@ -32,7 +32,14 @@
       "Bash(del:*)",
       "Bash(del db_encryption.key)",
       "Bash(test:*)",
-      "Bash(dotnet restore:*)"
+      "Bash(dotnet restore:*)",
+      "Bash(du -sh:*)",
+      "Bash(npx tsc:*)",
+      "Bash(curl:*)",
+      "Bash(robocopy:*)",
+      "Bash(tasklist:*)",
+      "Bash(timeout /t 2)",
+      "Bash(npx vite build)"
     ]
   }
 }

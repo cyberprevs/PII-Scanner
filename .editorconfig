@@ -1,0 +1,64 @@
+# EditorConfig is awesome: https://EditorConfig.org
+
+# Top-most EditorConfig file
+root = true
+
+# All files
+[*]
+charset = utf-8
+end_of_line = crlf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Code files
+[*.{cs,csx,vb,vbx}]
+indent_style = space
+indent_size = 4
+
+# C# files
+[*.cs]
+# New line preferences
+csharp_new_line_before_open_brace = all
+csharp_new_line_before_else = true
+csharp_new_line_before_catch = true
+csharp_new_line_before_finally = true
+
+# Indentation preferences
+csharp_indent_case_contents = true
+csharp_indent_switch_labels = true
+
+# Space preferences
+csharp_space_after_cast = false
+csharp_space_after_keywords_in_control_flow_statements = true
+
+# JavaScript/TypeScript files
+[*.{js,ts,jsx,tsx}]
+indent_style = space
+indent_size = 2
+
+# JSON files
+[*.json]
+indent_style = space
+indent_size = 2
+
+# YAML files
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2
+
+# Markdown files
+[*.md]
+trim_trailing_whitespace = false
+
+# XML/config files
+[*.{xml,config,props,targets,nuspec,resx,ruleset,vsixmanifest,vsct}]
+indent_style = space
+indent_size = 2
+
+# Batch files
+[*.{cmd,bat}]
+end_of_line = crlf
+
+# Shell scripts
+[*.sh]
+end_of_line = lf

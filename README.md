@@ -1,12 +1,41 @@
 # PII Scanner - Détecteur de Données Personnelles pour le Bénin
 
 [![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
+[![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript)](https://www.typescriptlang.org/)
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-Support-orange?logo=ko-fi)](https://ko-fi.com/Y8Y31QXZ2Y)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-blue.svg)](https://www.paypal.com/ncp/payment/G9FTF7NGPN8CG)
 
 Application de bureau pour détecter et analyser les données personnelles identifiables (PII) dans vos fichiers, conforme à la **Loi N°2017-20 du Bénin** sur la protection des données personnelles (APDP).
 
-## 🚀 Quick Start (Test en 5 minutes)
+## 🚀 Quick Start
+
+### Option 1 : Version portable (Recommandée - Pas d'installation)
+
+**Téléchargez** : `PII-Scanner-v1.0.0-Portable-Complete.zip` depuis les [Releases](https://github.com/cyberprevs/pii-scanner/releases)
+
+```bash
+# 1. Extraire le ZIP
+Expand-Archive PII-Scanner-v1.0.0-Portable-Complete.zip -Destination C:\PII-Scanner
+
+# 2. Débloquer les fichiers (Solution au blocage Windows SmartScreen)
+cd C:\PII-Scanner
+# Option A: Clic-droit sur UI\PII Scanner.exe → Propriétés → Cocher "Débloquer" → OK
+# Option B: Double-clic sur "Débloquer-Fichiers.bat"
+# Option C: Clic-droit "Ajouter-Exclusion-Windows-Defender.bat" → Exécuter en Admin
+
+# 3. Lancer l'application
+Double-clic sur "Démarrer PII Scanner.bat"
+```
+
+✅ **Aucune installation requise** - Tout est inclus (API + UI + .NET Runtime)
+✅ Fonctionne sur **Windows 10/11** et **Windows Server 2016/2019/2022**
+✅ **Première utilisation** : Créez votre compte admin (pas de compte par défaut)
+
+⚠️ **Windows SmartScreen** : L'application n'est pas signée numériquement (coût ~300€/an). Windows peut bloquer l'exécution. Utilisez l'une des 3 méthodes de déblocage ci-dessus. C'est **100% sûr** - le code est open-source et vérifié.
+
+### Option 2 : Installation depuis les sources (Développeurs)
 
 ```bash
 # 1. Cloner le projet
@@ -28,7 +57,7 @@ npm run electron:dev
 ✅ Créez votre compte admin (première utilisation)
 ✅ Lancez un scan de test !
 
-📖 **Guide détaillé** : [INSTALLATION.md](INSTALLATION.md) | **Configuration production** : [CONFIGURATION.md](CONFIGURATION.md)
+📖 **Guide détaillé** : [INSTALLATION.md](INSTALLATION.md) | **Configuration production** : [CONFIGURATION.md](CONFIGURATION.md) | **Version portable** : [LISEZMOI-PORTABLE.txt](LISEZMOI-PORTABLE.txt)
 
 ---
 

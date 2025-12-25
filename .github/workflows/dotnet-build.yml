@@ -1,0 +1,40 @@
+name: .NET Build and Test
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore PiiScanner.sln
+
+    - name: Build solution
+      run: dotnet build PiiScanner.sln --configuration Release --no-restore
+
+    - name: Run tests (if any)
+      run: dotnet test PiiScanner.sln --configuration Release --no-build --verbosity normal
+      continue-on-error: true
+
+    - name: Publish API
+      run: dotnet publish PiiScanner.Api/PiiScanner.Api.csproj --configuration Release --output ./publish-api
+
+    - name: Upload API artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: pii-scanner-api
+        path: ./publish-api
+        retention-days: 7
