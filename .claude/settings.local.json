@@ -31,7 +31,8 @@
       "Bash(npm run electron:dev:*)",
       "Bash(del:*)",
       "Bash(del db_encryption.key)",
-      "Bash(test:*)"
+      "Bash(test:*)",
+      "Bash(dotnet restore:*)"
     ]
   }
 }

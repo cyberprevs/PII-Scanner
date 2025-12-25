@@ -6,6 +6,32 @@
 
 Application de bureau pour détecter et analyser les données personnelles identifiables (PII) dans vos fichiers, conforme à la **Loi N°2017-20 du Bénin** sur la protection des données personnelles (APDP).
 
+## 🚀 Quick Start (Test en 5 minutes)
+
+```bash
+# 1. Cloner le projet
+git clone https://github.com/cyberprevs/pii-scanner.git
+cd pii-scanner
+
+# 2. Démarrer l'API (.NET 8.0 requis)
+cd PiiScanner.Api
+dotnet restore
+dotnet run
+
+# 3. Dans un nouveau terminal : Démarrer l'interface (Node.js 18+ requis)
+cd pii-scanner-ui
+npm install
+npm run electron:dev
+```
+
+✅ L'application Electron s'ouvre automatiquement
+✅ Créez votre compte admin (première utilisation)
+✅ Lancez un scan de test !
+
+📖 **Guide détaillé** : [INSTALLATION.md](INSTALLATION.md) | **Configuration production** : [CONFIGURATION.md](CONFIGURATION.md)
+
+---
+
 ## Fonctionnalités
 
 ### 🖥️ Compatible Windows Server & Serveurs de fichiers
