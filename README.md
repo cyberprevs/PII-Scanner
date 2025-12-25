@@ -2,7 +2,7 @@
 
 [![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-Support-orange?logo=ko-fi)](https://ko-fi.com/Y8Y31QXZ2Y)
-[![Donate](https://img.shields.io/badge/Donate-PayPal-blue.svg)](https://www.paypal.com/donate/?hosted_button_id=VOTRE_ID)
+[![Donate](https://img.shields.io/badge/Donate-PayPal-blue.svg)](https://www.paypal.com/ncp/payment/G9FTF7NGPN8CG)
 
 Application de bureau pour détecter et analyser les données personnelles identifiables (PII) dans vos fichiers, conforme à la **Loi N°2017-20 du Bénin** sur la protection des données personnelles (APDP).
 
@@ -860,7 +860,7 @@ Voir le fichier [LICENSE](LICENSE) pour les détails complets.
 PII Scanner est un logiciel **gratuit et open-source**. Si vous trouvez cet outil utile pour votre conformité RGPD/APDP, vous pouvez soutenir son développement avec une **contribution à prix libre** :
 
 - **☕ Ko-fi** : [Faire un don](https://ko-fi.com/Y8Y31QXZ2Y) - Montant libre, à partir de 3€
-- **💳 PayPal** : [Faire un don](https://www.paypal.com/donate/?hosted_button_id=VOTRE_ID) - Montant libre de votre choix
+- **💳 PayPal** : [Faire un don](https://www.paypal.com/ncp/payment/G9FTF7NGPN8CG) - Montant libre de votre choix
 - **🏢 Support entreprise** : Contactez [contact@cyberprevs.fr](mailto:contact@cyberprevs.fr) pour des options de support professionnel
 
 **Vos contributions permettent** :

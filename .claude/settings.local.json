@@ -30,7 +30,8 @@
       "Bash(npm install:*)",
       "Bash(npm run electron:dev:*)",
       "Bash(del:*)",
-      "Bash(del db_encryption.key)"
+      "Bash(del db_encryption.key)",
+      "Bash(test:*)"
     ]
   }
 }
