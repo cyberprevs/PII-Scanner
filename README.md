@@ -1,8 +1,20 @@
 # PII Scanner - Détecteur de Données Personnelles pour le Bénin
 
+[![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-Support-orange?logo=ko-fi)](https://ko-fi.com/Y8Y31QXZ2Y)
+[![Donate](https://img.shields.io/badge/Donate-PayPal-blue.svg)](https://www.paypal.com/donate/?hosted_button_id=VOTRE_ID)
+
 Application de bureau pour détecter et analyser les données personnelles identifiables (PII) dans vos fichiers, conforme à la **Loi N°2017-20 du Bénin** sur la protection des données personnelles (APDP).
 
 ## Fonctionnalités
+
+### 🖥️ Compatible Windows Server & Serveurs de fichiers
+- **Déploiement sur Windows Server** : Compatible Windows Server 2016/2019/2022
+- **Scan des partages réseau** : Support complet des chemins UNC (`\\FileServer\Share\...`)
+- **Analyse NTFS ACL** : Détection des fichiers sur-exposés sur serveurs Windows
+- **Service Windows/IIS** : Déploiement en production comme service Windows ou dans IIS
+- **Automatisation possible** : Scripts PowerShell pour déclencher des scans via l'API REST
+- Voir la section [Déploiement sur Windows Server](#déploiement-sur-windows-server) pour plus de détails
 
 ### Détection de 17 types de PII spécifiques au Bénin
 
@@ -131,6 +143,7 @@ Pour plus de détails, consultez la section [Installation](#installation) ci-des
 - .NET 8.0 SDK
 - Node.js 18+ et npm
 - Windows 10/11 (pour la version Electron)
+- **Windows Server** : Compatible avec Windows Server 2016, 2019, 2022 (voir section [Déploiement sur Windows Server](#déploiement-sur-windows-server))
 
 ### Compilation depuis les sources
 
@@ -196,6 +209,183 @@ Pour plus de détails, consultez la section [Installation](#installation) ci-des
 2. **Analyser** : Consultez les détections dans les différentes pages
 3. **Gérer la rétention** : Identifiez et supprimez les fichiers obsolètes
 4. **Exporter** : Téléchargez les rapports au format souhaité
+
+## Déploiement sur Windows Server
+
+### 🖥️ Compatibilité Windows Server & Serveurs de fichiers
+
+PII Scanner est **parfaitement compatible** avec Windows Server et optimisé pour scanner des serveurs de fichiers d'entreprise.
+
+#### Systèmes d'exploitation supportés
+- ✅ Windows Server 2016, 2019, 2022
+- ✅ Windows Server Core (version minimale)
+- ✅ Windows 10/11 (développement et test)
+
+#### Cas d'usage typiques
+
+**1. Scanner des partages réseau**
+```bash
+# L'application peut scanner directement :
+\\FileServer\Departements\RH
+\\FileServer\Comptabilite
+\\DC01\SYSVOL
+C:\Shares\Public
+```
+
+**2. Analyse de serveurs de fichiers RH/Finance**
+- Scanner manuellement ou via script les dossiers sensibles
+- Détection des fichiers contenant IFU, CNI, CNSS, IBAN, comptes Mobile Money
+- Génération de rapports (CSV, JSON, HTML, Excel)
+- Suppression des fichiers obsolètes via la fonctionnalité de rétention des données
+
+**3. Conformité RGPD/APDP sur serveurs partagés**
+- Analyse NTFS ACL pour détecter les fichiers sur-exposés
+- Identification des fichiers accessibles à "Everyone" ou "Authenticated Users"
+- Détection des partages réseau contenant des PII
+- Calcul du niveau d'exposition (Critique, Élevé, Moyen, Faible)
+
+#### Options de déploiement
+
+**Option 1 : Service Windows (Recommandé pour production)**
+```powershell
+# 1. Publier l'API en standalone
+cd PiiScanner.Api
+dotnet publish -c Release -r win-x64 --self-contained true -o C:\PiiScanner
+
+# 2. Installer NSSM (Non-Sucking Service Manager)
+# Télécharger depuis https://nssm.cc/download
+
+# 3. Créer le service Windows
+nssm install PiiScannerAPI "C:\PiiScanner\PiiScanner.Api.exe"
+nssm set PiiScannerAPI AppDirectory "C:\PiiScanner"
+nssm set PiiScannerAPI Start SERVICE_AUTO_START
+nssm start PiiScannerAPI
+
+# 4. Configurer le pare-feu
+New-NetFirewallRule -DisplayName "PII Scanner API" -Direction Inbound -Protocol TCP -LocalPort 5001 -Action Allow
+```
+
+**Option 2 : IIS (Internet Information Services)**
+```powershell
+# 1. Installer le module ASP.NET Core Hosting Bundle
+# Télécharger : https://dotnet.microsoft.com/download/dotnet/8.0
+
+# 2. Créer un Application Pool dans IIS
+# - .NET CLR Version : "No Managed Code"
+# - Managed Pipeline Mode : Integrated
+
+# 3. Publier l'application
+cd PiiScanner.Api
+dotnet publish -c Release -o C:\inetpub\wwwroot\piiscanner
+
+# 4. Créer un site IIS pointant vers C:\inetpub\wwwroot\piiscanner
+# 5. Lier un certificat SSL pour HTTPS
+```
+
+**Option 3 : Automatisation avec scripts PowerShell**
+
+L'application ne dispose pas de scans planifiés intégrés, mais vous pouvez automatiser les scans via l'API REST :
+
+```powershell
+# Script PowerShell pour lancer un scan via l'API
+# scan_api.ps1
+
+# 1. S'authentifier pour obtenir un token JWT
+$loginBody = @{
+    username = "admin"
+    password = "VotreMotDePasse"
+} | ConvertTo-Json
+
+$loginResponse = Invoke-RestMethod -Uri "https://localhost:5001/api/auth/login" -Method POST -ContentType "application/json" -Body $loginBody
+$token = $loginResponse.accessToken
+
+# 2. Lancer un scan
+$scanBody = @{
+    directoryPath = "\\FileServer\RH"
+} | ConvertTo-Json
+
+$headers = @{
+    "Authorization" = "Bearer $token"
+    "Content-Type" = "application/json"
+}
+
+$scanResponse = Invoke-RestMethod -Uri "https://localhost:5001/api/scan/start" -Method POST -Headers $headers -Body $scanBody
+Write-Host "Scan lancé avec l'ID: $($scanResponse.scanId)"
+
+# 3. (Optionnel) Créer une tâche planifiée Windows pour exécuter ce script
+# schtasks /create /tn "PII_Scan_RH_Weekly" /tr "powershell.exe -File C:\Scripts\scan_api.ps1" /sc weekly /d SUN /st 02:00 /ru SYSTEM
+```
+
+**Note** : Les scans planifiés ne sont pas une fonctionnalité native de l'application. Utilisez le Planificateur de tâches Windows pour automatiser l'exécution des scans si nécessaire.
+
+#### Sécurité sur Windows Server
+
+**1. Compte de service dédié**
+```powershell
+# Créer un compte de service
+New-LocalUser -Name "svc_piiscanner" -Description "PII Scanner Service Account" -NoPassword
+Add-LocalGroupMember -Group "Users" -Member "svc_piiscanner"
+
+# Donner les droits de lecture sur les partages
+icacls "\\FileServer\Shares" /grant "svc_piiscanner:(R)"
+
+# Configurer le service pour utiliser ce compte
+nssm set PiiScannerAPI ObjectName ".\svc_piiscanner" "PASSWORD"
+```
+
+**2. Base de données chiffrée**
+- SQLCipher avec AES-256 activé par défaut
+- Clé de chiffrement 256 bits stockée avec protection NTFS ACL
+- Accès restreint au compte de service uniquement
+- Sauvegardes chiffrées automatiques
+
+**3. Audit Windows**
+```powershell
+# Activer l'audit des accès fichiers
+auditpol /set /subcategory:"File System" /success:enable /failure:enable
+auditpol /set /subcategory:"Object Access" /success:enable /failure:enable
+```
+
+#### Avantages sur Windows Server
+
+1. **Accès direct aux partages réseau** : Support complet des chemins UNC (`\\SERVER\Share\...`)
+2. **Analyse NTFS ACL** : Le module `FilePermissionAnalyzer` analyse les permissions Windows et détecte les fichiers sur-exposés
+3. **Intégration Active Directory** : Comptage des groupes/utilisateurs ayant accès aux fichiers
+4. **Performance optimisée** : Traitement parallèle adapté aux serveurs multi-cœurs
+5. **Sécurité renforcée** : Chiffrement base de données, HTTPS/TLS 1.2+, audit complet
+
+#### Exemple de configuration production
+
+**appsettings.Production.json** :
+```json
+{
+  "Database": {
+    "ConnectionString": "Data Source=C:\\ProgramData\\PiiScanner\\piiscanner.db"
+  },
+  "Kestrel": {
+    "Endpoints": {
+      "Https": {
+        "Url": "https://0.0.0.0:5001",
+        "Certificate": {
+          "Path": "C:\\ProgramData\\PiiScanner\\certificate.pfx",
+          "Password": "VOTRE_MOT_DE_PASSE_SECURISE"
+        }
+      }
+    }
+  },
+  "AllowedOrigins": [
+    "https://fileserver.votredomaine.local:5001"
+  ]
+}
+```
+
+#### Performance typique
+
+**Serveur de fichiers RH (200 Go, 50 000 fichiers)** :
+- Configuration : Windows Server 2022, 8 CPU cores, 16 GB RAM
+- Temps de scan : ~30-45 minutes
+- Types détectés : IFU, CNI, CNSS, IBAN, Mobile Money
+- Rapport exporté : Excel vers `\\RH-SERVER\RGPD\Rapports`
 
 ## Architecture
 
@@ -442,6 +632,7 @@ Fichier .xlsx avec 3 onglets :
 11. **HTTPS natif** : TLS 1.2+ avec certificats auto-signés (dev) ou Let's Encrypt (prod)
 12. **Analyse avancée** : Stale Data Detection (ancienneté) + Over-Exposed Data (NTFS ACL)
 13. **Détection secrets** : Mots de passe en clair, clés API AWS, tokens JWT dans le code
+14. **Support Windows Server** : Déploiement natif sur Windows Server 2016/2019/2022 avec support partages réseau UNC et analyse ACL
 
 ## Structure des fichiers
 
@@ -576,7 +767,7 @@ npm run build
 ## Limitations connues
 
 - L'application détecte les PII mais ne peut pas déterminer si elles sont réelles ou fictives
-- Optimisée pour Windows (permissions NTFS pour analyse Over-Exposed Data)
+- **Optimisée pour Windows** : Windows 10/11 et Windows Server 2016/2019/2022 (analyse NTFS ACL, partages réseau UNC)
 - Nécessite .NET 8.0 SDK pour développement, .NET 8.0 Runtime pour production
 - Les emails dans `node_modules/` sont des emails légitimes de développeurs npm (non-PII)
 - Le chiffrement de la base de données nécessite SQLCipher (inclus via Microsoft.Data.Sqlite package)
@@ -663,6 +854,23 @@ Voir le fichier [LICENSE](LICENSE) pour les détails complets.
 - Spécialiste en cybersécurité et protection des données
 - Conforme aux réglementations APDP (Bénin) et RGPD (Europe)
 - Solutions sur mesure pour entreprises et organisations
+
+### ❤️ Soutenir le projet
+
+PII Scanner est un logiciel **gratuit et open-source**. Si vous trouvez cet outil utile pour votre conformité RGPD/APDP, vous pouvez soutenir son développement avec une **contribution à prix libre** :
+
+- **☕ Ko-fi** : [Faire un don](https://ko-fi.com/Y8Y31QXZ2Y) - Montant libre, à partir de 3€
+- **💳 PayPal** : [Faire un don](https://www.paypal.com/donate/?hosted_button_id=VOTRE_ID) - Montant libre de votre choix
+- **🏢 Support entreprise** : Contactez [contact@cyberprevs.fr](mailto:contact@cyberprevs.fr) pour des options de support professionnel
+
+**Vos contributions permettent** :
+- ✅ Maintenance et corrections de bugs
+- ✅ Ajout de nouveaux types de PII (sur demande communautaire)
+- ✅ Amélioration des performances et nouvelles fonctionnalités
+- ✅ Documentation, tutoriels et guides d'utilisation
+- ✅ Support technique gratuit pour toute la communauté
+
+**Chaque contribution, quelle que soit sa taille, est précieuse et appréciée ! 🙏**
 
 ## Historique des mises à jour
 

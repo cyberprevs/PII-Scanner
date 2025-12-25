@@ -143,6 +143,87 @@ export default function Support() {
         Trouvez de l'aide, consultez la documentation ou contactez-nous
       </Typography>
 
+      {/* Section Soutenir le projet */}
+      <Alert severity="info" sx={{ mb: 3 }}>
+        <Typography variant="body2">
+          <strong>PII Scanner est gratuit et open-source.</strong> Soutenez le projet avec une contribution à prix libre. Chaque don, quelle que soit sa taille, aide à maintenir et améliorer l'outil pour toute la communauté.
+        </Typography>
+      </Alert>
+
+      <Typography variant="h5" fontWeight={700} gutterBottom sx={{ mt: 4, mb: 2 }}>
+        ❤️ Soutenir le projet
+      </Typography>
+
+      <Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ mb: 4 }}>
+        {/* Ko-fi */}
+        <Card sx={{ flex: 1, display: 'flex', flexDirection: 'column', border: '2px solid #FF5E5B' }}>
+          <CardContent sx={{ flexGrow: 1 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+              <Typography sx={{ fontSize: 40, mr: 2 }}>☕</Typography>
+              <Typography variant="h6" fontWeight={600}>
+                Ko-fi
+              </Typography>
+            </Box>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+              Faites un don via Ko-fi. Montant libre à partir de 3€.
+            </Typography>
+            <Typography variant="body2" sx={{ fontWeight: 500, color: '#FF5E5B' }}>
+              ✨ Votre prix, votre contribution
+            </Typography>
+          </CardContent>
+          <CardActions sx={{ p: 2, pt: 0 }}>
+            <Button
+              fullWidth
+              variant="contained"
+              sx={{
+                bgcolor: '#FF5E5B',
+                '&:hover': { bgcolor: '#E54E4B' }
+              }}
+              endIcon={<OpenInNewIcon />}
+              onClick={() => openExternalLink('https://ko-fi.com/Y8Y31QXZ2Y')}
+            >
+              Faire un don Ko-fi
+            </Button>
+          </CardActions>
+        </Card>
+
+        {/* PayPal */}
+        <Card sx={{ flex: 1, display: 'flex', flexDirection: 'column', border: '2px solid #0070BA' }}>
+          <CardContent sx={{ flexGrow: 1 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+              <Typography sx={{ fontSize: 40, mr: 2 }}>💳</Typography>
+              <Typography variant="h6" fontWeight={600}>
+                PayPal
+              </Typography>
+            </Box>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+              Faites un don via PayPal. Montant totalement libre.
+            </Typography>
+            <Typography variant="body2" sx={{ fontWeight: 500, color: '#0070BA' }}>
+              💰 Sécurisé et flexible
+            </Typography>
+          </CardContent>
+          <CardActions sx={{ p: 2, pt: 0 }}>
+            <Button
+              fullWidth
+              variant="contained"
+              sx={{
+                bgcolor: '#0070BA',
+                '&:hover': { bgcolor: '#005EA6' }
+              }}
+              endIcon={<OpenInNewIcon />}
+              onClick={() => openExternalLink('https://www.paypal.com/donate/?hosted_button_id=VOTRE_ID')}
+            >
+              Faire un don PayPal
+            </Button>
+          </CardActions>
+        </Card>
+      </Stack>
+
+      <Typography variant="h5" fontWeight={700} gutterBottom sx={{ mt: 4, mb: 2 }}>
+        📚 Ressources
+      </Typography>
+
       <Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ mb: 4 }}>
         {/* Ressources principales */}
         <Card sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>

@@ -1,0 +1,8 @@
+# Configuration des dons pour PII Scanner
+# Ces liens apparaîtront dans le bouton "Sponsor" sur GitHub
+
+# Ko-fi (dons à prix libre)
+ko_fi: Y8Y31QXZ2Y
+
+# PayPal (dons à prix libre)
+# custom: ['https://www.paypal.com/donate/?hosted_button_id=VOTRE_ID']
