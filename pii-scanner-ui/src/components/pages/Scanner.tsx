@@ -401,10 +401,8 @@ export default function Scanner({ scanning, scanId, onStartScan }: ScannerProps)
                     { label: 'RAMU', icon: '💊' },
                     { label: 'INE', icon: '🎓' },
                     { label: 'Matricule fonctionnaire', icon: '👨‍💼' },
+                    { label: 'Plaque d\'immatriculation', icon: '🚗' },
                     { label: 'Dates de naissance', icon: '📅' },
-                    { label: 'Mots de passe', icon: '🔑' },
-                    { label: 'Clés API AWS', icon: '🔐' },
-                    { label: 'Tokens JWT', icon: '🎫' },
                   ].map((item, index) => (
                     <Chip
                       key={index}

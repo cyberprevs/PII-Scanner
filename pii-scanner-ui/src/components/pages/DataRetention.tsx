@@ -48,11 +48,12 @@ interface RetentionPolicy {
 
 export default function DataRetention() {
   const [retentionPolicies, setRetentionPolicies] = useState<RetentionPolicy[]>([
-    { category: 'Données bancaires (IBAN, Mobile Money)', description: 'Transactions et informations bancaires', defaultPeriod: 5, currentPeriod: 5, color: '#f44336', icon: '💳' },
-    { category: 'Données d\'identité (IFU, CNI, Passeport)', description: 'Documents d\'identité et fiscaux', defaultPeriod: 3, currentPeriod: 3, color: '#667eea', icon: '🆔' },
+    { category: 'Données bancaires (IBAN, Carte, Mobile Money)', description: 'Transactions et informations bancaires', defaultPeriod: 5, currentPeriod: 5, color: '#f44336', icon: '💳' },
+    { category: 'Données d\'identité (IFU, CNI, Passeport, RCCM)', description: 'Documents d\'identité et fiscaux', defaultPeriod: 3, currentPeriod: 3, color: '#667eea', icon: '🆔' },
     { category: 'Données santé (CNSS, RAMU)', description: 'Dossiers médicaux et assurance', defaultPeriod: 5, currentPeriod: 5, color: '#43e97b', icon: '🏥' },
     { category: 'Données éducation (INE, Matricule)', description: 'Dossiers scolaires et administratifs', defaultPeriod: 2, currentPeriod: 2, color: '#ff9800', icon: '🎓' },
     { category: 'Données contact (Email, Téléphone)', description: 'Coordonnées personnelles', defaultPeriod: 1, currentPeriod: 1, color: '#4facfe', icon: '📞' },
+    { category: 'Données transport (Plaque d\'immatriculation)', description: 'Informations véhicules', defaultPeriod: 3, currentPeriod: 3, color: '#795548', icon: '🚗' },
   ]);
 
   const [directoryPath, setDirectoryPath] = useState('C:\\Users');
@@ -93,6 +94,7 @@ export default function DataRetention() {
         health: retentionPolicies[2].currentPeriod,
         education: retentionPolicies[3].currentPeriod,
         contact: retentionPolicies[4].currentPeriod,
+        transport: retentionPolicies[5].currentPeriod,
       };
 
       // Appel API réel

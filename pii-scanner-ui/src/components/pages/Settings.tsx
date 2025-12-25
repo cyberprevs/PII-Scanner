@@ -32,7 +32,7 @@ interface PiiTypeConfig {
   description: string;
   enabled: boolean;
   sensitivity: 'Critique' | 'Élevé' | 'Moyen' | 'Faible';
-  category: 'Identité' | 'Contact' | 'Bancaire' | 'Santé' | 'Éducation' | 'Sécurité' | 'Universel';
+  category: 'Identité' | 'Contact' | 'Bancaire' | 'Santé' | 'Éducation' | 'Transport' | 'Universel';
 }
 
 export default function Settings() {
@@ -77,14 +77,11 @@ export default function Settings() {
     { id: 'INE', label: 'INE', description: 'Identifiant National de l\'Élève', enabled: true, sensitivity: 'Moyen', category: 'Éducation' },
     { id: 'Matricule_Fonctionnaire', label: 'Matricule fonctionnaire', description: 'Matricule de fonctionnaire (F/M + chiffres)', enabled: true, sensitivity: 'Élevé', category: 'Éducation' },
 
+    // Transport
+    { id: 'Plaque_Immatriculation', label: 'Plaque d\'immatriculation', description: 'Plaque véhicule (nouveau: AB 1234 CD, ancien: 1234 AB)', enabled: true, sensitivity: 'Moyen', category: 'Transport' },
+
     // Données universelles
     { id: 'DateNaissance', label: 'Date de naissance', description: 'Date de naissance (JJ/MM/AAAA)', enabled: true, sensitivity: 'Critique', category: 'Universel' },
-    { id: 'AdresseIP', label: 'Adresse IP', description: 'Adresse IP (IPv4)', enabled: true, sensitivity: 'Faible', category: 'Universel' },
-
-    // Sécurité
-    { id: 'MotDePasse', label: 'Mot de passe', description: 'Mots de passe en clair', enabled: true, sensitivity: 'Critique', category: 'Sécurité' },
-    { id: 'CleAPI_AWS', label: 'Clé API AWS', description: 'Clés d\'accès AWS (AKIA...)', enabled: true, sensitivity: 'Critique', category: 'Sécurité' },
-    { id: 'Token_JWT', label: 'Token JWT', description: 'JSON Web Token', enabled: true, sensitivity: 'Élevé', category: 'Sécurité' },
   ]);
 
   const handleFileTypeChange = (type: keyof typeof fileTypes) => {
@@ -121,7 +118,7 @@ export default function Settings() {
       case 'Bancaire': return '#f44336';
       case 'Santé': return '#43e97b';
       case 'Éducation': return '#ff9800';
-      case 'Sécurité': return '#9c27b0';
+      case 'Transport': return '#795548';
       case 'Universel': return '#607d8b';
       default: return '#757575';
     }

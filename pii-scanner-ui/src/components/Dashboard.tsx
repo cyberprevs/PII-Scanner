@@ -81,9 +81,10 @@ export default function Dashboard({ scanning, scanId, onStartScan }: DashboardPr
             <Chip label="📞 Téléphones" size="small" />
             <Chip label="💳 Cartes bancaires" size="small" />
             <Chip label="🏦 IBAN" size="small" />
-            <Chip label="🆔 Numéro Sécu" size="small" />
+            <Chip label="💰 Mobile Money" size="small" />
+            <Chip label="🆔 IFU, CNI, CNSS" size="small" />
+            <Chip label="🚗 Plaques" size="small" />
             <Chip label="📅 Dates de naissance" size="small" />
-            <Chip label="🌐 Adresses IP" size="small" />
           </Box>
         </CardContent>
       </Card>

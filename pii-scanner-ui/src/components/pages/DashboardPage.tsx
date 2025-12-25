@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Card,
@@ -78,6 +79,7 @@ const getExposureColor = (exposureLevel?: string) => {
 };
 
 export default function Results({ results, onDownloadReport, onNewScan }: ResultsProps) {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(0);
   const [stalenessFilter, setStalenessFilter] = useState<string>('all');
   const [exposureFilter, setExposureFilter] = useState<string>('all');
@@ -97,7 +99,7 @@ export default function Results({ results, onDownloadReport, onNewScan }: Result
             <Button
               variant="contained"
               size="large"
-              onClick={onNewScan}
+              onClick={() => navigate('/scanner')}
               startIcon={<RefreshIcon />}
             >
               Nouveau Scan
