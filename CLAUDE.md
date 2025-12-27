@@ -299,9 +299,11 @@ The app has NO default credentials for security. First-run setup is required:
 - `npm run electron:build:win` - Creates Windows installer (NSIS) or portable version
 - Bundles API binaries from `../PiiScanner.Api/bin/Release/net8.0/publish`
 
-**Portable Deployment:**
+---
 
-The application can be distributed as a portable package that requires no installation.
+## Building a Portable Package
+
+For creating a distributable portable package (no installation required):
 
 *Package Structure:*
 ```
@@ -316,47 +318,93 @@ PII-Scanner-Portable-Complete/
     └── PII Scanner.exe                     ← Electron app (win-unpacked)
 ```
 
-*Build Portable Package:*
+### Build Steps
+
 ```bash
 # 1. Build UI
 cd pii-scanner-ui
 npx vite build
 npx electron-builder --win --dir
 
-# 2. Publish API (self-contained with runtime)
+# 2. Publish API (self-contained with .NET runtime)
 cd ../PiiScanner.Api
 dotnet publish -c Release -r win-x64 --self-contained true -o ../Portable/API
 
 # 3. Copy UI
-cp -r ../pii-scanner-ui/release/win-unpacked ../Portable/UI
+xcopy /E /I ..\pii-scanner-ui\release\win-unpacked ..\Portable\UI
 
-# 4. Add launcher scripts
-# See scripts in PII-Scanner-Portable-Complete/ folder
+# 4. Create launcher scripts (see below)
+
+# 5. Create ZIP archive
+Compress-Archive -Path Portable\* -DestinationPath PII-Scanner-Portable-Complete.zip
 ```
 
-*Windows SmartScreen Issue:*
+**Taille finale** : ~196 MB
 
-The portable application is **not code-signed** (certificate costs ~300€/year), so Windows SmartScreen and Smart App Control may block execution with errors like:
-- "Windows a protégé votre ordinateur"
-- "Une stratégie de contrôle d'application a bloqué ce fichier"
+### Launcher Scripts
 
-**Solutions provided:**
-1. **Manual unblock**: Right-click `UI\PII Scanner.exe` → Properties → Check "Unblock" → OK
-2. **Automated unblock**: Run `Débloquer-Fichiers.bat` (uses PowerShell `Unblock-File`)
-3. **Windows Defender exclusion** (Recommended): Run `Ajouter-Exclusion-Windows-Defender.bat` as Administrator
+Create these batch files in the `Portable/` folder:
 
-*API Auto-Start Disabled:*
+**`Démarrer PII Scanner.bat`** :
+```batch
+@echo off
+chcp 65001 > nul
+title PII Scanner - Démarrage automatique
+color 0A
 
-In `electron/main.ts`, the automatic API startup is disabled for the portable version:
-```typescript
-app.whenReady().then(() => {
-  // API auto-start disabled - must be started manually via batch script
-  console.log('API auto-start disabled - please start manually: dotnet run in PiiScanner.Api');
-  createWindow();
-});
+echo ╔═══════════════════════════════════════════════════════════════════╗
+echo ║                        PII SCANNER v2.0                           ║
+echo ╚═══════════════════════════════════════════════════════════════════╝
+echo.
+
+REM Démarrer l'API en arrière-plan
+cd /d "%~dp0API"
+start "PII Scanner API" /MIN cmd /c "PiiScanner.Api.exe"
+
+echo ✓ API démarrée sur https://localhost:5001
+echo.
+echo [2/2] Attente du démarrage de l'API (8 secondes)...
+timeout /t 8 /nobreak > nul
+
+REM Lancer l'interface Electron
+cd /d "%~dp0UI"
+start "PII Scanner UI" "PII Scanner.exe"
+
+echo.
+echo ✓ Interface utilisateur lancée
+pause
 ```
 
-The batch script handles starting both API and UI in the correct order.
+**`Débloquer-Fichiers.bat`** :
+```batch
+@echo off
+echo Déblocage des fichiers en cours...
+powershell -Command "Get-ChildItem -Path '%~dp0' -Recurse | Unblock-File"
+echo Terminé !
+pause
+```
+
+**`Ajouter-Exclusion-Windows-Defender.bat`** :
+```batch
+@echo off
+echo Ajout de l'exclusion Windows Defender...
+echo IMPORTANT : Exécutez ce script en tant qu'administrateur
+echo.
+powershell -Command "Add-MpPreference -ExclusionPath '%~dp0'"
+echo Exclusion ajoutée !
+pause
+```
+
+### Windows SmartScreen
+
+The portable application is **not code-signed** (certificate costs ~300€/year), so Windows may block execution.
+
+**User documentation** : See [INSTALLATION.md](INSTALLATION.md#windows-smartscreen) or [LISEZMOI-PORTABLE.txt](LISEZMOI-PORTABLE.txt)
+
+**Technical notes** :
+- API auto-start is disabled in `electron/main.ts` to avoid conflicts
+- Batch script handles sequential startup (API → UI)
+- 8-second delay ensures API is ready before UI connects
 
 ### 4. PiiScanner (Console App - Legacy)
 
@@ -724,17 +772,13 @@ dotnet ef migrations remove
 - Clear Vite cache: `rm -rf node_modules/.vite`
 
 **Windows SmartScreen blocks portable app:**
-- **Error**: "Windows a protégé votre ordinateur" or "Une stratégie de contrôle d'application a bloqué ce fichier"
-- **Cause**: Application is not code-signed (certificate costs ~300€/year)
-- **Solution 1**: Manual unblock - Right-click `UI\PII Scanner.exe` → Properties → Check "Unblock" → OK
-- **Solution 2**: Run `Débloquer-Fichiers.bat` (automated PowerShell script)
-- **Solution 3** (Recommended): Run `Ajouter-Exclusion-Windows-Defender.bat` as Administrator
-- **Note**: User opened ticket with Microsoft regarding this issue
+- **Cause**: Application not code-signed (~300€/year)
+- **Solutions**: See [INSTALLATION.md - Windows SmartScreen](INSTALLATION.md#windows-smartscreen)
+- **Note**: Ticket opened with Microsoft
 
 **Portable app shows blank page after admin creation:**
-- **Cause**: React Router not re-rendering properly when initialization state changes
-- **Fix**: Implemented in [App.tsx:179-192](pii-scanner-ui/src/App.tsx#L179-L192) with state update + API re-check
-- **Workaround**: Manually restart the application if issue persists
+- **Fix**: Implemented in [App.tsx:179-192](pii-scanner-ui/src/App.tsx#L179-L192)
+- **Workaround**: Restart the application
 
 ### Useful Endpoints for Testing
 

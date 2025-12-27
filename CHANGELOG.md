@@ -48,54 +48,30 @@ Cette version introduit un package portable complet ne nécessitant aucune insta
 
 #### 🐛 Corrigé
 
-**Problème de Navigation (Page Blanche)**
-- **Symptôme** : Page blanche après création du compte admin
-- **Cause** : React Router ne re-rendait pas correctement quand `isInitialized` changeait
-- **Fix** : `App.tsx:179-192` - Ajout d'un état intermédiaire + re-vérification API
-- **Résultat** : Navigation fluide vers l'écran de connexion après setup
-
-**Problème de Conflit API**
-- **Symptôme** : Erreur "Impossible de démarrer l'API: spawn ... ENOENT"
-- **Cause** : Electron tentait de démarrer l'API alors que le batch script le fait déjà
-- **Fix** : `electron/main.ts` - API auto-start complètement désactivé
-- **Résultat** : Plus de conflit, démarrage contrôlé par batch script uniquement
+- **Page blanche après création admin** : Fix dans App.tsx avec state update + API re-check
+- **Conflit démarrage API** : Auto-start Electron désactivé, batch script contrôle le démarrage
 
 #### 📚 Documentation
 
-**Ajouts**
-- Guide complet de création de package portable (INSTALLATION.md)
-- 4 solutions pour Windows SmartScreen dans chaque fichier doc
-- Section troubleshooting étendue avec cas portable
-- Références croisées vers les correctifs de code
-
-**Améliorations**
-- README.md : Version portable comme Option 1 (recommandée)
-- INSTALLATION.md : Sections démarrage rapide + dépannage complet
-- CLAUDE.md : Architecture portable + problèmes connus + solutions
-- LISEZMOI-PORTABLE.txt : Documentation utilisateur exhaustive en français
+- README.md réduit de 70% avec liens vers docs spécialisées
+- INSTALLATION.md restructuré (Option 1: Portable, Option 2: Sources)
+- CLAUDE.md avec section build portable pour développeurs
+- LISEZMOI-PORTABLE.txt avec guide utilisateur complet
+- Solutions Windows SmartScreen documentées partout
 
 #### 🔧 Infrastructure
 
-**Build Process**
-- Commandes de build portable documentées
-- Structure de package standardisée
-- Scripts batch Windows optimisés
-- Compression ZIP automatisée (~196 MB)
+- Build portable documenté dans CLAUDE.md
+- Scripts batch Windows (Démarrer, Débloquer, Exclusion Defender)
+- Package ZIP ~196 MB (API + UI + .NET Runtime)
 
 #### ⚠️ Problèmes Connus
 
-**Windows SmartScreen**
-- Application non signée car certificat coûte ~300€/an
-- Peut afficher "Windows a protégé votre ordinateur"
-- **Solutions fournies** : Exclusion Defender, déblocage PowerShell, déblocage manuel
-- **Note** : Ticket ouvert avec Microsoft concernant ce problème
+- **Windows SmartScreen** : Application non signée (~300€/an). Solutions fournies. Ticket Microsoft ouvert.
 
 #### 🔒 Sécurité
 
-Aucun changement aux fonctionnalités de sécurité (identiques à v1.0.0).
-
-Note : JWT secret par défaut inclus pour faciliter les tests.
-Pour production : Régénérer le secret avec commande PowerShell fournie.
+Aucun changement (identique à v1.0.0). JWT secret par défaut pour tests (régénérer pour production).
 
 ---
 
