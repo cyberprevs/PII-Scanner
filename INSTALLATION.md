@@ -24,43 +24,57 @@ Ce script lance automatiquement l'API et l'interface utilisateur.
 
 **Symptôme** : Windows affiche "Windows a protégé votre ordinateur" ou "Une stratégie de contrôle d'application a bloqué ce fichier"
 
-**Cause** : L'application n'est pas signée numériquement (le certificat coûte ~300€/an)
+**Cause** : L'application est signée avec un certificat auto-signé au lieu d'un certificat commercial (~300€/an)
 
 **Solutions** (par ordre de recommandation) :
 
-#### Solution 1 : Exclusion Windows Defender (Recommandée)
+#### Solution 1 : Installer le Certificat Auto-Signé (Recommandée)
+1. **Clic droit** sur `InstallCertificate.bat`
+2. Sélectionnez **"Exécuter en tant qu'administrateur"**
+3. Confirmez l'installation du certificat
+
+Cette méthode installe le certificat de Cyberprevs dans le magasin "Trusted Root Certification Authorities" de Windows. Une fois installé, Windows reconnaîtra l'application comme sûre.
+
+**Comment ça fonctionne** : Les exécutables (API et UI) sont signés avec un certificat auto-signé. En installant ce certificat, vous indiquez à Windows que vous faites confiance à Cyberprevs pour signer des applications.
+
+**Sécurité** : Le certificat est limité à la signature de code uniquement. Le code source de PII Scanner est open-source et vérifiable sur GitHub.
+
+#### Solution 2 : Exclusion Windows Defender (Fallback)
 1. **Clic droit** sur `Ajouter-Exclusion-Windows-Defender.bat`
 2. Sélectionnez **"Exécuter en tant qu'administrateur"**
 3. Confirmez l'ajout de l'exclusion
 
-Cette méthode est permanente et empêche tout blocage futur.
+Cette méthode est permanente. Utilisez-la si la Solution 1 ne fonctionne pas.
 
-#### Solution 2 : Script de Déblocage Automatique
+#### Solution 3 : Script de Déblocage Automatique
 1. **Double-cliquez** sur `Débloquer-Fichiers.bat`
 2. Attendez que le script termine
 3. Relancez l'application
 
 Cette méthode utilise PowerShell `Unblock-File` pour débloquer tous les fichiers.
 
-#### Solution 3 : Déblocage Manuel
+#### Solution 4 : Déblocage Manuel
 1. **Clic droit** sur `UI\PII Scanner.exe`
 2. Sélectionnez **"Propriétés"**
 3. En bas de l'onglet **"Général"**, cochez **"Débloquer"**
 4. Cliquez sur **"OK"**
-5. Relancez l'application
+5. Répétez pour `API\PiiScanner.Api.exe`
+6. Relancez l'application
 
 ### Contenu du Package
 
 ```
 PII-Scanner-Portable-Complete/
 ├── Démarrer PII Scanner.bat               ← Lance l'application
-├── Débloquer-Fichiers.bat                  ← Débloque tous les fichiers
-├── Ajouter-Exclusion-Windows-Defender.bat ← Ajoute une exclusion (Admin requis)
+├── InstallCertificate.bat                  ← Installe le certificat (RECOMMANDÉ)
+├── PiiScannerCodeSigning.cer              ← Certificat auto-signé
+├── Débloquer-Fichiers.bat                  ← Déblocage alternatif
+├── Ajouter-Exclusion-Windows-Defender.bat ← Exclusion Defender (fallback)
 ├── LISEZMOI.txt                            ← Instructions détaillées
 ├── API/
-│   └── PiiScanner.Api.exe                  ← Backend .NET (runtime inclus)
+│   └── PiiScanner.Api.exe                  ← Backend .NET (signé)
 └── UI/
-    └── PII Scanner.exe                     ← Interface Electron
+    └── PII Scanner.exe                     ← Interface Electron (signée)
 ```
 
 ### Première Utilisation
@@ -73,10 +87,10 @@ PII-Scanner-Portable-Complete/
 
 ### Notes Importantes
 
-- **Antivirus** : Certains antivirus peuvent marquer l'application comme suspecte car elle n'est pas signée
+- **Certificat** : L'application est signée avec un certificat auto-signé gratuit (au lieu de ~300€/an)
 - **Pare-feu** : Windows peut demander d'autoriser l'API sur le port 5001 (HTTPS)
 - **Données locales** : Toutes les données restent sur votre ordinateur (100% local, aucune connexion externe)
-- **Ticket Microsoft** : Un ticket a été ouvert avec Microsoft concernant le blocage SmartScreen
+- **Code open-source** : Le code source est vérifiable sur GitHub
 
 ---
 

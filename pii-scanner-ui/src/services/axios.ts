@@ -2,8 +2,9 @@ import axios from 'axios';
 import { logger } from '../utils/logger';
 
 // Instance axios configurée avec le token JWT
+// En production, l'API et le frontend sont sur le même domaine, donc baseURL = '/api'
 const axiosInstance = axios.create({
-  baseURL: 'https://localhost:5001/api',
+  baseURL: import.meta.env.DEV ? 'https://localhost:5001/api' : '/api',
   headers: {
     'Content-Type': 'application/json',
   },

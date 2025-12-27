@@ -175,20 +175,8 @@ function App() {
             element={
               <InitialSetup
                 onSetupComplete={() => {
-                  // Mettre à jour l'état pour déclencher le re-render avec le bon Router
-                  setIsInitialized(true);
-                  setCheckingInit(true);
-                  // Re-vérifier l'initialisation pour forcer le rechargement du Router
-                  setTimeout(async () => {
-                    try {
-                      const response = await axiosInstance.get('/initialization/status');
-                      setIsInitialized(response.data.isInitialized);
-                    } catch (err) {
-                      console.error('Erreur:', err);
-                    } finally {
-                      setCheckingInit(false);
-                    }
-                  }, 100);
+                  // Recharger complètement l'application pour afficher la page de login
+                  window.location.reload();
                 }}
               />
             }

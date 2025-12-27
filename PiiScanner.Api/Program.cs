@@ -67,22 +67,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // Add SignalR
 builder.Services.AddSignalR();
 
-// Add CORS pour permettre Electron de se connecter (HTTP et HTTPS)
-// Configuration depuis appsettings.json pour sécurité multi-environnement
-var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
-    ?? throw new InvalidOperationException("CORS AllowedOrigins non configuré dans appsettings.json");
-
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowElectron", policy =>
-    {
-        policy.WithOrigins(allowedOrigins)
-              .AllowAnyMethod()
-              .AllowAnyHeader()
-              .AllowCredentials()
-              .WithExposedHeaders("X-CSRF-Token"); // IMPORTANT: Exposer le header CSRF
-    });
-});
+// Add CORS - Désactivé car l'application web est servie depuis le même domaine
+// Plus besoin de CORS puisque React est servi par la même API
+// builder.Services.AddCors(...);
 
 // Add custom services
 builder.Services.AddSingleton<ScanService>();
@@ -135,7 +122,12 @@ app.Use(async (context, next) =>
     await next();
 });
 
-app.UseCors("AllowElectron");
+// Servir les fichiers statiques React (dist folder)
+app.UseDefaultFiles(); // Sert index.html automatiquement
+app.UseStaticFiles();  // Sert tous les fichiers statiques
+
+// Plus besoin de CORS
+// app.UseCors("AllowElectron");
 
 // SÉCURITÉ: Rate Limiting - Doit être avant l'authentification
 app.UseRateLimiting();
@@ -149,10 +141,13 @@ app.UseAuthorization();
 app.MapControllers();
 
 // Map SignalR Hub
-app.MapHub<ScanHub>("/scanhub").RequireCors("AllowElectron");
+app.MapHub<ScanHub>("/scanhub");
 
 // Map Health Checks
 app.MapHealthChecks("/health");
 app.MapHealthChecks("/health/ready");
+
+// Fallback pour React Router - Toutes les routes non-API redirigent vers index.html
+app.MapFallbackToFile("index.html");
 
 app.Run();

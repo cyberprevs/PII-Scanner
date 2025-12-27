@@ -7,32 +7,43 @@
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-Support-orange?logo=ko-fi)](https://ko-fi.com/Y8Y31QXZ2Y)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-blue.svg)](https://www.paypal.com/ncp/payment/G9FTF7NGPN8CG)
 
-Application de bureau pour détecter et analyser les données personnelles identifiables (PII) dans vos fichiers, conforme à la **Loi N°2017-20 du Bénin** (APDP).
+Application web pour détecter et analyser les données personnelles identifiables (PII) dans vos fichiers, conforme à la **Loi N°2017-20 du Bénin** (APDP).
 
 ## 🚀 Quick Start
 
 ### Version portable (Recommandée)
 
-1. Téléchargez `PII-Scanner-Portable-Complete.zip` : [Releases](https://github.com/cyberprevs/pii-scanner/releases)
+1. Téléchargez `PII-Scanner-WebApp.zip` : [Releases](https://github.com/cyberprevs/pii-scanner/releases)
 2. Extrayez le ZIP
 3. Lancez `Démarrer PII Scanner.bat`
-4. ⚠️ **Si Windows bloque** : Voir [Solutions Windows SmartScreen](INSTALLATION.md#windows-smartscreen)
+4. Ouvrez votre navigateur : **https://localhost:5001**
 
-✅ **Aucune installation requise** - Tout est inclus (API + UI + .NET Runtime)
+✅ **Aucune installation requise** - Application web tout-en-un (~124 MB, .NET Runtime inclus)
+✅ **Pas de certificat** - Fonctionne directement sans problème Windows SmartScreen
+✅ **N'importe quel navigateur** - Chrome, Edge, Firefox, etc.
 
 📖 **Guide complet** : [INSTALLATION.md](INSTALLATION.md)
 
 ### Installation depuis sources (Développeurs)
 
 ```bash
-# 1. Cloner et démarrer l'API
+# Build automatique (recommandé)
 git clone https://github.com/cyberprevs/pii-scanner.git
-cd pii-scanner/PiiScanner.Api
-dotnet restore && dotnet run
+cd pii-scanner
+.\BuildWebApp.ps1
 
-# 2. Dans un nouveau terminal : Démarrer l'interface
+# OU build manuel:
+# 1. Build React UI
 cd pii-scanner-ui
-npm install && npm run electron:dev
+npm install && npm run build
+
+# 2. Copier dans wwwroot
+xcopy /E /I dist ..\PiiScanner.Api\wwwroot
+
+# 3. Lancer l'application web
+cd ../PiiScanner.Api
+dotnet run
+# Ouvrir: https://localhost:5001
 ```
 
 ✅ Créez votre compte admin au premier lancement (pas de compte par défaut)
@@ -60,12 +71,13 @@ npm install && npm run electron:dev
 - **Sur-exposition** : Analyse NTFS ACL pour fichiers accessibles à "Everyone"
 - **Classification automatique** : Risque FAIBLE/MOYEN/ÉLEVÉ
 
-### 🖥️ Interface moderne
+### 🖥️ Interface web moderne
 
 - **15 pages spécialisées** : Dashboard, Scanner, Historique, Analytics, Exports, etc.
 - **Thème sombre** : Material-UI v7 avec graphiques interactifs (Recharts)
 - **Temps réel** : Mise à jour du scan via SignalR WebSocket
 - **Gestion complète** : Utilisateurs, base de données, audit logs (Admin)
+- **Responsive** : Fonctionne sur desktop et tablette
 
 ### 🔒 Sécurité renforcée
 

@@ -8,8 +8,9 @@ import type {
 } from '../types';
 
 // SÉCURITÉ: Utiliser HTTPS pour toutes les communications
-const API_BASE_URL = 'https://localhost:5001/api';
-const SIGNALR_URL = 'https://localhost:5001/scanhub';
+// En production, utiliser des URLs relatives (même domaine)
+const API_BASE_URL = import.meta.env.DEV ? 'https://localhost:5001/api' : '/api';
+const SIGNALR_URL = import.meta.env.DEV ? 'https://localhost:5001/scanhub' : '/scanhub';
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,

@@ -29,7 +29,10 @@ PiiScanner.Api/encryption.key
 **/PiiScanner_*/
 rapport_pii.*
 scan_results_*/
-PiiScanner.Api/wwwroot/reports/
+
+# wwwroot - React build output (généré par BuildWebApp.ps1)
+# Les fichiers sources sont dans pii-scanner-ui/
+PiiScanner.Api/wwwroot/
 
 # Sauvegardes de base de données
 **/backups/*.db
@@ -49,7 +52,15 @@ backup_*.db
 *.p12
 *.pem
 *.crt
-*.cer
+
+# Code signing certificates
+# ⚠️ CRITIQUE: Ne JAMAIS commiter les fichiers .pfx (clé privée)!
+Scripts/Certificates/*.pfx
+Scripts/Certificates/*.p12
+
+# Exception: Les certificats publics .cer peuvent être distribués
+# Ils seront inclus manuellement dans les releases
+!Scripts/Certificates/*.cer
 
 # =============================================================================
 # .NET / C# / Visual Studio
@@ -99,11 +110,9 @@ artifacts/
 *.dll
 *.pdb
 *.exe
-# Exception: on garde les .exe dans le release Electron
-!pii-scanner-ui/release/**/*.exe
 
 # =============================================================================
-# Node.js / React / Electron
+# Node.js / React / Vite
 # =============================================================================
 
 # Dependencies
@@ -118,7 +127,6 @@ package-lock.json
 # Build outputs
 dist/
 dist-ssr/
-dist-electron/
 build/
 out/
 *.tsbuildinfo
@@ -126,10 +134,14 @@ out/
 # Vite
 .vite/
 vite.config.*.timestamp-*
-
-# Electron builder
-pii-scanner-ui/release/
 *.local
+
+# Build artifact folder
+PII-Scanner-WebApp/
+PII-Scanner-WebApp.zip
+
+# Archived obsolete code
+_archived/
 
 # =============================================================================
 # Système d'exploitation
