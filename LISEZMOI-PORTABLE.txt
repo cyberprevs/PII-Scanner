@@ -67,68 +67,26 @@ SOLUTIONS (par ordre de recommandation)
 ═══════════════════════════════════════════════════════════════════════════════
 
 ┌──────────────────────────────────────────────────────────────────────────┐
-│ SOLUTION 1 : Ajouter une exclusion Windows Defender (RECOMMANDÉE)       │
+│ SOLUTIONS (3 méthodes au choix)                                         │
 └──────────────────────────────────────────────────────────────────────────┘
 
-Cette solution est PERMANENTE et empêche tout blocage futur.
+**Solution 1 (Recommandée)** : Exclusion Windows Defender
+  → Clic droit sur "Ajouter-Exclusion-Windows-Defender.bat"
+  → Exécuter en tant qu'administrateur
+  ✅ Solution PERMANENTE
 
-Étapes :
-1. Clic droit sur : Ajouter-Exclusion-Windows-Defender.bat
-2. Sélectionnez "Exécuter en tant qu'administrateur"
-3. Confirmez l'ajout de l'exclusion dans la fenêtre UAC
-4. Fermez la fenêtre
-5. Relancez "Démarrer PII Scanner.bat"
+**Solution 2** : Déblocage automatique
+  → Double-clic sur "Débloquer-Fichiers.bat"
+  → Attendre "Terminé !"
+  ✅ Solution RAPIDE (peut nécessiter de répéter)
 
-✅ L'application ne sera plus bloquée
+**Solution 3** : Déblocage manuel
+  → Clic droit sur "UI\PII Scanner.exe" → Propriétés
+  → Cocher "Débloquer" → OK
+  → Répéter pour "API\PiiScanner.Api.exe"
+  ✅ Solution MANUELLE
 
-
-┌──────────────────────────────────────────────────────────────────────────┐
-│ SOLUTION 2 : Script de déblocage automatique                            │
-└──────────────────────────────────────────────────────────────────────────┘
-
-Cette solution utilise PowerShell pour débloquer tous les fichiers.
-
-Étapes :
-1. Double-cliquez sur : Débloquer-Fichiers.bat
-2. Attendez le message "Terminé !"
-3. Fermez la fenêtre
-4. Relancez "Démarrer PII Scanner.bat"
-
-✅ Les fichiers sont débloqués (peut nécessiter de répéter après un redémarrage)
-
-
-┌──────────────────────────────────────────────────────────────────────────┐
-│ SOLUTION 3 : Déblocage manuel (si les scripts ne fonctionnent pas)      │
-└──────────────────────────────────────────────────────────────────────────┘
-
-Étapes :
-1. Clic droit sur : UI\PII Scanner.exe
-2. Sélectionnez "Propriétés"
-3. En bas de l'onglet "Général", cochez la case "Débloquer"
-4. Cliquez sur "Appliquer" puis "OK"
-5. Répétez pour : API\PiiScanner.Api.exe
-6. Relancez "Démarrer PII Scanner.bat"
-
-✅ L'application est autorisée à s'exécuter
-
-
-┌──────────────────────────────────────────────────────────────────────────┐
-│ SOLUTION 4 : Désactiver temporairement Smart App Control                │
-└──────────────────────────────────────────────────────────────────────────┘
-
-UNIQUEMENT si toutes les autres solutions échouent :
-
-Étapes :
-1. Ouvrez : Paramètres Windows → Confidentialité et sécurité
-2. Cliquez sur "Sécurité Windows"
-3. Cliquez sur "Contrôle des applications et du navigateur"
-4. Trouvez "Contrôle d'application intelligent" (Smart App Control)
-5. Sélectionnez "Désactivé"
-6. Redémarrez Windows
-7. Relancez "Démarrer PII Scanner.bat"
-
-⚠️ IMPORTANT : Réactivez cette fonctionnalité après avoir débloqué l'application
-
+📖 **Guide détaillé** : Voir le fichier README.md ou INSTALLATION.md
 
 NOTE : Un ticket a été ouvert auprès de Microsoft concernant ce problème.
 
@@ -277,14 +235,9 @@ Solution 2 : Installez .NET 8.0 Runtime (si le package self-contained échoue)
 PROBLÈME : Page blanche après création du compte admin
 ─────────────────────────────────────────────────────────────────────────────
 
-Symptôme : Écran blanc après avoir cliqué sur "Créer le compte"
-
 Solution : Ce bug a été corrigé dans la version 2.0
 
-   Si vous rencontrez toujours le problème :
-   1. Fermez complètement l'application
-   2. Relancez "Démarrer PII Scanner.bat"
-   3. Vous devriez voir l'écran de connexion
+   Si le problème persiste → Redémarrez l'application
 
 
 PROBLÈME : L'interface ne se connecte pas à l'API

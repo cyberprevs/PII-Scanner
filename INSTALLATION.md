@@ -165,98 +165,9 @@ npm run electron:dev
 
 ---
 
-## 📦 Créer un Package Portable
+## 📦 Créer un Package Portable (Développeurs)
 
-Pour distribuer l'application sans nécessiter d'installation :
-
-### Étape 1 : Build de l'interface Electron
-
-```bash
-cd pii-scanner-ui
-npx vite build
-npx electron-builder --win --dir
-```
-
-### Étape 2 : Publier l'API (self-contained)
-
-```bash
-cd ../PiiScanner.Api
-dotnet publish -c Release -r win-x64 --self-contained true -o ../Portable/API
-```
-
-### Étape 3 : Copier l'interface
-
-```bash
-xcopy /E /I ..\pii-scanner-ui\release\win-unpacked ..\Portable\UI
-```
-
-### Étape 4 : Créer les scripts de lancement
-
-Créez `Démarrer PII Scanner.bat` dans le dossier `Portable` :
-
-```batch
-@echo off
-chcp 65001 > nul
-title PII Scanner - Démarrage automatique
-color 0A
-
-echo ╔═══════════════════════════════════════════════════════════════════╗
-echo ║                        PII SCANNER v2.0                           ║
-echo ╚═══════════════════════════════════════════════════════════════════╝
-echo.
-
-REM Démarrer l'API en arrière-plan
-cd /d "%~dp0API"
-start "PII Scanner API" /MIN cmd /c "PiiScanner.Api.exe"
-
-echo ✓ API démarrée sur https://localhost:5001
-echo.
-echo [2/2] Attente du démarrage de l'API (8 secondes)...
-timeout /t 8 /nobreak > nul
-
-REM Lancer l'interface Electron
-cd /d "%~dp0UI"
-start "PII Scanner UI" "PII Scanner.exe"
-
-echo.
-echo ✓ Interface utilisateur lancée
-echo.
-echo ═══════════════════════════════════════════════════════════════════
-echo   Pour arrêter l'application, fermez simplement cette fenêtre
-echo ═══════════════════════════════════════════════════════════════════
-pause
-```
-
-Créez `Débloquer-Fichiers.bat` :
-
-```batch
-@echo off
-echo Déblocage des fichiers en cours...
-powershell -Command "Get-ChildItem -Path '%~dp0' -Recurse | Unblock-File"
-echo Terminé !
-pause
-```
-
-Créez `Ajouter-Exclusion-Windows-Defender.bat` :
-
-```batch
-@echo off
-echo Ajout de l'exclusion Windows Defender...
-echo IMPORTANT : Exécutez ce script en tant qu'administrateur
-echo.
-powershell -Command "Add-MpPreference -ExclusionPath '%~dp0'"
-echo Exclusion ajoutée !
-pause
-```
-
-### Étape 5 : Créer l'archive ZIP
-
-```bash
-cd ../
-Compress-Archive -Path Portable\* -DestinationPath PII-Scanner-Portable-Complete.zip
-```
-
-**Taille finale** : ~196 MB
+Pour créer votre propre package portable, consultez le guide complet dans [CLAUDE.md - Build Portable Package](CLAUDE.md#build-portable-package).
 
 ---
 
@@ -273,11 +184,9 @@ Compress-Archive -Path Portable\* -DestinationPath PII-Scanner-Portable-Complete
 
 ### Page blanche après création du compte admin
 
-**Symptôme** : L'application affiche une page blanche après avoir créé le compte administrateur
-
-**Solution** : Ce problème a été corrigé dans [App.tsx:179-192](pii-scanner-ui/src/App.tsx#L179-L192). Si vous rencontrez toujours le problème :
+**Solution** : Ce problème a été corrigé dans la version 2.0. Si vous rencontrez toujours le problème :
 1. Fermez l'application complètement
-2. Relancez avec `Démarrer PII Scanner.bat`
+2. Relancez `Démarrer PII Scanner.bat`
 
 ### L'API ne démarre pas
 
