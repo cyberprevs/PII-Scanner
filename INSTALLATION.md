@@ -1,95 +1,57 @@
-# 📦 Guide d'Installation - PII Scanner
+# 📦 Guide d'Installation - PII Scanner v2.0
 
-Guide complet pour installer et utiliser PII Scanner.
+Guide complet pour installer et utiliser PII Scanner en tant qu'application web.
 
 ---
 
-## 🚀 Option 1 : Version Portable (Recommandée)
+## 🚀 Option 1 : Version Web App (Recommandée)
 
-**Aucune installation requise** - Téléchargez simplement le fichier ZIP et lancez l'application.
+**Aucune installation requise** - Téléchargez le fichier ZIP et lancez l'application dans votre navigateur.
 
 ### Téléchargement
 
 1. Téléchargez la dernière version : [Releases](https://github.com/cyberprevs/pii-scanner/releases)
-2. Extrayez le fichier `PII-Scanner-Portable-Complete.zip`
-3. Lisez le fichier `LISEZMOI.txt` pour les instructions détaillées
+2. Extrayez le fichier `PII-Scanner-WebApp.zip`
 
 ### Démarrage Rapide
 
 **Double-cliquez sur** : `Démarrer PII Scanner.bat`
 
-Ce script lance automatiquement l'API et l'interface utilisateur.
-
-### ⚠️ Problème de Blocage Windows SmartScreen
-
-**Symptôme** : Windows affiche "Windows a protégé votre ordinateur" ou "Une stratégie de contrôle d'application a bloqué ce fichier"
-
-**Cause** : L'application est signée avec un certificat auto-signé au lieu d'un certificat commercial (~300€/an)
-
-**Solutions** (par ordre de recommandation) :
-
-#### Solution 1 : Installer le Certificat Auto-Signé (Recommandée)
-1. **Clic droit** sur `InstallCertificate.bat`
-2. Sélectionnez **"Exécuter en tant qu'administrateur"**
-3. Confirmez l'installation du certificat
-
-Cette méthode installe le certificat de Cyberprevs dans le magasin "Trusted Root Certification Authorities" de Windows. Une fois installé, Windows reconnaîtra l'application comme sûre.
-
-**Comment ça fonctionne** : Les exécutables (API et UI) sont signés avec un certificat auto-signé. En installant ce certificat, vous indiquez à Windows que vous faites confiance à Cyberprevs pour signer des applications.
-
-**Sécurité** : Le certificat est limité à la signature de code uniquement. Le code source de PII Scanner est open-source et vérifiable sur GitHub.
-
-#### Solution 2 : Exclusion Windows Defender (Fallback)
-1. **Clic droit** sur `Ajouter-Exclusion-Windows-Defender.bat`
-2. Sélectionnez **"Exécuter en tant qu'administrateur"**
-3. Confirmez l'ajout de l'exclusion
-
-Cette méthode est permanente. Utilisez-la si la Solution 1 ne fonctionne pas.
-
-#### Solution 3 : Script de Déblocage Automatique
-1. **Double-cliquez** sur `Débloquer-Fichiers.bat`
-2. Attendez que le script termine
-3. Relancez l'application
-
-Cette méthode utilise PowerShell `Unblock-File` pour débloquer tous les fichiers.
-
-#### Solution 4 : Déblocage Manuel
-1. **Clic droit** sur `UI\PII Scanner.exe`
-2. Sélectionnez **"Propriétés"**
-3. En bas de l'onglet **"Général"**, cochez **"Débloquer"**
-4. Cliquez sur **"OK"**
-5. Répétez pour `API\PiiScanner.Api.exe`
-6. Relancez l'application
+Ce script lance automatiquement l'API web et ouvre votre navigateur sur https://localhost:5001
 
 ### Contenu du Package
 
 ```
-PII-Scanner-Portable-Complete/
-├── Démarrer PII Scanner.bat               ← Lance l'application
-├── InstallCertificate.bat                  ← Installe le certificat (RECOMMANDÉ)
-├── PiiScannerCodeSigning.cer              ← Certificat auto-signé
-├── Débloquer-Fichiers.bat                  ← Déblocage alternatif
-├── Ajouter-Exclusion-Windows-Defender.bat ← Exclusion Defender (fallback)
-├── LISEZMOI.txt                            ← Instructions détaillées
-├── API/
-│   └── PiiScanner.Api.exe                  ← Backend .NET (signé)
-└── UI/
-    └── PII Scanner.exe                     ← Interface Electron (signée)
+PII-Scanner-WebApp/
+├── Demarrer PII Scanner.bat    ← Lance l'application
+├── PiiScanner.Api.exe           ← Serveur web .NET (API + React)
+├── wwwroot/                     ← Interface React
+│   ├── index.html
+│   └── assets/
+├── appsettings.json
+├── piiscanner.db                ← Base de données (créée au démarrage)
+└── db_encryption.key            ← Clé de chiffrement (créée au démarrage)
 ```
+
+**Taille** : ~124 MB (self-contained, .NET runtime inclus)
 
 ### Première Utilisation
 
 1. Lancez l'application avec `Démarrer PII Scanner.bat`
-2. **Si Windows bloque** : Utilisez une des solutions ci-dessus
-3. Créez un compte administrateur (première utilisation uniquement)
-4. Connectez-vous avec vos identifiants
-5. Commencez à scanner vos répertoires
+2. Votre navigateur s'ouvre automatiquement sur https://localhost:5001
+3. **Si alerte certificat** : Cliquez sur "Avancé" → "Continuer vers localhost" (certificat auto-signé normal pour localhost)
+4. Créez un compte administrateur (première utilisation uniquement)
+5. L'application se recharge automatiquement
+6. Connectez-vous avec vos identifiants
+7. Commencez à scanner vos répertoires
 
 ### Notes Importantes
 
-- **Certificat** : L'application est signée avec un certificat auto-signé gratuit (au lieu de ~300€/an)
+- **100% local** : Aucune connexion externe, toutes les données restent sur votre ordinateur
+- **Navigateur** : Fonctionne avec Chrome, Firefox, Edge, ou tout navigateur moderne
+- **HTTPS** : Certificat auto-signé pour localhost (normal, aucun risque)
 - **Pare-feu** : Windows peut demander d'autoriser l'API sur le port 5001 (HTTPS)
-- **Données locales** : Toutes les données restent sur votre ordinateur (100% local, aucune connexion externe)
+- **Pas de certificat de code** : Plus besoin de signature de code, pas de problème Windows SmartScreen
 - **Code open-source** : Le code source est vérifiable sur GitHub
 
 ---
@@ -139,14 +101,14 @@ cd pii-scanner
 ```bash
 cd PiiScanner.Api
 
-# Copier le fichier de configuration exemple
+# Copier le fichier de configuration exemple (si existe)
 copy appsettings.example.json appsettings.json
 
 # Générer un secret JWT sécurisé (PowerShell)
 powershell -Command "$secret = [Convert]::ToBase64String([System.Security.Cryptography.RandomNumberGenerator]::GetBytes(64)); Write-Host $secret"
 ```
 
-**Important** : Ouvrez `appsettings.json` et remplacez le secret JWT par celui généré.
+**Important** : Ouvrez `appsettings.json` et remplacez le secret JWT par celui généré si nécessaire.
 
 ### Étape 3 : Installer les dépendances .NET
 
@@ -161,46 +123,88 @@ dotnet build
 dotnet dev-certs https --trust
 ```
 
-### Étape 5 : Démarrer l'API
-
-```bash
-dotnet run
-```
-
-### Étape 6 : Installer l'interface Electron
-
-Nouveau terminal :
+### Étape 5 : Installer l'interface React
 
 ```bash
 cd pii-scanner-ui
 npm install
-npm run electron:dev
+```
+
+### Étape 6 : Démarrer l'application
+
+**Option A : Production-like (Recommandé)**
+```bash
+# Build React
+npm run build
+
+# Copier vers wwwroot
+# Windows
+xcopy /E /I dist ..\PiiScanner.Api\wwwroot
+
+# Linux/Mac
+cp -r dist/* ../PiiScanner.Api/wwwroot/
+
+# Lancer API (sert React + API)
+cd ..\PiiScanner.Api
+dotnet run
+```
+
+Ouvrir : https://localhost:5001
+
+**Option B : Développement avec Hot Reload**
+
+Terminal 1 - API :
+```bash
+cd PiiScanner.Api
+dotnet run
+```
+
+Terminal 2 - React Dev Server (optionnel) :
+```bash
+cd pii-scanner-ui
+npm run dev
+```
+
+- Application complète : https://localhost:5001
+- Dev server avec hot reload : http://localhost:5173
+
+---
+
+## 📦 Créer un Package Web App (Développeurs)
+
+Pour créer votre propre package distributable :
+
+```powershell
+# Script automatisé (Recommandé)
+.\BuildWebApp.ps1
+
+# OU manuellement :
+
+# 1. Build React
+cd pii-scanner-ui
+npm run build
+
+# 2. Copier vers wwwroot
+xcopy /E /I dist ..\PiiScanner.Api\wwwroot
+
+# 3. Publish API (self-contained)
+cd ..\PiiScanner.Api
+dotnet publish -c Release -r win-x64 --self-contained true -o ..\PII-Scanner-WebApp
+
+# 4. Créer le fichier batch de lancement
+# (voir BuildWebApp.ps1 pour le contenu)
+```
+
+Le package sera créé dans `PII-Scanner-WebApp/` (~124 MB).
+
+Pour distribuer :
+```powershell
+Compress-Archive -Path PII-Scanner-WebApp\* -DestinationPath PII-Scanner-WebApp.zip
 ```
 
 ---
 
-## 📦 Créer un Package Portable (Développeurs)
-
-Pour créer votre propre package portable, consultez le guide complet dans [CLAUDE.md - Build Portable Package](CLAUDE.md#build-portable-package).
-
----
-
 ## 🔧 Dépannage
-
-### Windows SmartScreen bloque l'application
-
-**Erreur** : "Windows a protégé votre ordinateur" ou "Une stratégie de contrôle d'application a bloqué ce fichier"
-
-**Solutions** :
-1. Utilisez le script `Ajouter-Exclusion-Windows-Defender.bat` (Admin requis)
-2. Utilisez le script `Débloquer-Fichiers.bat`
-3. Déverrouillez manuellement via Propriétés → Débloquer
-
-### Page blanche après création du compte admin
-
-**Solution** : Ce problème a été corrigé dans la version 2.0. Si vous rencontrez toujours le problème :
-1. Fermez l'application complètement
-2. Relancez `Démarrer PII Scanner.bat`
 
 ### L'API ne démarre pas
 
@@ -213,6 +217,9 @@ netstat -ano | findstr :5001
 
 # Terminer le processus (remplacer PID par le numéro obtenu)
 taskkill /F /PID <PID>
+
+# OU tuer tous les processus dotnet
+taskkill /F /IM dotnet.exe
 ```
 
 ### Erreur de certificat HTTPS
@@ -237,11 +244,71 @@ tasklist | findstr PiiScanner
 taskkill /F /IM PiiScanner.Api.exe
 ```
 
+### Page blanche dans le navigateur
+
+**Problème** : wwwroot/ vide ou manquant
+
+**Solution** :
+```bash
+# Build et copier React
+cd pii-scanner-ui
+npm run build
+xcopy /E /I dist ..\PiiScanner.Api\wwwroot
+```
+
+### Le navigateur affiche "Cannot GET /"
+
+**Problème** : Fichiers statiques non servis
+
+**Solution** : Vérifier que `Program.cs` contient :
+```csharp
+app.UseDefaultFiles();
+app.UseStaticFiles();
+app.MapFallbackToFile("index.html");
+```
+
+### Certificat HTTPS non approuvé dans le navigateur
+
+**Symptôme** : "Votre connexion n'est pas privée" sur https://localhost:5001
+
+**Cause** : Certificat auto-signé pour localhost
+
+**Solutions** :
+1. **Recommandé** : Cliquez sur "Avancé" → "Continuer vers localhost (dangereux)" - c'est sécurisé pour localhost
+2. **Ou** : Approuvez le certificat de développement :
+```bash
+dotnet dev-certs https --trust
+```
+
+---
+
+## 📊 Comparaison des Versions
+
+| Critère | v1.x (Electron) | v2.0 (Web App) |
+|---------|-----------------|----------------|
+| **Taille** | 196 MB | 124 MB (-37%) |
+| **Exécutables** | 2 (API + UI Electron) | 1 (API uniquement) |
+| **Démarrage** | 2 processus | 1 processus + navigateur |
+| **Certificat de code** | Requis (SmartScreen) | ❌ Pas nécessaire |
+| **Navigateur** | Chromium intégré | N'importe quel navigateur |
+| **CORS** | Configuration complexe | ❌ Pas nécessaire |
+| **Déploiement** | Installer certificat | Extraire ZIP et lancer |
+| **Updates** | Remplacer 2 exe | Remplacer 1 dossier |
+
 ---
 
 ## 📚 Documentation
 
 - **Documentation complète** : [README.md](README.md)
+- **Guide de démarrage** : [DEMARRAGE.md](DEMARRAGE.md)
+- **Migration Electron → Web** : [MIGRATION-WEB.md](MIGRATION-WEB.md)
+- **Changelog v2.0** : [CHANGELOG-v2.0.md](CHANGELOG-v2.0.md)
 - **Sécurité** : [SECURITY.md](SECURITY.md)
 - **Configuration** : [CONFIGURATION.md](CONFIGURATION.md)
 - **Documentation technique** : [CLAUDE.md](CLAUDE.md)
+
+---
+
+**Version** : 2.0.0
+**Date** : 27 décembre 2025
+**Développé par** : [Cyberprevs](https://cyberprevs.com)
