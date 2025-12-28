@@ -13,10 +13,12 @@ PII Scanner is a full-stack web application for detecting Personally Identifiabl
 ```
 PII-Scanner/
 ├── PiiScanner.Core/          # Shared library - Core PII detection logic
+├── PiiScanner.Core.Tests/    # Unit tests for Core library (xUnit + FluentAssertions)
 ├── PiiScanner.Api/           # ASP.NET Core Web API + SignalR + Static Files
 │   └── wwwroot/              # React build output (index.html, assets/)
 ├── PiiScanner/               # Legacy console application
 ├── pii-scanner-ui/           # React + TypeScript UI (build to wwwroot)
+│   └── src/components/__tests__/  # React component tests (Vitest)
 └── BuildWebApp.ps1           # Automated build script
 ```
 
@@ -632,6 +634,127 @@ The French language is used for end-user facing elements to comply with RGPD ter
 - **Memory**: Results stored in-memory during scan - large directories may require optimization
 - **Regex Compilation**: Patterns are not pre-compiled - consider using RegexOptions.Compiled for frequently scanned large files
 - **SignalR Overhead**: Real-time updates add minimal overhead (~100ms per file)
+
+## Tests
+
+Le projet dispose d'une suite de tests complète couvrant le backend .NET et le frontend React.
+
+### Vue d'ensemble
+
+| Composant | Framework | Tests | Fichiers |
+|-----------|-----------|-------|----------|
+| Backend (.NET) | xUnit + FluentAssertions | 88 | PiiScanner.Core.Tests/ |
+| Frontend (React) | Vitest + Testing Library | 30 | pii-scanner-ui/src/components/__tests__/ |
+| **Total** | | **118** | |
+
+### Exécuter les Tests
+
+**Tests .NET (Backend):**
+```bash
+# Exécuter tous les tests .NET
+dotnet test PiiScanner.Core.Tests
+
+# Avec détails verbeux
+dotnet test PiiScanner.Core.Tests --verbosity normal
+
+# Filtrer par nom de test
+dotnet test PiiScanner.Core.Tests --filter "PiiDetector"
+```
+
+**Tests React (Frontend):**
+```bash
+cd pii-scanner-ui
+
+# Exécuter une fois (CI/CD)
+npm run test:run
+
+# Mode watch (développement)
+npm run test
+
+# Avec couverture de code
+npm run test:coverage
+```
+
+**Tous les tests (PowerShell):**
+```powershell
+# Note: Utiliser ; au lieu de && en PowerShell
+dotnet test PiiScanner.Core.Tests ; cd pii-scanner-ui ; npm run test:run ; cd ..
+```
+
+### Structure des Tests
+
+**PiiScanner.Core.Tests/** - Tests unitaires .NET:
+- [Analysis/PiiDetectorTests.cs](PiiScanner.Core.Tests/Analysis/PiiDetectorTests.cs) - 80+ tests pour la détection PII
+  - Tests de validation pour chaque type de PII (Email, IFU, CNI, IBAN, etc.)
+  - Tests des faux positifs à rejeter
+  - Tests de validation Luhn pour cartes bancaires
+  - Tests multi-PII dans un même document
+- [Utils/PathValidatorTests.cs](PiiScanner.Core.Tests/Utils/PathValidatorTests.cs) - Tests de sécurité
+  - Validation des chemins de fichiers
+  - Protection contre path traversal (../, etc.)
+  - Blocage des répertoires système
+
+**pii-scanner-ui/src/components/__tests__/** - Tests React:
+- [Login.test.tsx](pii-scanner-ui/src/components/__tests__/Login.test.tsx) - 15 tests
+  - Rendu du formulaire
+  - Validation des champs
+  - Flux de connexion
+  - États de chargement
+- [InitialSetup.test.tsx](pii-scanner-ui/src/components/__tests__/InitialSetup.test.tsx) - 15 tests
+  - Validation du nom d'utilisateur (3+ caractères)
+  - Validation du mot de passe (12+ chars, complexité)
+  - Correspondance des mots de passe
+  - Gestion des erreurs API
+
+### Écrire un Nouveau Test
+
+**Pattern ARRANGE / ACT / ASSERT:**
+
+```csharp
+// Exemple test .NET (xUnit + FluentAssertions)
+[Fact]
+public void Detect_Email_ShouldDetectValidEmail()
+{
+    // ARRANGE - Préparer les données de test
+    var content = "Contact: jean.dupont@example.com";
+    var filePath = "/test/file.txt";
+
+    // ACT - Exécuter le code à tester
+    var results = PiiDetector.Detect(content, filePath);
+
+    // ASSERT - Vérifier le résultat
+    results.Should().ContainSingle(r => r.PiiType == "Email");
+    results.First().Match.Should().Be("jean.dupont@example.com");
+}
+```
+
+```typescript
+// Exemple test React (Vitest + Testing Library)
+it('should call login with correct credentials', async () => {
+  // ARRANGE
+  mockLogin.mockResolvedValueOnce({});
+  renderLogin();
+  const user = userEvent.setup();
+
+  // ACT
+  await user.type(screen.getByLabelText(/nom d'utilisateur/i), 'admin');
+  await user.type(screen.getByLabelText(/mot de passe/i), 'password');
+  await user.click(screen.getByRole('button', { name: /se connecter/i }));
+
+  // ASSERT
+  await waitFor(() => {
+    expect(mockLogin).toHaveBeenCalledWith('admin', 'password');
+  });
+});
+```
+
+### CI/CD Integration
+
+Les tests sont automatiquement exécutés via GitHub Actions à chaque push/PR:
+- Voir [.github/workflows/ci.yml](.github/workflows/ci.yml)
+- Job `test-backend`: Exécute `dotnet test`
+- Job `test-frontend`: Exécute `npm run test:run`
+- Job `build`: S'exécute seulement si les tests passent
 
 ## Security Notes
 

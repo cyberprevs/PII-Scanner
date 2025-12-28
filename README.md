@@ -117,9 +117,23 @@ dotnet run
 | [INSTALLATION.md](INSTALLATION.md) | Guide d'installation complet (portable + sources) |
 | [CONFIGURATION.md](CONFIGURATION.md) | Configuration pour la production |
 | [SECURITY.md](SECURITY.md) | Documentation de sécurité détaillée |
-| [CLAUDE.md](CLAUDE.md) | Guide technique développeurs (architecture, API, build) |
+| [CLAUDE.md](CLAUDE.md) | Guide technique développeurs (architecture, API, build, **tests**) |
 | [LISEZMOI-PORTABLE.txt](LISEZMOI-PORTABLE.txt) | Guide utilisateur final (version portable) |
 | [CHANGELOG.md](CHANGELOG.md) | Historique des versions |
+
+### 🧪 Tests
+
+**118 tests automatisés** (88 .NET + 30 React) :
+
+```bash
+# Tests .NET
+dotnet test PiiScanner.Core.Tests
+
+# Tests React
+cd pii-scanner-ui && npm run test:run
+```
+
+→ **Documentation complète des tests** : [CLAUDE.md - Tests](CLAUDE.md#tests)
 
 ---
 
@@ -134,10 +148,11 @@ dotnet run
 
 ```
 PII-Scanner/
-├── PiiScanner.Core/      # Bibliothèque de détection PII (17 types)
-├── PiiScanner.Api/       # API REST + SignalR + Authentification
-├── PiiScanner/           # Application console (legacy)
-└── pii-scanner-ui/       # Application Electron (15 pages)
+├── PiiScanner.Core/          # Bibliothèque de détection PII (17 types)
+├── PiiScanner.Core.Tests/    # Tests unitaires (xUnit + FluentAssertions)
+├── PiiScanner.Api/           # API REST + SignalR + Authentification
+├── PiiScanner/               # Application console (legacy)
+└── pii-scanner-ui/           # Interface React (15 pages) + Tests Vitest
 ```
 
 ### API REST
