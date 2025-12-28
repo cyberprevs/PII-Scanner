@@ -1,11 +1,15 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
- VisualStudioVersion = 17.0.31903.59
+VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PiiScanner.Core", "PiiScanner.Core\PiiScanner.Core.csproj", "{BA789C4D-9137-4A6D-B0DC-0D8F2DEB8561}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PiiScanner.Api", "PiiScanner.Api\PiiScanner.Api.csproj", "{5E99F6B0-D4D4-4D04-AE6C-7BE34C5BA923}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PiiScanner.Core.Tests", "PiiScanner.Core.Tests\PiiScanner.Core.Tests.csproj", "{93AA7BBC-351A-4B2F-9C98-8E9743A87743}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PiiScanner.Api.Tests", "PiiScanner.Api.Tests\PiiScanner.Api.Tests.csproj", "{CC136F56-84D0-4CD8-95A6-FD96BDBC8C74}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,5 +28,13 @@ Global
 		{5E99F6B0-D4D4-4D04-AE6C-7BE34C5BA923}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5E99F6B0-D4D4-4D04-AE6C-7BE34C5BA923}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5E99F6B0-D4D4-4D04-AE6C-7BE34C5BA923}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93AA7BBC-351A-4B2F-9C98-8E9743A87743}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93AA7BBC-351A-4B2F-9C98-8E9743A87743}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93AA7BBC-351A-4B2F-9C98-8E9743A87743}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93AA7BBC-351A-4B2F-9C98-8E9743A87743}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC136F56-84D0-4CD8-95A6-FD96BDBC8C74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC136F56-84D0-4CD8-95A6-FD96BDBC8C74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC136F56-84D0-4CD8-95A6-FD96BDBC8C74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC136F56-84D0-4CD8-95A6-FD96BDBC8C74}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

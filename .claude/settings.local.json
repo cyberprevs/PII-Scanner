@@ -39,7 +39,12 @@
       "Bash(robocopy:*)",
       "Bash(tasklist:*)",
       "Bash(timeout /t 2)",
-      "Bash(npx vite build)"
+      "Bash(npx vite build)",
+      "Bash(dotnet new:*)",
+      "Bash(dotnet sln:*)",
+      "Bash(dotnet test:*)",
+      "Bash(npm test:*)",
+      "Bash(npm run test:run:*)"
     ]
   }
 }

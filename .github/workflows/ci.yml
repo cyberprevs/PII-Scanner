@@ -1,0 +1,125 @@
+# CI/CD Pipeline pour PII Scanner
+# Se déclenche à chaque push ou pull request
+
+name: CI
+
+# Quand exécuter ce workflow ?
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ============================================
+  # JOB 1: Tests Backend (.NET)
+  # ============================================
+  test-backend:
+    name: Tests .NET
+    runs-on: windows-latest
+
+    steps:
+      # Étape 1: Récupérer le code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Étape 2: Installer .NET 8
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      # Étape 3: Restaurer les dépendances
+      - name: Restore dependencies
+        run: dotnet restore
+
+      # Étape 4: Build
+      - name: Build
+        run: dotnet build --no-restore
+
+      # Étape 5: Exécuter les tests
+      - name: Run tests
+        run: dotnet test --no-build --verbosity normal
+
+  # ============================================
+  # JOB 2: Tests Frontend (React)
+  # ============================================
+  test-frontend:
+    name: Tests React
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: pii-scanner-ui
+
+    steps:
+      # Étape 1: Récupérer le code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Étape 2: Installer Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: pii-scanner-ui/package-lock.json
+
+      # Étape 3: Installer les dépendances
+      - name: Install dependencies
+        run: npm ci
+
+      # Étape 4: Exécuter les tests
+      - name: Run tests
+        run: npm run test:run
+
+      # Étape 5: Build de production
+      - name: Build
+        run: npm run build
+
+  # ============================================
+  # JOB 3: Build complet (après succès des tests)
+  # ============================================
+  build:
+    name: Build Application
+    needs: [test-backend, test-frontend]  # Attend que les tests passent
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Build React
+      - name: Build React UI
+        working-directory: pii-scanner-ui
+        run: |
+          npm ci
+          npm run build
+
+      # Copier vers wwwroot
+      - name: Copy React to wwwroot
+        run: |
+          if (Test-Path PiiScanner.Api\wwwroot) { Remove-Item -Recurse -Force PiiScanner.Api\wwwroot }
+          Copy-Item -Recurse pii-scanner-ui\dist PiiScanner.Api\wwwroot
+
+      # Build .NET
+      - name: Publish .NET API
+        run: dotnet publish PiiScanner.Api -c Release -r win-x64 --self-contained true -o publish
+
+      # Sauvegarder l'artifact
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PII-Scanner-WebApp
+          path: publish/
+          retention-days: 30
