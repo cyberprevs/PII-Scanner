@@ -505,7 +505,7 @@ Four report formats are generated simultaneously:
 
 **pii-scanner-ui**:
 - No .NET dependencies
-- Packages API binaries as `extraResources` during Electron build
+- Build output copied to `PiiScanner.Api/wwwroot/` for production
 
 ## Common Development Tasks
 
@@ -865,9 +865,9 @@ npm run electron:build:win
 cd PiiScanner.Api
 dotnet run
 
-# Terminal 2: Start Electron UI
+# Terminal 2 (optionnel): Start Vite dev server for hot reload
 cd pii-scanner-ui
-npm run electron:dev
+npm run dev
 ```
 
 ### Database Commands
@@ -892,11 +892,12 @@ dotnet ef migrations remove
 - Check database encryption key permissions
 - Review logs in console output
 
-**Electron app can't connect to API:**
-- Ensure API is running on port 5000 (or 5001 for HTTPS)
-- Check CORS configuration in [Program.cs](PiiScanner.Api/Program.cs)
-- Verify firewall isn't blocking connections
+**Web app can't connect to API:**
+- Ensure API is running on `https://localhost:5001`
+- For production: Check that React build is in `wwwroot/`
+- For dev mode: Verify Vite proxy configuration in `vite.config.ts`
 - For HTTPS: Trust dev certificate with `dotnet dev-certs https --trust`
+- Check browser console for CORS or network errors
 
 **SignalR connection fails:**
 - Verify WebSocket support (not blocked by firewall/proxy)

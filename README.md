@@ -142,7 +142,7 @@ cd pii-scanner-ui && npm run test:run
 ### Stack technique
 
 **Backend** : .NET 8.0, ASP.NET Core Web API, SignalR, SQLite + SQLCipher
-**Frontend** : Electron 39, React 19, TypeScript 5.9, Material-UI v7, Recharts
+**Frontend** : React 19, TypeScript 5.9, Material-UI v7, Recharts, Vite
 
 ### Projets
 

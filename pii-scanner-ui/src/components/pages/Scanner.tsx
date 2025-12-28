@@ -82,14 +82,22 @@ export default function Scanner({ scanning, scanId, onStartScan }: ScannerProps)
   };
 
   const handleSelectDirectory = async () => {
-    if (window.electronAPI) {
-      const path = await window.electronAPI.selectDirectory();
-      if (path) {
-        setDirectoryPath(path);
-        setPathError('');
+    try {
+      // Vérifier si l'API File System Access est supportée (Chrome, Edge modernes)
+      if ('showDirectoryPicker' in window) {
+        const directoryHandle = await (window as any).showDirectoryPicker();
+        // On ne peut pas obtenir le chemin complet pour des raisons de sécurité
+        // On affiche le nom du dossier et on demande à l'utilisateur de saisir le chemin complet
+        alert(`Dossier sélectionné : ${directoryHandle.name}\n\nPour des raisons de sécurité navigateur, veuillez saisir le chemin complet du dossier dans le champ ci-dessous.\n\nExemple Windows : C:\\Users\\Votre Nom\\Documents\\${directoryHandle.name}\nExemple Linux/Mac : /home/votre-nom/documents/${directoryHandle.name}`);
+      } else {
+        // Navigateur non supporté
+        alert('Sélection de dossier non supportée dans ce navigateur.\n\nVeuillez saisir le chemin complet du dossier manuellement dans le champ ci-dessous.\n\nExemples :\n• Windows : C:\\Users\\Votre Nom\\Documents\\MonDossier\n• Linux/Mac : /home/votre-nom/documents/mon-dossier');
       }
-    } else {
-      console.log('Electron API non disponible, entrez le chemin manuellement');
+    } catch (err: any) {
+      if (err.name !== 'AbortError') {
+        console.error('Erreur lors de la sélection du dossier:', err);
+        alert('Erreur lors de la sélection du dossier.\n\nVeuillez saisir le chemin complet manuellement dans le champ ci-dessous.');
+      }
     }
   };
 
@@ -378,7 +386,7 @@ export default function Scanner({ scanning, scanId, onStartScan }: ScannerProps)
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                   <SecurityIcon sx={{ fontSize: 28, mr: 1.5, color: 'secondary.main' }} />
                   <Typography variant="h6" fontWeight={600}>
-                    20 types de PII détectés
+                    17 types de PII détectés
                   </Typography>
                 </Box>
                 <Typography variant="body2" color="text.secondary" paragraph>
@@ -387,22 +395,23 @@ export default function Scanner({ scanning, scanId, onStartScan }: ScannerProps)
 
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.75, mt: 2 }}>
                   {[
-                    { label: 'Adresses email', icon: '📧' },
-                    { label: 'Téléphones (+229)', icon: '📞' },
-                    { label: 'Cartes bancaires', icon: '💳' },
-                    { label: 'IBAN (BJ)', icon: '🏦' },
-                    { label: 'Mobile Money', icon: '💰' },
+                    { label: 'Email', icon: '📧' },
+                    { label: 'Date de naissance', icon: '📅' },
+                    { label: 'Carte bancaire', icon: '💳' },
                     { label: 'IFU (13 chiffres)', icon: '🆔' },
                     { label: 'CNI Bénin', icon: '📇' },
                     { label: 'Passeport béninois', icon: '🛂' },
                     { label: 'RCCM', icon: '🏢' },
                     { label: 'Acte de naissance', icon: '📜' },
+                    { label: 'Téléphone (+229)', icon: '📞' },
+                    { label: 'IBAN Bénin', icon: '🏦' },
+                    { label: 'Mobile Money MTN', icon: '💰' },
+                    { label: 'Mobile Money Moov', icon: '💸' },
                     { label: 'CNSS (11 chiffres)', icon: '🏥' },
                     { label: 'RAMU', icon: '💊' },
                     { label: 'INE', icon: '🎓' },
                     { label: 'Matricule fonctionnaire', icon: '👨‍💼' },
                     { label: 'Plaque d\'immatriculation', icon: '🚗' },
-                    { label: 'Dates de naissance', icon: '📅' },
                   ].map((item, index) => (
                     <Chip
                       key={index}

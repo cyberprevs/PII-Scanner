@@ -60,7 +60,7 @@ const About: React.FC = () => {
                 Détection automatisée de données personnelles (PII) dans vos fichiers
               </Typography>
               <Chip
-                label="Version 1.0.0"
+                label="Version 2.0.0"
                 sx={{
                   bgcolor: 'rgba(255,255,255,0.2)',
                   color: 'white',
@@ -255,7 +255,7 @@ const About: React.FC = () => {
           <Grid item xs={12} sm={6} md={3}>
             <Box sx={{ textAlign: 'center', p: 2 }}>
               <Typography variant="h6" fontWeight={700} color="primary.main">
-                20+
+                17
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 Types de PII détectés
@@ -301,13 +301,13 @@ const About: React.FC = () => {
         </Typography>
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
           <Chip label=".NET 8.0" size="small" variant="outlined" />
+          <Chip label="ASP.NET Core" size="small" variant="outlined" />
           <Chip label="React 19" size="small" variant="outlined" />
-          <Chip label="TypeScript" size="small" variant="outlined" />
-          <Chip label="Electron" size="small" variant="outlined" />
-          <Chip label="Material-UI" size="small" variant="outlined" />
+          <Chip label="TypeScript 5.9" size="small" variant="outlined" />
+          <Chip label="Material-UI v7" size="small" variant="outlined" />
           <Chip label="SignalR" size="small" variant="outlined" />
           <Chip label="SQLite" size="small" variant="outlined" />
-          <Chip label="SQLCipher" size="small" variant="outlined" />
+          <Chip label="SQLCipher AES-256" size="small" variant="outlined" />
         </Box>
 
         <Typography variant="body2" color="text.secondary" paragraph>
@@ -334,21 +334,6 @@ const About: React.FC = () => {
             <ListItemText
               primary={
                 <Link
-                  href="https://creativecommons.org/licenses/by-nc/4.0/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  sx={{ textDecoration: 'none', fontWeight: 600 }}
-                >
-                  📄 Texte complet de la licence CC BY-NC 4.0
-                </Link>
-              }
-              secondary="Consultez les termes complets de la licence"
-            />
-          </ListItem>
-          <ListItem>
-            <ListItemText
-              primary={
-                <Link
                   href="https://github.com/cyberprevs/pii-scanner"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -357,7 +342,67 @@ const About: React.FC = () => {
                   💻 Code source sur GitHub
                 </Link>
               }
-              secondary="Accédez au dépôt GitHub du projet"
+              secondary="Accédez au dépôt GitHub du projet (cyberprevs/pii-scanner)"
+            />
+          </ListItem>
+          <ListItem>
+            <ListItemText
+              primary={
+                <Link
+                  href="https://github.com/cyberprevs/pii-scanner/blob/main/README.md"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  sx={{ textDecoration: 'none', fontWeight: 600 }}
+                >
+                  📖 Documentation complète
+                </Link>
+              }
+              secondary="Guide d'installation, configuration et utilisation"
+            />
+          </ListItem>
+          <ListItem>
+            <ListItemText
+              primary={
+                <Link
+                  href="https://github.com/cyberprevs/pii-scanner/blob/main/CLAUDE.md"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  sx={{ textDecoration: 'none', fontWeight: 600 }}
+                >
+                  🔧 Documentation technique
+                </Link>
+              }
+              secondary="Guide développeur : architecture, API, tests (118 tests)"
+            />
+          </ListItem>
+          <ListItem>
+            <ListItemText
+              primary={
+                <Link
+                  href="https://github.com/cyberprevs/pii-scanner/blob/main/SECURITY.md"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  sx={{ textDecoration: 'none', fontWeight: 600 }}
+                >
+                  🔒 Documentation de sécurité
+                </Link>
+              }
+              secondary="11 protections implémentées : HTTPS, SQLCipher, JWT, CSRF, etc."
+            />
+          </ListItem>
+          <ListItem>
+            <ListItemText
+              primary={
+                <Link
+                  href="https://github.com/cyberprevs/pii-scanner/releases"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  sx={{ textDecoration: 'none', fontWeight: 600 }}
+                >
+                  📦 Releases et téléchargements
+                </Link>
+              }
+              secondary="Téléchargez la version portable (124 MB, sans installation)"
             />
           </ListItem>
           <ListItem>
@@ -372,7 +417,7 @@ const About: React.FC = () => {
                   🤝 Guide de contribution
                 </Link>
               }
-              secondary="Comment contribuer au projet"
+              secondary="Comment contribuer au projet open-source"
             />
           </ListItem>
           <ListItem>
@@ -384,10 +429,40 @@ const About: React.FC = () => {
                   rel="noopener noreferrer"
                   sx={{ textDecoration: 'none', fontWeight: 600 }}
                 >
-                  🐛 Signaler un bug
+                  🐛 Signaler un bug ou demander une fonctionnalité
                 </Link>
               }
-              secondary="Signalez des bugs ou proposez des améliorations"
+              secondary="Ouvrez une issue sur GitHub"
+            />
+          </ListItem>
+          <ListItem>
+            <ListItemText
+              primary={
+                <Link
+                  href="https://creativecommons.org/licenses/by-nc/4.0/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  sx={{ textDecoration: 'none', fontWeight: 600 }}
+                >
+                  📄 Licence CC BY-NC 4.0
+                </Link>
+              }
+              secondary="Texte complet de la licence Creative Commons"
+            />
+          </ListItem>
+          <ListItem>
+            <ListItemText
+              primary={
+                <Link
+                  href="https://cyberprevs.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  sx={{ textDecoration: 'none', fontWeight: 600 }}
+                >
+                  🏢 Site web Cyberprevs
+                </Link>
+              }
+              secondary="Découvrez nos autres projets et services"
             />
           </ListItem>
         </List>
