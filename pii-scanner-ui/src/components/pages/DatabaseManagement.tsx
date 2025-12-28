@@ -36,7 +36,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import SaveIcon from '@mui/icons-material/Save';
 import WarningIcon from '@mui/icons-material/Warning';
 import DeleteIcon from '@mui/icons-material/Delete';
-import axios from '../../services/axios';
+import axios, { initializeCsrfToken } from '../../services/axios';
 
 interface DatabaseStats {
   databaseSize: number;
@@ -87,7 +87,12 @@ const DatabaseManagement: React.FC = () => {
   const [resetPassword, setResetPassword] = useState('');
 
   useEffect(() => {
-    loadData();
+    const init = async () => {
+      // Initialiser le token CSRF avant de charger les données
+      await initializeCsrfToken();
+      await loadData();
+    };
+    init();
   }, []);
 
   const loadData = async () => {
@@ -189,12 +194,16 @@ const DatabaseManagement: React.FC = () => {
 
   const handleDeleteBackup = async (fileName: string) => {
     try {
-      await axios.delete(`/database/backup/${encodeURIComponent(fileName)}`);
+      console.log('Deleting backup:', fileName);
+      const response = await axios.delete(`/database/backup/${encodeURIComponent(fileName)}`);
+      console.log('Delete response:', response);
       setSuccess(`Sauvegarde supprimée: ${fileName}`);
       setTimeout(() => setSuccess(''), 3000);
       loadData();
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Erreur lors de la suppression de la sauvegarde');
+      console.error('Delete backup error:', err);
+      console.error('Error response:', err.response);
+      setError(err.response?.data?.error || err.response?.data?.message || 'Erreur lors de la suppression de la sauvegarde');
       setTimeout(() => setError(''), 3000);
     }
   };

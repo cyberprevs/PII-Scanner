@@ -67,9 +67,26 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // Add SignalR
 builder.Services.AddSignalR();
 
-// Add CORS - Désactivé car l'application web est servie depuis le même domaine
-// Plus besoin de CORS puisque React est servi par la même API
-// builder.Services.AddCors(...);
+// Add CORS - Actif en développement pour Vite dev server (port 3000)
+// En production, React est servi depuis wwwroot/ donc CORS n'est pas nécessaire
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("DevCorsPolicy", policy =>
+        {
+            policy.WithOrigins(
+                "http://localhost:3000",
+                "http://127.0.0.1:3000",
+                "https://localhost:5173",
+                "http://localhost:5173"
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+        });
+    });
+}
 
 // Add custom services
 builder.Services.AddSingleton<ScanService>();
@@ -97,6 +114,12 @@ if (app.Environment.IsDevelopment())
 
 // SÉCURITÉ: HTTPS Redirection - Forcer HTTPS pour toutes les requêtes
 app.UseHttpsRedirection();
+
+// CORS en développement uniquement (pour Vite dev server)
+if (app.Environment.IsDevelopment())
+{
+    app.UseCors("DevCorsPolicy");
+}
 
 // SÉCURITÉ: Headers de sécurité HTTP
 app.Use(async (context, next) =>

@@ -387,27 +387,33 @@ L'application implémente un rate limiting à trois niveaux via `RateLimitingMid
 
 ### Configuration
 
-CORS configuré dans `Program.cs` :
+CORS configuré dans `Program.cs` (actif **uniquement en développement**) :
 
 ```csharp
-builder.Services.AddCors(options =>
+if (builder.Environment.IsDevelopment())
 {
-    options.AddPolicy("AllowElectron", policy =>
+    builder.Services.AddCors(options =>
     {
-        policy.WithOrigins(
-            "http://localhost:3000",
-            "http://localhost:5173",
-            "http://localhost:5174",
-            "http://localhost:5175"
-        )
-        .AllowAnyMethod()
-        .AllowAnyHeader()
-        .AllowCredentials();
+        options.AddPolicy("DevCorsPolicy", policy =>
+        {
+            policy.WithOrigins(
+                "http://localhost:3000",
+                "http://127.0.0.1:3000",
+                "https://localhost:5173",
+                "http://localhost:5173"
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+        });
     });
-});
+}
 ```
 
-**En production** : Remplacer `AllowAnyOrigin()` par la liste blanche des domaines autorisés.
+**Notes importantes** :
+- **Production** : CORS est **désactivé** car React est servi depuis `wwwroot/` (même origine → pas de CORS nécessaire)
+- **Développement** : CORS actif pour Vite dev server (`http://localhost:5173`) et tests locaux
+- Cette configuration permet le développement avec hot reload tout en maintenant la sécurité en production
 
 ## 9. Sécurité de la base de données
 
