@@ -79,7 +79,7 @@ public static class PiiDetector
         { "Plaque_Immatriculation", @"\b(?:[A-Z]{2}\s?\d{4}\s?[A-Z]{2}|\d{4}\s?[A-Z]{2})\b" }
     };
 
-    public static List<ScanResult> Detect(string content, string filePath, DateTime? lastAccessedDate = null, FilePermissionAnalyzer.PermissionInfo? permissionInfo = null)
+    public static List<ScanResult> Detect(string content, string filePath, DateTime? lastAccessedDate = null, FilePermissionAnalyzer.PermissionInfo? permissionInfo = null, string? fileHash = null)
     {
         var results = new List<ScanResult>();
 
@@ -96,6 +96,7 @@ public static class PiiDetector
                         PiiType = pattern.Key,
                         Match = match.Value,
                         LastAccessedDate = lastAccessedDate,
+                        FileHash = fileHash,
                         ExposureLevel = permissionInfo != null ? FilePermissionAnalyzer.GetExposureLevelLabel(permissionInfo.ExposureLevel) : null,
                         AccessibleToEveryone = permissionInfo?.AccessibleToEveryone,
                         IsNetworkShare = permissionInfo?.IsNetworkShare,

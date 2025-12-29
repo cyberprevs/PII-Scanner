@@ -27,6 +27,8 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import DownloadIcon from '@mui/icons-material/Download';
+import CategoryIcon from '@mui/icons-material/Category';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import SettingsIcon from '@mui/icons-material/Settings';
 import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -89,6 +91,8 @@ const menuItems: MenuItem[] = [
     subItems: [
       { id: 'risky-files', label: 'Fichiers à risque', icon: <FolderIcon />, path: '/risky-files' },
       { id: 'detections', label: 'Données sensibles', icon: <SecurityIcon />, path: '/detections' },
+      { id: 'pii-category-analysis', label: 'Analyse par Catégories', icon: <CategoryIcon />, path: '/pii-category-analysis' },
+      { id: 'duplicate-files', label: 'Fichiers dupliqués', icon: <ContentCopyIcon />, path: '/duplicate-files' },
       { id: 'staleness', label: 'Ancienneté', icon: <AccessTimeIcon />, path: '/staleness' },
       { id: 'exposure', label: 'Exposition', icon: <LockOpenIcon />, path: '/exposure' },
     ],
@@ -156,7 +160,7 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
   const isMaintenancePath = ['/users', '/database', '/audit-trail', '/settings'].includes(location.pathname);
 
   // Check if current path is under analysis
-  const isAnalysisPath = ['/risky-files', '/detections', '/staleness', '/exposure'].includes(location.pathname);
+  const isAnalysisPath = ['/risky-files', '/detections', '/pii-category-analysis', '/duplicate-files', '/staleness', '/exposure'].includes(location.pathname);
 
   return (
     <Drawer

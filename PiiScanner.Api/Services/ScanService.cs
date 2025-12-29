@@ -180,6 +180,7 @@ public class ScanService
                 PiiType = r.PiiType,
                 Match = r.Match,
                 LastAccessedDate = r.LastAccessedDate,
+                FileHash = r.FileHash,
                 ExposureLevel = r.ExposureLevel,
                 AccessibleToEveryone = r.AccessibleToEveryone
             }).ToList()

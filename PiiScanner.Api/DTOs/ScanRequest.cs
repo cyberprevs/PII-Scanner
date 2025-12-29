@@ -62,6 +62,9 @@ public class ScanDetectionDto
     public required string Match { get; set; }
     public DateTime? LastAccessedDate { get; set; }
 
+    // Hash MD5 du fichier pour la détection de duplicatas
+    public string? FileHash { get; set; }
+
     // Informations d'exposition
     public string? ExposureLevel { get; set; }
     public bool? AccessibleToEveryone { get; set; }

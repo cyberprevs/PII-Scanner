@@ -7,6 +7,9 @@ public class ScanResult
     public required string Match { get; init; }
     public DateTime? LastAccessedDate { get; init; }
 
+    // Hash MD5 du fichier pour la détection de duplicatas
+    public string? FileHash { get; init; }
+
     // Informations d'exposition (permissions)
     public string? ExposureLevel { get; init; }
     public bool? AccessibleToEveryone { get; init; }

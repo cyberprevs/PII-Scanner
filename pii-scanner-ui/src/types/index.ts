@@ -53,6 +53,9 @@ export interface ScanDetection {
   match: string;
   lastAccessedDate?: string;
 
+  // Hash MD5 du fichier pour la détection de duplicatas
+  fileHash?: string;
+
   // Informations d'exposition
   exposureLevel?: string;
   accessibleToEveryone?: boolean;

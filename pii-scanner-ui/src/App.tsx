@@ -24,6 +24,8 @@ import DatabaseManagement from './components/pages/DatabaseManagement';
 import AuditTrail from './components/pages/AuditTrail';
 import Support from './components/pages/Support';
 import About from './components/pages/About';
+import PiiCategoryAnalysis from './components/pages/PiiCategoryAnalysis';
+import DuplicateFiles from './components/pages/DuplicateFiles';
 import { scanApi } from './services/apiClient';
 import type { ScanResultResponse } from './types';
 import axiosInstance, { initializeCsrfToken } from './services/axios';
@@ -226,6 +228,8 @@ function App() {
             />
             <Route path="risky-files" element={<RiskyFiles results={results} />} />
             <Route path="detections" element={<Detections results={results} />} />
+            <Route path="pii-category-analysis" element={<PiiCategoryAnalysis results={results} />} />
+            <Route path="duplicate-files" element={<DuplicateFiles results={results} />} />
             <Route path="staleness" element={<Staleness results={results} />} />
             <Route path="exposure" element={<Exposure results={results} />} />
             <Route path="reports" element={<Reports results={results} />} />

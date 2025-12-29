@@ -3,6 +3,7 @@ using PiiScanner.Models;
 using PiiScanner.Reader;
 using PiiScanner.Utils;
 using System.Collections.Concurrent;
+using System.Security.Cryptography;
 
 namespace PiiScanner.Scanner;
 
@@ -15,6 +16,21 @@ public class FileScanner
     public int ProcessedFiles => processedFiles;
 
     public event Action<int, int>? ProgressUpdated; // (current, total)
+
+    private static string CalculateFileHash(string filePath)
+    {
+        try
+        {
+            using var md5 = MD5.Create();
+            using var stream = File.OpenRead(filePath);
+            var hashBytes = md5.ComputeHash(stream);
+            return BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
+        }
+        catch
+        {
+            return string.Empty;
+        }
+    }
 
     public List<ScanResult> ScanDirectory(string path)
     {
@@ -78,10 +94,20 @@ public class FileScanner
                         // Si impossible d'analyser les permissions, continuer sans
                     }
 
-                    var detections = PiiDetector.Detect(content, file, lastAccessedDate, permissionInfo);
-                    foreach (var detection in detections)
+                    // Détecter les PII sans hash d'abord
+                    var detections = PiiDetector.Detect(content, file, lastAccessedDate, permissionInfo, null);
+
+                    // Si des PII sont détectés, calculer le hash et mettre à jour les détections
+                    if (detections.Count > 0)
                     {
-                        results.Add(detection);
+                        string? fileHash = CalculateFileHash(file);
+
+                        // Recréer les détections avec le hash
+                        var detectionsWithHash = PiiDetector.Detect(content, file, lastAccessedDate, permissionInfo, fileHash);
+                        foreach (var detection in detectionsWithHash)
+                        {
+                            results.Add(detection);
+                        }
                     }
                 }
             }
