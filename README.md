@@ -69,13 +69,16 @@ dotnet run
 - **Rétention des données** : Gestion automatique des fichiers obsolètes (1-10 ans)
 - **Fichiers obsolètes** : Détection de PII dans des fichiers non accédés depuis longtemps
 - **Sur-exposition** : Analyse NTFS ACL pour fichiers accessibles à "Everyone"
+- **Fichiers dupliqués** : Détection MD5 des copies redondantes (même contenu = même risque multiplié)
+- **Analyse par catégories** : Regroupement par type (Bancaire, Identité, Santé, Contact, Éducation, Transport)
 - **Classification automatique** : Risque FAIBLE/MOYEN/ÉLEVÉ
 
 ### 🖥️ Interface web moderne
 
-- **15 pages spécialisées** : Dashboard, Scanner, Historique, Analytics, Exports, etc.
+- **17 pages spécialisées** : Dashboard, Scanner, Historique, Analyse par catégories, Fichiers dupliqués, Analytics, Exports, etc.
 - **Thème sombre** : Material-UI v7 avec graphiques interactifs (Recharts)
 - **Temps réel** : Mise à jour du scan via SignalR WebSocket
+- **Exports avancés** : CSV et Excel pour analyses par catégorie
 - **Gestion complète** : Utilisateurs, base de données, audit logs (Admin)
 - **Responsive** : Fonctionne sur desktop et tablette
 
