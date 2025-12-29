@@ -60,14 +60,12 @@ export default function Settings() {
     { id: 'ActeNaissance', label: 'Acte de naissance', description: 'Numéro d\'acte de naissance', enabled: true, sensitivity: 'Critique', category: 'Identité' },
 
     // Contact
-    { id: 'Telephone', label: 'Téléphone', description: 'Numéro de téléphone béninois (+229)', enabled: true, sensitivity: 'Moyen', category: 'Contact' },
+    { id: 'Telephone', label: 'Téléphone', description: 'Numéro de téléphone béninois (fixe, mobile, mobile money)', enabled: true, sensitivity: 'Moyen', category: 'Contact' },
     { id: 'Email', label: 'Email', description: 'Adresse email', enabled: true, sensitivity: 'Moyen', category: 'Contact' },
 
     // Bancaire
     { id: 'IBAN', label: 'IBAN Bénin', description: 'IBAN béninois (BJ + 26 caractères)', enabled: true, sensitivity: 'Critique', category: 'Bancaire' },
     { id: 'CarteBancaire', label: 'Carte bancaire', description: 'Numéro de carte bancaire (validation Luhn)', enabled: true, sensitivity: 'Critique', category: 'Bancaire' },
-    { id: 'MobileMoney_MTN', label: 'MTN MoMo', description: 'Mobile Money MTN (96, 97, 66, 67)', enabled: true, sensitivity: 'Critique', category: 'Bancaire' },
-    { id: 'MobileMoney_Moov', label: 'Moov Money', description: 'Mobile Money Moov (98, 99, 68, 69)', enabled: true, sensitivity: 'Critique', category: 'Bancaire' },
 
     // Santé & Sécurité Sociale
     { id: 'CNSS', label: 'CNSS', description: 'Caisse Nationale de Sécurité Sociale', enabled: true, sensitivity: 'Élevé', category: 'Santé' },

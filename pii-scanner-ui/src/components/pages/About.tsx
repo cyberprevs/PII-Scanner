@@ -14,6 +14,7 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
+  Alert,
 } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -60,7 +61,7 @@ const About: React.FC = () => {
                 Détection automatisée de données personnelles (PII) dans vos fichiers
               </Typography>
               <Chip
-                label="Version 2.0.0"
+                label="Version 2.1.0"
                 sx={{
                   bgcolor: 'rgba(255,255,255,0.2)',
                   color: 'white',
@@ -255,7 +256,7 @@ const About: React.FC = () => {
           <Grid item xs={12} sm={6} md={3}>
             <Box sx={{ textAlign: 'center', p: 2 }}>
               <Typography variant="h6" fontWeight={700} color="primary.main">
-                17
+                15
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 Types de PII détectés
@@ -325,147 +326,90 @@ const About: React.FC = () => {
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
           <GitHubIcon sx={{ fontSize: 32, mr: 2, color: 'primary.main' }} />
           <Typography variant="h5" fontWeight={700}>
-            Liens Utiles
+            Liens et Documentation
           </Typography>
         </Box>
 
-        <List>
-          <ListItem>
-            <ListItemText
-              primary={
-                <Link
-                  href="https://github.com/cyberprevs/pii-scanner"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  sx={{ textDecoration: 'none', fontWeight: 600 }}
-                >
-                  💻 Code source sur GitHub
-                </Link>
-              }
-              secondary="Accédez au dépôt GitHub du projet (cyberprevs/pii-scanner)"
-            />
-          </ListItem>
-          <ListItem>
-            <ListItemText
-              primary={
-                <Link
-                  href="https://github.com/cyberprevs/pii-scanner/blob/main/README.md"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  sx={{ textDecoration: 'none', fontWeight: 600 }}
-                >
-                  📖 Documentation complète
-                </Link>
-              }
-              secondary="Guide d'installation, configuration et utilisation"
-            />
-          </ListItem>
-          <ListItem>
-            <ListItemText
-              primary={
-                <Link
-                  href="https://github.com/cyberprevs/pii-scanner/blob/main/CLAUDE.md"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  sx={{ textDecoration: 'none', fontWeight: 600 }}
-                >
-                  🔧 Documentation technique
-                </Link>
-              }
-              secondary="Guide développeur : architecture, API, tests (118 tests)"
-            />
-          </ListItem>
-          <ListItem>
-            <ListItemText
-              primary={
-                <Link
-                  href="https://github.com/cyberprevs/pii-scanner/blob/main/SECURITY.md"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  sx={{ textDecoration: 'none', fontWeight: 600 }}
-                >
-                  🔒 Documentation de sécurité
-                </Link>
-              }
-              secondary="11 protections implémentées : HTTPS, SQLCipher, JWT, CSRF, etc."
-            />
-          </ListItem>
-          <ListItem>
-            <ListItemText
-              primary={
-                <Link
-                  href="https://github.com/cyberprevs/pii-scanner/releases"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  sx={{ textDecoration: 'none', fontWeight: 600 }}
-                >
-                  📦 Releases et téléchargements
-                </Link>
-              }
-              secondary="Téléchargez la version portable (124 MB, sans installation)"
-            />
-          </ListItem>
-          <ListItem>
-            <ListItemText
-              primary={
-                <Link
-                  href="https://github.com/cyberprevs/pii-scanner/blob/main/CONTRIBUTING.md"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  sx={{ textDecoration: 'none', fontWeight: 600 }}
-                >
-                  🤝 Guide de contribution
-                </Link>
-              }
-              secondary="Comment contribuer au projet open-source"
-            />
-          </ListItem>
-          <ListItem>
-            <ListItemText
-              primary={
-                <Link
-                  href="https://github.com/cyberprevs/pii-scanner/issues"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  sx={{ textDecoration: 'none', fontWeight: 600 }}
-                >
-                  🐛 Signaler un bug ou demander une fonctionnalité
-                </Link>
-              }
-              secondary="Ouvrez une issue sur GitHub"
-            />
-          </ListItem>
-          <ListItem>
-            <ListItemText
-              primary={
-                <Link
-                  href="https://creativecommons.org/licenses/by-nc/4.0/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  sx={{ textDecoration: 'none', fontWeight: 600 }}
-                >
+        <Alert severity="info" sx={{ mb: 3 }}>
+          💡 Pour les <strong>guides pratiques, FAQ et support</strong>, consultez la page{' '}
+          <Link href="/support" underline="hover" sx={{ fontWeight: 600 }}>
+            Support
+          </Link>
+        </Alert>
+
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6}>
+            <Link
+              href="https://github.com/cyberprevs/pii-scanner"
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{ textDecoration: 'none' }}
+            >
+              <Card sx={{ p: 2, '&:hover': { bgcolor: 'action.hover' } }}>
+                <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+                  💻 Code source GitHub
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Dépôt du projet et documentation
+                </Typography>
+              </Card>
+            </Link>
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <Link
+              href="https://github.com/cyberprevs/pii-scanner/blob/main/SECURITY.md"
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{ textDecoration: 'none' }}
+            >
+              <Card sx={{ p: 2, '&:hover': { bgcolor: 'action.hover' } }}>
+                <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+                  🔒 Documentation sécurité
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  13 protections : HTTPS, SQLCipher, JWT, CSRF, CSP
+                </Typography>
+              </Card>
+            </Link>
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <Link
+              href="https://creativecommons.org/licenses/by-nc/4.0/"
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{ textDecoration: 'none' }}
+            >
+              <Card sx={{ p: 2, '&:hover': { bgcolor: 'action.hover' } }}>
+                <Typography variant="subtitle1" fontWeight={600} gutterBottom>
                   📄 Licence CC BY-NC 4.0
-                </Link>
-              }
-              secondary="Texte complet de la licence Creative Commons"
-            />
-          </ListItem>
-          <ListItem>
-            <ListItemText
-              primary={
-                <Link
-                  href="https://cyberprevs.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  sx={{ textDecoration: 'none', fontWeight: 600 }}
-                >
-                  🏢 Site web Cyberprevs
-                </Link>
-              }
-              secondary="Découvrez nos autres projets et services"
-            />
-          </ListItem>
-        </List>
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Texte complet de la licence
+                </Typography>
+              </Card>
+            </Link>
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <Link
+              href="https://cyberprevs.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{ textDecoration: 'none' }}
+            >
+              <Card sx={{ p: 2, '&:hover': { bgcolor: 'action.hover' } }}>
+                <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+                  🏢 Site Cyberprevs
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Nos autres projets et services
+                </Typography>
+              </Card>
+            </Link>
+          </Grid>
+        </Grid>
       </Paper>
 
       {/* Disclaimer */}

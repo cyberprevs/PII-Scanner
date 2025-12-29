@@ -297,7 +297,7 @@ const InitialSetup: React.FC<InitialSetupProps> = ({ onSetupComplete }) => {
                   mt: 0.5,
                 }}
               >
-                v1.0.0 • © 2025
+                v2.1.0 • © 2025
               </Typography>
             </Box>
           </CardContent>

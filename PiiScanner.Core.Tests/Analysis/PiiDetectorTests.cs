@@ -268,7 +268,6 @@ public class PiiDetectorTests
     }
 
     [Theory]
-    [InlineData("97 12 34 56")]       // Sans indicatif +229
     [InlineData("+33 6 12 34 56 78")] // France
     [InlineData("06 12 34 56 78")]    // Format France
     public void Detect_Telephone_ShouldRejectNonBeninPhones(string content)
@@ -278,6 +277,23 @@ public class PiiDetectorTests
 
         // Assert
         results.Should().NotContain(r => r.PiiType == "Telephone");
+    }
+
+    [Theory]
+    [InlineData("97 12 34 56")]       // Mobile Money MTN sans +229
+    [InlineData("66 78 90 12")]       // MTN sans +229
+    [InlineData("98 12 34 56")]       // Moov sans +229
+    [InlineData("68 78 90 12")]       // Moov sans +229
+    [InlineData("40 12 34 56")]       // Fixe sans +229
+    [InlineData("60 12 34 56")]       // Mobile sans +229
+    [InlineData("90 12 34 56")]       // Mobile sans +229
+    public void Detect_Telephone_ShouldDetectBeninPhonesWithoutPrefix(string content)
+    {
+        // Act
+        var results = PiiDetector.Detect(content, TestFilePath);
+
+        // Assert - Tous les numéros béninois sont détectés comme "Telephone" (avec ou sans +229)
+        results.Should().ContainSingle(r => r.PiiType == "Telephone");
     }
 
     #endregion
@@ -317,27 +333,17 @@ public class PiiDetectorTests
     [InlineData("97 00 11 22")]
     [InlineData("66 78 90 12")]
     [InlineData("67 33 44 55")]
-    public void Detect_MobileMoney_MTN_ShouldDetectValidNumbers(string content)
-    {
-        // Act
-        var results = PiiDetector.Detect(content, TestFilePath);
-
-        // Assert
-        results.Should().ContainSingle(r => r.PiiType == "MobileMoney_MTN");
-    }
-
-    [Theory]
     [InlineData("Moov Money: 98 12 34 56")]
     [InlineData("99 00 11 22")]
     [InlineData("68 78 90 12")]
     [InlineData("69 33 44 55")]
-    public void Detect_MobileMoney_Moov_ShouldDetectValidNumbers(string content)
+    public void Detect_Telephone_ShouldDetectMobileMoneyNumbers(string content)
     {
         // Act
         var results = PiiDetector.Detect(content, TestFilePath);
 
-        // Assert
-        results.Should().ContainSingle(r => r.PiiType == "MobileMoney_Moov");
+        // Assert - Les numéros mobile money sont maintenant détectés comme "Telephone"
+        results.Should().ContainSingle(r => r.PiiType == "Telephone");
     }
 
     #endregion

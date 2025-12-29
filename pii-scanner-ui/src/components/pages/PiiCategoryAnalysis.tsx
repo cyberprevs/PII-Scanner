@@ -49,7 +49,7 @@ interface Props {
 // Définition des catégories de PII avec leurs types et niveaux de sensibilité
 const PII_CATEGORIES = {
   Bancaire: {
-    types: ['IBAN', 'CarteBancaire', 'MobileMoney_MTN', 'MobileMoney_Moov'],
+    types: ['IBAN', 'CarteBancaire'],
     icon: '🏦',
     severity: 'Critique',
     color: '#f44336',

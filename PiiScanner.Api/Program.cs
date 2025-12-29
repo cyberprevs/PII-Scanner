@@ -136,6 +136,21 @@ app.Use(async (context, next) =>
     // Désactive les fonctionnalités dangereuses
     context.Response.Headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()";
 
+    // Content Security Policy: Protection contre XSS et injection de contenu
+    // Adapté pour React SPA avec Material-UI inline styles
+    var cspPolicy = "default-src 'self'; " +
+                    "script-src 'self'; " +
+                    "style-src 'self' 'unsafe-inline'; " +  // Material-UI nécessite inline styles
+                    "img-src 'self' data: https:; " +       // Images locales + data URIs + HTTPS externe
+                    "font-src 'self' data:; " +              // Fonts locales + data URIs
+                    "connect-src 'self' https://localhost:5001 wss://localhost:5001 ws://localhost:5001; " +  // API + SignalR WebSocket
+                    "frame-ancestors 'none'; " +             // Équivalent moderne de X-Frame-Options DENY
+                    "base-uri 'self'; " +                    // Empêche modification de <base>
+                    "form-action 'self'; " +                 // Soumission formulaires seulement vers origin
+                    "upgrade-insecure-requests;";            // Force HTTPS pour toutes les ressources
+
+    context.Response.Headers["Content-Security-Policy"] = cspPolicy;
+
     // HSTS: Force HTTPS pendant 1 an (seulement en production)
     if (context.Request.IsHttps || !app.Environment.IsDevelopment())
     {

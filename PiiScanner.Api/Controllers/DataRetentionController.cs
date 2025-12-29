@@ -156,9 +156,8 @@ public class DataRetentionController : ControllerBase
     /// </summary>
     private string GetViolatedRetentionPolicy(List<(string Type, string Value)> detections, double fileAge, Dictionary<string, int> policies)
     {
-        // Données bancaires (IBAN, CarteBancaire, MobileMoney)
-        if (detections.Any(d => d.Type == "IBAN" || d.Type == "CarteBancaire" ||
-                                d.Type == "MobileMoney_MTN" || d.Type == "MobileMoney_Moov"))
+        // Données bancaires (IBAN, CarteBancaire)
+        if (detections.Any(d => d.Type == "IBAN" || d.Type == "CarteBancaire"))
         {
             var retentionYears = policies.GetValueOrDefault("banking", 5);
             if (fileAge > retentionYears)

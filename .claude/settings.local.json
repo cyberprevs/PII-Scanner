@@ -1,7 +1,22 @@
 {
   "permissions": {
     "allow": [
-      "Bash(xcopy:*)"
+      "Bash(xcopy:*)",
+      "Bash(dotnet build:*)",
+      "Bash(dotnet test:*)",
+      "Bash(taskkill:*)",
+      "Bash(robocopy:*)",
+      "Bash(powershell:*)",
+      "Bash(dotnet run)",
+      "Bash(npm run build:*)",
+      "Bash(curl:*)",
+      "Bash(Get-Process)",
+      "Bash(Where-Object {$_ProcessName -like \"*PiiScanner*\"})",
+      "Bash(Stop-Process -Force)",
+      "Bash(tasklist:*)",
+      "Bash(findstr:*)",
+      "Bash(Remove-Item \"c:\\\\Users\\\\samir\\\\OneDrive\\\\Desktop\\\\PII-Scanner\\\\pii-scanner-ui\\\\src\\\\components\\\\Dashboard.tsx\" -Force)",
+      "Bash(dir:*)"
     ]
   }
 }

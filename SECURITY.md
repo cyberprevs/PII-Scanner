@@ -534,6 +534,27 @@ Implémentés dans [PiiScanner.Api/Program.cs](PiiScanner.Api/Program.cs:107) :
    - Désactive les fonctionnalités dangereuses
    - Réduit la surface d'attaque
 
+6. **Content-Security-Policy (CSP)**
+   ```
+   Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://localhost:5001 wss://localhost:5001 ws://localhost:5001; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;
+   ```
+   - **Protection XSS** : Bloque l'exécution de scripts non autorisés
+   - **default-src 'self'** : Ressources uniquement depuis l'origine actuelle
+   - **script-src 'self'** : JavaScript uniquement depuis le domaine (protection principale anti-XSS)
+   - **style-src 'self' 'unsafe-inline'** : CSS local + Material-UI inline styles (requis)
+   - **img-src 'self' data: https:** : Images locales + data URIs + HTTPS externe
+   - **connect-src** : API + SignalR WebSocket autorisés
+   - **frame-ancestors 'none'** : Empêche l'affichage dans iframe (moderne)
+   - **upgrade-insecure-requests** : Force HTTPS pour toutes les ressources
+
+   **Note sur `'unsafe-inline'` pour les styles** :
+   - Material-UI (MUI) v7 génère des styles inline via Emotion CSS-in-JS
+   - L'utilisation de `'unsafe-inline'` dans `style-src` est **nécessaire** pour le bon fonctionnement de l'UI
+   - **Impact sécurité limité** : Seuls les styles CSS sont inline, pas les scripts JavaScript
+   - **Protection XSS maintenue** : La directive `script-src 'self'` bloque les scripts malveillants
+   - **Alternative non retenue** : CSP nonce pour chaque style (complexité élevée, gain sécurité faible)
+   - **Statut OWASP ZAP** : Alerte "CSP: style-src unsafe-inline" **acceptée et justifiée**
+
 ### Protocoles TLS Supportés
 
 - **TLS 1.3** : Supporté (préféré)
@@ -641,8 +662,15 @@ Voir [CONFIGURATION_HTTPS.md](CONFIGURATION_HTTPS.md) pour :
    # Vérifier que HTTPS fonctionne
    curl -k -v https://localhost:5001/api/auth/me
 
-   # Vérifier les headers de sécurité
-   curl -k -I https://localhost:5001/api/auth/me | grep -E "(Strict-Transport|X-Frame|X-Content)"
+   # Vérifier les headers de sécurité (HSTS, X-Frame-Options, CSP)
+   curl -k -I https://localhost:5001 | grep -E "(Strict-Transport|X-Frame|X-Content|Content-Security-Policy)"
+   ```
+
+6. **Test Content-Security-Policy**
+   ```bash
+   # Vérifier que CSP est activé
+   curl -k -I https://localhost:5001 | grep "Content-Security-Policy"
+   # Devrait retourner la politique CSP complète
    ```
 
 ### Outils recommandés
@@ -653,6 +681,21 @@ Voir [CONFIGURATION_HTTPS.md](CONFIGURATION_HTTPS.md) pour :
 - **Snyk** : Scan des dépendances vulnérables
 - **SSL Labs** : Test de configuration SSL/TLS (production)
 - **Security Headers** : Vérification des headers HTTP
+
+### Alertes OWASP ZAP Connues et Acceptées
+
+Après analyse complète avec OWASP ZAP, les alertes suivantes sont **acceptées et justifiées** :
+
+| Alerte | Niveau | Statut | Justification |
+|--------|--------|--------|---------------|
+| **CSP: style-src unsafe-inline** | Medium | ✅ Acceptée | Material-UI v7 nécessite inline styles via Emotion CSS-in-JS. Protection XSS maintenue via `script-src 'self'`. Alternative (nonce) : complexité élevée, gain sécurité négligeable. |
+| **CSP: Wildcard Directive** | Low | ✅ Résolue | Politique CSP stricte implémentée sans wildcards. Directive `default-src 'self'` en place. |
+
+**Score de sécurité final** :
+- Alertes critiques : 0
+- Alertes élevées : 0
+- Alertes moyennes acceptées : 1 (CSP inline styles - justifiée)
+- Alertes faibles : 0
 
 ## 14. Contact et Signalement
 

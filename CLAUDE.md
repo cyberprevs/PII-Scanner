@@ -221,7 +221,7 @@ The application includes a comprehensive data retention management system compli
 
 *Retention Policies* ([Models/RetentionPolicy.cs](PiiScanner.Api/Models/RetentionPolicy.cs)):
 - **5 categories** of PII data with configurable retention periods (1-10 years):
-  - Banking data (IBAN, Mobile Money, CarteBancaire): 5 years default
+  - Banking data (IBAN, CarteBancaire): 5 years default
   - Identity data (IFU, CNI, Passeport, RCCM, ActeNaissance): 3 years default
   - Health data (CNSS, RAMU): 5 years default
   - Education data (INE, Matricule_Fonctionnaire): 2 years default
@@ -272,23 +272,24 @@ Modern web interface built with React 19 and Material-UI, served as a Single Pag
 - [src/contexts/AuthContext.tsx](pii-scanner-ui/src/contexts/AuthContext.tsx) - Authentication state management
 
 **UI Pages (17 specialized pages):**
-1. [Dashboard.tsx](pii-scanner-ui/src/components/Dashboard.tsx) - Key metrics and statistics
-2. [Scanner.tsx](pii-scanner-ui/src/components/Scanner.tsx) - Scan initiation and real-time progress
-3. [History.tsx](pii-scanner-ui/src/components/History.tsx) - All past scans
-4. [RiskyFiles.tsx](pii-scanner-ui/src/components/RiskyFiles.tsx) - Top 20 high-risk files
-5. [SensitiveData.tsx](pii-scanner-ui/src/components/SensitiveData.tsx) - All PII detections
+1. [DashboardPage.tsx](pii-scanner-ui/src/components/pages/DashboardPage.tsx) - Scan results with charts and statistics (Route: `/dashboard`)
+2. [Scanner.tsx](pii-scanner-ui/src/components/pages/Scanner.tsx) - Scan initiation and real-time progress (Route: `/scanner`)
+3. [ScanHistory.tsx](pii-scanner-ui/src/components/pages/ScanHistory.tsx) - All past scans
+4. [RiskyFiles.tsx](pii-scanner-ui/src/components/pages/RiskyFiles.tsx) - Top 20 high-risk files
+5. [Detections.tsx](pii-scanner-ui/src/components/pages/Detections.tsx) - All PII detections
 6. [PiiCategoryAnalysis.tsx](pii-scanner-ui/src/components/pages/PiiCategoryAnalysis.tsx) - PII analysis by category (Banking, Identity, Health, Contact, Education, Transport) with export to CSV/Excel
 7. [DuplicateFiles.tsx](pii-scanner-ui/src/components/pages/DuplicateFiles.tsx) - Duplicate file detection using MD5 hash (identifies identical files regardless of name)
-8. [StaleData.tsx](pii-scanner-ui/src/components/StaleData.tsx) - Old/obsolete files analysis
-9. [OverExposedData.tsx](pii-scanner-ui/src/components/OverExposedData.tsx) - Over-exposed files (NTFS ACL analysis)
-10. [Analytics.tsx](pii-scanner-ui/src/components/Analytics.tsx) - Charts and visualizations
-11. [Exports.tsx](pii-scanner-ui/src/components/Exports.tsx) - Download reports (CSV, JSON, HTML, Excel)
-12. [DataRetention.tsx](pii-scanner-ui/src/components/DataRetention.tsx) - Retention policy management and file deletion
-13. [Users.tsx](pii-scanner-ui/src/components/Users.tsx) - User management (Admin only)
-14. [Database.tsx](pii-scanner-ui/src/components/Database.tsx) - Database backup/restore (Admin only)
-15. [AuditLogs.tsx](pii-scanner-ui/src/components/AuditLogs.tsx) - Security audit trail (Admin only)
-16. [Profile.tsx](pii-scanner-ui/src/components/Profile.tsx) - User profile management
-17. [Support.tsx](pii-scanner-ui/src/components/Support.tsx) - Help center, FAQ, contact
+8. [Staleness.tsx](pii-scanner-ui/src/components/pages/Staleness.tsx) - Old/obsolete files analysis
+9. [Exposure.tsx](pii-scanner-ui/src/components/pages/Exposure.tsx) - Over-exposed files (NTFS ACL analysis)
+10. [Reports.tsx](pii-scanner-ui/src/components/pages/Reports.tsx) - Report viewing and analysis
+11. [Exports.tsx](pii-scanner-ui/src/components/pages/Exports.tsx) - Download reports (CSV, JSON, HTML, Excel)
+12. [DataRetention.tsx](pii-scanner-ui/src/components/pages/DataRetention.tsx) - Retention policy management and file deletion
+13. [UserManagement.tsx](pii-scanner-ui/src/components/UserManagement.tsx) - User management (Admin only)
+14. [DatabaseManagement.tsx](pii-scanner-ui/src/components/pages/DatabaseManagement.tsx) - Database backup/restore (Admin only)
+15. [AuditTrail.tsx](pii-scanner-ui/src/components/pages/AuditTrail.tsx) - Security audit trail (Admin only)
+16. [Profile.tsx](pii-scanner-ui/src/components/pages/Profile.tsx) - User profile management
+17. [Support.tsx](pii-scanner-ui/src/components/pages/Support.tsx) - Help center, FAQ, contact
+18. [About.tsx](pii-scanner-ui/src/components/pages/About.tsx) - Application information and licensing
 
 **API Connection:**
 - Development: `https://localhost:5001/api` (Vite dev server proxies to API)
@@ -447,12 +448,14 @@ The system detects **17 types of PII** with advanced post-validation, specifical
 - **ActeNaissance**: Birth certificate (N°XXX/YYYY/Département)
 
 **Bénin Contact:**
-- **Telephone**: Bénin phone numbers (+229/00229 required, prefixes 40-59, 60-69, 90-99)
+- **Telephone**: Bénin phone numbers (all types: fixed, mobile, mobile money)
+  - +229 or 00229 prefix (optional)
+  - Valid prefixes: 40-59 (fixed), 60-69 (mobile), 90-99 (mobile)
+  - Includes MTN MoMo (96, 97, 66, 67) and Moov Money (98, 99, 68, 69)
 
 **Bénin Banking Data** (triggers high-risk classification):
 - **IBAN**: Bénin IBAN (BJ + 2 digits + 24 characters)
-- **MobileMoney_MTN**: MTN MoMo (starts with 96, 97, 66, 67)
-- **MobileMoney_Moov**: Moov Money (starts with 98, 99, 68, 69)
+- **CarteBancaire**: Credit cards (16 digits, Luhn algorithm validated)
 
 **Bénin Health & Social Security:**
 - **CNSS**: Caisse Nationale de Sécurité Sociale (11 digits)
@@ -840,8 +843,9 @@ All sensitive operations are logged to `AuditLogs` table:
 7. ✅ **Password Security** - BCrypt hashing with automatic salt
 8. ✅ **JWT Authentication** - 7-day access tokens + 30-day refresh tokens
 9. ✅ **Role-Based Access Control (RBAC)** - Admin vs User separation
-10. ✅ **Security Headers** - HSTS, X-Frame-Options, X-Content-Type-Options, etc.
+10. ✅ **Security Headers** - HSTS, X-Frame-Options, X-Content-Type-Options, CSP, etc.
 11. ✅ **SQL Injection Protection** - Entity Framework parameterized queries only
+12. ✅ **Content Security Policy (CSP)** - XSS protection with strict resource loading policy
 
 **Recommended for Production:**
 1. Rotate JWT secret periodically (every 90 days)

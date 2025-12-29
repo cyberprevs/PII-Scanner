@@ -14,13 +14,9 @@ import {
   TableHead,
   TableRow,
   Chip,
-  Alert,
   Tabs,
   Tab,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
+  Alert,
 } from '@mui/material';
 import {
   BarChart,
@@ -41,6 +37,10 @@ import DataObjectIcon from '@mui/icons-material/DataObject';
 import CodeIcon from '@mui/icons-material/Code';
 import TableChartIcon from '@mui/icons-material/TableChart';
 import type { ScanResultResponse } from '../../types';
+import EmptyState from '../common/EmptyState';
+import StatCard from '../common/StatCard';
+import FilterSelect from '../common/FilterSelect';
+import InfoAlert from '../common/InfoAlert';
 
 interface ResultsProps {
   results: ScanResultResponse | null;
@@ -87,26 +87,13 @@ export default function Results({ results, onDownloadReport, onNewScan }: Result
   // Si aucun résultat, afficher un message d'accueil
   if (!results) {
     return (
-      <Box sx={{ p: 3 }}>
-        <Card sx={{ textAlign: 'center', py: 8 }}>
-          <CardContent>
-            <Typography variant="h4" gutterBottom fontWeight={600}>
-              Bienvenue dans PII Scanner
-            </Typography>
-            <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-              Aucun scan récent disponible. Lancez un nouveau scan pour commencer.
-            </Typography>
-            <Button
-              variant="contained"
-              size="large"
-              onClick={() => navigate('/scanner')}
-              startIcon={<RefreshIcon />}
-            >
-              Nouveau Scan
-            </Button>
-          </CardContent>
-        </Card>
-      </Box>
+      <EmptyState
+        title="Bienvenue dans PII Scanner"
+        description="Aucun scan récent disponible. Lancez un nouveau scan pour commencer."
+        actionLabel="Nouveau Scan"
+        onAction={() => navigate('/scanner')}
+        actionIcon={<RefreshIcon />}
+      />
     );
   }
 
@@ -191,54 +178,26 @@ export default function Results({ results, onDownloadReport, onNewScan }: Result
     <Box>
       {/* En-tête avec statistiques principales */}
       <Box sx={{ display: 'flex', gap: 3, mb: 4, flexWrap: 'wrap' }}>
-        <Box sx={{ flex: '1 1 200px' }}>
-          <Card sx={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-            <CardContent>
-              <Typography variant="h3" fontWeight={700} color="white">
-                {statistics.totalFilesScanned}
-              </Typography>
-              <Typography variant="body2" color="rgba(255,255,255,0.9)">
-                Fichiers scannés
-              </Typography>
-            </CardContent>
-          </Card>
-        </Box>
-        <Box sx={{ flex: '1 1 200px' }}>
-          <Card sx={{ background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' }}>
-            <CardContent>
-              <Typography variant="h3" fontWeight={700} color="white">
-                {statistics.filesWithPii}
-              </Typography>
-              <Typography variant="body2" color="rgba(255,255,255,0.9)">
-                Fichiers avec PII
-              </Typography>
-            </CardContent>
-          </Card>
-        </Box>
-        <Box sx={{ flex: '1 1 200px' }}>
-          <Card sx={{ background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' }}>
-            <CardContent>
-              <Typography variant="h3" fontWeight={700} color="white">
-                {statistics.totalPiiFound}
-              </Typography>
-              <Typography variant="body2" color="rgba(255,255,255,0.9)">
-                PII détectées
-              </Typography>
-            </CardContent>
-          </Card>
-        </Box>
-        <Box sx={{ flex: '1 1 200px' }}>
-          <Card sx={{ background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' }}>
-            <CardContent>
-              <Typography variant="h3" fontWeight={700} color="white">
-                {Object.keys(statistics.piiByType).length}
-              </Typography>
-              <Typography variant="body2" color="rgba(255,255,255,0.9)">
-                Types de PII
-              </Typography>
-            </CardContent>
-          </Card>
-        </Box>
+        <StatCard
+          value={statistics.totalFilesScanned}
+          label="Fichiers scannés"
+          gradient="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+        />
+        <StatCard
+          value={statistics.filesWithPii}
+          label="Fichiers avec PII"
+          gradient="linear-gradient(135deg, #f093fb 0%, #f5576c 100%)"
+        />
+        <StatCard
+          value={statistics.totalPiiFound}
+          label="PII détectées"
+          gradient="linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)"
+        />
+        <StatCard
+          value={Object.keys(statistics.piiByType).length}
+          label="Types de PII"
+          gradient="linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)"
+        />
       </Box>
 
       {/* Boutons d'action */}
@@ -502,35 +461,31 @@ export default function Results({ results, onDownloadReport, onNewScan }: Result
                   Top {statistics.topRiskyFiles.length} fichiers à risque
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 2 }}>
-                  <FormControl size="small" sx={{ minWidth: 200 }}>
-                    <InputLabel>Filtrer par ancienneté</InputLabel>
-                    <Select
-                      value={stalenessFilter}
-                      label="Filtrer par ancienneté"
-                      onChange={(e) => setStalenessFilter(e.target.value)}
-                    >
-                      <MenuItem value="all">Tous les fichiers</MenuItem>
-                      <MenuItem value="Récent">Récent (&lt; 6 mois)</MenuItem>
-                      <MenuItem value="6 mois">6 mois - 1 an</MenuItem>
-                      <MenuItem value="1 an">1 an - 3 ans</MenuItem>
-                      <MenuItem value="3 ans">3 ans - 5 ans</MenuItem>
-                      <MenuItem value="+5 ans">Plus de 5 ans</MenuItem>
-                    </Select>
-                  </FormControl>
-                  <FormControl size="small" sx={{ minWidth: 200 }}>
-                    <InputLabel>Filtrer par exposition</InputLabel>
-                    <Select
-                      value={exposureFilter}
-                      label="Filtrer par exposition"
-                      onChange={(e) => setExposureFilter(e.target.value)}
-                    >
-                      <MenuItem value="all">Tous les niveaux</MenuItem>
-                      <MenuItem value="Critique">🔴 Critique</MenuItem>
-                      <MenuItem value="Élevé">🟠 Élevé</MenuItem>
-                      <MenuItem value="Moyen">🟡 Moyen</MenuItem>
-                      <MenuItem value="Faible">✅ Faible</MenuItem>
-                    </Select>
-                  </FormControl>
+                  <FilterSelect
+                    label="Filtrer par ancienneté"
+                    value={stalenessFilter}
+                    onChange={setStalenessFilter}
+                    options={[
+                      { value: 'all', label: 'Tous les fichiers' },
+                      { value: 'Récent', label: 'Récent (< 6 mois)' },
+                      { value: '6 mois', label: '6 mois - 1 an' },
+                      { value: '1 an', label: '1 an - 3 ans' },
+                      { value: '3 ans', label: '3 ans - 5 ans' },
+                      { value: '+5 ans', label: 'Plus de 5 ans' },
+                    ]}
+                  />
+                  <FilterSelect
+                    label="Filtrer par exposition"
+                    value={exposureFilter}
+                    onChange={setExposureFilter}
+                    options={[
+                      { value: 'all', label: 'Tous les niveaux' },
+                      { value: 'Critique', label: '🔴 Critique' },
+                      { value: 'Élevé', label: '🟠 Élevé' },
+                      { value: 'Moyen', label: '🟡 Moyen' },
+                      { value: 'Faible', label: '✅ Faible' },
+                    ]}
+                  />
                 </Box>
               </Box>
               {filteredRiskyFiles.length > 0 ? (
@@ -648,9 +603,9 @@ export default function Results({ results, onDownloadReport, onNewScan }: Result
                   </Table>
                 </TableContainer>
               ) : (
-                <Alert severity="success" sx={{ mt: 2 }}>
+                <InfoAlert severity="success" sx={{ mt: 2 }}>
                   Aucun fichier à risque détecté
-                </Alert>
+                </InfoAlert>
               )}
             </Box>
           )}
@@ -662,33 +617,31 @@ export default function Results({ results, onDownloadReport, onNewScan }: Result
                 <Typography variant="h6" fontWeight={600}>
                   Détails des détections
                 </Typography>
-                <FormControl size="small" sx={{ minWidth: 200 }}>
-                  <InputLabel>Filtrer par ancienneté</InputLabel>
-                  <Select
-                    value={stalenessFilter}
-                    label="Filtrer par ancienneté"
-                    onChange={(e) => setStalenessFilter(e.target.value)}
-                  >
-                    <MenuItem value="all">Tous les fichiers</MenuItem>
-                    <MenuItem value="Récent">Récent (&lt; 6 mois)</MenuItem>
-                    <MenuItem value="6 mois">6 mois - 1 an</MenuItem>
-                    <MenuItem value="1 an">1 an - 3 ans</MenuItem>
-                    <MenuItem value="3 ans">3 ans - 5 ans</MenuItem>
-                    <MenuItem value="+5 ans">Plus de 5 ans</MenuItem>
-                  </Select>
-                </FormControl>
+                <FilterSelect
+                  label="Filtrer par ancienneté"
+                  value={stalenessFilter}
+                  onChange={setStalenessFilter}
+                  options={[
+                    { value: 'all', label: 'Tous les fichiers' },
+                    { value: 'Récent', label: 'Récent (< 6 mois)' },
+                    { value: '6 mois', label: '6 mois - 1 an' },
+                    { value: '1 an', label: '1 an - 3 ans' },
+                    { value: '3 ans', label: '3 ans - 5 ans' },
+                    { value: '+5 ans', label: 'Plus de 5 ans' },
+                  ]}
+                />
               </Box>
               {filteredDetections.length > 500 && (
-                <Alert severity="info" sx={{ mb: 2 }}>
+                <InfoAlert severity="info">
                   Affichage des 500 premières détections sur {filteredDetections.length} au total
                   {stalenessFilter !== 'all' && ` (filtrées par: ${stalenessFilter})`}.
                   Téléchargez les rapports pour voir toutes les détections.
-                </Alert>
+                </InfoAlert>
               )}
               {stalenessFilter !== 'all' && filteredDetections.length <= 500 && filteredDetections.length > 0 && (
-                <Alert severity="info" sx={{ mb: 2 }}>
+                <InfoAlert severity="info">
                   {filteredDetections.length} détection(s) trouvée(s) pour les fichiers de {stalenessFilter}.
-                </Alert>
+                </InfoAlert>
               )}
               <TableContainer component={Paper} sx={{ mt: 2, maxHeight: 600 }}>
                 <Table stickyHeader size="small">

@@ -4,6 +4,7 @@ import {
   Paper,
   Typography,
   Stack,
+  Grid,
   Card,
   CardContent,
   CardActions,
@@ -21,9 +22,7 @@ import {
   Link,
   IconButton,
 } from '@mui/material';
-import GitHubIcon from '@mui/icons-material/GitHub';
 import BugReportIcon from '@mui/icons-material/BugReport';
-import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SendIcon from '@mui/icons-material/Send';
@@ -147,106 +146,114 @@ export default function Support() {
         📚 Ressources
       </Typography>
 
-      <Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ mb: 4 }}>
-        {/* Ressources principales */}
-        <Card sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-          <CardContent sx={{ flexGrow: 1 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <GitHubIcon sx={{ fontSize: 40, color: '#667eea', mr: 2 }} />
-              <Typography variant="h6" fontWeight={600}>
-                Documentation GitHub
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        {/* Actions rapides */}
+        <Grid item xs={12} md={4}>
+          <Card sx={{
+            height: 220,
+            display: 'flex',
+            flexDirection: 'column',
+            transition: 'transform 0.2s, box-shadow 0.2s',
+            '&:hover': {
+              transform: 'translateY(-4px)',
+              boxShadow: 4
+            }
+          }}>
+            <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <BugReportIcon sx={{ fontSize: 32, color: '#e74c3c', mr: 1.5 }} />
+                <Typography variant="h6" fontWeight={600} fontSize="1.1rem">
+                  Signaler un bug
+                </Typography>
+              </Box>
+              <Typography variant="body2" color="text.secondary" sx={{ flexGrow: 1 }}>
+                Vous avez rencontré un problème ? Signalez-le rapidement.
               </Typography>
-            </Box>
-            <Typography variant="body2" color="text.secondary">
-              Consultez la documentation complète, les guides d'installation et les exemples de code sur notre dépôt GitHub.
-            </Typography>
-          </CardContent>
-          <CardActions sx={{ p: 2, pt: 0 }}>
-            <Button
-              fullWidth
-              variant="outlined"
-              endIcon={<OpenInNewIcon />}
-              onClick={() => openExternalLink('https://github.com/cyberprevs/pii-scanner')}
-            >
-              Voir sur GitHub
-            </Button>
-          </CardActions>
-        </Card>
+            </CardContent>
+            <CardActions sx={{ p: 2, pt: 0 }}>
+              <Button
+                fullWidth
+                variant="outlined"
+                color="error"
+                endIcon={<OpenInNewIcon />}
+                onClick={() => openExternalLink('https://github.com/cyberprevs/pii-scanner/issues/new')}
+              >
+                Créer un ticket
+              </Button>
+            </CardActions>
+          </Card>
+        </Grid>
 
-        <Card sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-          <CardContent sx={{ flexGrow: 1 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <BugReportIcon sx={{ fontSize: 40, color: '#e74c3c', mr: 2 }} />
-              <Typography variant="h6" fontWeight={600}>
-                Signaler un bug
+        <Grid item xs={12} md={4}>
+          <Card sx={{
+            height: 220,
+            display: 'flex',
+            flexDirection: 'column',
+            transition: 'transform 0.2s, box-shadow 0.2s',
+            '&:hover': {
+              transform: 'translateY(-4px)',
+              boxShadow: 4
+            }
+          }}>
+            <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <AddCircleOutlineIcon sx={{ fontSize: 32, color: '#27ae60', mr: 1.5 }} />
+                <Typography variant="h6" fontWeight={600} fontSize="1.1rem">
+                  Suggérer un pattern
+                </Typography>
+              </Box>
+              <Typography variant="body2" color="text.secondary" sx={{ flexGrow: 1 }}>
+                Proposez un nouveau pattern de détection PII.
               </Typography>
-            </Box>
-            <Typography variant="body2" color="text.secondary">
-              Vous avez rencontré un problème ? Signalez-le sur GitHub Issues pour que nous puissions le corriger rapidement.
-            </Typography>
-          </CardContent>
-          <CardActions sx={{ p: 2, pt: 0 }}>
-            <Button
-              fullWidth
-              variant="outlined"
-              color="error"
-              endIcon={<OpenInNewIcon />}
-              onClick={() => openExternalLink('https://github.com/cyberprevs/pii-scanner/issues/new')}
-            >
-              Créer un ticket
-            </Button>
-          </CardActions>
-        </Card>
+            </CardContent>
+            <CardActions sx={{ p: 2, pt: 0 }}>
+              <Button
+                fullWidth
+                variant="outlined"
+                color="success"
+                endIcon={<OpenInNewIcon />}
+                onClick={() => openExternalLink('https://github.com/cyberprevs/pii-scanner/issues/new?labels=enhancement,pattern&template=suggest_pattern.md&title=[Pattern]%20')}
+              >
+                Proposer un pattern
+              </Button>
+            </CardActions>
+          </Card>
+        </Grid>
 
-        <Card sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-          <CardContent sx={{ flexGrow: 1 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <VideoLibraryIcon sx={{ fontSize: 40, color: '#f39c12', mr: 2 }} />
-              <Typography variant="h6" fontWeight={600}>
-                Tutoriels vidéo
+        <Grid item xs={12} md={4}>
+          <Card sx={{
+            height: 220,
+            display: 'flex',
+            flexDirection: 'column',
+            transition: 'transform 0.2s, box-shadow 0.2s',
+            '&:hover': {
+              transform: 'translateY(-4px)',
+              boxShadow: 4
+            }
+          }}>
+            <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <ArticleIcon sx={{ fontSize: 32, color: '#667eea', mr: 1.5 }} />
+                <Typography variant="h6" fontWeight={600} fontSize="1.1rem">
+                  Documentation
+                </Typography>
+              </Box>
+              <Typography variant="body2" color="text.secondary" sx={{ flexGrow: 1 }}>
+                Guides complets et informations techniques.
               </Typography>
-            </Box>
-            <Typography variant="body2" color="text.secondary">
-              Apprenez à utiliser PII Scanner avec nos tutoriels vidéo détaillés et nos démonstrations pratiques.
-            </Typography>
-          </CardContent>
-          <CardActions sx={{ p: 2, pt: 0 }}>
-            <Button
-              fullWidth
-              variant="outlined"
-              endIcon={<OpenInNewIcon />}
-              onClick={() => openExternalLink('https://www.youtube.com/@piiscanner')}
-            >
-              Voir les vidéos
-            </Button>
-          </CardActions>
-        </Card>
-
-        <Card sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-          <CardContent sx={{ flexGrow: 1 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <AddCircleOutlineIcon sx={{ fontSize: 40, color: '#27ae60', mr: 2 }} />
-              <Typography variant="h6" fontWeight={600}>
-                Suggérer un pattern
-              </Typography>
-            </Box>
-            <Typography variant="body2" color="text.secondary">
-              Vous connaissez un type de donnée personnelle non détecté ? Proposez un nouveau pattern de détection.
-            </Typography>
-          </CardContent>
-          <CardActions sx={{ p: 2, pt: 0 }}>
-            <Button
-              fullWidth
-              variant="outlined"
-              color="success"
-              endIcon={<OpenInNewIcon />}
-              onClick={() => openExternalLink('https://github.com/cyberprevs/pii-scanner/issues/new?labels=enhancement,pattern&template=suggest_pattern.md&title=[Pattern]%20')}
-            >
-              Proposer un pattern
-            </Button>
-          </CardActions>
-        </Card>
-      </Stack>
+            </CardContent>
+            <CardActions sx={{ p: 2, pt: 0 }}>
+              <Button
+                fullWidth
+                variant="outlined"
+                onClick={() => window.location.href = '/about'}
+              >
+                Voir À propos
+              </Button>
+            </CardActions>
+          </Card>
+        </Grid>
+      </Grid>
 
       <Stack direction={{ xs: 'column', lg: 'row' }} spacing={3}>
         {/* Formulaire de contact */}
@@ -358,72 +365,6 @@ export default function Support() {
           </Paper>
         </Box>
       </Stack>
-
-      {/* Ressources supplémentaires */}
-      <Box sx={{ mt: 3 }}>
-          <Paper sx={{ p: 3 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-              <ArticleIcon sx={{ fontSize: 32, color: '#667eea', mr: 2 }} />
-              <Typography variant="h6" fontWeight={600}>
-                Ressources supplémentaires
-              </Typography>
-            </Box>
-
-            <List>
-              <ListItem>
-                <ListItemIcon>
-                  <ArticleIcon color="primary" />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Guide de démarrage rapide"
-                  secondary="Apprenez les bases de PII Scanner en 5 minutes"
-                />
-                <IconButton onClick={() => openExternalLink('https://github.com/cyberprevs/pii-scanner/wiki/Quick-Start')}>
-                  <OpenInNewIcon />
-                </IconButton>
-              </ListItem>
-              <Divider component="li" />
-              <ListItem>
-                <ListItemIcon>
-                  <ArticleIcon color="primary" />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Architecture technique"
-                  secondary="Découvrez comment fonctionne PII Scanner en interne"
-                />
-                <IconButton onClick={() => openExternalLink('https://github.com/cyberprevs/pii-scanner/wiki/Architecture')}>
-                  <OpenInNewIcon />
-                </IconButton>
-              </ListItem>
-              <Divider component="li" />
-              <ListItem>
-                <ListItemIcon>
-                  <ArticleIcon color="primary" />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Guide de conformité RGPD"
-                  secondary="Utilisez PII Scanner pour votre mise en conformité RGPD"
-                />
-                <IconButton onClick={() => openExternalLink('https://github.com/cyberprevs/pii-scanner/wiki/GDPR-Compliance')}>
-                  <OpenInNewIcon />
-                </IconButton>
-              </ListItem>
-              <Divider component="li" />
-              <ListItem>
-                <ListItemIcon>
-                  <ArticleIcon color="primary" />
-                </ListItemIcon>
-                <ListItemText
-                  primary="API Reference"
-                  secondary="Documentation complète de l'API pour les développeurs"
-                />
-                <IconButton onClick={() => openExternalLink('https://localhost:5001/swagger')}>
-                  <OpenInNewIcon />
-                </IconButton>
-              </ListItem>
-            </List>
-          </Paper>
-        </Box>
 
       {/* Section Soutenir le projet - Discrète en bas de page */}
       <Box sx={{ mt: 4 }}>

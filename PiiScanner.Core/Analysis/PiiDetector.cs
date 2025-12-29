@@ -43,19 +43,14 @@ public static class PiiDetector
 
         // ========== CONTACT BÉNIN ==========
 
-        // Téléphone Bénin: +229 obligatoire OU 8 chiffres commençant par préfixes valides (sans ponctuation isolée)
-        { "Telephone", @"\b(?:\+229|00229)\s?(?:4[0-9]|5[0-9]|6[0-79]|9[0-79])\s?\d{2}\s?\d{2}\s?\d{2}\b" },
+        // Téléphone Bénin: +229 ou 00229 (optionnel) + 8 chiffres commençant par préfixes valides
+        // Détecte TOUS les numéros: fixes (4x, 5x), mobiles (6x, 9x), mobile money (MTN, Moov)
+        { "Telephone", @"\b(?:(?:\+229|00229)\s?)?(?:4[0-9]|5[0-9]|6[0-9]|9[0-9])\s?\d{2}\s?\d{2}\s?\d{2}\b" },
 
         // ========== DONNÉES BANCAIRES BÉNIN ==========
 
         // IBAN Bénin (BJ + 2 chiffres + 24 caractères)
         { "IBAN", @"\bBJ\s?\d{2}\s?[A-Z0-9\s]{24,28}\b" },
-
-        // Mobile Money - MTN MoMo (commence par 96, 97, 66, 67)
-        { "MobileMoney_MTN", @"\b(?:96|97|66|67)\s?\d{2}\s?\d{2}\s?\d{2}\b" },
-
-        // Mobile Money - Moov Money (commence par 98, 99, 68, 69)
-        { "MobileMoney_Moov", @"\b(?:98|99|68|69)\s?\d{2}\s?\d{2}\s?\d{2}\b" },
 
         // ========== SANTÉ & SÉCURITÉ SOCIALE BÉNIN ==========
 
