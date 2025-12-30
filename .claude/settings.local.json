@@ -16,7 +16,13 @@
       "Bash(tasklist:*)",
       "Bash(findstr:*)",
       "Bash(Remove-Item \"c:\\\\Users\\\\samir\\\\OneDrive\\\\Desktop\\\\PII-Scanner\\\\pii-scanner-ui\\\\src\\\\components\\\\Dashboard.tsx\" -Force)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(Set-Content PathValidatorTests.cs -NoNewline \")",
+      "Bash(find:*)",
+      "Bash(npm run dev:*)",
+      "Bash(timeout /t 5 /nobreak)",
+      "Bash(Remove-Item -Force piiscanner.db)",
+      "Bash(Remove-Item -Force db_encryption.key)"
     ]
   }
 }

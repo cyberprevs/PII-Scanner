@@ -498,7 +498,6 @@ export default function Results({ results, onDownloadReport, onNewScan }: Result
                     >
                       <MenuItem value="all">Tous les niveaux</MenuItem>
                       <MenuItem value="Critique">🔴 Critique</MenuItem>
-                      <MenuItem value="Élevé">🟠 Élevé</MenuItem>
                       <MenuItem value="Moyen">🟡 Moyen</MenuItem>
                       <MenuItem value="Faible">✅ Faible</MenuItem>
                     </Select>

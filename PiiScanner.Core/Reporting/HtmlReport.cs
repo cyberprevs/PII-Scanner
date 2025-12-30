@@ -116,8 +116,7 @@ public static class HtmlReport
         html.AppendLine("                    <div class='legend-category'>");
         html.AppendLine("                        <h4>🔓 Exposition (permissions d'accès Windows)</h4>");
         html.AppendLine("                        <div class='legend-item'><span class='badge badge-success'>Faible</span> Moins de 5 groupes</div>");
-        html.AppendLine("                        <div class='legend-item'><span class='badge badge-warning'>Moyen</span> 5-10 groupes</div>");
-        html.AppendLine("                        <div class='legend-item'><span class='badge badge-warning'>Élevé</span> 10+ groupes ou Authenticated Users</div>");
+        html.AppendLine("                        <div class='legend-item'><span class='badge badge-warning'>Moyen</span> 5+ groupes ou Authenticated Users</div>");
         html.AppendLine("                        <div class='legend-item'><span class='badge badge-error'>Critique</span> Everyone ou partage réseau public</div>");
         html.AppendLine("                    </div>");
 
@@ -227,7 +226,6 @@ public static class HtmlReport
         {
             { "Faible", stats.TopRiskyFiles.Count(f => f.ExposureLevel == "Faible") },
             { "Moyen", stats.TopRiskyFiles.Count(f => f.ExposureLevel == "Moyen") },
-            { "Élevé", stats.TopRiskyFiles.Count(f => f.ExposureLevel == "Élevé") },
             { "Critique", stats.TopRiskyFiles.Count(f => f.ExposureLevel == "Critique") }
         };
 
@@ -244,7 +242,6 @@ public static class HtmlReport
                     var color = level switch
                     {
                         "Critique" => "#f44336",
-                        "Élevé" => "#ff5722",
                         "Moyen" => "#ff9800",
                         _ => "#4caf50"
                     };
@@ -400,7 +397,6 @@ public static class HtmlReport
         return exposureLevel switch
         {
             "Critique" => "badge-error",
-            "Élevé" => "badge-warning",
             "Moyen" => "badge-warning",
             _ => "badge-success"
         };

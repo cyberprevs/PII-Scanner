@@ -481,7 +481,6 @@ export default function Results({ results, onDownloadReport, onNewScan }: Result
                     options={[
                       { value: 'all', label: 'Tous les niveaux' },
                       { value: 'Critique', label: '🔴 Critique' },
-                      { value: 'Élevé', label: '🟠 Élevé' },
                       { value: 'Moyen', label: '🟡 Moyen' },
                       { value: 'Faible', label: '✅ Faible' },
                     ]}

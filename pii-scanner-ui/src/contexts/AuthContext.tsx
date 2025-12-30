@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import { initializeCsrfToken } from '../services/axios';
+import axiosInstance from '../services/axios';
 
 interface User {
   id: number;
@@ -53,7 +54,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (username: string, password: string) => {
     try {
-      const response = await axios.post('https://localhost:5001/api/auth/login', {
+      const response = await axiosInstance.post('/auth/login', {
         username,
         password
       });
@@ -84,7 +85,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const refreshToken = localStorage.getItem('refreshToken');
       if (refreshToken) {
-        await axios.post('https://localhost:5001/api/auth/logout', { refreshToken });
+        await axiosInstance.post('/auth/logout', { refreshToken });
       }
     } catch (error) {
       console.error('Logout error:', error);

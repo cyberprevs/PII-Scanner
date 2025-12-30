@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\samir\\OneDrive\\Desktop\\PII-Scanner\\PiiScanner.Core\\PiiScanner.Core.csproj": {}
+    "C:\\Users\\samir\\OneDrive\\Desktop\\PII-Scanner\\PiiScanner.Core\\PiiScanner.Core.csproj": {}
   },
   "projects": {
-    "c:\\Users\\samir\\OneDrive\\Desktop\\PII-Scanner\\PiiScanner.Core\\PiiScanner.Core.csproj": {
+    "C:\\Users\\samir\\OneDrive\\Desktop\\PII-Scanner\\PiiScanner.Core\\PiiScanner.Core.csproj": {
       "version": "2.1.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\samir\\OneDrive\\Desktop\\PII-Scanner\\PiiScanner.Core\\PiiScanner.Core.csproj",
+        "projectUniqueName": "C:\\Users\\samir\\OneDrive\\Desktop\\PII-Scanner\\PiiScanner.Core\\PiiScanner.Core.csproj",
         "projectName": "PiiScanner.Core",
-        "projectPath": "c:\\Users\\samir\\OneDrive\\Desktop\\PII-Scanner\\PiiScanner.Core\\PiiScanner.Core.csproj",
+        "projectPath": "C:\\Users\\samir\\OneDrive\\Desktop\\PII-Scanner\\PiiScanner.Core\\PiiScanner.Core.csproj",
         "packagesPath": "C:\\Users\\samir\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\samir\\OneDrive\\Desktop\\PII-Scanner\\PiiScanner.Core\\obj\\",
+        "outputPath": "C:\\Users\\samir\\OneDrive\\Desktop\\PII-Scanner\\PiiScanner.Core\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\samir\\AppData\\Roaming\\NuGet\\NuGet.Config"
