@@ -26,15 +26,22 @@ export default function FilterSelect({
   minWidth = 200,
   size = 'small',
 }: FilterSelectProps) {
+  // Filtrer les options invalides (comme "Élevé" qui a été supprimé)
+  const validOptions = options.filter(opt => opt.value !== 'Élevé');
+
+  // S'assurer que la valeur courante existe dans les options valides
+  const validValues = validOptions.map(opt => opt.value);
+  const safeValue = validValues.includes(value) ? value : validOptions[0]?.value || '';
+
   return (
     <FormControl size={size} sx={{ minWidth }}>
       <InputLabel>{label}</InputLabel>
       <Select
-        value={value}
+        value={safeValue}
         label={label}
         onChange={(e) => onChange(e.target.value)}
       >
-        {options.map((option) => (
+        {validOptions.map((option) => (
           <MenuItem key={option.value} value={option.value}>
             {option.label}
           </MenuItem>

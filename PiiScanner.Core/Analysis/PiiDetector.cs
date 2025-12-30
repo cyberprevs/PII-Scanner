@@ -11,7 +11,7 @@ public static class PiiDetector
     // Détection des données personnelles selon la Loi N°2017-20 du Bénin
     // Autorité: APDP (Autorité de Protection des Données Personnelles)
 
-    private static readonly Dictionary<string, string> Patterns = new()
+    private static readonly Dictionary<string, string> PatternStrings = new()
     {
         // ========== DONNÉES UNIVERSELLES ==========
 
@@ -74,13 +74,19 @@ public static class PiiDetector
         { "Plaque_Immatriculation", @"\b(?:[A-Z]{2}\s?\d{4}\s?[A-Z]{2}|\d{4}\s?[A-Z]{2})\b" }
     };
 
+    // Regex compilées une seule fois au démarrage pour améliorer les performances
+    private static readonly Dictionary<string, Regex> CompiledPatterns = PatternStrings.ToDictionary(
+        kvp => kvp.Key,
+        kvp => new Regex(kvp.Value, RegexOptions.Compiled)
+    );
+
     public static List<ScanResult> Detect(string content, string filePath, DateTime? lastAccessedDate = null, FilePermissionAnalyzer.PermissionInfo? permissionInfo = null, string? fileHash = null)
     {
         var results = new List<ScanResult>();
 
-        foreach (var pattern in Patterns)
+        foreach (var pattern in CompiledPatterns)
         {
-            foreach (Match match in Regex.Matches(content, pattern.Value))
+            foreach (Match match in pattern.Value.Matches(content))
             {
                 // Validation supplémentaire pour éviter les faux positifs
                 if (IsValidPii(pattern.Key, match.Value))

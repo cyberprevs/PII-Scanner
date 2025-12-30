@@ -8,8 +8,7 @@ public static class FilePermissionAnalyzer
     public enum ExposureLevel
     {
         Faible,      // Accès restreint, peu de groupes
-        Moyen,       // Accès à plusieurs groupes (5-10)
-        Élevé,       // Accès à beaucoup de groupes (10+) ou Authenticated Users
+        Moyen,       // Accès à plusieurs groupes (5-10) ou Authenticated Users
         Critique     // Accès à Everyone ou partage réseau public
     }
 
@@ -86,9 +85,9 @@ public static class FilePermissionAnalyzer
         if (info.IsNetworkShare && info.UserGroupCount > 10)
             return ExposureLevel.Critique;
 
-        // ÉLEVÉ: Authenticated Users ou beaucoup de groupes
+        // MOYEN: Authenticated Users ou beaucoup de groupes
         if (info.AccessibleToAuthenticatedUsers || info.UserGroupCount > 10)
-            return ExposureLevel.Élevé;
+            return ExposureLevel.Moyen;
 
         // MOYEN: Plusieurs groupes (5-10)
         if (info.UserGroupCount >= 5)
@@ -112,10 +111,10 @@ public static class FilePermissionAnalyzer
                 return $"🔴 CRITIQUE: Ce fichier contient {piiCount} PII et est accessible sur un partage réseau à {permInfo.UserGroupCount} groupes";
 
             if (permInfo.AccessibleToAuthenticatedUsers)
-                return $"🟠 ÉLEVÉ: Ce fichier contient {piiCount} PII et est accessible à tous les utilisateurs authentifiés";
+                return $"🟡 MOYEN: Ce fichier contient {piiCount} PII et est accessible à tous les utilisateurs authentifiés";
 
-            if (permInfo.ExposureLevel == ExposureLevel.Élevé)
-                return $"🟠 ÉLEVÉ: Ce fichier contient {piiCount} PII et est accessible à {permInfo.UserGroupCount} groupes d'utilisateurs";
+            if (permInfo.ExposureLevel == ExposureLevel.Moyen && permInfo.UserGroupCount > 10)
+                return $"🟡 MOYEN: Ce fichier contient {piiCount} PII et est accessible à {permInfo.UserGroupCount} groupes d'utilisateurs";
 
             if (permInfo.ExposureLevel == ExposureLevel.Moyen)
                 return $"🟡 MOYEN: Ce fichier contient {piiCount} PII et est accessible à {permInfo.UserGroupCount} groupes d'utilisateurs";
@@ -131,7 +130,6 @@ public static class FilePermissionAnalyzer
             return level switch
             {
                 ExposureLevel.Critique => "Critique",
-                ExposureLevel.Élevé => "Élevé",
                 ExposureLevel.Moyen => "Moyen",
                 ExposureLevel.Faible => "Faible",
                 _ => "Inconnu"

@@ -95,7 +95,6 @@ public class ScanStatistics
         return level switch
         {
             "Critique" => FilePermissionAnalyzer.ExposureLevel.Critique,
-            "Élevé" => FilePermissionAnalyzer.ExposureLevel.Élevé,
             "Moyen" => FilePermissionAnalyzer.ExposureLevel.Moyen,
             _ => FilePermissionAnalyzer.ExposureLevel.Faible
         };
