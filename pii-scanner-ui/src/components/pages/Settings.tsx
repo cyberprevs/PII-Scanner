@@ -20,6 +20,9 @@ import {
   Chip,
   Button,
   Snackbar,
+  Select,
+  MenuItem,
+  FormControl,
 } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
 import RestoreIcon from '@mui/icons-material/Restore';
@@ -29,7 +32,7 @@ interface PiiTypeConfig {
   label: string;
   description: string;
   enabled: boolean;
-  sensitivity: 'Critique' | 'Moyen' | 'Faible';
+  sensitivity: 'Critique' | 'Élevé' | 'Moyen' | 'Faible';
   category: 'Identité' | 'Contact' | 'Bancaire' | 'Santé' | 'Éducation' | 'Transport' | 'Universel';
 }
 
@@ -321,9 +324,7 @@ export default function Settings() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {piiTypes
-                  .filter(pii => pii.sensitivity && ['Critique', 'Moyen', 'Faible'].includes(pii.sensitivity))
-                  .map((pii) => (
+                {piiTypes.map((pii) => (
                   <TableRow
                     key={pii.id}
                     hover
@@ -361,9 +362,53 @@ export default function Settings() {
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Typography variant="body2">
-                        {pii.sensitivity}
-                      </Typography>
+                      <FormControl size="small" sx={{ minWidth: 120 }}>
+                        <Select
+                          value={pii.sensitivity}
+                          onChange={(e) => handleSensitivityChange(pii.id, e.target.value as 'Critique' | 'Moyen' | 'Faible')}
+                          sx={{
+                            '& .MuiSelect-select': {
+                              py: 0.5,
+                              display: 'flex',
+                              alignItems: 'center',
+                            }
+                          }}
+                        >
+                          <MenuItem value="Critique">
+                            <Chip
+                              label="🔴 Critique"
+                              size="small"
+                              sx={{
+                                backgroundColor: '#f44336',
+                                color: 'white',
+                                fontWeight: 500,
+                              }}
+                            />
+                          </MenuItem>
+                          <MenuItem value="Moyen">
+                            <Chip
+                              label="🟡 Moyen"
+                              size="small"
+                              sx={{
+                                backgroundColor: '#ff9800',
+                                color: 'white',
+                                fontWeight: 500,
+                              }}
+                            />
+                          </MenuItem>
+                          <MenuItem value="Faible">
+                            <Chip
+                              label="🟢 Faible"
+                              size="small"
+                              sx={{
+                                backgroundColor: '#4caf50',
+                                color: 'white',
+                                fontWeight: 500,
+                              }}
+                            />
+                          </MenuItem>
+                        </Select>
+                      </FormControl>
                     </TableCell>
                   </TableRow>
                 ))}

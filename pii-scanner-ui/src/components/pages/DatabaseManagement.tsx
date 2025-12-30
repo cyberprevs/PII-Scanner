@@ -36,6 +36,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import SaveIcon from '@mui/icons-material/Save';
 import WarningIcon from '@mui/icons-material/Warning';
 import DeleteIcon from '@mui/icons-material/Delete';
+import RestoreIcon from '@mui/icons-material/Restore';
 import axios, { initializeCsrfToken } from '../../services/axios';
 
 interface DatabaseStats {
@@ -205,6 +206,23 @@ const DatabaseManagement: React.FC = () => {
       console.error('Error response:', err.response);
       setError(err.response?.data?.error || err.response?.data?.message || 'Erreur lors de la suppression de la sauvegarde');
       setTimeout(() => setError(''), 3000);
+    }
+  };
+
+  const handleRestoreBackup = async (fileName: string) => {
+    try {
+      const response = await axios.post(`/database/backup/restore/${encodeURIComponent(fileName)}`);
+      setSuccess(`${response.data.message} Une sauvegarde de sécurité a été créée: ${response.data.preRestoreBackup}`);
+      // Déconnecter l'utilisateur car la base de données a été remplacée
+      setTimeout(() => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
+        window.location.href = '/login';
+      }, 3000);
+    } catch (err: any) {
+      console.error('Restore backup error:', err);
+      setError(err.response?.data?.error || 'Erreur lors de la restauration de la sauvegarde');
+      setTimeout(() => setError(''), 5000);
     }
   };
 
@@ -379,11 +397,13 @@ const DatabaseManagement: React.FC = () => {
                   label="Durée de conservation des scans (jours)"
                   type="number"
                   value={settings.dataRetentionDays}
-                  onChange={(e) =>
-                    setSettings({ ...settings, dataRetentionDays: parseInt(e.target.value) })
-                  }
+                  onChange={(e) => {
+                    const value = Math.max(1, parseInt(e.target.value) || 1);
+                    setSettings({ ...settings, dataRetentionDays: value });
+                  }}
                   margin="normal"
-                  helperText="Les scans plus anciens seront supprimés lors du nettoyage"
+                  helperText="Les scans plus anciens seront supprimés lors du nettoyage (min: 1 jour)"
+                  inputProps={{ min: 1, max: 3650 }}
                 />
 
                 <TextField
@@ -391,10 +411,13 @@ const DatabaseManagement: React.FC = () => {
                   label="Durée de conservation des logs d'audit (jours)"
                   type="number"
                   value={settings.auditLogRetentionDays}
-                  onChange={(e) =>
-                    setSettings({ ...settings, auditLogRetentionDays: parseInt(e.target.value) })
-                  }
+                  onChange={(e) => {
+                    const value = Math.max(1, parseInt(e.target.value) || 1);
+                    setSettings({ ...settings, auditLogRetentionDays: value });
+                  }}
                   margin="normal"
+                  helperText="Min: 1 jour, Max: 10 ans"
+                  inputProps={{ min: 1, max: 3650 }}
                 />
 
                 <TextField
@@ -402,10 +425,13 @@ const DatabaseManagement: React.FC = () => {
                   label="Durée de conservation des sessions (jours)"
                   type="number"
                   value={settings.sessionRetentionDays}
-                  onChange={(e) =>
-                    setSettings({ ...settings, sessionRetentionDays: parseInt(e.target.value) })
-                  }
+                  onChange={(e) => {
+                    const value = Math.max(1, parseInt(e.target.value) || 1);
+                    setSettings({ ...settings, sessionRetentionDays: value });
+                  }}
                   margin="normal"
+                  helperText="Min: 1 jour, Max: 365 jours"
+                  inputProps={{ min: 1, max: 365 }}
                 />
 
                 <Box sx={{ mt: 2 }}>
@@ -428,13 +454,16 @@ const DatabaseManagement: React.FC = () => {
                     label="Intervalle des sauvegardes (heures)"
                     type="number"
                     value={settings.autoBackupIntervalHours}
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      const value = Math.max(1, parseInt(e.target.value) || 1);
                       setSettings({
                         ...settings,
-                        autoBackupIntervalHours: parseInt(e.target.value),
-                      })
-                    }
+                        autoBackupIntervalHours: value,
+                      });
+                    }}
                     margin="normal"
+                    helperText="Min: 1 heure, Max: 168 heures (1 semaine)"
+                    inputProps={{ min: 1, max: 168 }}
                   />
                 )}
 
@@ -548,6 +577,20 @@ const DatabaseManagement: React.FC = () => {
                           {new Date(backup.createdAt).toLocaleString('fr-FR')}
                         </TableCell>
                         <TableCell align="center">
+                          <Tooltip title="Restaurer cette sauvegarde">
+                            <IconButton
+                              color="success"
+                              onClick={() =>
+                                showConfirmDialog(
+                                  'Restaurer la sauvegarde',
+                                  `⚠️ ATTENTION: Cette action va remplacer la base de données actuelle par la sauvegarde "${backup.fileName}". Une sauvegarde de sécurité sera créée automatiquement. Vous serez déconnecté après la restauration. Continuer ?`,
+                                  () => handleRestoreBackup(backup.fileName)
+                                )
+                              }
+                            >
+                              <RestoreIcon />
+                            </IconButton>
+                          </Tooltip>
                           <Tooltip title="Télécharger">
                             <IconButton
                               color="primary"
