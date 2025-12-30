@@ -431,6 +431,83 @@ public class DatabaseController : ControllerBase
     }
 
     /// <summary>
+    /// Restaurer une sauvegarde de la base de données
+    /// </summary>
+    [HttpPost("backup/restore/{fileName}")]
+    public async Task<ActionResult> RestoreBackup(string fileName)
+    {
+        try
+        {
+            // SÉCURITÉ: Valider le nom de fichier pour prévenir les attaques de type Path Traversal
+            if (!PathValidator.ValidateFileName(fileName, out var validationError))
+            {
+                _logger.LogWarning("Tentative de restauration avec un nom de fichier invalide: {FileName} - Erreur: {Error}",
+                    fileName, validationError);
+                return BadRequest(new { error = $"Nom de fichier invalide: {validationError}" });
+            }
+
+            var dbPath = GetDatabasePath();
+            var backupDir = Path.Combine(Path.GetDirectoryName(dbPath) ?? "", "backups");
+            var backupPath = Path.GetFullPath(Path.Combine(backupDir, fileName));
+
+            // SÉCURITÉ: Vérifier que le fichier est bien dans le répertoire de sauvegarde
+            if (!PathValidator.ValidateFileInDirectory(backupPath, backupDir, out validationError))
+            {
+                _logger.LogWarning("Tentative de restauration d'un fichier hors du répertoire de sauvegarde: {Path}",
+                    backupPath);
+                return BadRequest(new { error = "Accès non autorisé au fichier" });
+            }
+
+            if (!System.IO.File.Exists(backupPath))
+            {
+                return NotFound(new { error = "Sauvegarde non trouvée" });
+            }
+
+            // Vérifier la taille du fichier de sauvegarde (une DB vide fait ~40KB, avec des utilisateurs > 50KB)
+            var backupFileInfo = new FileInfo(backupPath);
+            if (backupFileInfo.Length < 45000) // Moins de 45KB = probablement vide
+            {
+                _logger.LogWarning("Backup file too small ({Size} bytes), might be empty: {FileName}",
+                    backupFileInfo.Length, fileName);
+                return BadRequest(new {
+                    error = "Cette sauvegarde semble vide ou incomplète (taille trop petite). La restauration pourrait vous empêcher de vous reconnecter. Choisissez une autre sauvegarde ou créez-en une nouvelle.",
+                    sizeBytes = backupFileInfo.Length
+                });
+            }
+
+            // Créer une sauvegarde de sécurité avant la restauration
+            var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+            var preRestoreBackupFileName = $"piiscanner_pre_restore_{timestamp}.db";
+            var preRestoreBackupPath = Path.Combine(backupDir, preRestoreBackupFileName);
+            System.IO.File.Copy(dbPath, preRestoreBackupPath, true);
+
+            // Log audit AVANT la restauration (car après on perd les logs)
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
+            _logger.LogInformation("Database restore initiated by user {UserId}: {FileName}", userId, fileName);
+
+            // Fermer les connexions à la base de données
+            await _db.Database.CloseConnectionAsync();
+
+            // Restaurer la sauvegarde
+            System.IO.File.Copy(backupPath, dbPath, true);
+
+            _logger.LogInformation("Database restored successfully from: {FileName}", fileName);
+
+            return Ok(new
+            {
+                message = "Base de données restaurée avec succès. Veuillez vous reconnecter.",
+                preRestoreBackup = preRestoreBackupFileName,
+                restoredFrom = fileName
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error restoring database backup");
+            return StatusCode(500, new { error = "Erreur lors de la restauration de la sauvegarde" });
+        }
+    }
+
+    /// <summary>
     /// RESET COMPLET de la base de données (DANGEREUX!)
     /// Supprime TOUTES les données sauf le compte admin par défaut
     /// </summary>
