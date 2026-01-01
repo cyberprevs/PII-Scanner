@@ -26,6 +26,7 @@ import {
 } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
 import RestoreIcon from '@mui/icons-material/Restore';
+import axios from '../../services/axios';
 
 interface PiiTypeConfig {
   id: string;
@@ -35,8 +36,6 @@ interface PiiTypeConfig {
   sensitivity: 'Critique' | 'Élevé' | 'Moyen' | 'Faible';
   category: 'Identité' | 'Contact' | 'Bancaire' | 'Santé' | 'Éducation' | 'Transport' | 'Universel';
 }
-
-const SETTINGS_STORAGE_KEY = 'pii-scanner-settings';
 
 const DEFAULT_FILE_TYPES = {
   docx: true,
@@ -78,58 +77,66 @@ export default function Settings() {
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
-  // Charger la configuration depuis localStorage au montage du composant
+  // Charger la configuration depuis l'API au montage du composant
   useEffect(() => {
     const loadSettings = async () => {
       try {
-        const savedSettings = localStorage.getItem(SETTINGS_STORAGE_KEY);
-        if (savedSettings) {
-          const parsed = JSON.parse(savedSettings);
+        const response = await axios.get('/usersettings');
+        const settings = response.data;
 
-          // Validation de base de la structure
-          if (!parsed || typeof parsed !== 'object') {
-            throw new Error('Invalid settings structure');
+        // Parser FileTypesJson
+        if (settings.fileTypesJson) {
+          try {
+            const parsedFileTypes = JSON.parse(settings.fileTypesJson);
+            setFileTypes(parsedFileTypes);
+          } catch {
+            console.warn('Invalid FileTypesJson, using defaults');
+            setFileTypes(DEFAULT_FILE_TYPES);
           }
+        } else {
+          setFileTypes(DEFAULT_FILE_TYPES);
+        }
 
-          setFileTypes(parsed.fileTypes || DEFAULT_FILE_TYPES);
-          setExcludedFolders(parsed.excludedFolders || DEFAULT_EXCLUDED_FOLDERS);
-          setExcludedExtensions(parsed.excludedExtensions || DEFAULT_EXCLUDED_EXTENSIONS);
+        // Charger les champs texte
+        setExcludedFolders(settings.excludedFolders || DEFAULT_EXCLUDED_FOLDERS);
+        setExcludedExtensions(settings.excludedExtensions || DEFAULT_EXCLUDED_EXTENSIONS);
 
-          // Valider et fusionner les piiTypes sauvegardés avec les defaults
-          if (parsed.piiTypes && Array.isArray(parsed.piiTypes)) {
-            const validSensitivities: Array<'Critique' | 'Moyen' | 'Faible'> = ['Critique', 'Moyen', 'Faible'];
+        // Parser PiiTypesJson
+        if (settings.piiTypesJson) {
+          try {
+            const parsedPiiTypes = JSON.parse(settings.piiTypesJson);
+            if (Array.isArray(parsedPiiTypes) && parsedPiiTypes.length > 0) {
+              const validSensitivities: Array<'Critique' | 'Élevé' | 'Moyen' | 'Faible'> = ['Critique', 'Élevé', 'Moyen', 'Faible'];
 
-            const validatedPiiTypes = DEFAULT_PII_TYPES.map(defaultPii => {
-              const savedPii = parsed.piiTypes.find((p: any) => p && p.id === defaultPii.id);
-              if (savedPii && typeof savedPii === 'object') {
-                // S'assurer que sensitivity est valide
-                const sensitivity = validSensitivities.includes(savedPii.sensitivity)
-                  ? savedPii.sensitivity
-                  : defaultPii.sensitivity;
+              const validatedPiiTypes = DEFAULT_PII_TYPES.map(defaultPii => {
+                const savedPii = parsedPiiTypes.find((p: any) => p && p.id === defaultPii.id);
+                if (savedPii && typeof savedPii === 'object') {
+                  const sensitivity = validSensitivities.includes(savedPii.sensitivity)
+                    ? savedPii.sensitivity
+                    : defaultPii.sensitivity;
 
-                return {
-                  ...defaultPii,
-                  enabled: typeof savedPii.enabled === 'boolean' ? savedPii.enabled : defaultPii.enabled,
-                  sensitivity
-                };
-              }
-              return defaultPii;
-            });
-            setPiiTypes(validatedPiiTypes);
-          } else {
+                  return {
+                    ...defaultPii,
+                    enabled: typeof savedPii.enabled === 'boolean' ? savedPii.enabled : defaultPii.enabled,
+                    sensitivity
+                  };
+                }
+                return defaultPii;
+              });
+              setPiiTypes(validatedPiiTypes);
+            } else {
+              setPiiTypes(DEFAULT_PII_TYPES);
+            }
+          } catch {
+            console.warn('Invalid PiiTypesJson, using defaults');
             setPiiTypes(DEFAULT_PII_TYPES);
           }
         } else {
-          // Pas de settings sauvegardés, utiliser les defaults
-          console.log('[Settings] Utilisation des valeurs par défaut');
           setPiiTypes(DEFAULT_PII_TYPES);
         }
       } catch (error) {
-        console.error('Erreur lors du chargement des paramètres:', error);
-        console.warn('Réinitialisation du localStorage corrompu');
-        // Nettoyer le localStorage corrompu
-        localStorage.removeItem(SETTINGS_STORAGE_KEY);
-        // Réinitialiser aux valeurs par défaut
+        console.error('Erreur lors du chargement des paramètres depuis l\'API:', error);
+        // Utiliser les valeurs par défaut en cas d'erreur
         setFileTypes(DEFAULT_FILE_TYPES);
         setExcludedFolders(DEFAULT_EXCLUDED_FOLDERS);
         setExcludedExtensions(DEFAULT_EXCLUDED_EXTENSIONS);
@@ -152,22 +159,22 @@ export default function Settings() {
     ));
   };
 
-  const handleSensitivityChange = (id: string, sensitivity: 'Critique' | 'Moyen' | 'Faible') => {
+  const handleSensitivityChange = (id: string, sensitivity: 'Critique' | 'Élevé' | 'Moyen' | 'Faible') => {
     setPiiTypes(prev => prev.map(pii =>
       pii.id === id ? { ...pii, sensitivity } : pii
     ));
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     try {
       const settingsToSave = {
-        fileTypes,
+        fileTypesJson: JSON.stringify(fileTypes),
         excludedFolders,
         excludedExtensions,
-        piiTypes,
-        savedAt: new Date().toISOString(),
+        piiTypesJson: JSON.stringify(piiTypes),
       };
-      localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settingsToSave));
+
+      await axios.put('/usersettings', settingsToSave);
       setSnackbarMessage('Configuration sauvegardée avec succès!');
       setSnackbarOpen(true);
     } catch (error) {
@@ -177,13 +184,23 @@ export default function Settings() {
     }
   };
 
-  const handleReset = () => {
+  const handleReset = async () => {
     try {
-      localStorage.removeItem(SETTINGS_STORAGE_KEY);
+      // Réinitialiser les valeurs dans l'état local
       setFileTypes(DEFAULT_FILE_TYPES);
       setExcludedFolders(DEFAULT_EXCLUDED_FOLDERS);
       setExcludedExtensions(DEFAULT_EXCLUDED_EXTENSIONS);
       setPiiTypes(DEFAULT_PII_TYPES);
+
+      // Sauvegarder les valeurs par défaut dans la base de données
+      const defaultSettings = {
+        fileTypesJson: JSON.stringify(DEFAULT_FILE_TYPES),
+        excludedFolders: DEFAULT_EXCLUDED_FOLDERS,
+        excludedExtensions: DEFAULT_EXCLUDED_EXTENSIONS,
+        piiTypesJson: JSON.stringify(DEFAULT_PII_TYPES),
+      };
+
+      await axios.put('/usersettings', defaultSettings);
       setSnackbarMessage('Configuration réinitialisée aux valeurs par défaut');
       setSnackbarOpen(true);
     } catch (error) {
@@ -365,7 +382,7 @@ export default function Settings() {
                       <FormControl size="small" sx={{ minWidth: 120 }}>
                         <Select
                           value={pii.sensitivity}
-                          onChange={(e) => handleSensitivityChange(pii.id, e.target.value as 'Critique' | 'Moyen' | 'Faible')}
+                          onChange={(e) => handleSensitivityChange(pii.id, e.target.value as 'Critique' | 'Élevé' | 'Moyen' | 'Faible')}
                           sx={{
                             '& .MuiSelect-select': {
                               py: 0.5,
@@ -379,7 +396,18 @@ export default function Settings() {
                               label="🔴 Critique"
                               size="small"
                               sx={{
-                                backgroundColor: '#f44336',
+                                backgroundColor: '#d32f2f',
+                                color: 'white',
+                                fontWeight: 500,
+                              }}
+                            />
+                          </MenuItem>
+                          <MenuItem value="Élevé">
+                            <Chip
+                              label="🟠 Élevé"
+                              size="small"
+                              sx={{
+                                backgroundColor: '#f57c00',
                                 color: 'white',
                                 fontWeight: 500,
                               }}
@@ -390,7 +418,7 @@ export default function Settings() {
                               label="🟡 Moyen"
                               size="small"
                               sx={{
-                                backgroundColor: '#ff9800',
+                                backgroundColor: '#ffa726',
                                 color: 'white',
                                 fontWeight: 500,
                               }}
@@ -401,7 +429,7 @@ export default function Settings() {
                               label="🟢 Faible"
                               size="small"
                               sx={{
-                                backgroundColor: '#4caf50',
+                                backgroundColor: '#66bb6a',
                                 color: 'white',
                                 fontWeight: 500,
                               }}
@@ -416,18 +444,21 @@ export default function Settings() {
             </Table>
           </TableContainer>
 
-          <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
+          <Box sx={{ mt: 2, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
             <Typography variant="body2" color="text.secondary">
               {piiTypes.filter(p => p.enabled).length} types actifs sur {piiTypes.length}
             </Typography>
             <Typography variant="body2" color="text.secondary">•</Typography>
-            <Typography variant="body2" color="error.main">
+            <Typography variant="body2" sx={{ color: '#d32f2f' }}>
               {piiTypes.filter(p => p.enabled && p.sensitivity === 'Critique').length} Critiques
             </Typography>
-            <Typography variant="body2" color="info.main">
+            <Typography variant="body2" sx={{ color: '#f57c00' }}>
+              {piiTypes.filter(p => p.enabled && p.sensitivity === 'Élevé').length} Élevés
+            </Typography>
+            <Typography variant="body2" sx={{ color: '#ffa726' }}>
               {piiTypes.filter(p => p.enabled && p.sensitivity === 'Moyen').length} Moyens
             </Typography>
-            <Typography variant="body2" color="success.main">
+            <Typography variant="body2" sx={{ color: '#66bb6a' }}>
               {piiTypes.filter(p => p.enabled && p.sensitivity === 'Faible').length} Faibles
             </Typography>
           </Box>

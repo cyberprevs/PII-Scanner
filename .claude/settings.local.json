@@ -23,7 +23,8 @@
       "Bash(timeout /t 5 /nobreak)",
       "Bash(Remove-Item -Force piiscanner.db)",
       "Bash(Remove-Item -Force db_encryption.key)",
-      "Bash(powershell -Command:*)"
+      "Bash(powershell -Command:*)",
+      "Bash(dotnet run:*)"
     ]
   }
 }

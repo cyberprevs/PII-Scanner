@@ -14,6 +14,7 @@ public class AppDbContext : DbContext
     public DbSet<ScanRecord> Scans { get; set; }
     public DbSet<AuditLog> AuditLogs { get; set; }
     public DbSet<AppSettings> AppSettings { get; set; }
+    public DbSet<UserSettings> UserSettings { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -43,6 +44,10 @@ public class AppDbContext : DbContext
 
         modelBuilder.Entity<AuditLog>()
             .HasIndex(a => a.CreatedAt);
+
+        modelBuilder.Entity<UserSettings>()
+            .HasIndex(us => us.UserId)
+            .IsUnique();
 
         // Seed: Créer les paramètres par défaut (pas de compte admin par défaut)
         modelBuilder.Entity<AppSettings>().HasData(new AppSettings

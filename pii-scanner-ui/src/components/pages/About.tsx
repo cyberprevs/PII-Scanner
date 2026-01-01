@@ -21,7 +21,6 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import SecurityIcon from '@mui/icons-material/Security';
 import GavelIcon from '@mui/icons-material/Gavel';
-import CodeIcon from '@mui/icons-material/Code';
 import BusinessIcon from '@mui/icons-material/Business';
 import GitHubIcon from '@mui/icons-material/GitHub';
 
@@ -240,84 +239,6 @@ const About: React.FC = () => {
             <strong>Attribution requise :</strong> Vous devez donner le crédit approprié à Cyberprevs, fournir
             un lien vers la licence, et indiquer si des modifications ont été apportées.
           </Typography>
-        </Box>
-      </Paper>
-
-      {/* Technical Information */}
-      <Paper sx={{ p: 3, mb: 4 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-          <CodeIcon sx={{ fontSize: 32, mr: 2, color: 'primary.main' }} />
-          <Typography variant="h5" fontWeight={700}>
-            Informations Techniques
-          </Typography>
-        </Box>
-
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={6} md={3}>
-            <Box sx={{ textAlign: 'center', p: 2 }}>
-              <Typography variant="h6" fontWeight={700} color="primary.main">
-                15
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Types de PII détectés
-              </Typography>
-            </Box>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Box sx={{ textAlign: 'center', p: 2 }}>
-              <Typography variant="h6" fontWeight={700} color="primary.main">
-                7
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Formats de fichiers
-              </Typography>
-            </Box>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Box sx={{ textAlign: 'center', p: 2 }}>
-              <Typography variant="h6" fontWeight={700} color="primary.main">
-                4
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Formats de rapports
-              </Typography>
-            </Box>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Box sx={{ textAlign: 'center', p: 2 }}>
-              <Typography variant="h6" fontWeight={700} color="primary.main">
-                100%
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Traitement local
-              </Typography>
-            </Box>
-          </Grid>
-        </Grid>
-
-        <Divider sx={{ my: 3 }} />
-
-        <Typography variant="body2" color="text.secondary" paragraph>
-          <strong>Technologies utilisées :</strong>
-        </Typography>
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
-          <Chip label=".NET 8.0" size="small" variant="outlined" />
-          <Chip label="ASP.NET Core" size="small" variant="outlined" />
-          <Chip label="React 19" size="small" variant="outlined" />
-          <Chip label="TypeScript 5.9" size="small" variant="outlined" />
-          <Chip label="Material-UI v7" size="small" variant="outlined" />
-          <Chip label="SignalR" size="small" variant="outlined" />
-          <Chip label="SQLite" size="small" variant="outlined" />
-          <Chip label="SQLCipher AES-256" size="small" variant="outlined" />
-        </Box>
-
-        <Typography variant="body2" color="text.secondary" paragraph>
-          <strong>Conformité :</strong>
-        </Typography>
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-          <Chip label="RGPD (EU)" size="small" color="primary" />
-          <Chip label="APDP (Bénin)" size="small" color="primary" />
-          <Chip label="Loi N°2017-20" size="small" color="primary" />
         </Box>
       </Paper>
 
