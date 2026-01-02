@@ -39,13 +39,20 @@ public class CsrfProtectionMiddleware
         var path = context.Request.Path.Value ?? "";
         var method = context.Request.Method;
 
-        // Générer et envoyer un nouveau token CSRF pour toutes les requêtes GET
+        // Générer et envoyer le token CSRF pour toutes les requêtes GET
+        // Le token est stocké dans la session pour être réutilisé
         if (method == "GET")
         {
-            var csrfToken = GenerateCsrfToken();
+            // Récupérer ou créer un token CSRF pour cette session
+            var csrfToken = context.Session.GetString("CsrfToken");
+            if (string.IsNullOrEmpty(csrfToken))
+            {
+                csrfToken = GenerateCsrfToken();
+                context.Session.SetString("CsrfToken", csrfToken);
+                _logger.LogDebug("Nouveau token CSRF généré pour la session");
+            }
 
             // Envoyer le token dans un header pour que JavaScript puisse le récupérer
-            // Pas besoin de cookie car en cross-origin (Electron) les cookies ne sont pas fiables
             context.Response.Headers["X-CSRF-Token"] = csrfToken;
 
             await _next(context);
@@ -74,8 +81,11 @@ public class CsrfProtectionMiddleware
                 return;
             }
 
-            // Vérifier que le token a le bon format (Base64, 32 bytes = 44 caractères en Base64)
-            if (headerToken.Length < 40)
+            // Récupérer le token stocké dans la session
+            var sessionToken = context.Session.GetString("CsrfToken");
+
+            // Vérifier que le token correspond à celui de la session
+            if (string.IsNullOrEmpty(sessionToken) || headerToken != sessionToken)
             {
                 _logger.LogWarning(
                     "Tentative CSRF détectée: Token invalide pour {Method} {Path} depuis {IpAddress}",

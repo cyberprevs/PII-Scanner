@@ -32,6 +32,9 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Session>()
             .HasIndex(s => s.RefreshToken);
 
+        modelBuilder.Entity<Session>()
+            .HasIndex(s => s.UserId);
+
         modelBuilder.Entity<ScanRecord>()
             .HasIndex(s => s.ScanId)
             .IsUnique();
