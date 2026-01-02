@@ -32,19 +32,23 @@ public class AuthService
             return new AuthResult { Success = false, Error = "Identifiants incorrects" };
         }
 
-        // Générer les tokens
-        var token = GenerateJwtToken(user);
+        // Générer le refresh token et créer la session
         var refreshToken = GenerateRefreshToken();
 
-        // Stocker le refresh token
-        await _db.Sessions.AddAsync(new Session
+        var session = new Session
         {
             UserId = user.Id,
             RefreshToken = refreshToken,
             CreatedAt = DateTime.UtcNow,
-            ExpiresAt = DateTime.UtcNow.AddDays(7),
+            ExpiresAt = DateTime.UtcNow.AddDays(30),
             IpAddress = ipAddress
-        });
+        };
+
+        await _db.Sessions.AddAsync(session);
+        await _db.SaveChangesAsync(); // Sauvegarder pour obtenir l'ID de session
+
+        // Générer le JWT avec le SessionId
+        var token = GenerateJwtToken(user, session.Id);
 
         // Mettre à jour last login
         user.LastLoginAt = DateTime.UtcNow;
@@ -96,22 +100,24 @@ public class AuthService
             return new AuthResult { Success = false, Error = "Utilisateur introuvable" };
         }
 
-        // Générer nouveaux tokens
-        var newToken = GenerateJwtToken(user);
+        // Générer nouveau refresh token
         var newRefreshToken = GenerateRefreshToken();
 
-        // Révoquer l'ancien et créer le nouveau
+        // Révoquer l'ancien et créer le nouveau (expiration 30 jours)
         session.IsRevoked = true;
-        await _db.Sessions.AddAsync(new Session
+        var newSession = new Session
         {
             UserId = user.Id,
             RefreshToken = newRefreshToken,
             CreatedAt = DateTime.UtcNow,
-            ExpiresAt = DateTime.UtcNow.AddDays(7),
+            ExpiresAt = DateTime.UtcNow.AddDays(30),
             IpAddress = ipAddress
-        });
+        };
+        await _db.Sessions.AddAsync(newSession);
+        await _db.SaveChangesAsync(); // Sauvegarder pour obtenir l'ID de session
 
-        await _db.SaveChangesAsync();
+        // Générer nouveau JWT avec le SessionId
+        var newToken = GenerateJwtToken(user, newSession.Id);
 
         return new AuthResult
         {
@@ -129,14 +135,14 @@ public class AuthService
         };
     }
 
-    private string GenerateJwtToken(User user)
+    private string GenerateJwtToken(User user, int? sessionId = null)
     {
         var jwtSecret = _config["Jwt:Secret"] ?? throw new InvalidOperationException("JWT Secret not configured");
         var jwtIssuer = _config["Jwt:Issuer"] ?? "PiiScanner";
         var jwtAudience = _config["Jwt:Audience"] ?? "PiiScannerUsers";
         var jwtExpiration = int.Parse(_config["Jwt:ExpirationHours"] ?? "8");
 
-        var claims = new[]
+        var claimsList = new List<Claim>
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Name, user.Username),
@@ -144,6 +150,14 @@ public class AuthService
             new Claim(ClaimTypes.Role, user.Role),
             new Claim("FullName", user.FullName)
         };
+
+        // Ajouter le SessionId si fourni (pour la validation de session)
+        if (sessionId.HasValue)
+        {
+            claimsList.Add(new Claim("SessionId", sessionId.Value.ToString()));
+        }
+
+        var claims = claimsList.ToArray();
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

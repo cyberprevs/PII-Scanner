@@ -24,7 +24,12 @@
       "Bash(Remove-Item -Force piiscanner.db)",
       "Bash(Remove-Item -Force db_encryption.key)",
       "Bash(powershell -Command:*)",
-      "Bash(dotnet run:*)"
+      "Bash(dotnet run:*)",
+      "Bash(dotnet ef migrations add:*)",
+      "Bash(csc:*)",
+      "Bash(dotnet --version:*)",
+      "Bash(dotnet new:*)",
+      "Bash(dotnet add:*)"
     ]
   }
 }

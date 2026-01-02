@@ -71,14 +71,12 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => {
     // Capturer le token CSRF depuis le header de réponse
-    // Axios normalise les headers en minuscules
-    const csrfHeader = response.headers['x-csrf-token'] || response.headers['X-CSRF-Token'];
-    if (csrfHeader) {
-      csrfToken = csrfHeader;
+    // Axios normalise tous les headers en minuscules
+    const newCsrfToken = response.headers['x-csrf-token'];
+    if (newCsrfToken) {
+      csrfToken = newCsrfToken;
       csrfInitialized = true;
-      logger.debug('CSRF token updated from response header:', csrfToken);
-    } else {
-      logger.debug('Response headers:', Object.keys(response.headers));
+      logger.debug('CSRF token updated from response header:', csrfToken.substring(0, 16) + '...');
     }
     return response;
   },

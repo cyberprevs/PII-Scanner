@@ -415,13 +415,20 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results }) => {
                   Répartition par Catégorie
                 </Typography>
               </Box>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={categoryStats}>
+              <ResponsiveContainer width="100%" height={350}>
+                <BarChart data={categoryStats} margin={{ top: 20, right: 30, left: 20, bottom: 80 }}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="category" angle={-45} textAnchor="end" height={80} />
-                  <YAxis />
+                  <XAxis
+                    dataKey="category"
+                    angle={-45}
+                    textAnchor="end"
+                    height={100}
+                    interval={0}
+                    tick={{ fontSize: 12 }}
+                  />
+                  <YAxis tick={{ fontSize: 12 }} />
                   <Tooltip />
-                  <Legend />
+                  <Legend wrapperStyle={{ paddingTop: '20px' }} />
                   <Bar dataKey="detections" fill="#667eea" name="Détections" />
                   <Bar dataKey="files" fill="#764ba2" name="Fichiers" />
                 </BarChart>
@@ -440,15 +447,15 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results }) => {
                   Répartition par Sensibilité
                 </Typography>
               </Box>
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" height={350}>
                 <PieChart>
                   <Pie
                     data={severityStats}
                     cx="50%"
-                    cy="50%"
-                    labelLine={false}
+                    cy="45%"
+                    labelLine={true}
                     label={(entry) => `${entry.severity}: ${entry.count}`}
-                    outerRadius={100}
+                    outerRadius={90}
                     fill="#8884d8"
                     dataKey="count"
                   >
@@ -456,7 +463,17 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results }) => {
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <Tooltip
+                    formatter={(value: number, name: string, props: any) => [
+                      `${value} fichiers`,
+                      props.payload.severity
+                    ]}
+                  />
+                  <Legend
+                    verticalAlign="bottom"
+                    height={36}
+                    formatter={(value: string, entry: any) => `${entry.payload.severity} (${entry.payload.count})`}
+                  />
                 </PieChart>
               </ResponsiveContainer>
             </CardContent>

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PiiScanner.Api.Data;
 using PiiScanner.Api.Models;
+using PiiScanner.Api.Attributes;
 
 namespace PiiScanner.Api.Controllers;
 
@@ -233,7 +234,6 @@ public class UsersController : ControllerBase
     /// Changer le mot de passe (accessible à tous les utilisateurs authentifiés)
     /// </summary>
     [HttpPut("change-password")]
-    [AllowAnonymous]
     [Authorize] // Tout utilisateur authentifié peut changer son propre mot de passe
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
     {
@@ -274,7 +274,6 @@ public class UsersController : ControllerBase
     /// Mettre à jour le profil utilisateur (email, nom complet)
     /// </summary>
     [HttpPut("profile")]
-    [AllowAnonymous]
     [Authorize]
     public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequest request)
     {
@@ -330,7 +329,7 @@ public class CreateUserRequest
     public string Email { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Le mot de passe est requis")]
-    [StringLength(100, MinimumLength = 6, ErrorMessage = "Le mot de passe doit contenir au moins 6 caractères")]
+    [StrongPassword]
     public string Password { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Le nom complet est requis")]
@@ -351,7 +350,7 @@ public class UpdateUserRequest
     [EmailAddress(ErrorMessage = "Format d'email invalide")]
     public string Email { get; set; } = string.Empty;
 
-    [StringLength(100, MinimumLength = 6, ErrorMessage = "Le mot de passe doit contenir au moins 6 caractères")]
+    [StrongPassword]
     public string? Password { get; set; }
 
     [Required(ErrorMessage = "Le nom complet est requis")]
@@ -366,7 +365,11 @@ public class UpdateUserRequest
 
 public class ChangePasswordRequest
 {
+    [Required(ErrorMessage = "Le mot de passe actuel est requis")]
     public string CurrentPassword { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Le nouveau mot de passe est requis")]
+    [StrongPassword]
     public string NewPassword { get; set; } = string.Empty;
 }
 

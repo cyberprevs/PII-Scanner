@@ -28,6 +28,16 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Add Session support (required for CSRF protection)
+builder.Services.AddDistributedMemoryCache(); // Required for session
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Session timeout
+    options.Cookie.HttpOnly = true; // Security: JavaScript cannot access session cookie
+    options.Cookie.IsEssential = true; // Required for GDPR compliance
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // HTTPS only
+});
+
 // Add Database Encryption Service
 builder.Services.AddSingleton<DatabaseEncryptionService>();
 
@@ -46,6 +56,24 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // Add JWT Authentication
 var jwtSecret = builder.Configuration["Jwt:Secret"] ?? throw new InvalidOperationException("JWT Secret not configured");
+
+// SÉCURITÉ CRITIQUE: Vérifier que le secret JWT par défaut n'est pas utilisé en production
+const string DEFAULT_SECRET = "DEFAULT_DEV_SECRET_DO_NOT_USE_IN_PRODUCTION_CHANGE_THIS_FOR_PRODUCTION_USE_ONLY";
+if (jwtSecret == DEFAULT_SECRET && !builder.Environment.IsDevelopment())
+{
+    throw new InvalidOperationException(
+        "ERREUR DE SÉCURITÉ CRITIQUE: Le secret JWT par défaut est utilisé en production! " +
+        "Vous DEVEZ configurer un secret JWT unique dans appsettings.Production.json ou via variable d'environnement 'Jwt__Secret'. " +
+        "Générez un secret sécurisé avec: openssl rand -base64 64");
+}
+
+if (jwtSecret == DEFAULT_SECRET && builder.Environment.IsDevelopment())
+{
+    logger.LogWarning(
+        "⚠️  AVERTISSEMENT: Utilisation du secret JWT par défaut en mode développement. " +
+        "Ceci est INTERDIT en production. Changez le secret avant le déploiement!");
+}
+
 var jwtIssuer = builder.Configuration["Jwt:Issuer"];
 var jwtAudience = builder.Configuration["Jwt:Audience"];
 
@@ -92,6 +120,9 @@ if (builder.Environment.IsDevelopment())
 builder.Services.AddSingleton<ScanService>();
 builder.Services.AddScoped<AuthService>();
 
+// Add background services
+builder.Services.AddHostedService<SessionCleanupService>();
+
 // Add Health Checks
 builder.Services.AddHealthChecks()
     .AddCheck("api", () => Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Healthy("API is running"));
@@ -106,6 +137,10 @@ using (var scope = app.Services.CreateScope())
 }
 
 // Configure the HTTP request pipeline
+
+// SÉCURITÉ: Exception handling - Premier middleware pour capter toutes les exceptions
+app.UseExceptionHandling();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -167,14 +202,20 @@ app.UseStaticFiles();  // Sert tous les fichiers statiques
 // Plus besoin de CORS
 // app.UseCors("AllowElectron");
 
+// IMPORTANT: Session doit être activée AVANT CSRF (CSRF utilise les sessions)
+app.UseSession();
+
 // SÉCURITÉ: Rate Limiting - Doit être avant l'authentification
 app.UseRateLimiting();
 
-// SÉCURITÉ: Protection CSRF - Après CORS, avant authentification
+// SÉCURITÉ: Protection CSRF - Après Session, avant authentification
 app.UseCsrfProtection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+// SÉCURITÉ: Validation de session - Après authentification, avant contrôleurs
+app.UseSessionValidation();
 
 app.MapControllers();
 

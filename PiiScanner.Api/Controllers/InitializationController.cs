@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PiiScanner.Api.Data;
 using PiiScanner.Api.Models;
+using PiiScanner.Api.Attributes;
 using System.ComponentModel.DataAnnotations;
 
 namespace PiiScanner.Api.Controllers;
@@ -118,7 +119,7 @@ public class InitializationRequest
     public string FullName { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Le mot de passe est requis")]
-    [StringLength(100, MinimumLength = 8, ErrorMessage = "Le mot de passe doit contenir au moins 8 caractères")]
+    [StrongPassword]
     public string Password { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "La confirmation du mot de passe est requise")]
