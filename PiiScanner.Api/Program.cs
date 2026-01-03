@@ -134,6 +134,34 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.EnsureCreated();
+
+    // MIGRATION MANUELLE: Créer la table UserSettings si elle n'existe pas
+    // Nécessaire car EnsureCreated() ne met pas à jour le schéma des bases existantes
+    try
+    {
+        var createUserSettingsTable = @"
+            CREATE TABLE IF NOT EXISTS ""UserSettings"" (
+                ""Id"" INTEGER NOT NULL CONSTRAINT ""PK_UserSettings"" PRIMARY KEY AUTOINCREMENT,
+                ""UserId"" INTEGER NOT NULL,
+                ""FileTypesJson"" TEXT NOT NULL,
+                ""ExcludedFolders"" TEXT NOT NULL,
+                ""ExcludedExtensions"" TEXT NOT NULL,
+                ""PiiTypesJson"" TEXT NOT NULL,
+                ""RecentScanPathsJson"" TEXT NOT NULL,
+                ""UpdatedAt"" TEXT NOT NULL,
+                CONSTRAINT ""FK_UserSettings_Users_UserId"" FOREIGN KEY (""UserId"") REFERENCES ""Users"" (""Id"") ON DELETE CASCADE
+            );
+
+            CREATE UNIQUE INDEX IF NOT EXISTS ""IX_UserSettings_UserId"" ON ""UserSettings"" (""UserId"");
+        ";
+
+        db.Database.ExecuteSqlRaw(createUserSettingsTable);
+    }
+    catch (Exception ex)
+    {
+        var migrationLogger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        migrationLogger.LogWarning(ex, "Erreur lors de la création de la table UserSettings (elle existe peut-être déjà)");
+    }
 }
 
 // Configure the HTTP request pipeline

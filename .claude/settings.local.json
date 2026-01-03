@@ -29,7 +29,12 @@
       "Bash(csc:*)",
       "Bash(dotnet --version:*)",
       "Bash(dotnet new:*)",
-      "Bash(dotnet add:*)"
+      "Bash(dotnet add:*)",
+      "Bash(sqlite3:*)",
+      "Bash(powershell -ExecutionPolicy Bypass -File .CreateUserSettingsTable.ps1)",
+      "Bash(powershell.exe -ExecutionPolicy Bypass -Command \"& ''.\\\\CreateUserSettingsTable.ps1''\")",
+      "Bash(powershell -Command \"Copy-Item -Path ''pii-scanner-ui\\\\dist\\\\*'' -Destination ''PiiScanner.Api\\\\wwwroot\\\\'' -Recurse -Force\")",
+      "Bash(powershell -Command \"Get-ChildItem -Recurse -Filter piiscanner.db | Select-Object FullName\")"
     ]
   }
 }
