@@ -65,21 +65,29 @@ public class UserSettingsController : ControllerBase
 
         if (settings == null)
         {
-            // Créer si n'existe pas
+            // Créer avec des valeurs par défaut si n'existe pas
             settings = new UserSettings
             {
-                UserId = userId
+                UserId = userId,
+                FileTypesJson = request.FileTypesJson ?? "{\"docx\":true,\"xlsx\":true,\"pdf\":true,\"txt\":true,\"csv\":true,\"log\":true,\"json\":true}",
+                ExcludedFolders = request.ExcludedFolders ?? "Windows, System32, Program Files, AppData",
+                ExcludedExtensions = request.ExcludedExtensions ?? ".exe, .dll, .sys, .tmp",
+                PiiTypesJson = request.PiiTypesJson ?? "[]",
+                RecentScanPathsJson = request.RecentScanPathsJson ?? "[]",
+                UpdatedAt = DateTime.UtcNow
             };
             _db.UserSettings.Add(settings);
         }
-
-        // Mettre à jour les champs
-        settings.FileTypesJson = request.FileTypesJson ?? settings.FileTypesJson;
-        settings.ExcludedFolders = request.ExcludedFolders ?? settings.ExcludedFolders;
-        settings.ExcludedExtensions = request.ExcludedExtensions ?? settings.ExcludedExtensions;
-        settings.PiiTypesJson = request.PiiTypesJson ?? settings.PiiTypesJson;
-        settings.RecentScanPathsJson = request.RecentScanPathsJson ?? settings.RecentScanPathsJson;
-        settings.UpdatedAt = DateTime.UtcNow;
+        else
+        {
+            // Mettre à jour les champs existants
+            settings.FileTypesJson = request.FileTypesJson ?? settings.FileTypesJson;
+            settings.ExcludedFolders = request.ExcludedFolders ?? settings.ExcludedFolders;
+            settings.ExcludedExtensions = request.ExcludedExtensions ?? settings.ExcludedExtensions;
+            settings.PiiTypesJson = request.PiiTypesJson ?? settings.PiiTypesJson;
+            settings.RecentScanPathsJson = request.RecentScanPathsJson ?? settings.RecentScanPathsJson;
+            settings.UpdatedAt = DateTime.UtcNow;
+        }
 
         await _db.SaveChangesAsync();
 

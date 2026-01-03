@@ -81,7 +81,7 @@ export default function Settings() {
   useEffect(() => {
     const loadSettings = async () => {
       try {
-        const response = await axios.get('/usersettings');
+        const response = await axios.get('/UserSettings');
         const settings = response.data;
 
         // Parser FileTypesJson
@@ -174,7 +174,7 @@ export default function Settings() {
         piiTypesJson: JSON.stringify(piiTypes),
       };
 
-      await axios.put('/usersettings', settingsToSave);
+      await axios.put('/UserSettings', settingsToSave);
       setSnackbarMessage('Configuration sauvegardée avec succès!');
       setSnackbarOpen(true);
     } catch (error) {
@@ -200,7 +200,7 @@ export default function Settings() {
         piiTypesJson: JSON.stringify(DEFAULT_PII_TYPES),
       };
 
-      await axios.put('/usersettings', defaultSettings);
+      await axios.put('/UserSettings', defaultSettings);
       setSnackbarMessage('Configuration réinitialisée aux valeurs par défaut');
       setSnackbarOpen(true);
     } catch (error) {
