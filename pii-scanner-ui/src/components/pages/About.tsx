@@ -60,7 +60,7 @@ const About: React.FC = () => {
                 Détection automatisée de données personnelles (PII) dans vos fichiers
               </Typography>
               <Chip
-                label="Version 2.1.0"
+                label="Version 1.0.0"
                 sx={{
                   bgcolor: 'rgba(255,255,255,0.2)',
                   color: 'white',
