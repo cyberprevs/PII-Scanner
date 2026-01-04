@@ -1978,7 +1978,7 @@
           "buildTransitive/net6.0/_._": {}
         }
       },
-      "PiiScanner.Core/2.1.0": {
+      "PiiScanner.Core/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v8.0",
         "dependencies": {
@@ -4791,7 +4791,7 @@
         "useSharedDesignerContext.txt"
       ]
     },
-    "PiiScanner.Core/2.1.0": {
+    "PiiScanner.Core/1.0.0": {
       "type": "project",
       "path": "../PiiScanner.Core/PiiScanner.Core.csproj",
       "msbuildProject": "../PiiScanner.Core/PiiScanner.Core.csproj"
@@ -4805,7 +4805,7 @@
       "Microsoft.AspNetCore.SignalR >= 1.2.0",
       "Microsoft.EntityFrameworkCore.Design >= 8.0.11",
       "Microsoft.EntityFrameworkCore.Sqlite >= 8.0.11",
-      "PiiScanner.Core >= 2.1.0",
+      "PiiScanner.Core >= 1.0.0",
       "SQLitePCLRaw.bundle_e_sqlcipher >= 2.1.11",
       "Swashbuckle.AspNetCore >= 6.6.2"
     ]
@@ -4814,7 +4814,7 @@
     "C:\\Users\\samir\\.nuget\\packages\\": {}
   },
   "project": {
-    "version": "2.1.0",
+    "version": "1.0.0",
     "restore": {
       "projectUniqueName": "C:\\Users\\samir\\OneDrive\\Desktop\\PII-Scanner\\PiiScanner.Api\\PiiScanner.Api.csproj",
       "projectName": "PiiScanner.Api",

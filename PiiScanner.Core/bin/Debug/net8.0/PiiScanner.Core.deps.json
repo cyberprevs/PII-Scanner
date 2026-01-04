@@ -6,7 +6,7 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v8.0": {
-      "PiiScanner.Core/2.1.0": {
+      "PiiScanner.Core/1.0.0": {
         "dependencies": {
           "DocumentFormat.OpenXml": "3.3.0",
           "PdfPig": "0.1.12"
@@ -80,7 +80,7 @@
     }
   },
   "libraries": {
-    "PiiScanner.Core/2.1.0": {
+    "PiiScanner.Core/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

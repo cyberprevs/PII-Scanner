@@ -308,7 +308,7 @@
     "C:\\Users\\samir\\.nuget\\packages\\": {}
   },
   "project": {
-    "version": "2.1.0",
+    "version": "1.0.0",
     "restore": {
       "projectUniqueName": "C:\\Users\\samir\\OneDrive\\Desktop\\PII-Scanner\\PiiScanner.Core\\PiiScanner.Core.csproj",
       "projectName": "PiiScanner.Core",
