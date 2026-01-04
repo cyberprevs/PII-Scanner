@@ -1,6 +1,6 @@
 # PII Scanner - Détecteur de Données Personnelles pour le Bénin
 
-[![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript)](https://www.typescriptlang.org/)
@@ -266,14 +266,20 @@ Conforme à la **Loi N°2017-20 portant Code du Numérique en République du Bé
 
 ## 📄 Licence
 
-**Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)**
+**MIT License**
 
-✅ **Utiliser, Modifier, Distribuer** gratuitement
-❌ **Usage commercial** sans autorisation écrite
+Ce projet est distribué sous licence MIT - l'une des licences open source les plus permissives.
 
-Pour toute demande commerciale, contactez **[Cyberprevs](https://cyberprevs.com)**.
+✅ **Usage commercial autorisé** - Utilisez-le librement dans vos projets commerciaux
+✅ **Modification autorisée** - Adaptez le code à vos besoins
+✅ **Distribution autorisée** - Partagez ou vendez le logiciel
+✅ **Usage privé autorisé** - Aucune restriction
 
-Voir [LICENSE](LICENSE) pour les détails complets.
+📋 **Seule obligation** : Conserver la notice de copyright et la licence MIT dans vos copies.
+
+Pour du support commercial, formation ou consulting, contactez **[Cyberprevs](https://cyberprevs.com)**.
+
+Voir [LICENSE](LICENSE) pour le texte complet de la licence.
 
 ---
 

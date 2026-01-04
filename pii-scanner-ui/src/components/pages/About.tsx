@@ -108,8 +108,8 @@ const About: React.FC = () => {
         </Box>
 
         <Typography variant="body1" color="text.secondary" paragraph>
-          Ce projet est distribué sous la licence{' '}
-          <strong>Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)</strong>.
+          Ce projet est distribué sous la <strong>licence MIT</strong>, une licence open source permissive
+          qui autorise l'usage commercial, la modification et la distribution libre du code.
         </Typography>
 
         <Grid container spacing={3} sx={{ mt: 2 }}>
@@ -132,8 +132,8 @@ const About: React.FC = () => {
                     <CheckCircleIcon sx={{ color: 'success.main' }} />
                   </ListItemIcon>
                   <ListItemText
-                    primary="Utiliser gratuitement"
-                    secondary="Le logiciel est gratuit pour tous les usages non-commerciaux"
+                    primary="Utiliser commercialement"
+                    secondary="Usage commercial autorisé sans restriction"
                   />
                 </ListItem>
                 <ListItem>
@@ -142,7 +142,7 @@ const About: React.FC = () => {
                   </ListItemIcon>
                   <ListItemText
                     primary="Modifier le code"
-                    secondary="Vous pouvez adapter le code source à vos besoins"
+                    secondary="Adaptez le code source à vos besoins"
                   />
                 </ListItem>
                 <ListItem>
@@ -150,8 +150,8 @@ const About: React.FC = () => {
                     <CheckCircleIcon sx={{ color: 'success.main' }} />
                   </ListItemIcon>
                   <ListItemText
-                    primary="Distribuer"
-                    secondary="Partagez le logiciel avec d'autres utilisateurs"
+                    primary="Distribuer et vendre"
+                    secondary="Partagez ou vendez le logiciel librement"
                   />
                 </ListItem>
                 <ListItem>
@@ -159,62 +159,62 @@ const About: React.FC = () => {
                     <CheckCircleIcon sx={{ color: 'success.main' }} />
                   </ListItemIcon>
                   <ListItemText
-                    primary="Étudier"
-                    secondary="Analysez le fonctionnement du logiciel"
+                    primary="Usage privé"
+                    secondary="Utilisez pour vos projets personnels ou professionnels"
                   />
                 </ListItem>
               </List>
             </Box>
           </Grid>
 
-          {/* What you CANNOT do */}
+          {/* Obligations */}
           <Grid item xs={12} md={6}>
             <Box
               sx={{
                 p: 2,
                 borderRadius: 2,
-                bgcolor: 'rgba(244, 67, 54, 0.1)',
-                border: '1px solid rgba(244, 67, 54, 0.3)',
+                bgcolor: 'rgba(255, 152, 0, 0.1)',
+                border: '1px solid rgba(255, 152, 0, 0.3)',
               }}
             >
-              <Typography variant="h6" fontWeight={700} sx={{ mb: 2, color: 'error.main' }}>
-                ❌ Ce que vous ne pouvez PAS faire
+              <Typography variant="h6" fontWeight={700} sx={{ mb: 2, color: 'warning.main' }}>
+                📋 Vos seules obligations
               </Typography>
               <List dense>
                 <ListItem>
                   <ListItemIcon sx={{ minWidth: 36 }}>
-                    <CancelIcon sx={{ color: 'error.main' }} />
+                    <CheckCircleIcon sx={{ color: 'warning.main' }} />
                   </ListItemIcon>
                   <ListItemText
-                    primary="Vendre le logiciel"
-                    secondary="Interdiction de vendre des copies du logiciel"
+                    primary="Conserver le copyright"
+                    secondary="Incluez la notice de copyright dans vos copies"
                   />
                 </ListItem>
                 <ListItem>
                   <ListItemIcon sx={{ minWidth: 36 }}>
-                    <CancelIcon sx={{ color: 'error.main' }} />
+                    <CheckCircleIcon sx={{ color: 'warning.main' }} />
                   </ListItemIcon>
                   <ListItemText
-                    primary="Usage commercial"
-                    secondary="Pas d'utilisation commerciale sans autorisation écrite"
+                    primary="Inclure la licence"
+                    secondary="Distribuez le fichier LICENSE avec le logiciel"
                   />
                 </ListItem>
                 <ListItem>
                   <ListItemIcon sx={{ minWidth: 36 }}>
-                    <CancelIcon sx={{ color: 'error.main' }} />
+                    <CheckCircleIcon sx={{ color: 'warning.main' }} />
                   </ListItemIcon>
                   <ListItemText
-                    primary="Retirer l'attribution"
-                    secondary="Vous devez toujours mentionner Cyberprevs"
+                    primary="Pas de garantie"
+                    secondary="Le logiciel est fourni 'tel quel' sans garantie"
                   />
                 </ListItem>
                 <ListItem>
                   <ListItemIcon sx={{ minWidth: 36 }}>
-                    <CancelIcon sx={{ color: 'error.main' }} />
+                    <CheckCircleIcon sx={{ color: 'warning.main' }} />
                   </ListItemIcon>
                   <ListItemText
-                    primary="Service payant"
-                    secondary="Interdiction d'offrir comme service commercial"
+                    primary="Responsabilité limitée"
+                    secondary="Les auteurs ne sont pas responsables des dommages"
                   />
                 </ListItem>
               </List>
@@ -232,12 +232,12 @@ const About: React.FC = () => {
           }}
         >
           <Typography variant="body2" color="text.secondary" paragraph>
-            <strong>Usage commercial :</strong> Pour toute demande d'utilisation commerciale ou de licence
-            propriétaire, veuillez contacter Cyberprevs.
+            <strong>📜 Licence MIT :</strong> Cette licence est l'une des plus permissives. Vous êtes libre d'utiliser,
+            modifier, distribuer et vendre ce logiciel. La seule exigence est de conserver la notice de copyright.
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            <strong>Attribution requise :</strong> Vous devez donner le crédit approprié à Cyberprevs, fournir
-            un lien vers la licence, et indiquer si des modifications ont été apportées.
+            <strong>💼 Support commercial :</strong> Bien que la licence permette l'usage commercial, Cyberprevs propose
+            des services de support, formation et consulting personnalisés. Contactez-nous pour plus d'informations.
           </Typography>
         </Box>
       </Paper>
@@ -297,17 +297,17 @@ const About: React.FC = () => {
 
           <Grid item xs={12} sm={6}>
             <Link
-              href="https://creativecommons.org/licenses/by-nc/4.0/"
+              href="https://opensource.org/licenses/MIT"
               target="_blank"
               rel="noopener noreferrer"
               sx={{ textDecoration: 'none' }}
             >
               <Card sx={{ p: 2, '&:hover': { bgcolor: 'action.hover' } }}>
                 <Typography variant="subtitle1" fontWeight={600} gutterBottom>
-                  📄 Licence CC BY-NC 4.0
+                  📄 Licence MIT
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Texte complet de la licence
+                  Texte complet de la licence open source
                 </Typography>
               </Card>
             </Link>
@@ -349,7 +349,7 @@ const About: React.FC = () => {
           responsables de toute réclamation, dommage ou autre responsabilité.
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          L'utilisation de ce logiciel implique l'acceptation des termes de la licence CC BY-NC 4.0 et l'engagement
+          L'utilisation de ce logiciel implique l'acceptation des termes de la licence MIT et l'engagement
           à respecter les lois applicables en matière de protection des données personnelles.
         </Typography>
       </Box>

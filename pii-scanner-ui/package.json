@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "description": "PII Scanner - Interface web React pour détection de données personnelles",
   "author": "Cyberprevs",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "dev": "vite",
