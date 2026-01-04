@@ -4,8 +4,6 @@
 [![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript)](https://www.typescriptlang.org/)
-[![Ko-fi](https://img.shields.io/badge/Ko--fi-Support-orange?logo=ko-fi)](https://ko-fi.com/Y8Y31QXZ2Y)
-[![Donate](https://img.shields.io/badge/Donate-PayPal-blue.svg)](https://www.paypal.com/ncp/payment/G9FTF7NGPN8CG)
 
 Application web pour détecter et analyser les données personnelles identifiables (PII) dans vos fichiers, conforme à la **Loi N°2017-20 du Bénin** (APDP).
 
@@ -276,23 +274,6 @@ Conforme à la **Loi N°2017-20 portant Code du Numérique en République du Bé
 Pour toute demande commerciale, contactez **[Cyberprevs](https://cyberprevs.com)**.
 
 Voir [LICENSE](LICENSE) pour les détails complets.
-
----
-
-## ❤️ Soutenir le projet
-
-PII Scanner est **gratuit et open-source**. Soutenez son développement :
-
-- ☕ **Ko-fi** : [Faire un don](https://ko-fi.com/Y8Y31QXZ2Y) (à partir de 3€)
-- 💳 **PayPal** : [Faire un don](https://www.paypal.com/ncp/payment/G9FTF7NGPN8CG) (montant libre)
-- 🏢 **Support entreprise** : [contact@cyberprevs.fr](mailto:contact@cyberprevs.fr)
-
-**Vos contributions permettent** :
-✅ Maintenance et corrections de bugs
-✅ Nouvelles fonctionnalités et types de PII
-✅ Documentation et support gratuit
-
-**Chaque contribution compte ! 🙏**
 
 ---
 

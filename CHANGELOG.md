@@ -239,7 +239,6 @@ Aucun changement (identique à v1.0.0). JWT secret par défaut pour tests (rég�
 - CLAUDE.md (documentation technique)
 - CONTRIBUTING.md (guide de contribution)
 - CODE_OF_CONDUCT.md (code de conduite)
-- DONATIONS.md (guide dons)
 
 #### 🔧 Infrastructure
 
