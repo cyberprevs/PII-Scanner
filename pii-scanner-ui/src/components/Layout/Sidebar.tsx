@@ -545,7 +545,7 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
                 mt: 0.5,
               }}
             >
-              v2.1.0 • © 2025
+              v1.0.0 • © 2025
             </Typography>
           </Box>
         )}
