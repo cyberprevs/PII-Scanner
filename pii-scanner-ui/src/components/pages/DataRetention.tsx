@@ -48,12 +48,12 @@ interface RetentionPolicy {
 
 export default function DataRetention() {
   const [retentionPolicies, setRetentionPolicies] = useState<RetentionPolicy[]>([
-    { category: 'Données bancaires (IBAN, Carte, Mobile Money)', description: 'Transactions et informations bancaires', defaultPeriod: 5, currentPeriod: 5, color: '#f44336', icon: '💳' },
-    { category: 'Données d\'identité (IFU, CNI, Passeport, RCCM)', description: 'Documents d\'identité et fiscaux', defaultPeriod: 3, currentPeriod: 3, color: '#667eea', icon: '🆔' },
-    { category: 'Données santé (CNSS, RAMU)', description: 'Dossiers médicaux et assurance', defaultPeriod: 5, currentPeriod: 5, color: '#43e97b', icon: '🏥' },
-    { category: 'Données éducation (INE, Matricule)', description: 'Dossiers scolaires et administratifs', defaultPeriod: 2, currentPeriod: 2, color: '#ff9800', icon: '🎓' },
-    { category: 'Données contact (Email, Téléphone)', description: 'Coordonnées personnelles', defaultPeriod: 1, currentPeriod: 1, color: '#4facfe', icon: '📞' },
-    { category: 'Données transport (Plaque d\'immatriculation)', description: 'Informations véhicules', defaultPeriod: 3, currentPeriod: 3, color: '#795548', icon: '🚗' },
+    { category: 'Données bancaires (IBAN, Carte, Mobile Money)', description: 'Transactions et informations bancaires', defaultPeriod: 5, currentPeriod: 5, color: '#f44336', icon: '•' },
+    { category: 'Données d\'identité (IFU, CNI, Passeport, RCCM)', description: 'Documents d\'identité et fiscaux', defaultPeriod: 3, currentPeriod: 3, color: '#667eea', icon: '•' },
+    { category: 'Données santé (CNSS, RAMU)', description: 'Dossiers médicaux et assurance', defaultPeriod: 5, currentPeriod: 5, color: '#43e97b', icon: '•' },
+    { category: 'Données éducation (INE, Matricule)', description: 'Dossiers scolaires et administratifs', defaultPeriod: 2, currentPeriod: 2, color: '#ff9800', icon: '•' },
+    { category: 'Données contact (Email, Téléphone)', description: 'Coordonnées personnelles', defaultPeriod: 1, currentPeriod: 1, color: '#4facfe', icon: '•' },
+    { category: 'Données transport (Plaque d\'immatriculation)', description: 'Informations véhicules', defaultPeriod: 3, currentPeriod: 3, color: '#795548', icon: '•' },
   ]);
 
   const [directoryPath, setDirectoryPath] = useState('C:\\Users');
@@ -150,7 +150,7 @@ export default function DataRetention() {
   return (
     <Box>
       <Typography variant="h4" fontWeight={700} gutterBottom>
-        🗑️ Rétention et suppression des données
+        Rétention et suppression des données
       </Typography>
       <Typography variant="body1" color="text.secondary" paragraph>
         Gérer la rétention des données personnelles conformément à la Loi N°2017-20 du Bénin (APDP)
@@ -165,7 +165,7 @@ export default function DataRetention() {
       <Card sx={{ mb: 3 }}>
         <CardContent>
           <Typography variant="h5" fontWeight={600} gutterBottom>
-            ⚙️ Politiques de rétention par catégorie
+            Politiques de rétention par catégorie
           </Typography>
           <Typography variant="body2" color="text.secondary" paragraph>
             Définissez la durée maximale de conservation pour chaque type de données
@@ -236,7 +236,7 @@ export default function DataRetention() {
       <Card sx={{ mb: 3 }}>
         <CardContent>
           <Typography variant="h5" fontWeight={600} gutterBottom>
-            🔍 Détection des fichiers à supprimer
+            Détection des fichiers à supprimer
           </Typography>
           <Typography variant="body2" color="text.secondary" paragraph>
             Analyser le système pour identifier les fichiers dépassant les périodes de rétention
@@ -369,7 +369,7 @@ export default function DataRetention() {
       <Card>
         <CardContent>
           <Typography variant="h6" fontWeight={600} gutterBottom>
-            📋 Conformité APDP - Loi N°2017-20 du Bénin
+            Conformité APDP - Loi N°2017-20 du Bénin
           </Typography>
           <List>
             <ListItem>
@@ -423,7 +423,7 @@ export default function DataRetention() {
         fullWidth
       >
         <DialogTitle sx={{ color: 'error.main', fontWeight: 700 }}>
-          ⚠️ Confirmation de suppression
+          Confirmation de suppression
         </DialogTitle>
         <DialogContent>
           {!deletionComplete ? (

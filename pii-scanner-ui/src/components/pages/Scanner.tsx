@@ -350,23 +350,23 @@ export default function Scanner({ scanning, scanId, onStartScan }: ScannerProps)
 
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.75, mt: 2 }}>
                   {[
-                    { label: 'Email', icon: '📧' },
-                    { label: 'Date de naissance', icon: '📅' },
-                    { label: 'Carte bancaire', icon: '💳' },
-                    { label: 'IFU (13 chiffres)', icon: '🆔' },
-                    { label: 'CNI Bénin', icon: '📇' },
-                    { label: 'Passeport béninois', icon: '🛂' },
-                    { label: 'RCCM', icon: '🏢' },
-                    { label: 'Acte de naissance', icon: '📜' },
-                    { label: 'Téléphone (+229)', icon: '📞' },
-                    { label: 'IBAN Bénin', icon: '🏦' },
-                    { label: 'Mobile Money MTN', icon: '💰' },
-                    { label: 'Mobile Money Moov', icon: '💸' },
-                    { label: 'CNSS (11 chiffres)', icon: '🏥' },
-                    { label: 'RAMU', icon: '💊' },
-                    { label: 'INE', icon: '🎓' },
-                    { label: 'Matricule fonctionnaire', icon: '👨‍💼' },
-                    { label: 'Plaque d\'immatriculation', icon: '🚗' },
+                    { label: 'Email', icon: '•' },
+                    { label: 'Date de naissance', icon: '•' },
+                    { label: 'Carte bancaire', icon: '•' },
+                    { label: 'IFU (13 chiffres)', icon: '•' },
+                    { label: 'CNI Bénin', icon: '•' },
+                    { label: 'Passeport béninois', icon: '•' },
+                    { label: 'RCCM', icon: '•' },
+                    { label: 'Acte de naissance', icon: '•' },
+                    { label: 'Téléphone (+229)', icon: '•' },
+                    { label: 'IBAN Bénin', icon: '•' },
+                    { label: 'Mobile Money MTN', icon: '•' },
+                    { label: 'Mobile Money Moov', icon: '•' },
+                    { label: 'CNSS (11 chiffres)', icon: '•' },
+                    { label: 'RAMU', icon: '•' },
+                    { label: 'INE', icon: '•' },
+                    { label: 'Matricule fonctionnaire', icon: '•' },
+                    { label: 'Plaque d\'immatriculation', icon: '•' },
                   ].map((item, index) => (
                     <Chip
                       key={index}
@@ -461,7 +461,7 @@ export default function Scanner({ scanning, scanId, onStartScan }: ScannerProps)
                     DOSSIER SCANNÉ
                   </Typography>
                   <Typography variant="body2" sx={{ mt: 0.5, wordBreak: 'break-all', fontWeight: 500 }}>
-                    📁 {directoryPath}
+                    {directoryPath}
                   </Typography>
                 </Box>
 

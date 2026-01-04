@@ -260,9 +260,9 @@ export default function Results({ results, onDownloadReport, onNewScan }: Result
       {/* Onglets */}
       <Card>
         <Tabs value={activeTab} onChange={(_, newValue) => setActiveTab(newValue)} sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <Tab label="📊 Graphiques" />
-          <Tab label="⚠️ Fichiers à risque" />
-          <Tab label="🔍 Détections" />
+          <Tab label="Graphiques" />
+          <Tab label="Fichiers à risque" />
+          <Tab label="Détections" />
         </Tabs>
 
         <CardContent sx={{ p: 3 }}>
@@ -273,14 +273,14 @@ export default function Results({ results, onDownloadReport, onNewScan }: Result
               <Card sx={{ mb: 3, backgroundColor: '#f5f5f5' }}>
                 <CardContent>
                   <Typography variant="h6" gutterBottom fontWeight={600} sx={{ mb: 2 }}>
-                    📖 Légende des indicateurs
+                    Légende des indicateurs
                   </Typography>
 
                   <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 3 }}>
                     {/* Niveau de risque */}
                     <Box>
                       <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 1 }}>
-                        🎯 Niveau de risque (basé sur le nombre de PII)
+                        Niveau de risque (basé sur le nombre de PII)
                       </Typography>
                       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -301,7 +301,7 @@ export default function Results({ results, onDownloadReport, onNewScan }: Result
                     {/* Ancienneté */}
                     <Box>
                       <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 1 }}>
-                        ⏰ Ancienneté (dernier accès au fichier)
+                        Ancienneté (dernier accès au fichier)
                       </Typography>
                       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -330,7 +330,7 @@ export default function Results({ results, onDownloadReport, onNewScan }: Result
                     {/* Exposition */}
                     <Box>
                       <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 1 }}>
-                        🔓 Exposition (permissions d'accès Windows)
+                        Exposition (permissions d'accès Windows)
                       </Typography>
                       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -403,7 +403,7 @@ export default function Results({ results, onDownloadReport, onNewScan }: Result
                 {/* Graphique Niveau de Risque */}
                 <Box sx={{ flex: '1 1 400px', minWidth: 0 }}>
                   <Typography variant="h6" gutterBottom fontWeight={600}>
-                    🎯 Niveau de risque des fichiers
+                    Niveau de risque des fichiers
                   </Typography>
                   <ResponsiveContainer width="100%" height={300}>
                     <BarChart data={riskData}>
@@ -424,7 +424,7 @@ export default function Results({ results, onDownloadReport, onNewScan }: Result
                 {/* Graphique Ancienneté (Stale Data) */}
                 <Box sx={{ flex: '1 1 400px', minWidth: 0 }}>
                   <Typography variant="h6" gutterBottom fontWeight={600}>
-                    ⏰ Ancienneté des fichiers (Stale Data)
+                    Ancienneté des fichiers (Stale Data)
                   </Typography>
                   <ResponsiveContainer width="100%" height={300}>
                     <BarChart data={stalenessData.filter(d => d.count > 0)}>
@@ -445,7 +445,7 @@ export default function Results({ results, onDownloadReport, onNewScan }: Result
                 {/* Graphique Exposition (Over-Exposed Data) */}
                 <Box sx={{ flex: '1 1 400px', minWidth: 0 }}>
                   <Typography variant="h6" gutterBottom fontWeight={600}>
-                    🔓 Niveau d'exposition (Over-Exposed Data)
+                    Niveau d'exposition (Over-Exposed Data)
                   </Typography>
                   <ResponsiveContainer width="100%" height={300}>
                     <BarChart data={exposureData.filter(d => d.count > 0)}>
@@ -497,9 +497,9 @@ export default function Results({ results, onDownloadReport, onNewScan }: Result
                       onChange={(e) => setExposureFilter(e.target.value)}
                     >
                       <MenuItem value="all">Tous les niveaux</MenuItem>
-                      <MenuItem value="Critique">🔴 Critique</MenuItem>
-                      <MenuItem value="Moyen">🟡 Moyen</MenuItem>
-                      <MenuItem value="Faible">✅ Faible</MenuItem>
+                      <MenuItem value="Critique">Critique</MenuItem>
+                      <MenuItem value="Moyen">Moyen</MenuItem>
+                      <MenuItem value="Faible">Faible</MenuItem>
                     </Select>
                   </FormControl>
                 </Box>

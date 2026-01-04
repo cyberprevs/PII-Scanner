@@ -124,7 +124,7 @@ const About: React.FC = () => {
               }}
             >
               <Typography variant="h6" fontWeight={700} sx={{ mb: 2, color: 'success.main' }}>
-                ✅ Ce que vous pouvez faire
+                Ce que vous pouvez faire
               </Typography>
               <List dense>
                 <ListItem>
@@ -178,7 +178,7 @@ const About: React.FC = () => {
               }}
             >
               <Typography variant="h6" fontWeight={700} sx={{ mb: 2, color: 'warning.main' }}>
-                📋 Vos seules obligations
+                Vos seules obligations
               </Typography>
               <List dense>
                 <ListItem>
@@ -232,11 +232,11 @@ const About: React.FC = () => {
           }}
         >
           <Typography variant="body2" color="text.secondary" paragraph>
-            <strong>📜 Licence MIT :</strong> Cette licence est l'une des plus permissives. Vous êtes libre d'utiliser,
+            <strong>Licence MIT :</strong> Cette licence est l'une des plus permissives. Vous êtes libre d'utiliser,
             modifier, distribuer et vendre ce logiciel. La seule exigence est de conserver la notice de copyright.
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            <strong>💼 Support commercial :</strong> Bien que la licence permette l'usage commercial, Cyberprevs propose
+            <strong>Support commercial :</strong> Bien que la licence permette l'usage commercial, Cyberprevs propose
             des services de support, formation et consulting personnalisés. Contactez-nous pour plus d'informations.
           </Typography>
         </Box>
@@ -252,7 +252,7 @@ const About: React.FC = () => {
         </Box>
 
         <Alert severity="info" sx={{ mb: 3 }}>
-          💡 Pour les <strong>guides pratiques, FAQ et support</strong>, consultez la page{' '}
+          Pour les <strong>guides pratiques, FAQ et support</strong>, consultez la page{' '}
           <Link href="/support" underline="hover" sx={{ fontWeight: 600 }}>
             Support
           </Link>
@@ -268,7 +268,7 @@ const About: React.FC = () => {
             >
               <Card sx={{ p: 2, '&:hover': { bgcolor: 'action.hover' } }}>
                 <Typography variant="subtitle1" fontWeight={600} gutterBottom>
-                  💻 Code source GitHub
+                  Code source GitHub
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   Dépôt du projet et documentation
@@ -286,7 +286,7 @@ const About: React.FC = () => {
             >
               <Card sx={{ p: 2, '&:hover': { bgcolor: 'action.hover' } }}>
                 <Typography variant="subtitle1" fontWeight={600} gutterBottom>
-                  🔒 Documentation sécurité
+                  Documentation sécurité
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   13 protections : HTTPS, SQLCipher, JWT, CSRF, CSP
@@ -304,7 +304,7 @@ const About: React.FC = () => {
             >
               <Card sx={{ p: 2, '&:hover': { bgcolor: 'action.hover' } }}>
                 <Typography variant="subtitle1" fontWeight={600} gutterBottom>
-                  📄 Licence MIT
+                  Licence MIT
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   Texte complet de la licence open source
@@ -322,7 +322,7 @@ const About: React.FC = () => {
             >
               <Card sx={{ p: 2, '&:hover': { bgcolor: 'action.hover' } }}>
                 <Typography variant="subtitle1" fontWeight={600} gutterBottom>
-                  🏢 Site Cyberprevs
+                  Site Cyberprevs
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   Nos autres projets et services
@@ -344,7 +344,7 @@ const About: React.FC = () => {
         }}
       >
         <Typography variant="body2" color="text.secondary" paragraph>
-          <strong>⚠️ Avertissement :</strong> Ce logiciel est fourni "tel quel", sans garantie d'aucune sorte,
+          <strong>Avertissement :</strong> Ce logiciel est fourni "tel quel", sans garantie d'aucune sorte,
           expresse ou implicite. En aucun cas, les auteurs ou les détenteurs des droits d'auteur ne seront tenus
           responsables de toute réclamation, dommage ou autre responsabilité.
         </Typography>
