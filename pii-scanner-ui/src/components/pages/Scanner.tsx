@@ -325,58 +325,6 @@ export default function Scanner({ scanning, scanId, onStartScan }: ScannerProps)
                 </Button>
               </CardContent>
             </Card>
-
-            {/* Caractéristiques */}
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6} md={3}>
-                <Card sx={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-                  <CardContent sx={{ textAlign: 'center', py: 3 }}>
-                    <Typography variant="h3" fontWeight={700} color="white">
-                      ⚡
-                    </Typography>
-                    <Typography variant="body2" color="rgba(255,255,255,0.95)" fontWeight={500}>
-                      Traitement parallèle
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-              <Grid item xs={12} sm={6} md={3}>
-                <Card sx={{ background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' }}>
-                  <CardContent sx={{ textAlign: 'center', py: 3 }}>
-                    <Typography variant="h3" fontWeight={700} color="white">
-                      🔒
-                    </Typography>
-                    <Typography variant="body2" color="rgba(255,255,255,0.95)" fontWeight={500}>
-                      100% local et sécurisé
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-              <Grid item xs={12} sm={6} md={3}>
-                <Card sx={{ background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' }}>
-                  <CardContent sx={{ textAlign: 'center', py: 3 }}>
-                    <Typography variant="h3" fontWeight={700} color="white">
-                      📊
-                    </Typography>
-                    <Typography variant="body2" color="rgba(255,255,255,0.95)" fontWeight={500}>
-                      4 formats de rapport
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-              <Grid item xs={12} sm={6} md={3}>
-                <Card sx={{ background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' }}>
-                  <CardContent sx={{ textAlign: 'center', py: 3 }}>
-                    <Typography variant="h3" fontWeight={700} color="white">
-                      🇧🇯
-                    </Typography>
-                    <Typography variant="body2" color="rgba(255,255,255,0.95)" fontWeight={500}>
-                      Conforme APDP Bénin
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-            </Grid>
           </Grid>
 
           {/* Types de PII - Sidebar */}
