@@ -28,6 +28,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import SecurityIcon from '@mui/icons-material/Security';
 import { scanApi } from '../../services/apiClient';
+import { useAuth } from '../../contexts/AuthContext';
 import type { ScanProgressResponse } from '../../types';
 
 interface ScannerProps {
@@ -37,14 +38,20 @@ interface ScannerProps {
 }
 
 export default function Scanner({ scanning, scanId, onStartScan }: ScannerProps) {
+  const { user } = useAuth();
   const [directoryPath, setDirectoryPath] = useState('');
   const [progress, setProgress] = useState<ScanProgressResponse | null>(null);
   const [recentPaths, setRecentPaths] = useState<string[]>([]);
   const [pathError, setPathError] = useState('');
 
+  // Get user-specific localStorage key
+  const getRecentPathsKey = () => {
+    return user ? `recentScanPaths_${user.username}` : 'recentScanPaths';
+  };
+
   // Load recent paths from localStorage on mount
   useEffect(() => {
-    const stored = localStorage.getItem('recentScanPaths');
+    const stored = localStorage.getItem(getRecentPathsKey());
     if (stored) {
       try {
         setRecentPaths(JSON.parse(stored));
@@ -52,7 +59,7 @@ export default function Scanner({ scanning, scanId, onStartScan }: ScannerProps)
         console.error('Error loading recent paths:', err);
       }
     }
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     if (!scanning || !scanId) return;
@@ -72,13 +79,13 @@ export default function Scanner({ scanning, scanId, onStartScan }: ScannerProps)
   const saveRecentPath = (path: string) => {
     const updated = [path, ...recentPaths.filter(p => p !== path)].slice(0, 5);
     setRecentPaths(updated);
-    localStorage.setItem('recentScanPaths', JSON.stringify(updated));
+    localStorage.setItem(getRecentPathsKey(), JSON.stringify(updated));
   };
 
   const removeRecentPath = (path: string) => {
     const updated = recentPaths.filter(p => p !== path);
     setRecentPaths(updated);
-    localStorage.setItem('recentScanPaths', JSON.stringify(updated));
+    localStorage.setItem(getRecentPathsKey(), JSON.stringify(updated));
   };
 
   const handleSelectDirectory = async () => {
