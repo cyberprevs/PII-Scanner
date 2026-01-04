@@ -64,7 +64,7 @@ export default function Scanner({ scanning, scanId, onStartScan }: ScannerProps)
       } catch (err) {
         console.error('Error fetching progress:', err);
       }
-    }, 500);
+    }, 2000); // 2 secondes - Compatible avec rate limiting (100 req/min = 30 req/min max)
 
     return () => clearInterval(interval);
   }, [scanning, scanId]);

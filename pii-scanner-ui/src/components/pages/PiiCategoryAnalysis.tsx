@@ -403,79 +403,148 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results }) => {
         </Grid>
       </Grid>
 
-      {/* Graphiques */}
+      {/* Graphiques - Nouvelle mise en page optimisée */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        {/* Graphique par catégorie */}
-        <Grid item xs={12} md={6}>
-          <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <BarChartIcon sx={{ mr: 1, color: 'primary.main' }} />
-                <Typography variant="h6" fontWeight={600}>
+        {/* Graphique par catégorie - Graphique horizontal plus large */}
+        <Grid item xs={12} lg={8}>
+          <Card sx={{ height: '100%' }}>
+            <CardContent sx={{ p: 4 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                <BarChartIcon sx={{ mr: 1.5, fontSize: 28, color: 'primary.main' }} />
+                <Typography variant="h5" fontWeight={700}>
                   Répartition par Catégorie
                 </Typography>
               </Box>
-              <ResponsiveContainer width="100%" height={350}>
-                <BarChart data={categoryStats} margin={{ top: 20, right: 30, left: 20, bottom: 80 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis
-                    dataKey="category"
-                    angle={-45}
-                    textAnchor="end"
-                    height={100}
-                    interval={0}
-                    tick={{ fontSize: 12 }}
-                  />
-                  <YAxis tick={{ fontSize: 12 }} />
-                  <Tooltip />
-                  <Legend wrapperStyle={{ paddingTop: '20px' }} />
-                  <Bar dataKey="detections" fill="#667eea" name="Détections" />
-                  <Bar dataKey="files" fill="#764ba2" name="Fichiers" />
-                </BarChart>
-              </ResponsiveContainer>
+              <Box sx={{ width: '100%', height: 400 }}>
+                <ResponsiveContainer>
+                  <BarChart
+                    data={categoryStats}
+                    layout="vertical"
+                    margin={{ top: 20, right: 30, bottom: 20, left: 120 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} />
+                    <XAxis type="number" tick={{ fontSize: 12 }} />
+                    <YAxis
+                      type="category"
+                      dataKey="category"
+                      tick={{ fontSize: 13 }}
+                      width={110}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                        borderRadius: 8,
+                        border: '1px solid #ddd'
+                      }}
+                    />
+                    <Legend
+                      wrapperStyle={{ paddingTop: '15px' }}
+                      iconType="rect"
+                    />
+                    <Bar
+                      dataKey="detections"
+                      fill="#667eea"
+                      name="Détections"
+                      radius={[0, 8, 8, 0]}
+                      barSize={30}
+                    />
+                    <Bar
+                      dataKey="files"
+                      fill="#764ba2"
+                      name="Fichiers"
+                      radius={[0, 8, 8, 0]}
+                      barSize={30}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </Box>
             </CardContent>
           </Card>
         </Grid>
 
-        {/* Graphique par sensibilité */}
-        <Grid item xs={12} md={6}>
-          <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <SecurityIcon sx={{ mr: 1, color: 'primary.main' }} />
-                <Typography variant="h6" fontWeight={600}>
-                  Répartition par Sensibilité
+        {/* Graphique par sensibilité - Format compact vertical */}
+        <Grid item xs={12} lg={4}>
+          <Card sx={{ height: '100%' }}>
+            <CardContent sx={{ p: 4 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                <SecurityIcon sx={{ mr: 1.5, fontSize: 28, color: 'secondary.main' }} />
+                <Typography variant="h5" fontWeight={700}>
+                  Par Sensibilité
                 </Typography>
               </Box>
-              <ResponsiveContainer width="100%" height={350}>
-                <PieChart>
-                  <Pie
-                    data={severityStats}
-                    cx="50%"
-                    cy="45%"
-                    labelLine={true}
-                    label={(entry) => `${entry.severity}: ${entry.count}`}
-                    outerRadius={90}
-                    fill="#8884d8"
-                    dataKey="count"
+              <Box sx={{ width: '100%', height: 400, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={severityStats}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={false}
+                      outerRadius={100}
+                      innerRadius={50}
+                      fill="#8884d8"
+                      dataKey="count"
+                      paddingAngle={3}
+                    >
+                      {severityStats.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                        borderRadius: 8,
+                        border: '1px solid #ddd'
+                      }}
+                      formatter={(value: number, name: string, props: any) => [
+                        `${value} détections`,
+                        props.payload.severity
+                      ]}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </Box>
+              {/* Légende personnalisée */}
+              <Box sx={{ mt: 2 }}>
+                {severityStats.map((stat, index) => (
+                  <Box
+                    key={index}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      py: 1,
+                      borderBottom: index < severityStats.length - 1 ? '1px solid rgba(0,0,0,0.08)' : 'none'
+                    }}
                   >
-                    {severityStats.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    formatter={(value: number, name: string, props: any) => [
-                      `${value} fichiers`,
-                      props.payload.severity
-                    ]}
-                  />
-                  <Legend
-                    verticalAlign="bottom"
-                    height={36}
-                    formatter={(value: string, entry: any) => `${entry.payload.severity} (${entry.payload.count})`}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                      <Box
+                        sx={{
+                          width: 16,
+                          height: 16,
+                          borderRadius: '4px',
+                          backgroundColor: stat.color,
+                          flexShrink: 0
+                        }}
+                      />
+                      <Typography variant="body2" fontWeight={500}>
+                        {stat.severity}
+                      </Typography>
+                    </Box>
+                    <Chip
+                      label={stat.count}
+                      size="small"
+                      sx={{
+                        bgcolor: stat.color,
+                        color: 'white',
+                        fontWeight: 700,
+                        minWidth: 45
+                      }}
+                    />
+                  </Box>
+                ))}
+              </Box>
             </CardContent>
           </Card>
         </Grid>
