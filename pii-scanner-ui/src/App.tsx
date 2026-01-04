@@ -60,6 +60,56 @@ function App() {
     checkInitialization();
   }, []);
 
+  // Restaurer les résultats du dernier scan depuis localStorage
+  useEffect(() => {
+    const restoreLastScan = async () => {
+      try {
+        const savedScanId = localStorage.getItem('lastScanId');
+        const savedResults = localStorage.getItem('lastScanResults');
+
+        if (savedScanId && savedResults && !results) {
+          // Restaurer depuis localStorage en priorité (plus rapide)
+          try {
+            const parsedResults = JSON.parse(savedResults);
+            setResults(parsedResults);
+            setScanId(savedScanId);
+            console.log('Résultats du scan restaurés depuis localStorage');
+          } catch (parseErr) {
+            console.error('Erreur lors du parsing des résultats sauvegardés:', parseErr);
+            // Si le parsing échoue, essayer de récupérer depuis l'API
+            await fetchResultsFromApi(savedScanId);
+          }
+        } else if (savedScanId && !savedResults && !results) {
+          // Si on a seulement le scanId, récupérer depuis l'API
+          await fetchResultsFromApi(savedScanId);
+        }
+      } catch (err) {
+        console.error('Erreur lors de la restauration du scan:', err);
+      }
+    };
+
+    const fetchResultsFromApi = async (scanId: string) => {
+      try {
+        const scanResults = await scanApi.getResults(scanId);
+        setResults(scanResults);
+        setScanId(scanId);
+        // Sauvegarder dans localStorage pour la prochaine fois
+        localStorage.setItem('lastScanResults', JSON.stringify(scanResults));
+        console.log('Résultats du scan récupérés depuis l\'API');
+      } catch (apiErr) {
+        console.error('Erreur lors de la récupération des résultats depuis l\'API:', apiErr);
+        // Nettoyer localStorage si le scan n'est plus disponible
+        localStorage.removeItem('lastScanId');
+        localStorage.removeItem('lastScanResults');
+      }
+    };
+
+    // Attendre que l'authentification soit vérifiée avant de restaurer
+    if (isInitialized === true && !checkingInit) {
+      restoreLastScan();
+    }
+  }, [isInitialized, checkingInit]);
+
   useEffect(() => {
     // Connecter SignalR au démarrage
     const connectSignalR = async () => {
@@ -76,6 +126,10 @@ function App() {
                 setResults(scanResults);
                 setScanning(false);
                 setSuccessMessage('Scan terminé avec succès !');
+
+                // Sauvegarder dans localStorage pour persistance
+                localStorage.setItem('lastScanId', sid);
+                localStorage.setItem('lastScanResults', JSON.stringify(scanResults));
               } catch (err) {
                 console.error('Error fetching results:', err);
                 setError('Erreur lors de la récupération des résultats');
@@ -114,6 +168,10 @@ function App() {
 
       if (response.status === 'started') {
         setScanId(response.scanId);
+        // Sauvegarder le nouveau scanId immédiatement
+        localStorage.setItem('lastScanId', response.scanId);
+        // Supprimer les anciens résultats (nouveaux résultats seront sauvegardés à la fin du scan)
+        localStorage.removeItem('lastScanResults');
       } else {
         throw new Error(response.message || 'Échec du démarrage du scan');
       }
@@ -148,6 +206,10 @@ function App() {
     setResults(null);
     setScanId(null);
     setScanning(false);
+
+    // Nettoyer localStorage lors d'un nouveau scan
+    localStorage.removeItem('lastScanId');
+    localStorage.removeItem('lastScanResults');
   };
 
   // Afficher un loader pendant la vérification
