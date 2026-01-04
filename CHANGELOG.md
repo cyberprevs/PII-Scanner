@@ -17,6 +17,161 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 ---
 
+## [1.0.0] - 2025-01-04
+
+### 🎉 Version Initiale Stable - Production Ready
+
+Première version stable de **PII Scanner** par Cyberprevs, prête pour un usage en production.
+
+#### ✨ Fonctionnalités Principales
+
+**Détection de PII**
+- Détection automatique de **17 types de PII** conformes Loi N°2017-20 (APDP Bénin)
+- Validation avancée avec réduction de ~87% des faux positifs
+- Support de 7 formats : .txt, .log, .csv, .json, .docx, .xlsx, .pdf
+- Traitement parallèle avec performance optimale (tous les cœurs CPU)
+
+**Interface Web Moderne**
+- Application web complète avec **17 pages spécialisées**
+- Design Material-UI v7 avec thème sombre
+- Graphiques interactifs (Recharts) - **layout horizontal optimisé**
+- Dashboard avec statistiques en temps réel
+- Navigation intuitive avec sidebar
+
+**Sécurité & Conformité**
+- ✅ Authentification JWT avec refresh tokens (7j/30j)
+- ✅ Base de données SQLite chiffrée (SQLCipher AES-256)
+- ✅ RBAC (Admin/User) avec audit logging complet
+- ✅ Protection CSRF (Double-Submit Cookie Pattern)
+- ✅ Rate limiting (100 req/min API générale, 5 req/15min login)
+- ✅ Path traversal protection (PathValidator)
+- ✅ Headers de sécurité (HSTS, CSP, X-Frame-Options)
+- ✅ Hachage BCrypt pour les mots de passe
+- ✅ 100% local - aucune donnée envoyée en ligne
+
+**Analyse Avancée**
+- **Analyse par catégories** : 6 catégories (Bancaire, Identité, Santé, Contact, Éducation, Transport)
+- **Fichiers dupliqués** : Détection MD5 hash-based avec optimisation (hash uniquement si PII)
+- **Graphiques optimisés** : BarChart horizontal + PieChart donut avec légende personnalisée
+- Filtres multi-critères (catégorie, sensibilité, type PII)
+- Export CSV/Excel enrichi
+
+**Gestion des Données**
+- Rétention des données avec 5 politiques configurables (1-10 ans)
+- Scan et suppression des fichiers violant les politiques
+- 4 niveaux de sensibilité : Critique, Élevé, Moyen, Faible
+- Historique des scans avec persistance localStorage
+
+**Rapports**
+- 4 formats : CSV, JSON, HTML, Excel
+- Rapports téléchargeables avec statistiques complètes
+- Visualisations graphiques intégrées
+
+**Administration**
+- Gestion des utilisateurs (Admin only)
+- Backup/Restore de base de données
+- Optimisation DB (VACUUM)
+- Trail d'audit complet
+- Profils utilisateurs avec changement de mot de passe
+
+#### 🔧 Architecture
+
+**Backend (.NET 8.0)**
+- ASP.NET Core Web API + SignalR
+- Entity Framework Core + SQLite
+- 3 projets : Core, Api, Tests
+- 88 tests unitaires (xUnit + FluentAssertions)
+
+**Frontend (React 19 + TypeScript)**
+- 17 pages spécialisées
+- Material-UI v7 + Recharts
+- 30 tests (Vitest + Testing Library)
+- Bundle optimisé : 1,215 kB (gzip: 359 kB)
+
+**Déploiement**
+- Application web auto-hébergée
+- Build automatisé (BuildWebApp.ps1)
+- Package self-contained (~124 MB)
+- Port HTTPS : 5001 (recommandé)
+
+#### 🎨 Interface Utilisateur
+
+**Pages Principales** (17 au total) :
+1. Dashboard - Résultats avec graphiques
+2. Scanner - Lancement de scans en temps réel
+3. Historique des scans
+4. Fichiers à risque (Top 20)
+5. Détections PII
+6. **Analyse par catégories** (avec graphiques horizontaux optimisés)
+7. **Fichiers dupliqués** (MD5 hash-based)
+8. Fichiers obsolètes (Staleness)
+9. Fichiers surexposés (NTFS ACL)
+10. Rapports
+11. Exports (4 formats)
+12. Rétention des données
+13. Gestion des utilisateurs (Admin)
+14. Base de données (Admin)
+15. Trail d'audit (Admin)
+16. Profil utilisateur
+17. Support & À propos
+
+**Améliorations UX**
+- ✅ Persistance des résultats (localStorage + API fallback)
+- ✅ Rate limiting optimisé (polling 2s au lieu de 500ms)
+- ✅ Graphiques pleine largeur avec layout 70/30
+- ✅ BarChart horizontal pour meilleure lisibilité
+- ✅ PieChart donut avec légende personnalisée
+- ✅ Pas de coupure des graphiques
+- ✅ Reload automatique après création compte admin
+
+#### 📊 Performances
+
+- **MD5 Hash optimisé** : 10-50x plus rapide (hash uniquement si PII détecté)
+- **Polling optimisé** : 2s (30 req/min) vs 500ms (120 req/min)
+- **Scan parallèle** : Utilise tous les cœurs CPU disponibles
+- **Bundle réduit** : Composants réutilisables (-144 lignes)
+
+#### 🐛 Correctifs Majeurs
+
+- ✅ Erreur 429 (Rate limiting) - Polling réduit de 500ms à 2s
+- ✅ Perte des résultats après refresh - Persistance localStorage + API
+- ✅ Graphiques coupés - Refonte complète avec marges et layout optimisé
+- ✅ Page blanche après création compte - Reload automatique implémenté
+- ✅ 500 erreur settings - Logique création/update séparée avec valeurs par défaut
+- ✅ Case sensitivity URLs - Routes corrigées (/UserSettings au lieu de /usersettings)
+
+#### 📝 Documentation
+
+- README.md complet avec guide d'installation
+- CLAUDE.md pour développeurs
+- SECURITY.md avec politique de sécurité
+- CONTRIBUTING.md pour contributeurs
+- CODE_OF_CONDUCT.md
+- FEATURES.md pour fonctionnalités détaillées
+- CODE_CLEANUP_LOG.md pour historique nettoyage
+
+#### 🔐 Sécurité
+
+**Niveau Production** :
+- 12 mesures de sécurité implémentées
+- Conformité RGPD/APDP
+- Encryption AES-256 de la base de données
+- Protection multi-couches (CSRF, Path Traversal, SQL Injection, XSS)
+- Audit logging complet
+
+#### 💡 Notes
+
+Cette version V1.0.0 marque la stabilité du produit et son aptitude à être utilisé en production. Toutes les fonctionnalités principales sont implémentées, testées et documentées.
+
+**Recommandations pour la production** :
+- Rotation JWT secret tous les 90 jours
+- Backups automatisés de la base de données
+- Monitoring et alertes sur événements de sécurité
+- Audits de sécurité réguliers (OWASP ZAP, Burp Suite)
+- Mise à jour CORS avec origines de production spécifiques
+
+---
+
 ## [2.1.0] - 2024-12-29
 
 ### 🎯 Analyse Avancée

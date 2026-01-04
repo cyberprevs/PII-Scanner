@@ -1,7 +1,7 @@
 {
   "name": "pii-scanner-ui",
   "private": true,
-  "version": "2.1.0",
+  "version": "1.0.0",
   "description": "PII Scanner - Interface web React pour détection de données personnelles",
   "author": "Cyberprevs",
   "type": "module",
