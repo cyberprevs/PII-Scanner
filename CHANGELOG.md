@@ -148,7 +148,19 @@ Première version stable de **PII Scanner** par Cyberprevs, prête pour un usage
 - CONTRIBUTING.md pour contributeurs
 - CODE_OF_CONDUCT.md
 - FEATURES.md pour fonctionnalités détaillées
-- CODE_CLEANUP_LOG.md pour historique nettoyage
+- RELEASE_V1.0.0.md pour documentation de release
+
+#### 📜 Licence
+
+- **Migration vers licence MIT** (depuis CC BY-NC 4.0)
+- Usage commercial autorisé sans restriction
+- Modification et distribution autorisées
+- Seule obligation : Conservation de la notice de copyright
+
+#### ✨ Améliorations UX Récentes
+
+- **Chemins récents séparés par utilisateur** : Chaque utilisateur a maintenant sa propre liste de dossiers récents dans localStorage (recentScanPaths_{username})
+- Fix de partage des chemins entre admin et utilisateurs standards
 
 #### 🔐 Sécurité
 
@@ -172,11 +184,15 @@ Cette version V1.0.0 marque la stabilité du produit et son aptitude à être ut
 
 ---
 
-## [2.1.0] - 2024-12-29
+## Versions précédentes (développement)
+
+Les versions 2.x.x étaient des versions de développement internes qui ont été consolidées dans la v1.0.0.
+
+### [2.1.0] - 2024-12-29 (Développement)
 
 ### 🎯 Analyse Avancée
 
-Cette version introduit deux nouvelles fonctionnalités majeures d'analyse : détection des fichiers dupliqués et analyse par catégories de PII.
+Cette version de développement a introduit deux fonctionnalités majeures d'analyse qui sont maintenant intégrées dans v1.0.0 : détection des fichiers dupliqués et analyse par catégories de PII.
 
 #### ✨ Ajouté
 
@@ -257,11 +273,11 @@ Cette version introduit deux nouvelles fonctionnalités majeures d'analyse : dé
 
 ---
 
-## [2.0.0] - 2024-12-25
+### [2.0.0] - 2024-12-25 (Développement)
 
 ### 🎁 Version Portable
 
-Cette version introduit un package portable complet ne nécessitant aucune installation.
+Cette version de développement a introduit le package portable qui est maintenant la méthode de distribution principale de v1.0.0.
 
 #### ✨ Ajouté
 
@@ -313,104 +329,6 @@ Cette version introduit un package portable complet ne nécessitant aucune insta
 
 Aucun changement (identique à v1.0.0). JWT secret par défaut pour tests (régénérer pour production).
 
----
-
-## [1.0.0] - 2024-12-25
-
-### 🎉 Version initiale
-
-#### ✨ Fonctionnalités principales
-
-**Détection PII**
-- Détection de 17 types de PII spécifiques au Bénin (Loi N°2017-20 APDP)
-- Validation avancée des patterns (réduction ~87% des faux positifs)
-- Support 7 formats de fichiers : .docx, .xlsx, .pdf, .txt, .log, .csv, .json
-- Traitement parallèle optimisé (utilise tous les cœurs CPU)
-
-**Types de PII détectés** :
-- Identité : IFU, CNI Bénin, Passeport Bénin, RCCM, Acte de naissance
-- Contact : Email (validation stricte), Téléphone Bénin (+229)
-- Bancaire : IBAN Bénin, MTN MoMo, Moov Money, Carte bancaire (Luhn)
-- Santé : CNSS, RAMU
-- Éducation : INE, Matricule fonctionnaire
-- Transport : Plaque d'immatriculation (formats ancien/nouveau)
-- Universel : Date de naissance (validation 5-120 ans)
-
-**Interface utilisateur**
-- Application Electron avec React 19 + TypeScript
-- Material-UI v7 avec thème sombre
-- 15 pages spécialisées (Dashboard, Scanner, Historique, Analytics, etc.)
-- Graphiques interactifs (Recharts) : donut charts, area charts, bar charts
-- Mise à jour en temps réel via SignalR
-
-**Analyse avancée**
-- Classification automatique par niveau de risque (ÉLEVÉ/MOYEN/FAIBLE)
-- Analyse d'obsolescence (Stale Data Detection)
-- Détection des fichiers sur-exposés (NTFS ACL sur Windows)
-- Calcul de score d'exposition (Critique/Élevé/Moyen/Faible)
-
-**Gestion des données**
-- Rétention des données conforme APDP (5 catégories, périodes configurables)
-- Scan et suppression sécurisée des fichiers obsolètes
-- Audit trail complet de toutes les suppressions
-
-**Exports & Rapports**
-- 4 formats d'export : CSV, JSON, HTML, Excel
-- Rapports détaillés avec statistiques et visualisations
-- Téléchargement direct depuis l'interface
-
-**Sécurité**
-- 🔐 Authentification JWT + refresh tokens (7 jours + 30 jours)
-- 🛡️ RBAC avec 2 rôles (Admin, User)
-- 🔒 Base de données chiffrée SQLCipher (AES-256)
-- 🚀 HTTPS/TLS 1.2+ natif
-- 🔑 CSRF protection (Double-Submit Cookie Pattern)
-- ⏱️ Rate limiting (login 5/15min, opérations 20/5min)
-- 🚫 Path traversal protection (PathValidator)
-- 📝 Audit logs complet
-- 🔐 Mots de passe BCrypt avec salt automatique
-- 📊 11 protections de sécurité actives
-
-**Administration**
-- Gestion des utilisateurs (CRUD complet)
-- Sauvegarde/restauration de base de données
-- Optimisation base de données (VACUUM)
-- Consultation des logs d'audit
-- Gestion du profil utilisateur
-
-**Support Windows Server**
-- Compatible Windows Server 2016/2019/2022
-- Support chemins UNC (`\\FileServer\Share\...`)
-- Analyse NTFS ACL native
-- Déploiement service Windows ou IIS
-- Automatisation via PowerShell + API REST
-
-#### 📚 Documentation
-
-- README.md complet avec Quick Start
-- INSTALLATION.md (guide pas-à-pas)
-- CONFIGURATION.md (sécurité production)
-- SECURITY.md (politique de sécurité)
-- CLAUDE.md (documentation technique)
-- CONTRIBUTING.md (guide de contribution)
-- CODE_OF_CONDUCT.md (code de conduite)
-
-#### 🔧 Infrastructure
-
-- .NET 8.0 (backend ASP.NET Core)
-- React 19 + TypeScript (frontend)
-- SQLite + SQLCipher (base de données chiffrée)
-- SignalR (temps réel)
-- Electron (application desktop)
-- GitHub Actions ready (CI/CD)
-
-#### 🌍 Open Source
-
-- Licence : CC BY-NC 4.0
-- Dons : Ko-fi et PayPal (contribution à prix libre)
-- Issues templates pour bug reports et feature requests
-- Pull request template
-- Code de conduite Contributor Covenant 2.1
 
 ---
 
@@ -426,4 +344,4 @@ Aucun changement (identique à v1.0.0). JWT secret par défaut pour tests (rég�
 ---
 
 **Développé par** : [Cyberprevs](https://cyberprevs.com)
-**Licence** : [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/)
+**Licence** : [MIT](https://opensource.org/licenses/MIT)

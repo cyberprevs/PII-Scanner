@@ -50,14 +50,14 @@ dotnet run
 
 ## ✨ Fonctionnalités principales
 
-### 🔍 Détection de 15 types de PII spécifiques au Bénin
+### 🔍 Détection de 17 types de PII spécifiques au Bénin
 
 **Identité** : IFU, CNI, Passeport, RCCM, Acte de naissance
-**Contact** : Email, Téléphone (fixe, mobile, mobile money)
-**Bancaire** : IBAN, Carte bancaire
+**Contact** : Email, Téléphone (+229), MTN MoMo, Moov Money
+**Bancaire** : IBAN Bénin, Carte bancaire
 **Santé** : CNSS, RAMU
 **Éducation** : INE, Matricule fonctionnaire
-**Transport** : Plaque d'immatriculation
+**Transport** : Plaque d'immatriculation (ancien + nouveau format)
 **Universel** : Date de naissance
 
 → **Validation avancée** : ~87% de réduction des faux positifs
@@ -302,5 +302,5 @@ L'application dispose d'une **page Support complète** avec :
 ---
 
 **Développé par [Cyberprevs](https://cyberprevs.com)**
-**Version** : 2.1.0 | **Dernière mise à jour** : 29 Décembre 2024
+**Version** : 1.0.0 | **Dernière mise à jour** : 4 Janvier 2025
 **Conformité** : Loi N°2017-20 du Bénin (APDP)
