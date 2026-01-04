@@ -14,7 +14,7 @@ Cette version **V1.0.0** est **prête pour la production** avec toutes les fonct
 
 ---
 
-## ✨ Fonctionnalités Clés
+## Fonctionnalités Clés
 
 ### 🔍 Détection de PII
 - **17 types de PII** détectés automatiquement
@@ -38,18 +38,18 @@ Cette version **V1.0.0** est **prête pour la production** avec toutes les fonct
 - **Export enrichi** : CSV et Excel avec métadonnées complètes
 
 ### 🔐 Sécurité (Niveau Production)
-- ✅ **Authentification JWT** avec refresh tokens (7j/30j)
-- ✅ **Encryption AES-256** de la base de données (SQLCipher)
-- ✅ **RBAC** : Admin vs User avec permissions granulaires
-- ✅ **Protection CSRF** : Double-Submit Cookie Pattern
-- ✅ **Rate Limiting** : 100 req/min API, 5 req/15min login
-- ✅ **Path Traversal Protection** : Validation stricte des chemins
-- ✅ **Headers de sécurité** : HSTS, CSP, X-Frame-Options
-- ✅ **Hachage BCrypt** pour les mots de passe
-- ✅ **Audit Logging** : Trail complet des opérations sensibles
-- ✅ **SQL Injection Protection** : Requêtes paramétrées uniquement
-- ✅ **XSS Protection** : Content Security Policy strict
-- ✅ **100% Local** : Aucune donnée envoyée en ligne
+- **Authentification JWT** avec refresh tokens (7j/30j)
+- **Encryption AES-256** de la base de données (SQLCipher)
+- **RBAC** : Admin vs User avec permissions granulaires
+- **Protection CSRF** : Double-Submit Cookie Pattern
+- **Rate Limiting** : 100 req/min API, 5 req/15min login
+- **Path Traversal Protection** : Validation stricte des chemins
+- **Headers de sécurité** : HSTS, CSP, X-Frame-Options
+- **Hachage BCrypt** pour les mots de passe
+- **Audit Logging** : Trail complet des opérations sensibles
+- **SQL Injection Protection** : Requêtes paramétrées uniquement
+- **XSS Protection** : Content Security Policy strict
+- **100% Local** : Aucune donnée envoyée en ligne
 
 ### 📈 Gestion des Données
 - **Rétention configurable** : 5 politiques (1-10 ans)
@@ -188,12 +188,12 @@ npm run dev
 ## 🔄 Améliorations depuis le Développement
 
 ### Correctifs Majeurs
-- ✅ **Erreur 429** (Rate limiting) : Polling optimisé de 500ms à 2s
-- ✅ **Perte des résultats** : Persistance localStorage + API fallback
-- ✅ **Graphiques coupés** : Refonte complète avec marges et layout 70/30
-- ✅ **Page blanche après setup** : Reload automatique implémenté
-- ✅ **Erreur 500 settings** : Logique création/update séparée
-- ✅ **URLs case-sensitive** : Routes corrigées
+- **Erreur 429** (Rate limiting) : Polling optimisé de 500ms à 2s
+- **Perte des résultats** : Persistance localStorage + API fallback
+- **Graphiques coupés** : Refonte complète avec marges et layout 70/30
+- **Page blanche après setup** : Reload automatique implémenté
+- **Erreur 500 settings** : Logique création/update séparée
+- **URLs case-sensitive** : Routes corrigées
 
 ### Optimisations
 - 🚀 **MD5 Hash** : 10-50x plus rapide (hash uniquement si PII)
@@ -271,9 +271,9 @@ Pour signaler un bug : [GitHub Issues](https://github.com/cyberprevs/pii-scanner
 
 **MIT License**
 
-✅ Usage commercial autorisé sans restriction
-✅ Modification autorisée
-✅ Distribution et vente autorisées
+- Usage commercial autorisé sans restriction
+- Modification autorisée
+- Distribution et vente autorisées
 📋 Seule obligation : Conservation de la notice de copyright
 
 Pour du support commercial, formation ou consulting, contactez **Cyberprevs**.
