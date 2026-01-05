@@ -1,6 +1,6 @@
 # Nouvelles Fonctionnalités - PII Scanner v1.2.0
 
-## Détection des Fichiers Dupliqués (NEW)
+## Détection des Fichiers Dupliqués
 
 ### Vue d'ensemble
 
@@ -15,10 +15,10 @@ La fonctionnalité de détection des fichiers dupliqués identifie automatiqueme
 
 **Exemple :**
 ```
-📄 Convention_Client.pdf         → Hash: 3e25960a79dbc69b674cd4ec67a72c62
-📄 Convention_Client - Copie.pdf → Hash: 3e25960a79dbc69b674cd4ec67a72c62 ✅ DUPLICATA
-📄 Document_Important.pdf        → Hash: 3e25960a79dbc69b674cd4ec67a72c62 ✅ DUPLICATA
-📄 Backup_2024.pdf               → Hash: 3e25960a79dbc69b674cd4ec67a72c62 ✅ DUPLICATA
+Convention_Client.pdf         → Hash: 3e25960a79dbc69b674cd4ec67a72c62
+Convention_Client - Copie.pdf → Hash: 3e25960a79dbc69b674cd4ec67a72c62 [DUPLICATA]
+Document_Important.pdf        → Hash: 3e25960a79dbc69b674cd4ec67a72c62 [DUPLICATA]
+Backup_2024.pdf               → Hash: 3e25960a79dbc69b674cd4ec67a72c62 [DUPLICATA]
 
 → 1 groupe de 4 fichiers identiques détecté
 → 3 copies redondantes à supprimer
@@ -76,7 +76,7 @@ if (detections.Count > 0)
 
 **Le hash MD5 affiché dans l'interface est-il sûr ?**
 
-✅ **OUI, totalement sécurisé**
+**OUI, totalement sécurisé**
 
 **Raisons :**
 1. **Hash unidirectionnel** : Impossible d'inverser le hash pour retrouver le contenu
@@ -86,9 +86,9 @@ if (detections.Count > 0)
 **Comparaison :**
 | Information | Sensible ? | Raison |
 |-------------|-----------|--------|
-| Hash MD5 | ❌ Non | Impossible d'extraire les données |
-| Chemin du fichier | ⚠️ Moyen | Révèle la structure système |
-| Valeur PII (IBAN, CNI) | ✅ Oui | Données personnelles directes |
+| Hash MD5 | Non | Impossible d'extraire les données |
+| Chemin du fichier | Moyen | Révèle la structure système |
+| Valeur PII (IBAN, CNI) | Oui | Données personnelles directes |
 
 **Note :** Le hash MD5 peut être affiché en toute sécurité à l'utilisateur. Il sert uniquement à :
 - Vérifier manuellement si deux fichiers sont identiques
@@ -97,7 +97,7 @@ if (detections.Count > 0)
 
 ---
 
-## Analyse par Catégories de PII (NEW)
+## Analyse par Catégories de PII
 
 ### Vue d'ensemble
 
@@ -305,7 +305,7 @@ const PII_CATEGORIES = {
 
   NouvelleCategorie: {
     types: ['Type1', 'Type2', 'Type3'],
-    icon: '🔒',
+    icon: '•',
     severity: 'Élevé',
     color: '#ff5722',
   },

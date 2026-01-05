@@ -4,20 +4,18 @@ Merci de votre intérêt pour contribuer au projet **PII Scanner** développé p
 
 ## Avant de commencer
 
-Ce projet est sous licence **Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)**.
+Ce projet est sous licence **MIT**.
 
 ### Ce que vous pouvez faire :
-- Utiliser le logiciel gratuitement
+- Utiliser le logiciel gratuitement (y compris usage commercial)
 - Modifier le code source
 - Distribuer des copies modifiées ou non
+- Vendre le logiciel ou des copies modifiées
 - Contribuer avec des pull requests
 - Signaler des bugs et proposer des améliorations
 
-### Ce que vous ne pouvez PAS faire :
-- **Vendre ce logiciel** (usage commercial interdit sans autorisation)
-- Vendre des copies modifiées
-- Offrir ce logiciel comme service commercial payant
-- Retirer l'attribution à Cyberprevs
+### Seule obligation :
+- Conserver la notice de copyright et la licence MIT dans vos copies
 
 ## Comment contribuer
 
@@ -117,7 +115,7 @@ Si vous découvrez une **vulnérabilité de sécurité**, veuillez :
 
 En contribuant, vous acceptez que :
 
-1. Vos contributions seront sous **licence CC BY-NC 4.0**
+1. Vos contributions seront sous **licence MIT**
 2. Vous conservez vos droits d'auteur
 3. Vous garantissez avoir le droit de soumettre le code
 4. L'attribution principale reste à **Cyberprevs**
@@ -128,9 +126,9 @@ Developed by Cyberprevs
 © 2025 Cyberprevs
 ```
 
-## Utilisation Commerciale
+## Support Commercial
 
-Pour toute demande d'**utilisation commerciale** ou de **licence propriétaire**, veuillez contacter **Cyberprevs**.
+Pour du **support commercial**, **formation** ou **consulting**, veuillez contacter **Cyberprevs**.
 
 ## Questions
 
@@ -141,6 +139,6 @@ Pour toute question sur les contributions :
 
 ---
 
-Merci de contribuer au projet PII Scanner ! 
+Merci de contribuer au projet PII Scanner !
 
-**Développé par Cyberprevs** • [Licence CC BY-NC 4.0](LICENSE)
+**Développé par Cyberprevs** • [Licence MIT](LICENSE)
