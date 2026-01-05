@@ -479,7 +479,7 @@ await axios.delete(`/database/backup/${encodeURIComponent(fileName)}`);
 
 ### Vue d'ensemble
 
-✅ **IMPLÉMENTÉ** - Toutes les communications entre le frontend et l'API sont chiffrées avec TLS 1.2+.
+**IMPLÉMENTÉ** - Toutes les communications entre le frontend et l'API sont chiffrées avec TLS 1.2+.
 
 ### Configuration HTTPS
 
@@ -584,23 +584,23 @@ Voir [CONFIGURATION_HTTPS.md](CONFIGURATION_HTTPS.md) pour :
 
 ### Pour la production
 
-1. **HTTPS obligatoire** ✅ **IMPLÉMENTÉ**
+1. **HTTPS obligatoire** [IMPLÉMENTÉ]
    - TLS 1.2+ avec certificat approuvé
    - Redirection HTTP → HTTPS active
    - Headers de sécurité (HSTS, X-Frame-Options, etc.)
 
-2. **Rate Limiting** ✅ **IMPLÉMENTÉ**
+2. **Rate Limiting** [IMPLÉMENTÉ]
    - Login : 5 tentatives par 15 minutes
    - Endpoints sensibles : 20 requêtes par 5 minutes
    - API générale : 100 requêtes par minute
    - Détection IP avec support proxies
 
-3. **Chiffrement de la base de données** ✅ **IMPLÉMENTÉ**
+3. **Chiffrement de la base de données** [IMPLÉMENTÉ]
    - SQLCipher avec AES-256
    - Clé de 256 bits générée automatiquement
    - Protection ACL NTFS du fichier de clé
 
-4. **Protection CSRF** ✅ **IMPLÉMENTÉ**
+4. **Protection CSRF** [IMPLÉMENTÉ]
    - Double-Submit Cookie Pattern
    - Validation pour toutes les opérations de modification
 
@@ -688,8 +688,8 @@ Après analyse complète avec OWASP ZAP, les alertes suivantes sont **acceptées
 
 | Alerte | Niveau | Statut | Justification |
 |--------|--------|--------|---------------|
-| **CSP: style-src unsafe-inline** | Medium | ✅ Acceptée | Material-UI v7 nécessite inline styles via Emotion CSS-in-JS. Protection XSS maintenue via `script-src 'self'`. Alternative (nonce) : complexité élevée, gain sécurité négligeable. |
-| **CSP: Wildcard Directive** | Low | ✅ Résolue | Politique CSP stricte implémentée sans wildcards. Directive `default-src 'self'` en place. |
+| **CSP: style-src unsafe-inline** | Medium | Acceptée | Material-UI v7 nécessite inline styles via Emotion CSS-in-JS. Protection XSS maintenue via `script-src 'self'`. Alternative (nonce) : complexité élevée, gain sécurité négligeable. |
+| **CSP: Wildcard Directive** | Low | Résolue | Politique CSP stricte implémentée sans wildcards. Directive `default-src 'self'` en place. |
 
 **Score de sécurité final** :
 - Alertes critiques : 0
@@ -713,19 +713,19 @@ Pour signaler une vulnérabilité de sécurité :
 
 | Protection | Statut | Fichier Principal | Documentation |
 |------------|--------|-------------------|---------------|
-| Path Traversal | ✅ | PathValidator.cs | Section 1 |
-| Authentication JWT | ✅ | AuthService.cs | Section 2 |
-| Authorization RBAC | ✅ | AuthController.cs | Section 3 |
-| Input Validation | ✅ | Tous les controllers | Section 4 |
-| SQL Injection | ✅ | Entity Framework | Section 5 |
-| Audit Logging | ✅ | AuditService.cs | Section 6 |
-| Password Security | ✅ | BCrypt | Section 7 |
-| Session Management | ✅ | JWT + Refresh Tokens | Section 8 |
-| Rate Limiting | ✅ | RateLimitingMiddleware.cs | Section 9 |
-| CSRF Protection | ✅ | CsrfProtectionMiddleware.cs | Section 10 |
-| Database Encryption | ✅ | DatabaseEncryptionService.cs | Section 9 |
-| HTTPS/TLS | ✅ | Program.cs | Section 11 |
-| Security Headers | ✅ | Program.cs | Section 11 |
+| Path Traversal | OK | PathValidator.cs | Section 1 |
+| Authentication JWT | OK | AuthService.cs | Section 2 |
+| Authorization RBAC | OK | AuthController.cs | Section 3 |
+| Input Validation | OK | Tous les controllers | Section 4 |
+| SQL Injection | OK | Entity Framework | Section 5 |
+| Audit Logging | OK | AuditService.cs | Section 6 |
+| Password Security | OK | BCrypt | Section 7 |
+| Session Management | OK | JWT + Refresh Tokens | Section 8 |
+| Rate Limiting | OK | RateLimitingMiddleware.cs | Section 9 |
+| CSRF Protection | OK | CsrfProtectionMiddleware.cs | Section 10 |
+| Database Encryption | OK | DatabaseEncryptionService.cs | Section 9 |
+| HTTPS/TLS | OK | Program.cs | Section 11 |
+| Security Headers | OK | Program.cs | Section 11 |
 
 **Score de sécurité** : 13/13 protections OWASP Top 10 implémentées
 
