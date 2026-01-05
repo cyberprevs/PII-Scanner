@@ -314,12 +314,12 @@ const StatCard = React.memo(({ title, value, icon }) => {
 
 ## Licence
 
-Ce projet est sous licence **Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)**.
+Ce projet est sous licence **MIT**.
 
 Voir [LICENSE](../LICENSE) pour les détails.
 
 ---
 
 **Développé par** : [Cyberprevs](https://cyberprevs.com)
-**Version** : 2.0.0
-**Dernière mise à jour** : Décembre 2025
+**Version** : 1.0.0
+**Dernière mise à jour** : 4 Janvier 2025
