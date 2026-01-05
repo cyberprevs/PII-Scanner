@@ -1,4 +1,4 @@
-# Guide d'Installation - PII Scanner v2.0
+# Guide d'Installation - PII Scanner
 
 Guide complet pour installer et utiliser PII Scanner en tant qu'application web.
 
@@ -289,9 +289,9 @@ dotnet dev-certs https --trust
 | **Taille** | 196 MB | 124 MB (-37%) |
 | **Exécutables** | 2 (API + UI Electron) | 1 (API uniquement) |
 | **Démarrage** | 2 processus | 1 processus + navigateur |
-| **Certificat de code** | Requis (SmartScreen) | ❌ Pas nécessaire |
+| **Certificat de code** | Requis (SmartScreen) | Pas nécessaire |
 | **Navigateur** | Chromium intégré | N'importe quel navigateur |
-| **CORS** | Configuration complexe | ❌ Pas nécessaire |
+| **CORS** | Configuration complexe | Pas nécessaire |
 | **Déploiement** | Installer certificat | Extraire ZIP et lancer |
 | **Updates** | Remplacer 2 exe | Remplacer 1 dossier |
 
@@ -309,6 +309,6 @@ dotnet dev-certs https --trust
 
 ---
 
-**Version** : 2.0.0
-**Date** : 27 décembre 2025
+**Version** : 1.0.0
+**Date** : 4 janvier 2025
 **Développé par** : [Cyberprevs](https://cyberprevs.com)
