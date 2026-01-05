@@ -2,7 +2,7 @@
 
 Interface web moderne pour l'application PII Scanner, développée avec React 19 et Material-UI v7.
 
-## 🚀 Technologies
+## Technologies
 
 - **React 19** : Bibliothèque UI avec nouvelles fonctionnalités
 - **TypeScript 5.9** : Typage statique pour meilleure maintenabilité
@@ -12,7 +12,7 @@ Interface web moderne pour l'application PII Scanner, développée avec React 19
 - **Axios** : Client HTTP avec intercepteurs
 - **@microsoft/signalr** : Communication temps réel avec l'API
 
-## 📦 Installation
+## Installation
 
 ### Prérequis
 
@@ -24,7 +24,7 @@ Interface web moderne pour l'application PII Scanner, développée avec React 19
 npm install
 ```
 
-## 🛠️ Commandes de développement
+## Commandes de développement
 
 ### Démarrage en mode développement
 
@@ -56,7 +56,7 @@ npm run lint
 npm run preview
 ```
 
-## 📁 Structure du projet
+## Structure du projet
 
 ```
 pii-scanner-ui/
@@ -83,7 +83,7 @@ pii-scanner-ui/
 └── package.json             # Dépendances et scripts
 ```
 
-## 🎨 Pages de l'application
+## Pages de l'application
 
 ### Pages publiques
 - **Initial Setup** : Création du premier compte administrateur
@@ -109,7 +109,7 @@ pii-scanner-ui/
 - **Base de données** : Sauvegardes, restauration, optimisation
 - **Journal d'audit** : Traçabilité complète des opérations
 
-## 🔐 Authentification
+## Authentification
 
 ### Système JWT
 
@@ -134,7 +134,7 @@ L'application implémente une protection CSRF via headers HTTP :
 
 **Implémentation** : [src/services/axios.ts](src/services/axios.ts)
 
-## 🌐 Configuration API
+## Configuration API
 
 ### Connexion à l'API
 
@@ -168,7 +168,7 @@ PiiScanner.Api/
 - Un seul processus à lancer
 - Même origine pour toutes les requêtes
 
-## 🎨 Thème et Design
+## Thème et Design
 
 ### Material-UI v7 Dark Theme
 
@@ -201,7 +201,7 @@ Police : **Plus Jakarta Sans** (Google Fonts)
 - Importée dans [index.html](index.html)
 - Appliquée via Material-UI theme
 
-## 📊 Graphiques et Visualisations
+## Graphiques et Visualisations
 
 ### Recharts
 
@@ -247,7 +247,7 @@ Utilisez le script à la racine du projet :
 .\BuildWebApp.ps1
 ```
 
-## 🐛 Dépannage
+## Dépannage
 
 ### Problèmes courants
 
@@ -275,7 +275,7 @@ npm run build
 - Vérifiez que le build a été copié vers `PiiScanner.Api/wwwroot/`
 - Vérifiez que `Program.cs` contient `UseDefaultFiles()` et `UseStaticFiles()`
 
-## 🚀 Optimisations de performance
+## Optimisations de performance
 
 ### Code splitting
 
@@ -297,7 +297,7 @@ const StatCard = React.memo(({ title, value, icon }) => {
 });
 ```
 
-## 📚 Ressources
+## Ressources
 
 ### Documentation
 
@@ -312,7 +312,7 @@ const StatCard = React.memo(({ title, value, icon }) => {
 - [Vite Documentation](https://vitejs.dev)
 - [Recharts Documentation](https://recharts.org)
 
-## 📄 Licence
+## Licence
 
 Ce projet est sous licence **Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)**.
 
