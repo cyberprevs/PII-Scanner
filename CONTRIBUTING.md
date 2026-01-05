@@ -91,7 +91,7 @@ Utilisez [Conventional Commits](https://www.conventionalcommits.org/) :
 - `test:` Ajout de tests
 - `chore:` Maintenance
 
-## 📝 Standards de code
+## Standards de code
 
 ### Backend (.NET)
 - Suivre les conventions C# de Microsoft
