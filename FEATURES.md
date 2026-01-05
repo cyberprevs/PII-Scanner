@@ -1,6 +1,6 @@
 # Nouvelles Fonctionnalités - PII Scanner v1.2.0
 
-## 📋 Détection des Fichiers Dupliqués (NEW)
+## Détection des Fichiers Dupliqués (NEW)
 
 ### Vue d'ensemble
 
@@ -97,7 +97,7 @@ if (detections.Count > 0)
 
 ---
 
-## 📊 Analyse par Catégories de PII (NEW)
+## Analyse par Catégories de PII (NEW)
 
 ### Vue d'ensemble
 
@@ -107,22 +107,22 @@ Nouvelle page d'analyse regroupant les détections PII par catégories logiques 
 
 **6 catégories avec niveaux de sensibilité :**
 
-1. **🏦 Données Bancaires** (Critique)
+1. **Données Bancaires** (Critique)
    - IBAN, CarteBancaire, MobileMoney_MTN, MobileMoney_Moov
 
-2. **🆔 Identité** (Élevé)
+2. **Identité** (Élevé)
    - IFU, CNI_Benin, Passeport_Benin, RCCM, ActeNaissance
 
-3. **🏥 Santé** (Élevé)
+3. **Santé** (Élevé)
    - CNSS, RAMU
 
-4. **📞 Contact** (Moyen)
+4. **Contact** (Moyen)
    - Email, Telephone
 
-5. **🎓 Éducation** (Moyen)
+5. **Éducation** (Moyen)
    - INE, Matricule_Fonctionnaire
 
-6. **🚗 Transport** (Faible)
+6. **Transport** (Faible)
    - Plaque_Immatriculation
 
 ### Visualisations
@@ -195,7 +195,7 @@ const exportToCSV = () => {
 
 ---
 
-## 🔄 Migration depuis v1.1.0
+## Migration depuis v1.1.0
 
 ### Changements dans les modèles
 
@@ -239,7 +239,7 @@ Les données existantes continuent de fonctionner :
 
 ---
 
-## 🎯 Cas d'usage
+## Cas d'usage
 
 ### Scénario 1 : Réduction du risque par suppression de duplicatas
 
@@ -280,7 +280,7 @@ Les données existantes continuent de fonctionner :
 
 ---
 
-## 📈 Statistiques d'utilisation
+## Statistiques d'utilisation
 
 **Temps de scan moyen (optimisé) :**
 - 1000 fichiers, 5% PII : **~30 secondes** (vs 5 minutes avant)
@@ -293,7 +293,7 @@ Les données existantes continuent de fonctionner :
 
 ---
 
-## 🛠️ Développement
+## Développement
 
 ### Ajouter une nouvelle catégorie PII
 
@@ -329,15 +329,15 @@ copy original.txt document_important.txt
 
 ---
 
-## 📝 Notes de version
+## Notes de version
 
 **Version 1.2.0** (Décembre 2024)
 
 **Nouvelles fonctionnalités :**
-- ✅ Détection des fichiers dupliqués par hash MD5
-- ✅ Analyse par catégories de PII avec graphiques
-- ✅ Exports CSV/Excel enrichis
-- ✅ Optimisation performance : calcul hash conditionnel (10-50x plus rapide)
+- Détection des fichiers dupliqués par hash MD5
+- Analyse par catégories de PII avec graphiques
+- Exports CSV/Excel enrichis
+- Optimisation performance : calcul hash conditionnel (10-50x plus rapide)
 
 **Fichiers modifiés :**
 - `PiiScanner.Core/Scanner/FileScanner.cs` - Calcul hash optimisé
@@ -351,9 +351,9 @@ copy original.txt document_important.txt
 - **NEW** `pii-scanner-ui/src/components/pages/DuplicateFiles.tsx`
 
 **Compatibilité :**
-- ✅ Rétrocompatible avec bases de données v1.1.0
-- ✅ Pas de migration requise
-- ✅ Anciens scans sans hash continuent de fonctionner
+- Rétrocompatible avec bases de données v1.1.0
+- Pas de migration requise
+- Anciens scans sans hash continuent de fonctionner
 
 ---
 
