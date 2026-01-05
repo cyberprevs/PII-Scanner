@@ -274,7 +274,7 @@ Pour signaler un bug : [GitHub Issues](https://github.com/cyberprevs/pii-scanner
 - Usage commercial autorisé sans restriction
 - Modification autorisée
 - Distribution et vente autorisées
-📋 Seule obligation : Conservation de la notice de copyright
+- Seule obligation : Conservation de la notice de copyright
 
 Pour du support commercial, formation ou consulting, contactez **Cyberprevs**.
 
@@ -284,7 +284,7 @@ Pour du support commercial, formation ou consulting, contactez **Cyberprevs**.
 
 Merci à tous les contributeurs et utilisateurs qui ont testé et fourni des retours durant le développement.
 
-**Développé avec** ❤️ **par Cyberprevs**
+**Développé par Cyberprevs**
 
 **Generated with [Claude Code](https://claude.com/claude-code)**
 
