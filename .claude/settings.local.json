@@ -36,7 +36,8 @@
       "Bash(powershell -Command \"Copy-Item -Path ''pii-scanner-ui\\\\dist\\\\*'' -Destination ''PiiScanner.Api\\\\wwwroot\\\\'' -Recurse -Force\")",
       "Bash(powershell -Command \"Get-ChildItem -Recurse -Filter piiscanner.db | Select-Object FullName\")",
       "Bash(git add:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(git commit:*)"
     ]
   }
 }
