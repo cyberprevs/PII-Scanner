@@ -251,12 +251,68 @@ const About: React.FC = () => {
           </Typography>
         </Box>
 
-        <Alert severity="info">
+        <Alert severity="info" sx={{ mb: 3 }}>
           Pour les <strong>guides pratiques, FAQ et support</strong>, consultez la page{' '}
           <Link href="/support" underline="hover" sx={{ fontWeight: 600 }}>
             Support
           </Link>
         </Alert>
+
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6} md={4}>
+            <Link
+              href="https://github.com/cyberprevs/pii-scanner"
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{ textDecoration: 'none' }}
+            >
+              <Card sx={{ p: 2, '&:hover': { bgcolor: 'action.hover' } }}>
+                <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+                  Code source GitHub
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Dépôt du projet et documentation
+                </Typography>
+              </Card>
+            </Link>
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={4}>
+            <Link
+              href="https://github.com/cyberprevs/pii-scanner/blob/main/SECURITY.md"
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{ textDecoration: 'none' }}
+            >
+              <Card sx={{ p: 2, '&:hover': { bgcolor: 'action.hover' } }}>
+                <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+                  Documentation sécurité
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  13 protections : HTTPS, SQLCipher, JWT, CSRF, CSP
+                </Typography>
+              </Card>
+            </Link>
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={4}>
+            <Link
+              href="https://opensource.org/licenses/MIT"
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{ textDecoration: 'none' }}
+            >
+              <Card sx={{ p: 2, '&:hover': { bgcolor: 'action.hover' } }}>
+                <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+                  Licence MIT
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Texte complet de la licence open source
+                </Typography>
+              </Card>
+            </Link>
+          </Grid>
+        </Grid>
       </Paper>
 
       {/* Disclaimer */}
