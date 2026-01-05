@@ -2,24 +2,24 @@
 
 Merci de votre intérêt pour contribuer au projet **PII Scanner** développé par **Cyberprevs** !
 
-## 📋 Avant de commencer
+## Avant de commencer
 
 Ce projet est sous licence **Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)**.
 
 ### Ce que vous pouvez faire :
-- ✅ Utiliser le logiciel gratuitement
-- ✅ Modifier le code source
-- ✅ Distribuer des copies modifiées ou non
-- ✅ Contribuer avec des pull requests
-- ✅ Signaler des bugs et proposer des améliorations
+- Utiliser le logiciel gratuitement
+- Modifier le code source
+- Distribuer des copies modifiées ou non
+- Contribuer avec des pull requests
+- Signaler des bugs et proposer des améliorations
 
 ### Ce que vous ne pouvez PAS faire :
-- ❌ **Vendre ce logiciel** (usage commercial interdit sans autorisation)
-- ❌ Vendre des copies modifiées
-- ❌ Offrir ce logiciel comme service commercial payant
-- ❌ Retirer l'attribution à Cyberprevs
+- **Vendre ce logiciel** (usage commercial interdit sans autorisation)
+- Vendre des copies modifiées
+- Offrir ce logiciel comme service commercial payant
+- Retirer l'attribution à Cyberprevs
 
-## 🤝 Comment contribuer
+## Comment contribuer
 
 ### 1. Signaler un bug
 
@@ -105,7 +105,7 @@ Utilisez [Conventional Commits](https://www.conventionalcommits.org/) :
 - Utiliser Material-UI pour la cohérence visuelle
 - Tester les composants
 
-## 🔒 Sécurité
+## Sécurité
 
 Si vous découvrez une **vulnérabilité de sécurité**, veuillez :
 
@@ -113,7 +113,7 @@ Si vous découvrez une **vulnérabilité de sécurité**, veuillez :
 2. Consulter [SECURITY.md](SECURITY.md) pour le processus de signalement
 3. Nous contacter directement (voir SECURITY.md)
 
-## 📜 Licence et Attribution
+## Licence et Attribution
 
 En contribuant, vous acceptez que :
 
@@ -128,11 +128,11 @@ Developed by Cyberprevs
 © 2025 Cyberprevs
 ```
 
-## 💼 Utilisation Commerciale
+## Utilisation Commerciale
 
 Pour toute demande d'**utilisation commerciale** ou de **licence propriétaire**, veuillez contacter **Cyberprevs**.
 
-## ❓ Questions
+## Questions
 
 Pour toute question sur les contributions :
 - Ouvrez une [Discussion GitHub](../../discussions)
@@ -141,6 +141,6 @@ Pour toute question sur les contributions :
 
 ---
 
-Merci de contribuer au projet PII Scanner ! 🎉
+Merci de contribuer au projet PII Scanner ! 
 
 **Développé par Cyberprevs** • [Licence CC BY-NC 4.0](LICENSE)
