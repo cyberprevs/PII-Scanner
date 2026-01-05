@@ -1,10 +1,10 @@
-# 📦 Guide d'Installation - PII Scanner v2.0
+# Guide d'Installation - PII Scanner v2.0
 
 Guide complet pour installer et utiliser PII Scanner en tant qu'application web.
 
 ---
 
-## 🚀 Option 1 : Version Web App (Recommandée)
+## Option 1 : Version Web App (Recommandée)
 
 **Aucune installation requise** - Téléchargez le fichier ZIP et lancez l'application dans votre navigateur.
 
@@ -56,7 +56,7 @@ PII-Scanner-WebApp/
 
 ---
 
-## 🛠️ Option 2 : Installation depuis les Sources
+## Option 2 : Installation depuis les Sources
 
 Pour les développeurs qui souhaitent compiler et modifier l'application.
 
@@ -87,7 +87,7 @@ npm --version
 
 ---
 
-### 📥 Installation
+### Installation
 
 ### Étape 1 : Cloner le repository
 
@@ -170,7 +170,7 @@ npm run dev
 
 ---
 
-## 📦 Créer un Package Web App (Développeurs)
+## Créer un Package Web App (Développeurs)
 
 Pour créer votre propre package distributable :
 
@@ -204,7 +204,7 @@ Compress-Archive -Path PII-Scanner-WebApp\* -DestinationPath PII-Scanner-WebApp.
 
 ---
 
-## 🔧 Dépannage
+## Dépannage
 
 ### L'API ne démarre pas
 
@@ -282,7 +282,7 @@ dotnet dev-certs https --trust
 
 ---
 
-## 📊 Comparaison des Versions
+## Comparaison des Versions
 
 | Critère | v1.x (Electron) | v2.0 (Web App) |
 |---------|-----------------|----------------|
@@ -297,7 +297,7 @@ dotnet dev-certs https --trust
 
 ---
 
-## 📚 Documentation
+## Documentation
 
 - **Documentation complète** : [README.md](README.md)
 - **Guide de démarrage** : [DEMARRAGE.md](DEMARRAGE.md)
