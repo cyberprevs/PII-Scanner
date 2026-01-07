@@ -242,22 +242,6 @@ Pour signaler un bug : [GitHub Issues](https://github.com/cyberprevs/pii-scanner
 
 ---
 
-## Roadmap Futur
-
-### Version 1.1.0 (Planifiée)
-- Scan incrémental (fichiers modifiés uniquement)
-- Support multi-langues (EN/FR)
-- Export PDF des rapports
-- Dashboard amélioré avec widgets
-
-### Version 2.0.0 (Future)
-- API REST publique avec API keys
-- Support Linux/macOS
-- Intégration CI/CD
-- Signature de code Windows
-
----
-
 ## Contact & Support
 
 - **Email** : contact@cyberprevs.fr

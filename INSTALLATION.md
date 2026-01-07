@@ -282,29 +282,12 @@ dotnet dev-certs https --trust
 
 ---
 
-## Comparaison des Versions
-
-| Critère | v1.x (Electron) | v2.0 (Web App) |
-|---------|-----------------|----------------|
-| **Taille** | 196 MB | 124 MB (-37%) |
-| **Exécutables** | 2 (API + UI Electron) | 1 (API uniquement) |
-| **Démarrage** | 2 processus | 1 processus + navigateur |
-| **Certificat de code** | Requis (SmartScreen) | Pas nécessaire |
-| **Navigateur** | Chromium intégré | N'importe quel navigateur |
-| **CORS** | Configuration complexe | Pas nécessaire |
-| **Déploiement** | Installer certificat | Extraire ZIP et lancer |
-| **Updates** | Remplacer 2 exe | Remplacer 1 dossier |
-
----
-
 ## Documentation
 
 - **Documentation complète** : [README.md](README.md)
 - **Guide de démarrage** : [DEMARRAGE.md](DEMARRAGE.md)
-- **Migration Electron → Web** : [MIGRATION-WEB.md](MIGRATION-WEB.md)
-- **Changelog v2.0** : [CHANGELOG-v2.0.md](CHANGELOG-v2.0.md)
 - **Sécurité** : [SECURITY.md](SECURITY.md)
-- **Configuration** : [CONFIGURATION.md](CONFIGURATION.md)
+- **Changelog** : [CHANGELOG.md](CHANGELOG.md)
 - **Documentation technique** : [CLAUDE.md](CLAUDE.md)
 
 ---

@@ -5,18 +5,6 @@ Tous les changements notables de ce projet seront documentés dans ce fichier.
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/),
 et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
-## [Non publié]
-
-### À venir
-- Scan incrémental (scan uniquement des fichiers modifiés)
-- Support multi-langues (anglais, français)
-- Export PDF des rapports
-- API REST publique avec authentification API key
-- Support Linux/macOS (analyse NTFS ACL désactivée)
-- Signature de code pour éliminer les avertissements Windows SmartScreen
-
----
-
 ## [1.0.0] - 2025-01-04
 
 ### 🎉 Version Initiale Stable - Production Ready

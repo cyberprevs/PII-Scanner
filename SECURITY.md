@@ -250,7 +250,7 @@ Chaque log contient :
 
 Les admins peuvent consulter les logs via :
 - La base de données directement
-- Future API endpoint (à implémenter)
+- L'interface web (page Audit Trail - `/audit`)
 
 ## 7. Protection des données sensibles
 
