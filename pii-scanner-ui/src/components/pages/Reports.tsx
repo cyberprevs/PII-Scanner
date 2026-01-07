@@ -249,9 +249,9 @@ export default function Reports({ results, onDownloadReport }: ReportsProps) {
 
       {/* Section 2: Visualisations Essentielles */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        {/* Top 10 Types de PII - Pleine largeur */}
-        <Grid item xs={12}>
-          <Card>
+        {/* Top 10 Types de PII - Moitié gauche */}
+        <Grid item xs={12} lg={6}>
+          <Card sx={{ height: '100%' }}>
             <CardContent>
               <Typography variant="h6" fontWeight={600} gutterBottom>
                 Top 10 des types de PII détectés
@@ -270,7 +270,7 @@ export default function Reports({ results, onDownloadReport }: ReportsProps) {
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                     <XAxis type="number" tick={{ fontSize: 12 }} />
-                    <YAxis dataKey="type" type="category" width={180} tick={{ fontSize: 12 }} />
+                    <YAxis dataKey="type" type="category" width={150} tick={{ fontSize: 11 }} />
                     <RechartsTooltip
                       content={({ active, payload }) => {
                         if (active && payload && payload.length) {
@@ -288,7 +288,7 @@ export default function Reports({ results, onDownloadReport }: ReportsProps) {
                         return null;
                       }}
                     />
-                    <Bar dataKey="count" fill="url(#barGradient)" radius={[0, 8, 8, 0]} barSize={40} />
+                    <Bar dataKey="count" fill="url(#barGradient)" radius={[0, 8, 8, 0]} barSize={35} />
                   </BarChart>
                 </ResponsiveContainer>
               </Box>
@@ -296,9 +296,9 @@ export default function Reports({ results, onDownloadReport }: ReportsProps) {
           </Card>
         </Grid>
 
-        {/* Distribution des Risques - Pleine largeur */}
-        <Grid item xs={12}>
-          <Card>
+        {/* Distribution des Risques - Moitié droite */}
+        <Grid item xs={12} lg={6}>
+          <Card sx={{ height: '100%' }}>
             <CardContent>
               <Typography variant="h6" fontWeight={600} gutterBottom>
                 Distribution des risques
@@ -306,8 +306,8 @@ export default function Reports({ results, onDownloadReport }: ReportsProps) {
               <Typography variant="body2" color="text.secondary" paragraph>
                 Classification par niveau de risque
               </Typography>
-              <Box sx={{ width: '100%', height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Box sx={{ width: '40%', height: '100%' }}>
+              <Box sx={{ width: '100%', height: 450, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                <Box sx={{ width: '100%', height: '60%', display: 'flex', justifyContent: 'center' }}>
                   <ResponsiveContainer>
                     <PieChart>
                       <Pie
@@ -315,7 +315,7 @@ export default function Reports({ results, onDownloadReport }: ReportsProps) {
                         cx="50%"
                         cy="50%"
                         innerRadius={70}
-                        outerRadius={120}
+                        outerRadius={110}
                         paddingAngle={3}
                         dataKey="count"
                         label={(entry) => `${entry.level}: ${entry.count}`}
@@ -334,21 +334,21 @@ export default function Reports({ results, onDownloadReport }: ReportsProps) {
                     </PieChart>
                   </ResponsiveContainer>
                 </Box>
-                <Box sx={{ width: '60%', pl: 4 }}>
+                <Box sx={{ width: '100%', mt: 2 }}>
                   <Grid container spacing={2}>
                     {riskData.map((item, index) => (
-                      <Grid item xs={6} key={index}>
-                        <Card sx={{ p: 2, bgcolor: `${item.color}15`, border: `1px solid ${item.color}40` }}>
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                            <Box sx={{ width: 16, height: 16, borderRadius: '50%', bgcolor: item.color }} />
-                            <Typography variant="subtitle2" fontWeight={700} sx={{ color: item.color }}>
+                      <Grid item xs={4} key={index}>
+                        <Card sx={{ p: 2, bgcolor: `${item.color}15`, border: `1px solid ${item.color}40`, textAlign: 'center' }}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, mb: 1 }}>
+                            <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: item.color }} />
+                            <Typography variant="caption" fontWeight={700} sx={{ color: item.color, fontSize: '0.75rem' }}>
                               {item.level}
                             </Typography>
                           </Box>
-                          <Typography variant="h4" fontWeight={700} color={item.color} gutterBottom>
+                          <Typography variant="h4" fontWeight={700} color={item.color} gutterBottom sx={{ fontSize: '2rem' }}>
                             {item.count}
                           </Typography>
-                          <Typography variant="caption" color="text.secondary">
+                          <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
                             {item.description}
                           </Typography>
                         </Card>
@@ -371,7 +371,7 @@ export default function Reports({ results, onDownloadReport }: ReportsProps) {
           </Typography>
           <Divider sx={{ mb: 3 }} />
 
-          <Grid container spacing={3}>
+          <Grid container spacing={2}>
             {exportFormats.map((format) => (
               <Grid item xs={12} sm={6} md={3} key={format.format}>
                 <Card sx={{
@@ -382,27 +382,30 @@ export default function Reports({ results, onDownloadReport }: ReportsProps) {
                     boxShadow: 6,
                   },
                 }}>
-                  <CardContent sx={{ textAlign: 'center', pt: 3 }}>
-                    <Box sx={{ mb: 2 }}>
+                  <CardContent sx={{ textAlign: 'center', pt: 2, pb: 2 }}>
+                    <Box sx={{ mb: 1.5 }}>
                       {format.icon}
                     </Box>
-                    <Typography variant="h6" fontWeight={600} gutterBottom>
+                    <Typography variant="h6" fontWeight={600} gutterBottom sx={{ fontSize: '1rem' }}>
                       {format.title}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 1, minHeight: 40 }}>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 1, minHeight: 36, fontSize: '0.85rem' }}>
                       {format.description}
                     </Typography>
-                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 2, fontSize: '0.75rem' }}>
+                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1.5, fontSize: '0.7rem', minHeight: 28 }}>
                       {format.details}
                     </Typography>
-                    <Chip label={format.size} size="small" sx={{ mb: 2 }} />
+                    <Chip label={format.size} size="small" sx={{ mb: 1.5, fontSize: '0.7rem', height: 20 }} />
                     <Button
                       fullWidth
                       variant="contained"
-                      startIcon={<DownloadIcon />}
+                      size="small"
+                      startIcon={<DownloadIcon sx={{ fontSize: 16 }} />}
                       onClick={() => handleDownload(format.format)}
                       disabled={downloadingFormat === format.format}
                       sx={{
+                        fontSize: '0.8rem',
+                        py: 0.75,
                         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                         '&:hover': {
                           background: 'linear-gradient(135deg, #5568d3 0%, #6a3f91 100%)',
