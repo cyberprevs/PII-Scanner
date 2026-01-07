@@ -22,6 +22,21 @@ PII-Scanner/
 └── BuildWebApp.ps1           # Automated build script
 ```
 
+## Quick Command Reference
+
+| Task | Command |
+|------|---------|
+| Build everything | `.\BuildWebApp.ps1` |
+| Run API only | `cd PiiScanner.Api && dotnet run` |
+| Run UI dev server | `cd pii-scanner-ui && npm run dev` |
+| Run all tests | `dotnet test PiiScanner.Core.Tests ; cd pii-scanner-ui ; npm run test:run ; cd ..` |
+| Run backend tests | `dotnet test PiiScanner.Core.Tests` |
+| Run frontend tests | `cd pii-scanner-ui && npm run test:run` |
+| Build React for prod | `cd pii-scanner-ui && npm run build` |
+| Deploy React to wwwroot | `powershell -Command "Copy-Item -Path 'pii-scanner-ui\dist\*' -Destination 'PiiScanner.Api\wwwroot\' -Recurse -Force"` |
+| Create DB migration | `cd PiiScanner.Api && dotnet ef migrations add MigrationName` |
+| Apply DB migrations | `cd PiiScanner.Api && dotnet ef database update` |
+
 ## Build and Run Commands
 
 ### Quick Start - Production Build (Recommended)
@@ -406,17 +421,8 @@ Compress-Archive -Path PII-Scanner-WebApp\* -DestinationPath PII-Scanner-WebApp.
 # No installation needed, no dependencies, no certificate required
 ```
 
-### Advantages Over Electron Package
-
-| Feature | Web App | Electron (Old) |
-|---------|---------|----------------|
-| Package Size | 124 MB | 196 MB |
-| Executables | 1 (API only) | 2 (API + UI) |
-| Code Signing | Not required | Required for SmartScreen |
-| Deployment | Copy folder | Install certificate |
-| Browser Support | Any modern browser | Chromium only |
-| Updates | Replace exe | Replace both exe |
-| CORS Issues | None | Complex setup |
+**Note on Architecture Evolution:**
+This project was initially built as an Electron desktop application but has been refactored to a pure web application served by the API. Benefits: smaller package size (124 MB vs 196 MB), no code signing needed, works in any modern browser, simpler deployment.
 
 ---
 
@@ -631,9 +637,46 @@ curl -X POST https://localhost:5001/api/database/restore \
 
 - Check that API is running on port 5000 (or 5001 for HTTPS)
 - Verify CORS policy allows connections
-- Check browser/Electron console for SignalR connection errors
+- Check browser console for SignalR connection errors
 - SignalR uses WebSockets - ensure no firewall blocking
 - For HTTPS: Ensure certificate is trusted (dev certificate may require acceptance)
+
+### Git Workflow
+
+**Branch Strategy:**
+- Main branch: `main` (production-ready)
+- All development commits directly to `main` (single developer workflow)
+
+**Commit Message Format:**
+```
+<type>: <description>
+
+<optional body>
+```
+
+**Types:**
+- `feat` - New feature
+- `fix` - Bug fix
+- `docs` - Documentation changes
+- `style` - Code style/formatting (no logic change)
+- `refactor` - Code refactoring
+- `test` - Test additions or modifications
+- `chore` - Build process, dependencies, tooling
+
+**Examples:**
+```
+feat: Add duplicate file detection with MD5 hashing
+fix: Resolve blank page after initial setup
+docs: Update README with v1.0.0 release notes
+refactor: Extract PII validation into separate methods
+```
+
+**Workflow:**
+1. Make changes locally
+2. Run tests: `dotnet test PiiScanner.Core.Tests ; cd pii-scanner-ui ; npm run test:run ; cd ..`
+3. Build if needed: `.\BuildWebApp.ps1` or `npm run build`
+4. Commit: `git add . && git commit -m "type: description"`
+5. Push: `git push origin main`
 
 ## Language & Localization
 
@@ -660,11 +703,17 @@ Le projet dispose d'une suite de tests complète couvrant le backend .NET et le 
 
 ### Vue d'ensemble
 
-| Composant | Framework | Tests | Fichiers |
-|-----------|-----------|-------|----------|
-| Backend (.NET) | xUnit + FluentAssertions | 88 | PiiScanner.Core.Tests/ |
-| Frontend (React) | Vitest + Testing Library | 30 | pii-scanner-ui/src/components/__tests__/ |
-| **Total** | | **118** | |
+| Composant | Framework | Tests | Command |
+|-----------|-----------|-------|---------|
+| Backend (.NET) | xUnit + FluentAssertions | 88 | `dotnet test PiiScanner.Core.Tests` |
+| Frontend (React) | Vitest + Testing Library | 30 | `cd pii-scanner-ui && npm run test:run` |
+| **Total** | | **118** | See commands above |
+
+**Key test files:**
+- [PiiDetectorTests.cs](PiiScanner.Core.Tests/Analysis/PiiDetectorTests.cs) - 80+ PII detection validation tests
+- [PathValidatorTests.cs](PiiScanner.Core.Tests/Utils/PathValidatorTests.cs) - Security path traversal tests
+- [Login.test.tsx](pii-scanner-ui/src/components/__tests__/Login.test.tsx) - 15 authentication tests
+- [InitialSetup.test.tsx](pii-scanner-ui/src/components/__tests__/InitialSetup.test.tsx) - 15 first-run setup tests
 
 ### Exécuter les Tests
 
@@ -875,7 +924,6 @@ dotnet publish -c Release -o bin/Release/net8.0/publish
 cd pii-scanner-ui
 npm install
 npm run build
-npm run electron:build:win
 ```
 
 ### Development Workflow
