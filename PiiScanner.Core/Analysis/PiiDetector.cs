@@ -43,9 +43,11 @@ public static class PiiDetector
 
         // ========== CONTACT BÉNIN ==========
 
-        // Téléphone Bénin: +229 ou 00229 (optionnel) + 8 chiffres commençant par préfixes valides
-        // Détecte TOUS les numéros: fixes (4x, 5x), mobiles (6x, 9x), mobile money (MTN, Moov)
-        { "Telephone", @"\b(?:(?:\+229|00229)\s?)?(?:4[0-9]|5[0-9]|6[0-9]|9[0-9])\s?\d{2}\s?\d{2}\s?\d{2}\b" },
+        // Téléphone Bénin: +229 ou 00229 (optionnel) + numéro avec préfixe "01" (nouveau) ou sans (ancien)
+        // Nouveau format (10 chiffres): 01 + 8 chiffres (ex: 0167809906)
+        // Ancien format (8 chiffres): sans 01 (ex: 67809906)
+        // Préfixes valides: 4x (fixe), 5x (fixe), 6x (mobile), 9x (mobile + mobile money)
+        { "Telephone", @"\b(?:(?:\+229|00229)\s?)?(?:01)?(?:4[0-9]|5[0-9]|6[0-9]|9[0-9])\s?\d{2}\s?\d{2}\s?\d{2}\b" },
 
         // ========== DONNÉES BANCAIRES BÉNIN ==========
 
