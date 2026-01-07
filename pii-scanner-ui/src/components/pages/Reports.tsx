@@ -15,6 +15,7 @@ import {
   ListItemIcon,
   ListItemText,
   Alert,
+  Container,
 } from '@mui/material';
 import {
   BarChart,
@@ -190,16 +191,15 @@ export default function Reports({ results, onDownloadReport }: ReportsProps) {
   ];
 
   return (
-    <Box>
+    <Container maxWidth="xl" sx={{ py: 4 }}>
       {/* Header */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" fontWeight={700} gutterBottom sx={{
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-        }}>
-          📊 Rapports et Exports
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+          <AssessmentIcon sx={{ fontSize: 40, mr: 2, color: 'primary.main' }} />
+          <Typography variant="h4" fontWeight={700}>
+            Rapports et Exports
+          </Typography>
+        </Box>
         <Typography variant="body1" color="text.secondary">
           Résumé exécutif, analyses visuelles et exports de données
         </Typography>
@@ -249,9 +249,9 @@ export default function Reports({ results, onDownloadReport }: ReportsProps) {
 
       {/* Section 2: Visualisations Essentielles */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        {/* Top 10 Types de PII */}
-        <Grid item xs={12} lg={8}>
-          <Card sx={{ height: '100%' }}>
+        {/* Top 10 Types de PII - Pleine largeur */}
+        <Grid item xs={12}>
+          <Card>
             <CardContent>
               <Typography variant="h6" fontWeight={600} gutterBottom>
                 Top 10 des types de PII détectés
@@ -259,44 +259,46 @@ export default function Reports({ results, onDownloadReport }: ReportsProps) {
               <Typography variant="body2" color="text.secondary" paragraph>
                 Distribution des données personnelles par catégorie
               </Typography>
-              <ResponsiveContainer width="100%" height={400}>
-                <BarChart data={piiTypeData} layout="vertical">
-                  <defs>
-                    <linearGradient id="barGradient" x1="0" y1="0" x2="1" y2="0">
-                      <stop offset="0%" stopColor="#667eea" />
-                      <stop offset="100%" stopColor="#764ba2" />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                  <XAxis type="number" tick={{ fontSize: 12 }} />
-                  <YAxis dataKey="type" type="category" width={180} tick={{ fontSize: 12 }} />
-                  <RechartsTooltip
-                    content={({ active, payload }) => {
-                      if (active && payload && payload.length) {
-                        return (
-                          <Paper sx={{ p: 2, border: '1px solid #e0e0e0' }}>
-                            <Typography variant="body2" fontWeight={600}>
-                              {payload[0].payload.fullType}
-                            </Typography>
-                            <Typography variant="body2" color="primary">
-                              {payload[0].value} détection(s)
-                            </Typography>
-                          </Paper>
-                        );
-                      }
-                      return null;
-                    }}
-                  />
-                  <Bar dataKey="count" fill="url(#barGradient)" radius={[0, 8, 8, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
+              <Box sx={{ width: '100%', height: 450 }}>
+                <ResponsiveContainer>
+                  <BarChart data={piiTypeData} layout="vertical">
+                    <defs>
+                      <linearGradient id="barGradient" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stopColor="#667eea" />
+                        <stop offset="100%" stopColor="#764ba2" />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                    <XAxis type="number" tick={{ fontSize: 12 }} />
+                    <YAxis dataKey="type" type="category" width={180} tick={{ fontSize: 12 }} />
+                    <RechartsTooltip
+                      content={({ active, payload }) => {
+                        if (active && payload && payload.length) {
+                          return (
+                            <Paper sx={{ p: 2, border: '1px solid #e0e0e0' }}>
+                              <Typography variant="body2" fontWeight={600}>
+                                {payload[0].payload.fullType}
+                              </Typography>
+                              <Typography variant="body2" color="primary">
+                                {payload[0].value} détection(s)
+                              </Typography>
+                            </Paper>
+                          );
+                        }
+                        return null;
+                      }}
+                    />
+                    <Bar dataKey="count" fill="url(#barGradient)" radius={[0, 8, 8, 0]} barSize={40} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </Box>
             </CardContent>
           </Card>
         </Grid>
 
-        {/* Distribution des Risques */}
-        <Grid item xs={12} lg={4}>
-          <Card sx={{ height: '100%' }}>
+        {/* Distribution des Risques - Pleine largeur */}
+        <Grid item xs={12}>
+          <Card>
             <CardContent>
               <Typography variant="h6" fontWeight={600} gutterBottom>
                 Distribution des risques
@@ -304,43 +306,57 @@ export default function Reports({ results, onDownloadReport }: ReportsProps) {
               <Typography variant="body2" color="text.secondary" paragraph>
                 Classification par niveau de risque
               </Typography>
-              <ResponsiveContainer width="100%" height={250}>
-                <PieChart>
-                  <Pie
-                    data={riskData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={100}
-                    paddingAngle={3}
-                    dataKey="count"
-                    label={(entry) => `${entry.level}: ${entry.count}`}
-                  >
-                    {riskData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
+              <Box sx={{ width: '100%', height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Box sx={{ width: '40%', height: '100%' }}>
+                  <ResponsiveContainer>
+                    <PieChart>
+                      <Pie
+                        data={riskData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={70}
+                        outerRadius={120}
+                        paddingAngle={3}
+                        dataKey="count"
+                        label={(entry) => `${entry.level}: ${entry.count}`}
+                      >
+                        {riskData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <RechartsTooltip
+                        contentStyle={{
+                          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                          border: '1px solid #e0e0e0',
+                          borderRadius: '8px',
+                        }}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </Box>
+                <Box sx={{ width: '60%', pl: 4 }}>
+                  <Grid container spacing={2}>
+                    {riskData.map((item, index) => (
+                      <Grid item xs={6} key={index}>
+                        <Card sx={{ p: 2, bgcolor: `${item.color}15`, border: `1px solid ${item.color}40` }}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                            <Box sx={{ width: 16, height: 16, borderRadius: '50%', bgcolor: item.color }} />
+                            <Typography variant="subtitle2" fontWeight={700} sx={{ color: item.color }}>
+                              {item.level}
+                            </Typography>
+                          </Box>
+                          <Typography variant="h4" fontWeight={700} color={item.color} gutterBottom>
+                            {item.count}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {item.description}
+                          </Typography>
+                        </Card>
+                      </Grid>
                     ))}
-                  </Pie>
-                  <RechartsTooltip
-                    contentStyle={{
-                      backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                      border: '1px solid #e0e0e0',
-                      borderRadius: '8px',
-                    }}
-                  />
-                  <Legend verticalAlign="bottom" height={36} />
-                </PieChart>
-              </ResponsiveContainer>
-              <Stack spacing={1} sx={{ mt: 2 }}>
-                {riskData.map((item, index) => (
-                  <Box key={index} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: item.color }} />
-                      <Typography variant="body2" fontSize="0.85rem">{item.description}</Typography>
-                    </Box>
-                    <Chip label={item.count} size="small" sx={{ fontWeight: 600, minWidth: 45 }} />
-                  </Box>
-                ))}
-              </Stack>
+                  </Grid>
+                </Box>
+              </Box>
             </CardContent>
           </Card>
         </Grid>
@@ -475,6 +491,6 @@ export default function Reports({ results, onDownloadReport }: ReportsProps) {
           </Stack>
         </CardContent>
       </Card>
-    </Box>
+    </Container>
   );
 }
