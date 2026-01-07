@@ -406,9 +406,9 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results }) => {
 
       {/* Graphiques - Pleine largeur */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        {/* Graphique par catégorie - Pleine largeur */}
-        <Grid item xs={12}>
-          <Card>
+        {/* Graphique par catégorie - Moitié gauche */}
+        <Grid item xs={12} lg={6}>
+          <Card sx={{ height: '100%' }}>
             <CardContent sx={{ p: 4 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
                 <BarChartIcon sx={{ mr: 1.5, fontSize: 28, color: 'primary.main' }} />
@@ -463,9 +463,9 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results }) => {
           </Card>
         </Grid>
 
-        {/* Graphique par sensibilité - Pleine largeur */}
-        <Grid item xs={12}>
-          <Card>
+        {/* Graphique par sensibilité - Moitié droite */}
+        <Grid item xs={12} lg={6}>
+          <Card sx={{ height: '100%' }}>
             <CardContent sx={{ p: 4 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
                 <SecurityIcon sx={{ mr: 1.5, fontSize: 28, color: 'secondary.main' }} />
@@ -473,8 +473,9 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results }) => {
                   Par Sensibilité
                 </Typography>
               </Box>
-              <Box sx={{ width: '100%', height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Box sx={{ width: '40%', height: '100%' }}>
+              <Box sx={{ width: '100%', height: 450, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                {/* Graphique en haut (60% de la hauteur) */}
+                <Box sx={{ flex: '0 0 60%' }}>
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
@@ -483,8 +484,8 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results }) => {
                         cy="50%"
                         labelLine={false}
                         label={false}
-                        outerRadius={120}
-                        innerRadius={70}
+                        outerRadius={100}
+                        innerRadius={60}
                         fill="#8884d8"
                         dataKey="count"
                         paddingAngle={3}
@@ -507,9 +508,9 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results }) => {
                   </PieChart>
                 </ResponsiveContainer>
                 </Box>
-                {/* Légende personnalisée à droite du graphique */}
-                <Box sx={{ width: '60%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Grid container spacing={2} sx={{ maxWidth: 600 }}>
+                {/* Légende en grille en bas (40% de la hauteur) */}
+                <Box sx={{ flex: '0 0 40%' }}>
+                  <Grid container spacing={1.5}>
                     {severityStats.map((stat, index) => (
                       <Grid item xs={6} key={index}>
                         <Box
@@ -517,24 +518,24 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results }) => {
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'space-between',
-                            p: 2,
+                            p: 1.5,
                             borderRadius: 2,
                             bgcolor: 'background.default',
                             border: '1px solid',
                             borderColor: 'divider',
                           }}
                         >
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                             <Box
                               sx={{
-                                width: 20,
-                                height: 20,
-                                borderRadius: '6px',
+                                width: 16,
+                                height: 16,
+                                borderRadius: '4px',
                                 backgroundColor: stat.color,
                                 flexShrink: 0
                               }}
                             />
-                            <Typography variant="body2" fontWeight={600}>
+                            <Typography variant="body2" fontSize={13} fontWeight={600}>
                               {stat.severity}
                             </Typography>
                           </Box>
@@ -545,8 +546,8 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results }) => {
                               bgcolor: stat.color,
                               color: 'white',
                               fontWeight: 700,
-                              minWidth: 50,
-                              fontSize: '0.85rem'
+                              minWidth: 45,
+                              fontSize: '0.8rem'
                             }}
                           />
                         </Box>
