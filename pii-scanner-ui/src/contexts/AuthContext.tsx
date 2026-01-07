@@ -9,6 +9,9 @@ interface User {
   email: string;
   fullName: string;
   role: string;
+  createdAt?: string;
+  lastLoginAt?: string;
+  isActive?: boolean;
 }
 
 interface AuthContextType {

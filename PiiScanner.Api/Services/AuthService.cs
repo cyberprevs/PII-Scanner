@@ -67,7 +67,10 @@ public class AuthService
                 Username = user.Username,
                 Email = user.Email,
                 FullName = user.FullName,
-                Role = user.Role
+                Role = user.Role,
+                CreatedAt = user.CreatedAt,
+                LastLoginAt = user.LastLoginAt,
+                IsActive = user.IsActive
             }
         };
     }
@@ -130,7 +133,10 @@ public class AuthService
                 Username = user.Username,
                 Email = user.Email,
                 FullName = user.FullName,
-                Role = user.Role
+                Role = user.Role,
+                CreatedAt = user.CreatedAt,
+                LastLoginAt = user.LastLoginAt,
+                IsActive = user.IsActive
             }
         };
     }
@@ -214,4 +220,7 @@ public class UserDto
     public string Email { get; set; } = string.Empty;
     public string FullName { get; set; } = string.Empty;
     public string Role { get; set; } = string.Empty;
+    public DateTime? CreatedAt { get; set; }
+    public DateTime? LastLoginAt { get; set; }
+    public bool IsActive { get; set; }
 }
