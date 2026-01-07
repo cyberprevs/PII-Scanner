@@ -17,7 +17,15 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
+  Container,
+  Grid,
+  Button,
 } from '@mui/material';
+import SecurityIcon from '@mui/icons-material/Security';
+import CategoryIcon from '@mui/icons-material/Category';
+import DescriptionIcon from '@mui/icons-material/Description';
+import FilterListIcon from '@mui/icons-material/FilterList';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import type { ScanResultResponse } from '../../types';
 
 interface DetectionsProps {
@@ -30,10 +38,18 @@ export default function Detections({ results }: DetectionsProps) {
 
   if (!results) {
     return (
-      <Box>
-        <Typography variant="h4" fontWeight={700} gutterBottom>
-          🔐 Données sensibles
-        </Typography>
+      <Container maxWidth="xl" sx={{ py: 4 }}>
+        <Box sx={{ mb: 4 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+            <SecurityIcon sx={{ fontSize: 40, mr: 2, color: 'primary.main' }} />
+            <Typography variant="h4" fontWeight={700}>
+              Données sensibles
+            </Typography>
+          </Box>
+          <Typography variant="body1" color="text.secondary">
+            Liste complète des détections de données personnelles identifiables
+          </Typography>
+        </Box>
         <Card sx={{ mt: 3 }}>
           <CardContent>
             <Typography variant="body1" color="text.secondary">
@@ -41,7 +57,7 @@ export default function Detections({ results }: DetectionsProps) {
             </Typography>
           </CardContent>
         </Card>
-      </Box>
+      </Container>
     );
   }
 
@@ -67,65 +83,151 @@ export default function Detections({ results }: DetectionsProps) {
   // Obtenir la liste unique des types de PII pour le filtre
   const uniquePiiTypes = Array.from(new Set(detections.map(d => d.piiType))).sort();
 
-  return (
-    <Box>
-      <Typography variant="h4" fontWeight={700} gutterBottom>
-        🔐 Données sensibles
-      </Typography>
-      <Typography variant="body1" color="text.secondary" paragraph>
-        {detections.length} détections de PII trouvées au total
-      </Typography>
+  // Calculer statistiques pour KPI
+  const uniqueFilesCount = new Set(detections.map(d => d.filePath)).size;
+  const uniqueTypesCount = uniquePiiTypes.length;
 
-      {/* Filtres */}
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mb: 2, gap: 2, flexWrap: 'wrap' }}>
-        <FormControl size="small" sx={{ minWidth: 200 }}>
-          <InputLabel>Filtrer par type de PII</InputLabel>
-          <Select
-            value={piiTypeFilter}
-            label="Filtrer par type de PII"
-            onChange={(e) => setPiiTypeFilter(e.target.value)}
-          >
-            <MenuItem value="all">Tous les types</MenuItem>
-            {uniquePiiTypes.map(type => (
-              <MenuItem key={type} value={type}>{type}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControl size="small" sx={{ minWidth: 200 }}>
-          <InputLabel>Filtrer par ancienneté</InputLabel>
-          <Select
-            value={stalenessFilter}
-            label="Filtrer par ancienneté"
-            onChange={(e) => setStalenessFilter(e.target.value)}
-          >
-            <MenuItem value="all">Tous les fichiers</MenuItem>
-            <MenuItem value="Récent">Récent (&lt; 6 mois)</MenuItem>
-            <MenuItem value="6 mois">6 mois - 1 an</MenuItem>
-            <MenuItem value="1 an">1 an - 3 ans</MenuItem>
-            <MenuItem value="3 ans">3 ans - 5 ans</MenuItem>
-            <MenuItem value="+5 ans">Plus de 5 ans</MenuItem>
-          </Select>
-        </FormControl>
+  const resetFilters = () => {
+    setStalenessFilter('all');
+    setPiiTypeFilter('all');
+  };
+
+  return (
+    <Container maxWidth="xl" sx={{ py: 4 }}>
+      {/* Header */}
+      <Box sx={{ mb: 4 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+          <SecurityIcon sx={{ fontSize: 40, mr: 2, color: 'primary.main' }} />
+          <Typography variant="h4" fontWeight={700}>
+            Données sensibles
+          </Typography>
+        </Box>
+        <Typography variant="body1" color="text.secondary">
+          {detections.length} détections de PII trouvées au total
+        </Typography>
       </Box>
 
-      {/* Alertes de filtrage */}
-      {filteredDetections.length > 500 && (
-        <Alert severity="info" sx={{ mb: 2 }}>
-          Affichage des 500 premières détections sur {filteredDetections.length} au total
-          {stalenessFilter !== 'all' && ` (filtrées par ancienneté: ${stalenessFilter})`}
-          {piiTypeFilter !== 'all' && ` (filtrées par type: ${piiTypeFilter})`}.
-          Téléchargez les rapports pour voir toutes les détections.
-        </Alert>
-      )}
-      {(stalenessFilter !== 'all' || piiTypeFilter !== 'all') && filteredDetections.length <= 500 && filteredDetections.length > 0 && (
-        <Alert severity="info" sx={{ mb: 2 }}>
-          {filteredDetections.length} détection(s) correspondent aux filtres sélectionnés
-        </Alert>
-      )}
+      {/* KPI Cards */}
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12} sm={6} md={4}>
+          <Card sx={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white' }}>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                <SecurityIcon sx={{ mr: 1, opacity: 0.8 }} />
+                <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                  Total détections
+                </Typography>
+              </Box>
+              <Typography variant="h3" fontWeight={700}>
+                {detections.length}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={4}>
+          <Card sx={{ background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', color: 'white' }}>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                <CategoryIcon sx={{ mr: 1, opacity: 0.8 }} />
+                <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                  Types de PII
+                </Typography>
+              </Box>
+              <Typography variant="h3" fontWeight={700}>
+                {uniqueTypesCount}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={4}>
+          <Card sx={{ background: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)', color: 'white' }}>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                <DescriptionIcon sx={{ mr: 1, opacity: 0.8 }} />
+                <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                  Fichiers affectés
+                </Typography>
+              </Box>
+              <Typography variant="h3" fontWeight={700}>
+                {uniqueFilesCount}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+
+      {/* Filtres */}
+      <Card sx={{ mb: 3 }}>
+        <CardContent>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+            <FilterListIcon sx={{ mr: 1, color: 'primary.main' }} />
+            <Typography variant="h6" fontWeight={600}>
+              Filtres
+            </Typography>
+          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
+            <FormControl size="small" sx={{ minWidth: 200 }}>
+              <InputLabel>Filtrer par type de PII</InputLabel>
+              <Select
+                value={piiTypeFilter}
+                label="Filtrer par type de PII"
+                onChange={(e) => setPiiTypeFilter(e.target.value)}
+              >
+                <MenuItem value="all">Tous les types</MenuItem>
+                {uniquePiiTypes.map(type => (
+                  <MenuItem key={type} value={type}>{type}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl size="small" sx={{ minWidth: 200 }}>
+              <InputLabel>Filtrer par ancienneté</InputLabel>
+              <Select
+                value={stalenessFilter}
+                label="Filtrer par ancienneté"
+                onChange={(e) => setStalenessFilter(e.target.value)}
+              >
+                <MenuItem value="all">Tous les fichiers</MenuItem>
+                <MenuItem value="Récent">Récent (&lt; 6 mois)</MenuItem>
+                <MenuItem value="6 mois">6 mois - 1 an</MenuItem>
+                <MenuItem value="1 an">1 an - 3 ans</MenuItem>
+                <MenuItem value="3 ans">3 ans - 5 ans</MenuItem>
+                <MenuItem value="+5 ans">Plus de 5 ans</MenuItem>
+              </Select>
+            </FormControl>
+            {(stalenessFilter !== 'all' || piiTypeFilter !== 'all') && (
+              <Button
+                variant="outlined"
+                size="small"
+                startIcon={<RestartAltIcon />}
+                onClick={resetFilters}
+              >
+                Réinitialiser
+              </Button>
+            )}
+          </Box>
+
+          {/* Alertes de filtrage */}
+          {filteredDetections.length > 500 && (
+            <Alert severity="info" sx={{ mt: 2 }}>
+              Affichage des 500 premières détections sur {filteredDetections.length} au total
+              {stalenessFilter !== 'all' && ` (filtrées par ancienneté: ${stalenessFilter})`}
+              {piiTypeFilter !== 'all' && ` (filtrées par type: ${piiTypeFilter})`}.
+              Téléchargez les rapports pour voir toutes les détections.
+            </Alert>
+          )}
+          {(stalenessFilter !== 'all' || piiTypeFilter !== 'all') && filteredDetections.length <= 500 && filteredDetections.length > 0 && (
+            <Alert severity="info" sx={{ mt: 2 }}>
+              {filteredDetections.length} détection(s) correspondent aux filtres sélectionnés
+            </Alert>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Table */}
       {filteredDetections.length > 0 ? (
-        <TableContainer component={Paper} sx={{ mt: 2, maxHeight: 600 }}>
+        <TableContainer component={Paper} sx={{ maxHeight: 600 }}>
           <Table stickyHeader size="small">
             <TableHead>
               <TableRow>
@@ -158,7 +260,7 @@ export default function Detections({ results }: DetectionsProps) {
           </Table>
         </TableContainer>
       ) : (
-        <Card sx={{ mt: 2 }}>
+        <Card>
           <CardContent>
             <Typography variant="body2" color="text.secondary" align="center">
               Aucune détection ne correspond aux filtres sélectionnés
@@ -166,6 +268,6 @@ export default function Detections({ results }: DetectionsProps) {
           </CardContent>
         </Card>
       )}
-    </Box>
+    </Container>
   );
 }

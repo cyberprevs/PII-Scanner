@@ -17,7 +17,15 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
+  Container,
+  Grid,
+  Button,
 } from '@mui/material';
+import FolderIcon from '@mui/icons-material/Folder';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+import DescriptionIcon from '@mui/icons-material/Description';
+import FilterListIcon from '@mui/icons-material/FilterList';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import type { ScanResultResponse } from '../../types';
 
 interface RiskyFilesProps {
@@ -58,10 +66,18 @@ export default function RiskyFiles({ results }: RiskyFilesProps) {
 
   if (!results) {
     return (
-      <Box>
-        <Typography variant="h4" fontWeight={700} gutterBottom>
-          📁 Fichiers à risque
-        </Typography>
+      <Container maxWidth="xl" sx={{ py: 4 }}>
+        <Box sx={{ mb: 4 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+            <FolderIcon sx={{ fontSize: 40, mr: 2, color: 'primary.main' }} />
+            <Typography variant="h4" fontWeight={700}>
+              Fichiers à risque
+            </Typography>
+          </Box>
+          <Typography variant="body1" color="text.secondary">
+            Liste des fichiers contenant le plus de données personnelles identifiables
+          </Typography>
+        </Box>
         <Card sx={{ mt: 3 }}>
           <CardContent>
             <Typography variant="body1" color="text.secondary">
@@ -69,7 +85,7 @@ export default function RiskyFiles({ results }: RiskyFilesProps) {
             </Typography>
           </CardContent>
         </Card>
-      </Box>
+      </Container>
     );
   }
 
@@ -82,57 +98,160 @@ export default function RiskyFiles({ results }: RiskyFilesProps) {
     return matchesStaleness && matchesExposure;
   });
 
-  return (
-    <Box>
-      <Typography variant="h4" fontWeight={700} gutterBottom>
-        📁 Fichiers à risque (Top 20)
-      </Typography>
-      <Typography variant="body1" color="text.secondary" paragraph>
-        Les {statistics.topRiskyFiles.length} fichiers contenant le plus de données personnelles identifiables
-      </Typography>
+  // Calculer les statistiques pour les KPI
+  const highRiskFiles = statistics.topRiskyFiles.filter(f => f.riskLevel === 'ÉLEVÉ').length;
+  const criticalExposureFiles = statistics.topRiskyFiles.filter(f => f.exposureLevel === 'Critique').length;
+  const oldFiles = statistics.topRiskyFiles.filter(f => f.stalenessLevel === '+5 ans' || f.stalenessLevel === '3 ans').length;
 
-      {/* Filtres */}
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mb: 2, gap: 2, flexWrap: 'wrap' }}>
-        <FormControl size="small" sx={{ minWidth: 200 }}>
-          <InputLabel>Filtrer par ancienneté</InputLabel>
-          <Select
-            value={stalenessFilter}
-            label="Filtrer par ancienneté"
-            onChange={(e) => setStalenessFilter(e.target.value)}
-          >
-            <MenuItem value="all">Tous les fichiers</MenuItem>
-            <MenuItem value="Récent">Récent (&lt; 6 mois)</MenuItem>
-            <MenuItem value="6 mois">6 mois - 1 an</MenuItem>
-            <MenuItem value="1 an">1 an - 3 ans</MenuItem>
-            <MenuItem value="3 ans">3 ans - 5 ans</MenuItem>
-            <MenuItem value="+5 ans">Plus de 5 ans</MenuItem>
-          </Select>
-        </FormControl>
-        <FormControl size="small" sx={{ minWidth: 200 }}>
-          <InputLabel>Filtrer par exposition</InputLabel>
-          <Select
-            value={exposureFilter}
-            label="Filtrer par exposition"
-            onChange={(e) => setExposureFilter(e.target.value)}
-          >
-            <MenuItem value="all">Tous les niveaux</MenuItem>
-            <MenuItem value="Critique">🔴 Critique</MenuItem>
-            <MenuItem value="Moyen">🟡 Moyen</MenuItem>
-            <MenuItem value="Faible">✅ Faible</MenuItem>
-          </Select>
-        </FormControl>
+  const resetFilters = () => {
+    setStalenessFilter('all');
+    setExposureFilter('all');
+  };
+
+  return (
+    <Container maxWidth="xl" sx={{ py: 4 }}>
+      {/* Header */}
+      <Box sx={{ mb: 4 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+          <FolderIcon sx={{ fontSize: 40, mr: 2, color: 'primary.main' }} />
+          <Typography variant="h4" fontWeight={700}>
+            Fichiers à risque (Top 20)
+          </Typography>
+        </Box>
+        <Typography variant="body1" color="text.secondary">
+          Les {statistics.topRiskyFiles.length} fichiers contenant le plus de données personnelles identifiables
+        </Typography>
       </Box>
 
-      {/* Compteur de résultats filtrés */}
-      {(stalenessFilter !== 'all' || exposureFilter !== 'all') && (
-        <Alert severity="info" sx={{ mb: 2 }}>
-          {filteredRiskyFiles.length} fichier(s) correspondent aux filtres sélectionnés
-        </Alert>
-      )}
+      {/* KPI Cards */}
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12} sm={6} md={3}>
+          <Card sx={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white' }}>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                <DescriptionIcon sx={{ mr: 1, opacity: 0.8 }} />
+                <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                  Total fichiers
+                </Typography>
+              </Box>
+              <Typography variant="h3" fontWeight={700}>
+                {statistics.topRiskyFiles.length}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={3}>
+          <Card sx={{ background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', color: 'white' }}>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                <WarningAmberIcon sx={{ mr: 1, opacity: 0.8 }} />
+                <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                  Risque élevé
+                </Typography>
+              </Box>
+              <Typography variant="h3" fontWeight={700}>
+                {highRiskFiles}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={3}>
+          <Card sx={{ background: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)', color: 'white' }}>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                <WarningAmberIcon sx={{ mr: 1, opacity: 0.8 }} />
+                <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                  Exposition critique
+                </Typography>
+              </Box>
+              <Typography variant="h3" fontWeight={700}>
+                {criticalExposureFiles}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={3}>
+          <Card sx={{ background: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)', color: '#333' }}>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                <WarningAmberIcon sx={{ mr: 1, opacity: 0.7 }} />
+                <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                  Fichiers obsolètes
+                </Typography>
+              </Box>
+              <Typography variant="h3" fontWeight={700}>
+                {oldFiles}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+
+      {/* Filtres */}
+      <Card sx={{ mb: 3 }}>
+        <CardContent>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+            <FilterListIcon sx={{ mr: 1, color: 'primary.main' }} />
+            <Typography variant="h6" fontWeight={600}>
+              Filtres
+            </Typography>
+          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
+            <FormControl size="small" sx={{ minWidth: 200 }}>
+              <InputLabel>Filtrer par ancienneté</InputLabel>
+              <Select
+                value={stalenessFilter}
+                label="Filtrer par ancienneté"
+                onChange={(e) => setStalenessFilter(e.target.value)}
+              >
+                <MenuItem value="all">Tous les fichiers</MenuItem>
+                <MenuItem value="Récent">Récent (&lt; 6 mois)</MenuItem>
+                <MenuItem value="6 mois">6 mois - 1 an</MenuItem>
+                <MenuItem value="1 an">1 an - 3 ans</MenuItem>
+                <MenuItem value="3 ans">3 ans - 5 ans</MenuItem>
+                <MenuItem value="+5 ans">Plus de 5 ans</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl size="small" sx={{ minWidth: 200 }}>
+              <InputLabel>Filtrer par exposition</InputLabel>
+              <Select
+                value={exposureFilter}
+                label="Filtrer par exposition"
+                onChange={(e) => setExposureFilter(e.target.value)}
+              >
+                <MenuItem value="all">Tous les niveaux</MenuItem>
+                <MenuItem value="Critique">🔴 Critique</MenuItem>
+                <MenuItem value="Moyen">🟡 Moyen</MenuItem>
+                <MenuItem value="Faible">✅ Faible</MenuItem>
+              </Select>
+            </FormControl>
+            {(stalenessFilter !== 'all' || exposureFilter !== 'all') && (
+              <Button
+                variant="outlined"
+                size="small"
+                startIcon={<RestartAltIcon />}
+                onClick={resetFilters}
+              >
+                Réinitialiser
+              </Button>
+            )}
+          </Box>
+
+          {/* Compteur de résultats filtrés */}
+          {(stalenessFilter !== 'all' || exposureFilter !== 'all') && (
+            <Alert severity="info" sx={{ mt: 2 }}>
+              {filteredRiskyFiles.length} fichier(s) correspondent aux filtres sélectionnés
+            </Alert>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Table */}
       {filteredRiskyFiles.length > 0 ? (
-        <TableContainer component={Paper} sx={{ mt: 2, maxHeight: 600 }}>
+        <TableContainer component={Paper} sx={{ maxHeight: 600 }}>
           <Table stickyHeader>
             <TableHead>
               <TableRow>
@@ -231,7 +350,7 @@ export default function RiskyFiles({ results }: RiskyFilesProps) {
           </Table>
         </TableContainer>
       ) : (
-        <Card sx={{ mt: 2 }}>
+        <Card>
           <CardContent>
             <Typography variant="body2" color="text.secondary" align="center">
               Aucun fichier ne correspond aux filtres sélectionnés
@@ -239,6 +358,6 @@ export default function RiskyFiles({ results }: RiskyFilesProps) {
           </CardContent>
         </Card>
       )}
-    </Box>
+    </Container>
   );
 }
