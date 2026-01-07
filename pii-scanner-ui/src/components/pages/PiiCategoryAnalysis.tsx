@@ -21,6 +21,7 @@ import {
   LinearProgress,
   Button,
   ButtonGroup,
+  Container,
 } from '@mui/material';
 import {
   PieChart,
@@ -316,7 +317,7 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results }) => {
   }
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Container maxWidth="xl" sx={{ py: 4 }}>
       {/* En-tête */}
       <Box sx={{ mb: 4 }}>
         <Typography variant="h4" fontWeight={700} gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -403,11 +404,11 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results }) => {
         </Grid>
       </Grid>
 
-      {/* Graphiques - Nouvelle mise en page optimisée */}
+      {/* Graphiques - Pleine largeur */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        {/* Graphique par catégorie - Graphique horizontal plus large */}
-        <Grid item xs={12} lg={8}>
-          <Card sx={{ height: '100%' }}>
+        {/* Graphique par catégorie - Pleine largeur */}
+        <Grid item xs={12}>
+          <Card>
             <CardContent sx={{ p: 4 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
                 <BarChartIcon sx={{ mr: 1.5, fontSize: 28, color: 'primary.main' }} />
@@ -415,7 +416,7 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results }) => {
                   Répartition par Catégorie
                 </Typography>
               </Box>
-              <Box sx={{ width: '100%', height: 400 }}>
+              <Box sx={{ width: '100%', height: 450 }}>
                 <ResponsiveContainer>
                   <BarChart
                     data={categoryStats}
@@ -427,7 +428,7 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results }) => {
                     <YAxis
                       type="category"
                       dataKey="category"
-                      tick={{ fontSize: 13 }}
+                      tick={{ fontSize: 14 }}
                       width={110}
                     />
                     <Tooltip
@@ -446,14 +447,14 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results }) => {
                       fill="#667eea"
                       name="Détections"
                       radius={[0, 8, 8, 0]}
-                      barSize={30}
+                      barSize={40}
                     />
                     <Bar
                       dataKey="files"
                       fill="#764ba2"
                       name="Fichiers"
                       radius={[0, 8, 8, 0]}
-                      barSize={30}
+                      barSize={40}
                     />
                   </BarChart>
                 </ResponsiveContainer>
@@ -462,9 +463,9 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results }) => {
           </Card>
         </Grid>
 
-        {/* Graphique par sensibilité - Format compact vertical */}
-        <Grid item xs={12} lg={4}>
-          <Card sx={{ height: '100%' }}>
+        {/* Graphique par sensibilité - Pleine largeur */}
+        <Grid item xs={12}>
+          <Card>
             <CardContent sx={{ p: 4 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
                 <SecurityIcon sx={{ mr: 1.5, fontSize: 28, color: 'secondary.main' }} />
@@ -472,31 +473,32 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results }) => {
                   Par Sensibilité
                 </Typography>
               </Box>
-              <Box sx={{ width: '100%', height: 400, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={severityStats}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={false}
-                      outerRadius={100}
-                      innerRadius={50}
-                      fill="#8884d8"
-                      dataKey="count"
-                      paddingAngle={3}
-                    >
-                      {severityStats.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                        borderRadius: 8,
-                        border: '1px solid #ddd'
-                      }}
+              <Box sx={{ width: '100%', height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Box sx={{ width: '40%', height: '100%' }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={severityStats}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={false}
+                        outerRadius={120}
+                        innerRadius={70}
+                        fill="#8884d8"
+                        dataKey="count"
+                        paddingAngle={3}
+                      >
+                        {severityStats.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                          borderRadius: 8,
+                          border: '1px solid #ddd'
+                        }}
                       formatter={(value: number, name: string, props: any) => [
                         `${value} détections`,
                         props.payload.severity
@@ -504,46 +506,54 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results }) => {
                     />
                   </PieChart>
                 </ResponsiveContainer>
-              </Box>
-              {/* Légende personnalisée */}
-              <Box sx={{ mt: 2 }}>
-                {severityStats.map((stat, index) => (
-                  <Box
-                    key={index}
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      py: 1,
-                      borderBottom: index < severityStats.length - 1 ? '1px solid rgba(0,0,0,0.08)' : 'none'
-                    }}
-                  >
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                      <Box
-                        sx={{
-                          width: 16,
-                          height: 16,
-                          borderRadius: '4px',
-                          backgroundColor: stat.color,
-                          flexShrink: 0
-                        }}
-                      />
-                      <Typography variant="body2" fontWeight={500}>
-                        {stat.severity}
-                      </Typography>
-                    </Box>
-                    <Chip
-                      label={stat.count}
-                      size="small"
-                      sx={{
-                        bgcolor: stat.color,
-                        color: 'white',
-                        fontWeight: 700,
-                        minWidth: 45
-                      }}
-                    />
-                  </Box>
-                ))}
+                </Box>
+                {/* Légende personnalisée à droite du graphique */}
+                <Box sx={{ width: '60%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Grid container spacing={2} sx={{ maxWidth: 600 }}>
+                    {severityStats.map((stat, index) => (
+                      <Grid item xs={6} key={index}>
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            p: 2,
+                            borderRadius: 2,
+                            bgcolor: 'background.default',
+                            border: '1px solid',
+                            borderColor: 'divider',
+                          }}
+                        >
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                            <Box
+                              sx={{
+                                width: 20,
+                                height: 20,
+                                borderRadius: '6px',
+                                backgroundColor: stat.color,
+                                flexShrink: 0
+                              }}
+                            />
+                            <Typography variant="body2" fontWeight={600}>
+                              {stat.severity}
+                            </Typography>
+                          </Box>
+                          <Chip
+                            label={stat.count}
+                            size="small"
+                            sx={{
+                              bgcolor: stat.color,
+                              color: 'white',
+                              fontWeight: 700,
+                              minWidth: 50,
+                              fontSize: '0.85rem'
+                            }}
+                          />
+                        </Box>
+                      </Grid>
+                    ))}
+                  </Grid>
+                </Box>
               </Box>
             </CardContent>
           </Card>
@@ -790,7 +800,7 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results }) => {
           )}
         </CardContent>
       </Card>
-    </Box>
+    </Container>
   );
 };
 
