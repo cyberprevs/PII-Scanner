@@ -18,6 +18,7 @@ import {
   Stepper,
   Step,
   StepLabel,
+  Container,
 } from '@mui/material';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -131,7 +132,7 @@ export default function Scanner({ scanning, scanId, onStartScan }: ScannerProps)
   const activeStep = scanning ? 1 : 0;
 
   return (
-    <Box>
+    <Container maxWidth="xl" sx={{ py: 4 }}>
       {/* Header */}
       <Box sx={{ mb: 4 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
@@ -520,6 +521,6 @@ export default function Scanner({ scanning, scanId, onStartScan }: ScannerProps)
           </Grid>
         </Grid>
       )}
-    </Box>
+    </Container>
   );
 }
