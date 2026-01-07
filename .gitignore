@@ -47,6 +47,13 @@ backup_*.db
 .env.production
 .env*.local
 
+# Claude Code (assistant IA - fichiers locaux)
+.claude/
+.claudesync/
+CLAUDE.md
+claude.json
+.claude-code/
+
 # Certificats et clés (SÉCURITÉ!)
 *.pfx
 *.p12
