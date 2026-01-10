@@ -36,4 +36,4 @@ Collez ici les logs d'erreur si disponibles
 Ajoutez tout autre contexte pertinent au problème ici.
 
 ---
-*Développé par Cyberprevs • Licence CC BY-NC 4.0*
+*Développé par Cyberprevs • Licence MIT*
