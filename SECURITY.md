@@ -559,7 +559,7 @@ Implémentés dans [PiiScanner.Api/Program.cs](PiiScanner.Api/Program.cs:107) :
 
 - **TLS 1.3** : Supporté (préféré)
 - **TLS 1.2** : Supporté
-- **TLS 1.1 et inférieur** : Désactivés par défaut (.NET 8)
+- **TLS 1.1 et inférieur** : Désactivés par défaut (.NET 9)
 
 ### Chiffrement des Flux
 
@@ -701,9 +701,8 @@ Après analyse complète avec OWASP ZAP, les alertes suivantes sont **acceptées
 
 Pour signaler une vulnérabilité de sécurité :
 
-1. **GitHub Issues** : https://github.com/your-org/pii-scanner/security/advisories
-2. **Email** : security@piiscanner.com
-3. **PGP Key** : (à fournir)
+1. **GitHub Security Advisories** : https://github.com/cyberprevs/pii-scanner/security/advisories
+2. **GitHub Issues** : https://github.com/cyberprevs/pii-scanner/issues
 
 **Délai de réponse** : 48 heures maximum
 
@@ -731,6 +730,6 @@ Pour signaler une vulnérabilité de sécurité :
 
 ---
 
-**Dernière mise à jour** : 29 décembre 2024
-**Version** : 2.1.0
+**Dernière mise à jour** : 10 janvier 2026
+**Version** : 1.0.0
 **Responsable sécurité** : Équipe PII Scanner

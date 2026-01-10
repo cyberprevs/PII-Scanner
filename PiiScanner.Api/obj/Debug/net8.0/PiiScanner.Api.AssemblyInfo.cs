@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PiiScanner.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0a15a5391941515b07bd8db565e08bac3f438cd4")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c85505b31a85bde5322bac684836d88c53a6fbbc")]
 [assembly: System.Reflection.AssemblyProductAttribute("PiiScanner.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PiiScanner.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

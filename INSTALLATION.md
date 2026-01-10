@@ -64,7 +64,7 @@ Pour les développeurs qui souhaitent compiler et modifier l'application.
 
 #### Logiciels requis
 
-- **.NET 8.0 SDK** : [Télécharger](https://dotnet.microsoft.com/download/dotnet/8.0)
+- **.NET 9.0 SDK** : [Télécharger](https://dotnet.microsoft.com/download/dotnet/9.0)
 - **Node.js 18+** et **npm** : [Télécharger](https://nodejs.org/)
 - **Git** : [Télécharger](https://git-scm.com/)
 - **Windows 10/11** ou **Windows Server 2016/2019/2022**
@@ -74,7 +74,7 @@ Pour les développeurs qui souhaitent compiler et modifier l'application.
 ```bash
 # Vérifier .NET SDK
 dotnet --version
-# Attendu : 8.0.x ou supérieur
+# Attendu : 9.0.x ou supérieur
 
 # Vérifier Node.js
 node --version
@@ -288,10 +288,9 @@ dotnet dev-certs https --trust
 - **Guide de démarrage** : [DEMARRAGE.md](DEMARRAGE.md)
 - **Sécurité** : [SECURITY.md](SECURITY.md)
 - **Changelog** : [CHANGELOG.md](CHANGELOG.md)
-- **Documentation technique** : [CLAUDE.md](CLAUDE.md)
 
 ---
 
 **Version** : 1.0.0
-**Date** : 4 janvier 2025
+**Date** : 10 janvier 2026
 **Développé par** : [Cyberprevs](https://cyberprevs.com)

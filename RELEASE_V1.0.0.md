@@ -1,7 +1,7 @@
 # PII Scanner - Version 1.0.0 - Production Ready
 
-**Date de Release** : 4 janvier 2025
-**Développé par** : [Cyberprevs](https://cyberprevs.fr)
+**Date de Release** : 10 janvier 2026
+**Développé par** : [Cyberprevs](https://cyberprevs.com)
 **Licence** : MIT (Open Source)
 
 ---
@@ -69,7 +69,7 @@ Cette version **V1.0.0** est **prête pour la production** avec toutes les fonct
 
 ## Architecture Technique
 
-### Backend (.NET 8.0)
+### Backend (.NET 9.0)
 - **ASP.NET Core Web API** + SignalR pour temps réel
 - **Entity Framework Core** + SQLite chiffré
 - **3 projets** : Core (logique), Api (web), Tests
@@ -177,7 +177,7 @@ npm run dev
 |----------|-------------|
 | [README.md](README.md) | Guide complet d'utilisation |
 | [CHANGELOG.md](CHANGELOG.md) | Historique des versions |
-| [CLAUDE.md](CLAUDE.md) | Documentation technique pour développeurs |
+| [INSTALLATION.md](INSTALLATION.md) | Guide d'installation |
 | [SECURITY.md](SECURITY.md) | Politique de sécurité |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Guide de contribution |
 | [FEATURES.md](FEATURES.md) | Fonctionnalités détaillées |
@@ -244,10 +244,10 @@ Pour signaler un bug : [GitHub Issues](https://github.com/cyberprevs/pii-scanner
 
 ## Contact & Support
 
-- **Email** : contact@cyberprevs.fr
-- **Documentation** : [CLAUDE.md](CLAUDE.md)
+- **Documentation** : [INSTALLATION.md](INSTALLATION.md)
 - **Issues** : [GitHub Issues](https://github.com/cyberprevs/pii-scanner/issues)
 - **Discussions** : [GitHub Discussions](https://github.com/cyberprevs/pii-scanner/discussions)
+- **Sécurité** : [GitHub Security Advisories](https://github.com/cyberprevs/pii-scanner/security/advisories)
 
 ---
 
@@ -275,6 +275,5 @@ Merci à tous les contributeurs et utilisateurs qui ont testé et fourni des ret
 ---
 
 **Version** : 1.0.0
-**Date** : 4 janvier 2025
-**Commit** : `ce07cd3`
+**Date** : 10 janvier 2026
 **Tag Git** : `v1.0.0`
