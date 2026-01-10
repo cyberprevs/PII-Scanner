@@ -87,7 +87,7 @@ echo.
 echo L'application va demarrer dans quelques secondes...
 echo Ouvrez votre navigateur sur : https://localhost:5001
 echo.
-echo Consultez LISEZ-MOI.txt pour les instructions de connexion
+echo Consultez LISEZMOI-DEMARRAGE-RAPIDE.txt pour les instructions
 echo.
 echo Appuyez sur Ctrl+C pour arreter l'application
 echo ========================================
@@ -116,20 +116,22 @@ Double-cliquer sur : START.bat
 
 Ou bien lancer directement : PiiScanner.Api.exe
 
-### 3. Se connecter
+### 3. Premiere connexion
 Ouvrir votre navigateur : https://localhost:5001
 
-Utilisateur : admin
-Mot de passe : Admin@123456
+Au premier lancement, vous devez CREER un compte administrateur :
+- Cliquez sur "S'inscrire"
+- Remplissez le formulaire d'inscription
+- Le premier compte cree devient automatiquement administrateur
 
-IMPORTANT : Changez le mot de passe admin !
+IMPORTANT : Notez bien vos identifiants !
 
 ## Caracteristiques
 
 - Version standalone : Aucune installation requise !
 - Runtime .NET 9.0 inclus
 - Pret a l'emploi
-- Taille : ~100 MB (avec runtime)
+- Taille : ~73 MB (avec runtime)
 
 ## Configuration
 
