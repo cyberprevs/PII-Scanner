@@ -12,7 +12,7 @@ Application web pour détecter et analyser les données personnelles identifiabl
 ### Version portable (Recommandée)
 
 1. Téléchargez `PII-Scanner-WebApp.zip` : [Releases](https://github.com/cyberprevs/pii-scanner/releases)
-2. Extrayez le ZIP
+2. Extrayez le ZIP .
 3. Lancez `Démarrer PII Scanner.bat`
 4. Ouvrez votre navigateur : **https://localhost:5001**
 
