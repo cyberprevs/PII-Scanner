@@ -188,15 +188,22 @@ const AuditTrail: React.FC = () => {
   };
 
   const handleCleanup = async () => {
-    if (!window.confirm('Êtes-vous sûr de vouloir supprimer les anciens logs selon la politique de rétention ?')) {
+    if (!window.confirm('Êtes-vous sûr de vouloir supprimer les anciens logs selon la politique de rétention (logs > 365 jours) ?')) {
       return;
     }
 
     try {
       const response = await axios.delete('/audit/cleanup');
-      setSuccess(response.data.message);
-      loadAuditLogs();
-      loadStats();
+      const message = response.data.deletedCount > 0
+        ? `${response.data.deletedCount} log(s) supprimé(s) avec succès`
+        : 'Aucun log à supprimer (tous les logs sont dans la période de rétention de 365 jours)';
+      setSuccess(message);
+
+      if (response.data.deletedCount > 0) {
+        loadAuditLogs();
+        loadStats();
+      }
+
       setTimeout(() => setSuccess(''), 5000);
     } catch (error: any) {
       setError(error.response?.data?.error || 'Erreur lors du nettoyage');
