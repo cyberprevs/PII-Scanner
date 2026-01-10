@@ -22,9 +22,9 @@ Avez-vous envisagé d'autres approches pour résoudre ce besoin ?
 Ajoutez tout autre contexte, captures d'écran, ou exemples pertinents.
 
 ## ✅ Checklist
-- [ ] Cette fonctionnalité est compatible avec la licence CC BY-NC 4.0
+- [ ] Cette fonctionnalité est compatible avec la licence MIT
 - [ ] J'ai vérifié qu'une issue similaire n'existe pas déjà
 - [ ] Cette fonctionnalité est conforme à la Loi N°2017-20 du Bénin (APDP)
 
 ---
-*Développé par Cyberprevs • Licence CC BY-NC 4.0*
+*Développé par Cyberprevs • Licence MIT*
