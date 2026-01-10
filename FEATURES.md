@@ -1,4 +1,4 @@
-# Nouvelles Fonctionnalités - PII Scanner v1.2.0
+# Fonctionnalités - PII Scanner v1.0.0
 
 ## Détection des Fichiers Dupliqués
 
@@ -195,11 +195,11 @@ const exportToCSV = () => {
 
 ---
 
-## Migration depuis v1.1.0
+## Intégration dans l'Application
 
-### Changements dans les modèles
+### Modèles de données
 
-**Nouveau champ `FileHash` ajouté :**
+**Champ `FileHash` :**
 
 1. **Backend Model** (`PiiScanner.Core/Models/ScanResult.cs`)
    ```csharp
@@ -216,22 +216,15 @@ const exportToCSV = () => {
    fileHash?: string;
    ```
 
-### Pas de migration de base de données requise
+### Routes de l'application
 
-Les données existantes continuent de fonctionner :
-- `FileHash` est **nullable** (`string?`)
-- Anciens scans sans hash : `FileHash = null`
-- Nouveaux scans : `FileHash` calculé si PII détecté
-
-### Routes ajoutées
-
-**Nouvelle route dans App.tsx :**
+**Routes dans App.tsx :**
 ```typescript
 <Route path="pii-category-analysis" element={<PiiCategoryAnalysis results={results} />} />
 <Route path="duplicate-files" element={<DuplicateFiles results={results} />} />
 ```
 
-**Nouveaux items dans Sidebar.tsx :**
+**Items du menu Sidebar.tsx :**
 ```typescript
 { id: 'pii-category-analysis', label: 'Analyse par Catégories', icon: <CategoryIcon />, path: '/pii-category-analysis' },
 { id: 'duplicate-files', label: 'Fichiers dupliqués', icon: <ContentCopyIcon />, path: '/duplicate-files' },
@@ -329,34 +322,34 @@ copy original.txt document_important.txt
 
 ---
 
-## Notes de version
+## Résumé des Fonctionnalités
 
-**Version 1.2.0** (Décembre 2024)
+**Version 1.0.0** - Release initiale
 
-**Nouvelles fonctionnalités :**
+**Fonctionnalités principales :**
 - Détection des fichiers dupliqués par hash MD5
 - Analyse par catégories de PII avec graphiques
 - Exports CSV/Excel enrichis
 - Optimisation performance : calcul hash conditionnel (10-50x plus rapide)
+- 17 types de PII détectés automatiquement
+- Support de 7 formats de fichiers (.txt, .log, .csv, .json, .docx, .xlsx, .pdf)
+- Interface web moderne avec Material-UI v7
+- Authentification JWT et chiffrement AES-256
+- Protection CSRF, Rate Limiting, HTTPS/TLS
 
-**Fichiers modifiés :**
-- `PiiScanner.Core/Scanner/FileScanner.cs` - Calcul hash optimisé
-- `PiiScanner.Core/Models/ScanResult.cs` - Champ FileHash ajouté
-- `PiiScanner.Api/DTOs/ScanRequest.cs` - DTO FileHash
-- `PiiScanner.Api/Services/ScanService.cs` - Mapping FileHash
-- `pii-scanner-ui/src/types/index.ts` - Interface TypeScript
-- `pii-scanner-ui/src/App.tsx` - Routes ajoutées
-- `pii-scanner-ui/src/components/layout/Sidebar.tsx` - Menu items
-- **NEW** `pii-scanner-ui/src/components/pages/PiiCategoryAnalysis.tsx`
-- **NEW** `pii-scanner-ui/src/components/pages/DuplicateFiles.tsx`
-
-**Compatibilité :**
-- Rétrocompatible avec bases de données v1.1.0
-- Pas de migration requise
-- Anciens scans sans hash continuent de fonctionner
+**Composants principaux :**
+- `PiiScanner.Core/Scanner/FileScanner.cs` - Moteur de scan optimisé
+- `PiiScanner.Core/Models/ScanResult.cs` - Modèle de données avec FileHash
+- `PiiScanner.Api/DTOs/ScanRequest.cs` - DTOs API
+- `PiiScanner.Api/Services/ScanService.cs` - Services métier
+- `pii-scanner-ui/src/types/index.ts` - Types TypeScript
+- `pii-scanner-ui/src/App.tsx` - Routing React
+- `pii-scanner-ui/src/components/layout/Sidebar.tsx` - Navigation
+- `pii-scanner-ui/src/components/pages/PiiCategoryAnalysis.tsx` - Analyse par catégories
+- `pii-scanner-ui/src/components/pages/DuplicateFiles.tsx` - Détection duplicatas
 
 ---
 
-**Dernière mise à jour** : 29 décembre 2024
-**Version** : 1.2.0
+**Dernière mise à jour** : 10 janvier 2026
+**Version** : 1.0.0
 **Auteur** : Équipe PII Scanner - Cyberprevs
