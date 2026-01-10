@@ -156,16 +156,6 @@ public class ScanController : ControllerBase
     }
 
     /// <summary>
-    /// Nettoyer les ressources d'un scan
-    /// </summary>
-    [HttpDelete("{scanId}")]
-    public ActionResult CleanupScan(string scanId)
-    {
-        _scanService.CleanupScan(scanId);
-        return NoContent();
-    }
-
-    /// <summary>
     /// Obtenir l'historique des scans
     /// </summary>
     [HttpGet("history")]
@@ -202,6 +192,39 @@ public class ScanController : ControllerBase
     }
 
     /// <summary>
+    /// Supprimer un scan de l'historique
+    /// </summary>
+    [HttpDelete("history/{scanId}")]
+    public async Task<ActionResult> DeleteScanHistory(string scanId)
+    {
+        var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
+        var isAdmin = User.IsInRole(Roles.Admin);
+
+        var scan = await _db.Scans.FirstOrDefaultAsync(s => s.ScanId == scanId);
+        if (scan == null)
+        {
+            return NotFound(new { message = "Scan non trouvé" });
+        }
+
+        // Vérifier que l'utilisateur a le droit de supprimer ce scan
+        if (!isAdmin && scan.UserId != userId)
+        {
+            return Forbid();
+        }
+
+        // Nettoyer les ressources du scan (fichiers temporaires, rapports, etc.)
+        _scanService.CleanupScan(scanId);
+
+        // Supprimer l'enregistrement de la base de données
+        _db.Scans.Remove(scan);
+        await _db.SaveChangesAsync();
+
+        _logger.LogInformation("Scan {ScanId} supprimé par l'utilisateur {UserId}", scanId, userId);
+
+        return NoContent();
+    }
+
+    /// <summary>
     /// Mettre à jour le statut d'un scan
     /// </summary>
     [HttpPut("{scanId}/status")]
@@ -224,6 +247,16 @@ public class ScanController : ControllerBase
 
         await _db.SaveChangesAsync();
 
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Nettoyer les ressources d'un scan
+    /// </summary>
+    [HttpDelete("{scanId}")]
+    public ActionResult CleanupScan(string scanId)
+    {
+        _scanService.CleanupScan(scanId);
         return NoContent();
     }
 }

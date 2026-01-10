@@ -16,10 +16,17 @@ import {
   InputAdornment,
   CircularProgress,
   Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import DownloadIcon from '@mui/icons-material/Download';
 import FolderIcon from '@mui/icons-material/Folder';
+import DeleteIcon from '@mui/icons-material/Delete';
 import axios from '../../services/axios';
 
 interface ScanHistoryItem {
@@ -40,6 +47,9 @@ const ScanHistory: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [scanToDelete, setScanToDelete] = useState<ScanHistoryItem | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     loadHistory();
@@ -71,6 +81,39 @@ const ScanHistory: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleDeleteClick = (scan: ScanHistoryItem) => {
+    setScanToDelete(scan);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!scanToDelete) return;
+
+    try {
+      setDeleting(true);
+      await axios.delete(`/scan/history/${scanToDelete.scanId}`);
+
+      // Mettre à jour la liste localement
+      const updatedScans = scans.filter(s => s.scanId !== scanToDelete.scanId);
+      setScans(updatedScans);
+      setFilteredScans(updatedScans);
+
+      setDeleteDialogOpen(false);
+      setScanToDelete(null);
+    } catch (err: any) {
+      console.error('Delete error:', err);
+      setError(err.response?.data?.message || 'Erreur lors de la suppression du scan');
+      setTimeout(() => setError(''), 3000);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false);
+    setScanToDelete(null);
   };
 
   const downloadReport = async (scanId: string, format: 'csv' | 'json' | 'html' | 'excel') => {
@@ -138,17 +181,28 @@ const ScanHistory: React.FC = () => {
   }
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Typography variant="h4" gutterBottom sx={{ mb: 3 }}>
-        Historique des scans
-      </Typography>
+    <Box>
+      {/* Header */}
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" fontWeight={700} gutterBottom sx={{
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+        }}>
+          Historique des scans
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          Consultez l'historique complet de vos scans et téléchargez les rapports
+        </Typography>
+      </Box>
 
       {error && (
-        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError('')}>
+        <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError('')}>
           {error}
         </Alert>
       )}
 
+      {/* Search */}
       <Box sx={{ mb: 3 }}>
         <TextField
           fullWidth
@@ -162,41 +216,66 @@ const ScanHistory: React.FC = () => {
                 <SearchIcon />
               </InputAdornment>
             ),
+            sx: {
+              bgcolor: 'background.paper',
+            }
           }}
         />
       </Box>
 
-      <TableContainer component={Paper}>
+      {/* Table */}
+      <TableContainer component={Paper} sx={{
+        background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.02) 0%, rgba(118, 75, 162, 0.02) 100%)',
+        border: '1px solid',
+        borderColor: 'divider',
+      }}>
         <Table>
-          <TableHead>
+          <TableHead sx={{ bgcolor: 'rgba(102, 126, 234, 0.05)' }}>
             <TableRow>
-              <TableCell>Date</TableCell>
-              <TableCell>Utilisateur</TableCell>
-              <TableCell>Répertoire</TableCell>
-              <TableCell align="center">Statut</TableCell>
-              <TableCell align="center">Fichiers</TableCell>
-              <TableCell align="center">PII détectés</TableCell>
-              <TableCell align="center">Durée</TableCell>
-              <TableCell align="center">Actions</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Date</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Utilisateur</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Répertoire</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 600 }}>Statut</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 600 }}>Fichiers</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 600 }}>PII détectés</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 600 }}>Durée</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 600 }}>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {filteredScans.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={8} align="center">
-                  <Typography variant="body2" color="text.secondary" sx={{ py: 3 }}>
-                    Aucun scan trouvé
-                  </Typography>
+                  <Box sx={{ py: 6 }}>
+                    <Typography variant="body1" color="text.secondary" fontWeight={500} gutterBottom>
+                      Aucun scan trouvé
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {searchTerm ? 'Aucun résultat ne correspond à votre recherche' : 'Démarrez un scan pour voir l\'historique'}
+                    </Typography>
+                  </Box>
                 </TableCell>
               </TableRow>
             ) : (
               filteredScans.map((scan) => (
-                <TableRow key={scan.id} hover>
+                <TableRow
+                  key={scan.id}
+                  hover
+                  sx={{
+                    '&:hover': {
+                      bgcolor: 'rgba(102, 126, 234, 0.03)',
+                    },
+                  }}
+                >
                   <TableCell>{formatDate(scan.createdAt)}</TableCell>
-                  <TableCell>{scan.userName}</TableCell>
+                  <TableCell>
+                    <Typography variant="body2" fontWeight={500}>
+                      {scan.userName}
+                    </Typography>
+                  </TableCell>
                   <TableCell>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <FolderIcon fontSize="small" color="action" />
+                      <FolderIcon fontSize="small" sx={{ color: 'primary.main' }} />
                       <Typography variant="body2" noWrap sx={{ maxWidth: 300 }}>
                         {scan.directoryPath}
                       </Typography>
@@ -207,10 +286,13 @@ const ScanHistory: React.FC = () => {
                       label={scan.status}
                       color={getStatusColor(scan.status) as any}
                       size="small"
+                      sx={{ fontWeight: 600 }}
                     />
                   </TableCell>
                   <TableCell align="center">
-                    {scan.filesScanned !== null ? scan.filesScanned : '-'}
+                    <Typography variant="body2" fontWeight={500}>
+                      {scan.filesScanned !== null ? scan.filesScanned.toLocaleString() : '-'}
+                    </Typography>
                   </TableCell>
                   <TableCell align="center">
                     {scan.piiDetected !== null ? (
@@ -218,36 +300,65 @@ const ScanHistory: React.FC = () => {
                         label={scan.piiDetected}
                         color={scan.piiDetected > 0 ? 'warning' : 'default'}
                         size="small"
+                        sx={{ fontWeight: 600 }}
                       />
                     ) : (
                       '-'
                     )}
                   </TableCell>
                   <TableCell align="center">
-                    {getDuration(scan.createdAt, scan.completedAt)}
+                    <Typography variant="body2" fontWeight={500}>
+                      {getDuration(scan.createdAt, scan.completedAt)}
+                    </Typography>
                   </TableCell>
                   <TableCell align="center">
-                    {scan.status.toLowerCase() === 'completed' && (
-                      <Box sx={{ display: 'flex', justifyContent: 'center', gap: 0.5 }}>
-                        <Tooltip title="Télécharger CSV">
-                          <IconButton
-                            size="small"
-                            onClick={() => downloadReport(scan.scanId, 'csv')}
-                          >
-                            <DownloadIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Télécharger Excel">
-                          <IconButton
-                            size="small"
-                            onClick={() => downloadReport(scan.scanId, 'excel')}
-                            sx={{ color: '#10b981' }}
-                          >
-                            <DownloadIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                      </Box>
-                    )}
+                    <Box sx={{ display: 'flex', justifyContent: 'center', gap: 0.5 }}>
+                      {scan.status.toLowerCase() === 'completed' && (
+                        <>
+                          <Tooltip title="Télécharger CSV">
+                            <IconButton
+                              size="small"
+                              onClick={() => downloadReport(scan.scanId, 'csv')}
+                              sx={{
+                                '&:hover': {
+                                  bgcolor: 'rgba(102, 126, 234, 0.1)',
+                                },
+                              }}
+                            >
+                              <DownloadIcon fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Télécharger Excel">
+                            <IconButton
+                              size="small"
+                              onClick={() => downloadReport(scan.scanId, 'excel')}
+                              sx={{
+                                color: '#10b981',
+                                '&:hover': {
+                                  bgcolor: 'rgba(16, 185, 129, 0.1)',
+                                },
+                              }}
+                            >
+                              <DownloadIcon fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                        </>
+                      )}
+                      <Tooltip title="Supprimer le scan">
+                        <IconButton
+                          size="small"
+                          onClick={() => handleDeleteClick(scan)}
+                          sx={{
+                            color: 'error.main',
+                            '&:hover': {
+                              bgcolor: 'rgba(244, 67, 54, 0.1)',
+                            },
+                          }}
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    </Box>
                   </TableCell>
                 </TableRow>
               ))
@@ -256,11 +367,58 @@ const ScanHistory: React.FC = () => {
         </Table>
       </TableContainer>
 
-      <Box sx={{ mt: 2, textAlign: 'center' }}>
-        <Typography variant="body2" color="text.secondary">
-          Total: {filteredScans.length} scan(s)
+      <Box sx={{ mt: 3, textAlign: 'center' }}>
+        <Typography variant="body2" color="text.secondary" fontWeight={500}>
+          Total: {filteredScans.length} scan(s) • {scans.filter(s => s.status.toLowerCase() === 'completed').length} complété(s)
         </Typography>
       </Box>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={handleDeleteCancel}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle sx={{ fontWeight: 600 }}>
+          Confirmer la suppression
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Êtes-vous sûr de vouloir supprimer ce scan ?
+            <Box sx={{ mt: 2, p: 2, bgcolor: 'rgba(244, 67, 54, 0.05)', borderRadius: 1, border: '1px solid', borderColor: 'rgba(244, 67, 54, 0.2)' }}>
+              <Typography variant="body2" fontWeight={500} gutterBottom>
+                ID: {scanToDelete?.scanId}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Dossier: {scanToDelete?.directoryPath}
+              </Typography>
+            </Box>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+              Cette action est irréversible. Le scan et tous ses rapports seront supprimés définitivement.
+            </Typography>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ p: 2, pt: 0 }}>
+          <Button
+            onClick={handleDeleteCancel}
+            disabled={deleting}
+            sx={{ fontWeight: 600 }}
+          >
+            Annuler
+          </Button>
+          <Button
+            onClick={handleDeleteConfirm}
+            variant="contained"
+            color="error"
+            disabled={deleting}
+            startIcon={deleting ? <CircularProgress size={16} color="inherit" /> : <DeleteIcon />}
+            sx={{ fontWeight: 600 }}
+          >
+            {deleting ? 'Suppression...' : 'Supprimer'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
