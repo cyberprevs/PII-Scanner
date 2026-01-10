@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "QfTufANxMFq0OuHwZbP/H+JiID6q2661yhHBIeeHJiM=",
+  "Hash": "6IEbPq6r4y2AP4/V2f100DYUFTtC46sD8+EOPNnuzoU=",
   "Source": "PiiScanner.Api",
   "BasePath": "_content/PiiScanner.Api",
   "Mode": "Default",
@@ -416,6 +416,25 @@
       "OriginalItemSpec": "wwwroot\\assets\\index-CW0H-_eS.js"
     },
     {
+      "Identity": "C:\\Users\\samir\\OneDrive\\Desktop\\PII-Scanner\\PiiScanner.Api\\wwwroot\\assets\\index-CW6S57Kt.js",
+      "SourceId": "PiiScanner.Api",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\samir\\OneDrive\\Desktop\\PII-Scanner\\PiiScanner.Api\\wwwroot\\",
+      "BasePath": "_content/PiiScanner.Api",
+      "RelativePath": "assets/index-CW6S57Kt.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\assets\\index-CW6S57Kt.js"
+    },
+    {
       "Identity": "C:\\Users\\samir\\OneDrive\\Desktop\\PII-Scanner\\PiiScanner.Api\\wwwroot\\assets\\index-D-fHlMhS.js",
       "SourceId": "PiiScanner.Api",
       "SourceType": "Discovered",
@@ -509,6 +528,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\assets\\index-DLjKN3ro.js"
+    },
+    {
+      "Identity": "C:\\Users\\samir\\OneDrive\\Desktop\\PII-Scanner\\PiiScanner.Api\\wwwroot\\assets\\index-DptGMuHh.js",
+      "SourceId": "PiiScanner.Api",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\samir\\OneDrive\\Desktop\\PII-Scanner\\PiiScanner.Api\\wwwroot\\",
+      "BasePath": "_content/PiiScanner.Api",
+      "RelativePath": "assets/index-DptGMuHh.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\assets\\index-DptGMuHh.js"
     },
     {
       "Identity": "C:\\Users\\samir\\OneDrive\\Desktop\\PII-Scanner\\PiiScanner.Api\\wwwroot\\assets\\index-DPxXKtTr.css",
