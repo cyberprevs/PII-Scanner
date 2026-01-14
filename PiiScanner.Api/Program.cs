@@ -13,15 +13,39 @@ SQLitePCL.raw.SetProvider(new SQLitePCL.SQLite3Provider_e_sqlcipher());
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure Kestrel to use HTTPS by default
-builder.WebHost.ConfigureKestrel(serverOptions =>
+// Configure Kestrel - HTTPS ou HTTP selon configuration
+var useHttpsOnly = builder.Configuration.GetValue<bool>("Security:UseHttpsOnly", true);
+var listenUrls = builder.Configuration.GetValue<string>("Kestrel:Urls", null);
+
+if (string.IsNullOrEmpty(listenUrls))
 {
-    serverOptions.ListenLocalhost(5001, listenOptions =>
+    builder.WebHost.ConfigureKestrel(serverOptions =>
     {
-        listenOptions.UseHttps();
+        // Écoute sur toutes les interfaces (pas seulement localhost) pour serveur
+        if (useHttpsOnly)
+        {
+            try
+            {
+                serverOptions.ListenAnyIP(5001, listenOptions =>
+                {
+                    listenOptions.UseHttps();
+                });
+            }
+            catch
+            {
+                // Si HTTPS échoue (pas de certificat), fallback sur HTTP
+                Console.WriteLine("AVERTISSEMENT: Certificat HTTPS non disponible, utilisation de HTTP uniquement");
+                Console.WriteLine("Pour activer HTTP explicitement, ajoutez 'Security:UseHttpsOnly': false dans appsettings.json");
+                serverOptions.ListenAnyIP(5000);
+            }
+        }
+        else
+        {
+            // Mode HTTP uniquement (pour serveurs sans certificat)
+            serverOptions.ListenAnyIP(5000);
+        }
     });
-    serverOptions.ListenLocalhost(5000);
-});
+}
 
 // Add services to the container
 builder.Services.AddControllers();
@@ -35,7 +59,8 @@ builder.Services.AddSession(options =>
     options.IdleTimeout = TimeSpan.FromMinutes(30); // Session timeout
     options.Cookie.HttpOnly = true; // Security: JavaScript cannot access session cookie
     options.Cookie.IsEssential = true; // Required for GDPR compliance
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // HTTPS only
+    // SameSite pour mode HTTP (serveurs sans certificat)
+    options.Cookie.SecurePolicy = useHttpsOnly ? CookieSecurePolicy.Always : CookieSecurePolicy.SameAsRequest;
 });
 
 // Add Database Encryption Service
@@ -175,8 +200,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// SÉCURITÉ: HTTPS Redirection - Forcer HTTPS pour toutes les requêtes
-app.UseHttpsRedirection();
+// SÉCURITÉ: HTTPS Redirection - Forcer HTTPS pour toutes les requêtes (si HTTPS activé)
+var httpsEnabled = app.Configuration.GetValue<bool>("Security:UseHttpsOnly", true);
+if (httpsEnabled)
+{
+    app.UseHttpsRedirection();
+}
 
 // CORS en développement uniquement (pour Vite dev server)
 if (app.Environment.IsDevelopment())
@@ -204,18 +233,23 @@ app.Use(async (context, next) =>
     var cspPolicy = "default-src 'self'; " +
                     "script-src 'self'; " +
                     "style-src 'self' 'unsafe-inline'; " +  // Material-UI nécessite inline styles
-                    "img-src 'self' data: https:; " +       // Images locales + data URIs + HTTPS externe
+                    "img-src 'self' data: https: http:; " + // Images locales + data URIs + externe
                     "font-src 'self' data:; " +              // Fonts locales + data URIs
-                    "connect-src 'self' https://localhost:5001 wss://localhost:5001 ws://localhost:5001; " +  // API + SignalR WebSocket
+                    "connect-src 'self' ws: wss: http: https:; " +  // API + SignalR WebSocket (HTTP et HTTPS)
                     "frame-ancestors 'none'; " +             // Équivalent moderne de X-Frame-Options DENY
                     "base-uri 'self'; " +                    // Empêche modification de <base>
-                    "form-action 'self'; " +                 // Soumission formulaires seulement vers origin
-                    "upgrade-insecure-requests;";            // Force HTTPS pour toutes les ressources
+                    "form-action 'self';";                   // Soumission formulaires seulement vers origin
+
+    // Ajouter upgrade-insecure-requests uniquement si HTTPS est activé
+    if (httpsEnabled)
+    {
+        cspPolicy += " upgrade-insecure-requests;";
+    }
 
     context.Response.Headers["Content-Security-Policy"] = cspPolicy;
 
-    // HSTS: Force HTTPS pendant 1 an (seulement en production)
-    if (context.Request.IsHttps || !app.Environment.IsDevelopment())
+    // HSTS: Force HTTPS pendant 1 an (seulement si HTTPS est activé)
+    if (httpsEnabled && context.Request.IsHttps)
     {
         context.Response.Headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains";
     }

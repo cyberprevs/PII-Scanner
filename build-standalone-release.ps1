@@ -85,7 +85,10 @@ echo    Demarrage en cours...
 echo ========================================
 echo.
 echo L'application va demarrer dans quelques secondes...
-echo Ouvrez votre navigateur sur : https://localhost:5001
+echo.
+echo Ouvrez votre navigateur sur : http://localhost:5000
+echo.
+echo (Mode HTTP pour compatibilite Windows Server)
 echo.
 echo Consultez LISEZMOI-DEMARRAGE-RAPIDE.txt pour les instructions
 echo.
@@ -93,6 +96,7 @@ echo Appuyez sur Ctrl+C pour arreter l'application
 echo ========================================
 echo.
 
+set ASPNETCORE_ENVIRONMENT=Production
 PiiScanner.Api.exe
 
 pause
@@ -117,7 +121,7 @@ Double-cliquer sur : START.bat
 Ou bien lancer directement : PiiScanner.Api.exe
 
 ### 3. Premiere connexion
-Ouvrir votre navigateur : https://localhost:5001
+Ouvrir votre navigateur : http://localhost:5000
 
 Au premier lancement, vous devez CREER un compte administrateur :
 - Cliquez sur "S'inscrire"
