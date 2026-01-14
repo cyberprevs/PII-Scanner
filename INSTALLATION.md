@@ -4,54 +4,80 @@ Guide complet pour installer et utiliser PII Scanner en tant qu'application web.
 
 ---
 
-## Option 1 : Version Web App (Recommandée)
+## Option 1 : Version Standalone Windows (Recommandée)
 
-**Aucune installation requise** - Téléchargez le fichier ZIP et lancez l'application dans votre navigateur.
+**Aucune installation requise** - Téléchargez le fichier ZIP et lancez l'application.
 
 ### Téléchargement
 
 1. Téléchargez la dernière version : [Releases](https://github.com/cyberprevs/pii-scanner/releases)
-2. Extrayez le fichier `PII-Scanner-WebApp.zip`
+2. Extrayez le fichier `PII-Scanner-v1.0.0-Windows-Standalone.zip`
 
 ### Démarrage Rapide
 
-**Double-cliquez sur** : `Démarrer PII Scanner.bat`
+**Double-cliquez sur** : `START.bat`
 
-Ce script lance automatiquement l'API web et ouvre votre navigateur sur https://localhost:5001
+L'application démarre sur **http://localhost:5000**
 
 ### Contenu du Package
 
 ```
-PII-Scanner-WebApp/
-├── Demarrer PII Scanner.bat    ← Lance l'application
+PII-Scanner-v1.0.0-Windows-Standalone/
+├── START.bat                    ← Lance l'application
 ├── PiiScanner.Api.exe           ← Serveur web .NET (API + React)
 ├── wwwroot/                     ← Interface React
 │   ├── index.html
 │   └── assets/
-├── appsettings.json
+├── appsettings.json             ← Configuration générale
+├── appsettings.Production.json  ← Configuration production (HTTP)
 ├── piiscanner.db                ← Base de données (créée au démarrage)
-└── db_encryption.key            ← Clé de chiffrement (créée au démarrage)
+├── db_encryption.key            ← Clé de chiffrement (créée au démarrage)
+├── LISEZMOI-DEMARRAGE-RAPIDE.txt
+└── README.md
 ```
 
-**Taille** : ~124 MB (self-contained, .NET runtime inclus)
+**Taille** : ~73 MB (self-contained, .NET 9.0 runtime inclus)
 
 ### Première Utilisation
 
-1. Lancez l'application avec `Démarrer PII Scanner.bat`
-2. Votre navigateur s'ouvre automatiquement sur https://localhost:5001
-3. **Si alerte certificat** : Cliquez sur "Avancé" → "Continuer vers localhost" (certificat auto-signé normal pour localhost)
-4. Créez un compte administrateur (première utilisation uniquement)
-5. L'application se recharge automatiquement
-6. Connectez-vous avec vos identifiants
-7. Commencez à scanner vos répertoires
+1. Lancez l'application avec `START.bat`
+2. Ouvrez votre navigateur sur **http://localhost:5000**
+3. Cliquez sur **"S'inscrire"** pour créer votre compte
+4. **Le premier compte créé devient automatiquement administrateur**
+5. Connectez-vous avec vos identifiants
+6. Commencez à scanner vos répertoires
+
+### Mode HTTP vs HTTPS
+
+| Mode | Port | Usage | Configuration |
+|------|------|-------|---------------|
+| **HTTP** (défaut) | 5000 | Windows Server, intranet | `"UseHttpsOnly": false` |
+| **HTTPS** | 5001 | Windows 10/11 avec certificat | `"UseHttpsOnly": true` |
+
+**Pour activer HTTPS** (Windows 10/11 uniquement) :
+
+1. Modifiez `appsettings.Production.json` :
+```json
+{
+  "Security": {
+    "UseHttpsOnly": true
+  }
+}
+```
+
+2. Créez le certificat (une seule fois) :
+```powershell
+dotnet dev-certs https --trust
+```
+
+3. Relancez `START.bat` → l'application sera sur **https://localhost:5001**
 
 ### Notes Importantes
 
 - **100% local** : Aucune connexion externe, toutes les données restent sur votre ordinateur
 - **Navigateur** : Fonctionne avec Chrome, Firefox, Edge, ou tout navigateur moderne
-- **HTTPS** : Certificat auto-signé pour localhost (normal, aucun risque)
-- **Pare-feu** : Windows peut demander d'autoriser l'API sur le port 5001 (HTTPS)
-- **Pas de certificat de code** : Plus besoin de signature de code, pas de problème Windows SmartScreen
+- **HTTP par défaut** : Compatible Windows Server sans certificat
+- **Pare-feu** : Windows peut demander d'autoriser l'API sur le port 5000/5001
 - **Code open-source** : Le code source est vérifiable sur GitHub
 
 ---
@@ -292,5 +318,5 @@ dotnet dev-certs https --trust
 ---
 
 **Version** : 1.0.0
-**Date** : 10 janvier 2026
+**Date** : 14 janvier 2026
 **Développé par** : [Cyberprevs](https://cyberprevs.com)

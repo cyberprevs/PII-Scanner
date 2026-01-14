@@ -11,14 +11,16 @@ Application web pour détecter et analyser les données personnelles identifiabl
 
 ### Version portable (Recommandée)
 
-1. Téléchargez `PII-Scanner-WebApp.zip` : [Releases](https://github.com/cyberprevs/pii-scanner/releases)
-2. Extrayez le ZIP .
-3. Lancez `Démarrer PII Scanner.bat`
-4. Ouvrez votre navigateur : **https://localhost:5001**
+1. Téléchargez `PII-Scanner-v1.0.0-Windows-Standalone.zip` : [Releases](https://github.com/cyberprevs/pii-scanner/releases)
+2. Extrayez le ZIP
+3. Lancez `START.bat`
+4. Ouvrez votre navigateur : **http://localhost:5000**
+5. Créez votre compte administrateur (premier compte = admin)
 
 **Avantages** :
-- Aucune installation requise - Application web tout-en-un (~124 MB, .NET Runtime inclus)
-- Pas de certificat - Fonctionne directement sans problème Windows SmartScreen
+- Aucune installation requise - Application standalone (~73 MB, .NET 9.0 Runtime inclus)
+- Compatible Windows 10/11 et Windows Server 2016+
+- Mode HTTP par défaut (compatible tous environnements)
 - N'importe quel navigateur - Chrome, Edge, Firefox, etc.
 
 **Guide complet** : [INSTALLATION.md](INSTALLATION.md)
@@ -144,7 +146,7 @@ cd pii-scanner-ui && npm run test:run
 
 ### Stack technique
 
-**Backend** : .NET 8.0, ASP.NET Core Web API, SignalR, SQLite + SQLCipher
+**Backend** : .NET 9.0, ASP.NET Core Web API, SignalR, SQLite + SQLCipher
 **Frontend** : React 19, TypeScript 5.9, Material-UI v7, Recharts, Vite
 
 ### Projets
@@ -170,7 +172,7 @@ PII-Scanner/
 
 **SignalR** : `/scanhub` - Mises à jour temps réel
 
-**Swagger UI** : `http://localhost:5000/swagger` (mode développement)
+**Swagger UI** : `https://localhost:5001/swagger` (mode développement uniquement)
 
 **Documentation complète** : [CLAUDE.md](CLAUDE.md)
 
@@ -306,6 +308,6 @@ L'application dispose d'une page Support complète avec :
 
 **Développé par [Cyberprevs](https://cyberprevs.com)**
 
-**Version** : 1.0.0 | **Dernière mise à jour** : 4 Janvier 2025
+**Version** : 1.0.0 | **Dernière mise à jour** : 14 Janvier 2026
 
 **Conformité** : Loi N°2017-20 du Bénin (APDP)

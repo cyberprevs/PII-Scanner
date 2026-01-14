@@ -99,6 +99,105 @@
           "buildTransitive/net6.0/_._": {}
         }
       }
+    },
+    "net8.0/win-x64": {
+      "DocumentFormat.OpenXml/3.3.0": {
+        "type": "package",
+        "dependencies": {
+          "DocumentFormat.OpenXml.Framework": "3.3.0"
+        },
+        "compile": {
+          "lib/net8.0/DocumentFormat.OpenXml.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/DocumentFormat.OpenXml.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "DocumentFormat.OpenXml.Framework/3.3.0": {
+        "type": "package",
+        "dependencies": {
+          "System.IO.Packaging": "8.0.1"
+        },
+        "compile": {
+          "lib/net8.0/DocumentFormat.OpenXml.Framework.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/DocumentFormat.OpenXml.Framework.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "PdfPig/0.1.12": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/UglyToad.PdfPig.Core.dll": {
+            "related": ".pdb;.xml"
+          },
+          "lib/net8.0/UglyToad.PdfPig.DocumentLayoutAnalysis.dll": {
+            "related": ".pdb;.xml"
+          },
+          "lib/net8.0/UglyToad.PdfPig.Fonts.dll": {
+            "related": ".pdb;.xml"
+          },
+          "lib/net8.0/UglyToad.PdfPig.Package.dll": {
+            "related": ".pdb;.xml"
+          },
+          "lib/net8.0/UglyToad.PdfPig.Tokenization.dll": {
+            "related": ".pdb;.xml"
+          },
+          "lib/net8.0/UglyToad.PdfPig.Tokens.dll": {
+            "related": ".pdb;.xml"
+          },
+          "lib/net8.0/UglyToad.PdfPig.dll": {
+            "related": ".Core.pdb;.Core.xml;.DocumentLayoutAnalysis.pdb;.DocumentLayoutAnalysis.xml;.Fonts.pdb;.Fonts.xml;.Package.pdb;.Package.xml;.pdb;.Tokenization.pdb;.Tokenization.xml;.Tokens.pdb;.Tokens.xml;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/UglyToad.PdfPig.Core.dll": {
+            "related": ".pdb;.xml"
+          },
+          "lib/net8.0/UglyToad.PdfPig.DocumentLayoutAnalysis.dll": {
+            "related": ".pdb;.xml"
+          },
+          "lib/net8.0/UglyToad.PdfPig.Fonts.dll": {
+            "related": ".pdb;.xml"
+          },
+          "lib/net8.0/UglyToad.PdfPig.Package.dll": {
+            "related": ".pdb;.xml"
+          },
+          "lib/net8.0/UglyToad.PdfPig.Tokenization.dll": {
+            "related": ".pdb;.xml"
+          },
+          "lib/net8.0/UglyToad.PdfPig.Tokens.dll": {
+            "related": ".pdb;.xml"
+          },
+          "lib/net8.0/UglyToad.PdfPig.dll": {
+            "related": ".Core.pdb;.Core.xml;.DocumentLayoutAnalysis.pdb;.DocumentLayoutAnalysis.xml;.Fonts.pdb;.Fonts.xml;.Package.pdb;.Package.xml;.pdb;.Tokenization.pdb;.Tokenization.xml;.Tokens.pdb;.Tokens.xml;.xml"
+          }
+        }
+      },
+      "System.IO.Packaging/8.0.1": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/System.IO.Packaging.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/System.IO.Packaging.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net6.0/_._": {}
+        }
+      }
     }
   },
   "libraries": {
@@ -366,12 +465,35 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
+        "downloadDependencies": [
+          {
+            "name": "Microsoft.AspNetCore.App.Runtime.win-x64",
+            "version": "[8.0.22, 8.0.22]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Crossgen2.win-x64",
+            "version": "[8.0.22, 8.0.22]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Runtime.win-x64",
+            "version": "[8.0.22, 8.0.22]"
+          },
+          {
+            "name": "Microsoft.WindowsDesktop.App.Runtime.win-x64",
+            "version": "[8.0.22, 8.0.22]"
+          }
+        ],
         "frameworkReferences": {
           "Microsoft.NETCore.App": {
             "privateAssets": "all"
           }
         },
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.416/PortableRuntimeIdentifierGraph.json"
+      }
+    },
+    "runtimes": {
+      "win-x64": {
+        "#import": []
       }
     }
   }
