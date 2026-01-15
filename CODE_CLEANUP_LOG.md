@@ -182,4 +182,4 @@ Suite à l'analyse complète des répétitions dans l'application, les opportuni
 ---
 
 **Dernière mise à jour** : 2025-12-29
-**Responsable** : Claude Code (Automated Cleanup)
+

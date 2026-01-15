@@ -289,7 +289,7 @@ Permissions :
 
 **Seule obligation** : Conserver la notice de copyright et la licence MIT dans vos copies.
 
-Pour du support commercial, formation ou consulting, contactez [Cyberprevs](https://cyberprevs.com).
+Pour du support commercial, formation ou consulting, contactez [Cyberprevs](https://cyberprevs.fr).
 
 Voir [LICENSE](LICENSE) pour le texte complet de la licence.
 
@@ -313,7 +313,7 @@ L'application dispose d'une page Support complète avec :
 
 ---
 
-**Développé par [Cyberprevs](https://cyberprevs.com)**
+**Développé par [Cyberprevs](https://cyberprevs.fr)**
 
 **Version** : 1.0.0 | **Dernière mise à jour** : 14 Janvier 2026
 

@@ -328,4 +328,4 @@ dotnet dev-certs https --trust
 
 **Version** : 1.0.0
 **Date** : 14 janvier 2026
-**Développé par** : [Cyberprevs](https://cyberprevs.com)
+**Développé par** : [Cyberprevs](https://cyberprevs.fr)

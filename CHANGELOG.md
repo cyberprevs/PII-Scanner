@@ -332,5 +332,5 @@ Aucun changement (identique à v1.0.0). JWT secret par défaut pour tests (rég�
 
 ---
 
-**Développé par** : [Cyberprevs](https://cyberprevs.com)
+**Développé par** : [Cyberprevs](https://cyberprevs.fr)
 **Licence** : [MIT](https://opensource.org/licenses/MIT)

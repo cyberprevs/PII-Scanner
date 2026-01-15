@@ -1,7 +1,7 @@
 # PII Scanner - Version 1.0.0 - Production Ready
 
 **Date de Release** : 10 janvier 2026
-**Développé par** : [Cyberprevs](https://cyberprevs.com)
+**Développé par** : [Cyberprevs](https://cyberprevs.fr)
 **Licence** : MIT (Open Source)
 
 ---
@@ -270,7 +270,6 @@ Merci à tous les contributeurs et utilisateurs qui ont testé et fourni des ret
 
 **Développé par Cyberprevs**
 
-**Generated with [Claude Code](https://claude.com/claude-code)**
 
 ---
 
