@@ -56,18 +56,27 @@ PII-Scanner-v1.0.0-Windows-Standalone/
 
 **Pour activer HTTPS** (Windows 10/11 uniquement) :
 
-1. Modifiez `appsettings.Production.json` :
+1. Créez le certificat - Exécutez PowerShell **en administrateur** :
+```powershell
+# Créer un certificat auto-signé pour localhost
+$cert = New-SelfSignedCertificate -DnsName "localhost" -CertStoreLocation "cert:\LocalMachine\My" -NotAfter (Get-Date).AddYears(5)
+
+# Faire confiance au certificat
+$store = New-Object System.Security.Cryptography.X509Certificates.X509Store "Root", "LocalMachine"
+$store.Open("ReadWrite")
+$store.Add($cert)
+$store.Close()
+
+Write-Host "Certificat installé !" -ForegroundColor Green
+```
+
+2. Modifiez `appsettings.Production.json` :
 ```json
 {
   "Security": {
     "UseHttpsOnly": true
   }
 }
-```
-
-2. Créez le certificat (une seule fois) :
-```powershell
-dotnet dev-certs https --trust
 ```
 
 3. Relancez `START.bat` → l'application sera sur **https://localhost:5001**

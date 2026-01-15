@@ -483,17 +483,17 @@ await axios.delete(`/database/backup/${encodeURIComponent(fileName)}`);
 
 ### Configuration HTTPS
 
-**Développement** :
-- Certificat auto-signé .NET approuvé
-- API écoute sur `https://localhost:5001` et `http://localhost:5000`
-- Frontend utilise `https://localhost:5001/api`
-- Redirection automatique HTTP → HTTPS
+**Mode HTTP (par défaut)** :
+- API écoute sur `http://localhost:5000`
+- Compatible Windows Server et Windows 10/11
+- Aucun certificat requis
+- Idéal pour environnements internes/intranet
 
-**Production** :
-- Certificat Let's Encrypt (gratuit, renouvelable automatiquement)
-- Ou certificat commercial (DigiCert, GlobalSign, etc.)
-- Configuration Kestrel avec certificat .pfx
-- CORS restreint aux origines de production
+**Mode HTTPS (optionnel)** :
+- API écoute sur `https://localhost:5001`
+- Nécessite certificat (auto-signé ou Let's Encrypt)
+- Activer via `appsettings.Production.json` : `"UseHttpsOnly": true`
+- Créer certificat avec PowerShell (voir INSTALLATION.md)
 
 ### Headers de Sécurité HTTP
 
@@ -730,6 +730,6 @@ Pour signaler une vulnérabilité de sécurité :
 
 ---
 
-**Dernière mise à jour** : 10 janvier 2026
+**Dernière mise à jour** : 14 janvier 2026
 **Version** : 1.0.0
 **Responsable sécurité** : Équipe PII Scanner

@@ -23,6 +23,15 @@ Application web pour détecter et analyser les données personnelles identifiabl
 - Mode HTTP par défaut (compatible tous environnements)
 - N'importe quel navigateur - Chrome, Edge, Firefox, etc.
 
+### Mode HTTP vs HTTPS
+
+| Mode | Port | Usage |
+|------|------|-------|
+| **HTTP** (défaut) | 5000 | Windows Server, intranet |
+| **HTTPS** | 5001 | Windows 10/11 avec certificat |
+
+**Pour activer HTTPS**, voir [INSTALLATION.md](INSTALLATION.md#mode-http-vs-https)
+
 **Guide complet** : [INSTALLATION.md](INSTALLATION.md)
 
 ### Installation depuis sources (Développeurs)
@@ -31,7 +40,7 @@ Application web pour détecter et analyser les données personnelles identifiabl
 # Build automatique (recommandé)
 git clone https://github.com/cyberprevs/pii-scanner.git
 cd pii-scanner
-.\BuildWebApp.ps1
+.\build-standalone-release.ps1
 
 # OU build manuel:
 # 1. Build React UI
@@ -44,7 +53,7 @@ xcopy /E /I dist ..\PiiScanner.Api\wwwroot
 # 3. Lancer l'application web
 cd ../PiiScanner.Api
 dotnet run
-# Ouvrir: https://localhost:5001
+# Ouvrir: http://localhost:5000 (ou https://localhost:5001 si HTTPS activé)
 ```
 
 **Note** : Créez votre compte admin au premier lancement (pas de compte par défaut)
@@ -120,11 +129,10 @@ Fonctionnalités :
 | Document | Description |
 |----------|-------------|
 | [INSTALLATION.md](INSTALLATION.md) | Guide d'installation complet (portable + sources) |
-| [CONFIGURATION.md](CONFIGURATION.md) | Configuration pour la production |
 | [SECURITY.md](SECURITY.md) | Documentation de sécurité détaillée |
-| [CLAUDE.md](CLAUDE.md) | Guide technique développeurs (architecture, API, build, **tests**) |
-| [LISEZMOI-PORTABLE.txt](LISEZMOI-PORTABLE.txt) | Guide utilisateur final (version portable) |
+| [FEATURES.md](FEATURES.md) | Liste complète des fonctionnalités |
 | [CHANGELOG.md](CHANGELOG.md) | Historique des versions |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Guide de contribution |
 
 ### Tests
 
@@ -138,7 +146,7 @@ dotnet test PiiScanner.Core.Tests
 cd pii-scanner-ui && npm run test:run
 ```
 
-**Documentation complète des tests** : [CLAUDE.md - Tests](CLAUDE.md#tests)
+**Documentation complète des tests** : Voir les dossiers `PiiScanner.Core.Tests/` et `pii-scanner-ui/src/__tests__/`
 
 ---
 
@@ -174,7 +182,7 @@ PII-Scanner/
 
 **Swagger UI** : `https://localhost:5001/swagger` (mode développement uniquement)
 
-**Documentation complète** : [CLAUDE.md](CLAUDE.md)
+**Documentation API** : Swagger UI disponible en mode développement
 
 ---
 
@@ -208,11 +216,10 @@ dotnet publish -c Release -o C:\inetpub\wwwroot\piiscanner
 **3. Automatisation PowerShell**
 ```powershell
 # Script pour déclencher scans via API REST
-# Voir exemple complet dans CLAUDE.md
-Invoke-RestMethod -Uri "https://localhost:5001/api/scan/start" -Method POST -Body $scanBody
+Invoke-RestMethod -Uri "http://localhost:5000/api/scan/start" -Method POST -Body $scanBody
 ```
 
-**Guide complet** : [CLAUDE.md - Déploiement sur Windows Server](CLAUDE.md#déploiement-sur-windows-server)
+**Guide complet** : [INSTALLATION.md](INSTALLATION.md)
 
 ### Cas d'usage typiques
 
@@ -300,7 +307,7 @@ L'application dispose d'une page Support complète avec :
 
 ### Ressources
 
-- Documentation : [CLAUDE.md](CLAUDE.md), [SECURITY.md](SECURITY.md), [INSTALLATION.md](INSTALLATION.md)
+- Documentation : [SECURITY.md](SECURITY.md), [INSTALLATION.md](INSTALLATION.md), [FEATURES.md](FEATURES.md)
 - APDP Bénin : contact@apdp.bj
 - Loi N°2017-20 : Référence légale sur la protection des données
 

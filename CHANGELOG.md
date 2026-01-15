@@ -5,7 +5,7 @@ Tous les changements notables de ce projet seront documentés dans ce fichier.
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/),
 et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
-## [1.0.0] - 2025-01-04
+## [1.0.0] - 2026-01-14
 
 ### 🎉 Version Initiale Stable - Production Ready
 
@@ -64,9 +64,9 @@ Première version stable de **PII Scanner** par Cyberprevs, prête pour un usage
 
 #### 🔧 Architecture
 
-**Backend (.NET 8.0)**
+**Backend (.NET 9.0)**
 - ASP.NET Core Web API + SignalR
-- Entity Framework Core + SQLite
+- Entity Framework Core + SQLite + SQLCipher
 - 3 projets : Core, Api, Tests
 - 88 tests unitaires (xUnit + FluentAssertions)
 
@@ -78,9 +78,10 @@ Première version stable de **PII Scanner** par Cyberprevs, prête pour un usage
 
 **Déploiement**
 - Application web auto-hébergée
-- Build automatisé (BuildWebApp.ps1)
-- Package self-contained (~124 MB)
-- Port HTTPS : 5001 (recommandé)
+- Build automatisé (`build-standalone-release.ps1`)
+- Package self-contained (~73 MB)
+- Mode HTTP par défaut (port 5000) - compatible Windows Server
+- Mode HTTPS optionnel (port 5001) - voir INSTALLATION.md
 
 #### 🎨 Interface Utilisateur
 

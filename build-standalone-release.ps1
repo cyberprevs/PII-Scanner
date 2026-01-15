@@ -130,6 +130,26 @@ Au premier lancement, vous devez CREER un compte administrateur :
 
 IMPORTANT : Notez bien vos identifiants !
 
+## Mode HTTP vs HTTPS
+
+Par defaut, l'application fonctionne en HTTP (port 5000).
+Compatible Windows Server et Windows 10/11.
+
+### Activer HTTPS (optionnel)
+
+1. Ouvrir PowerShell en ADMINISTRATEUR et executer :
+
+`$cert = New-SelfSignedCertificate -DnsName "localhost" -CertStoreLocation "cert:\LocalMachine\My" -NotAfter (Get-Date).AddYears(5)
+`$store = New-Object System.Security.Cryptography.X509Certificates.X509Store "Root", "LocalMachine"
+`$store.Open("ReadWrite")
+`$store.Add(`$cert)
+`$store.Close()
+
+2. Modifier appsettings.Production.json :
+   "Security": { "UseHttpsOnly": true }
+
+3. Relancer START.bat -> https://localhost:5001
+
 ## Caracteristiques
 
 - Version standalone : Aucune installation requise !
@@ -139,14 +159,13 @@ IMPORTANT : Notez bien vos identifiants !
 
 ## Configuration
 
-Editer le fichier appsettings.json pour :
-- Changer le port d'ecoute
+Editer le fichier appsettings.Production.json pour :
+- Activer/desactiver HTTPS
 - Modifier le secret JWT (OBLIGATOIRE en production)
-- Configurer la retention des donnees
 
 ## Documentation complete
 
-Consultez README.md pour la documentation complete
+Consultez README.md et INSTALLATION.md pour la documentation complete
 
 ## Support
 
