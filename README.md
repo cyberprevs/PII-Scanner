@@ -318,3 +318,14 @@ L'application dispose d'une page Support complète avec :
 **Version** : 1.0.0 | **Dernière mise à jour** : 14 Janvier 2026
 
 **Conformité** : Loi N°2017-20 du Bénin (APDP)
+<img width="998" height="645" alt="image" src="https://github.com/user-attachments/assets/c2394a30-fc99-4074-b3ef-a6d15e244ca6" />
+
+<img width="1006" height="553" alt="image" src="https://github.com/user-attachments/assets/2767b2fc-2f1e-41a4-95d6-d2f2c949fb70" />
+
+<img width="1000" height="645" alt="image" src="https://github.com/user-attachments/assets/643ff0df-f119-4c36-94f7-18b15ac3f846" />
+
+<img width="1012" height="642" alt="image" src="https://github.com/user-attachments/assets/6d82a63b-83e6-4e18-a643-a92e9cc223e2" />
+
+<img width="1005" height="638" alt="image" src="https://github.com/user-attachments/assets/ac42ab9f-2aab-41a8-b795-f59b7e6e5798" />
+
+<img width="877" height="637" alt="image" src="https://github.com/user-attachments/assets/d9882a23-44eb-4771-a4a8-d055a40d6ba0" />
