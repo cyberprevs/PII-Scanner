@@ -55,5 +55,5 @@ Pour des réponses aux questions courantes sur ce code de conduite, consultez la
 
 ---
 
-**Dernière mise à jour** : Décembre 2024
+**Dernière mise à jour** : Décembre 2025
 **Contact** : contact@cyberprevs.fr
