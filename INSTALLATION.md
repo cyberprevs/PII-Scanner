@@ -15,16 +15,16 @@ Guide complet pour installer et utiliser PII Scanner en tant qu'application web.
 
 ### Démarrage Rapide
 
-**Double-cliquez sur** : `START.bat`
+**Double-cliquez sur** : `PiiScanner.Api.exe`
 
-L'application démarre sur **http://localhost:5000**
+Le navigateur s'ouvre automatiquement sur **http://localhost:5000**
 
 ### Contenu du Package
 
 ```
 PII-Scanner-v1.0.0-Windows-Standalone/
-├── START.bat                    ← Lance l'application
-├── PiiScanner.Api.exe           ← Serveur web .NET (API + React)
+├── PiiScanner.Api.exe           ← Lance l'application (ouvre le navigateur)
+├── START.bat                    ← Alternative de lancement
 ├── wwwroot/                     ← Interface React
 │   ├── index.html
 │   └── assets/
@@ -40,8 +40,8 @@ PII-Scanner-v1.0.0-Windows-Standalone/
 
 ### Première Utilisation
 
-1. Lancez l'application avec `START.bat`
-2. Ouvrez votre navigateur sur **http://localhost:5000**
+1. Double-cliquez sur `PiiScanner.Api.exe`
+2. Le navigateur s'ouvre automatiquement sur **http://localhost:5000**
 3. Cliquez sur **"S'inscrire"** pour créer votre compte
 4. **Le premier compte créé devient automatiquement administrateur**
 5. Connectez-vous avec vos identifiants
@@ -79,7 +79,7 @@ Write-Host "Certificat installé !" -ForegroundColor Green
 }
 ```
 
-3. Relancez `START.bat` → l'application sera sur **https://localhost:5001**
+3. Relancez `PiiScanner.Api.exe` → l'application sera sur **https://localhost:5001**
 
 ### Notes Importantes
 

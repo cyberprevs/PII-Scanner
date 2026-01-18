@@ -291,4 +291,23 @@ app.MapHealthChecks("/health/ready");
 // Fallback pour React Router - Toutes les routes non-API redirigent vers index.html
 app.MapFallbackToFile("index.html");
 
+// Ouvrir automatiquement le navigateur en mode Production
+if (!app.Environment.IsDevelopment())
+{
+    var url = httpsEnabled ? "https://localhost:5001" : "http://localhost:5000";
+    try
+    {
+        var psi = new System.Diagnostics.ProcessStartInfo
+        {
+            FileName = url,
+            UseShellExecute = true
+        };
+        System.Diagnostics.Process.Start(psi);
+    }
+    catch
+    {
+        // Ignorer si le navigateur ne peut pas être ouvert
+    }
+}
+
 app.Run();

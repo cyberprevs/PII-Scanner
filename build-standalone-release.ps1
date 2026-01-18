@@ -74,54 +74,40 @@ foreach ($doc in $docs) {
 Write-Host "Documentation copiee" -ForegroundColor Green
 Write-Host ""
 
-# 4. Creer un fichier START.bat pour lancer facilement
-Write-Host "Creation du fichier de lancement START.bat..." -ForegroundColor Cyan
+# 4. Creer les fichiers de lancement
+Write-Host "Creation des fichiers de lancement..." -ForegroundColor Cyan
+
+# Creer START.bat
 $startBat = @"
 @echo off
-title PII Scanner v$Version
-echo ========================================
-echo    PII Scanner v$Version
-echo    Demarrage en cours...
-echo ========================================
-echo.
-echo L'application va demarrer dans quelques secondes...
-echo.
-echo Ouvrez votre navigateur sur : http://localhost:5000
-echo.
-echo (Mode HTTP pour compatibilite Windows Server)
-echo.
-echo Consultez LISEZMOI-DEMARRAGE-RAPIDE.txt pour les instructions
-echo.
-echo Appuyez sur Ctrl+C pour arreter l'application
-echo ========================================
-echo.
-
 set ASPNETCORE_ENVIRONMENT=Production
+start http://localhost:5000
 PiiScanner.Api.exe
-
-pause
 "@
-
 Set-Content -Path "$releaseFolder/START.bat" -Value $startBat -Encoding ASCII
-Write-Host "Fichier START.bat cree" -ForegroundColor Green
+
+# Creer aussi START.cmd (alternative)
+Set-Content -Path "$releaseFolder/START.cmd" -Value $startBat -Encoding ASCII
+
+Write-Host "Fichiers START.bat et START.cmd crees" -ForegroundColor Green
 Write-Host ""
 
 # 5. Creer un README simplifie
 $readmeQuick = @"
 # PII Scanner v$Version - Version Standalone Windows
 
-## Demarrage rapide (3 etapes)
+## Demarrage rapide
 
 ### 1. Extraire le ZIP
 Extraire tous les fichiers dans un dossier de votre choix
 
 ### 2. Lancer l'application
-Double-cliquer sur : START.bat
+Double-cliquer sur : PiiScanner.Api.exe
 
-Ou bien lancer directement : PiiScanner.Api.exe
+Alternative : START.bat ou START.cmd
 
-### 3. Premiere connexion
-Ouvrir votre navigateur : http://localhost:5000
+### 3. Ouvrir le navigateur
+Ouvrir : http://localhost:5000
 
 Au premier lancement, vous devez CREER un compte administrateur :
 - Cliquez sur "S'inscrire"

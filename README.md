@@ -13,8 +13,8 @@ Application web pour détecter et analyser les données personnelles identifiabl
 
 1. Téléchargez `PII-Scanner-v1.0.0-Windows-Standalone.zip` : [Releases](https://github.com/cyberprevs/pii-scanner/releases)
 2. Extrayez le ZIP
-3. Lancez `START.bat`
-4. Ouvrez votre navigateur : **http://localhost:5000**
+3. Double-cliquez sur **`PiiScanner.Api.exe`**
+4. Le navigateur s'ouvre automatiquement sur **http://localhost:5000**
 5. Créez votre compte administrateur (premier compte = admin)
 
 **Avantages** :
