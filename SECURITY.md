@@ -730,6 +730,6 @@ Pour signaler une vulnérabilité de sécurité :
 
 ---
 
-**Dernière mise à jour** : 14 janvier 2026
+**Dernière mise à jour** : 18 janvier 2026
 **Version** : 1.0.0
 **Responsable sécurité** : Équipe PII Scanner

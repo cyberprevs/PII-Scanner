@@ -123,7 +123,7 @@ En contribuant, vous acceptez que :
 Toute contribution doit maintenir les mentions :
 ```
 Developed by Cyberprevs
-© 2025 Cyberprevs
+© 2026 Cyberprevs
 ```
 
 ## Support Commercial
@@ -135,7 +135,7 @@ Pour du **support commercial**, **formation** ou **consulting**, veuillez contac
 Pour toute question sur les contributions :
 - Ouvrez une [Discussion GitHub](../../discussions)
 - Consultez la [documentation](README.md)
-- Lisez [CLAUDE.md](CLAUDE.md) pour la doc technique
+- Lisez [FEATURES.md](FEATURES.md) pour les fonctionnalités détaillées
 
 ---
 

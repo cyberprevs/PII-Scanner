@@ -1,6 +1,6 @@
 # PII Scanner - Version 1.0.0 - Production Ready
 
-**Date de Release** : 10 janvier 2026
+**Date de Release** : 18 janvier 2026
 **Développé par** : [Cyberprevs](https://cyberprevs.fr)
 **Licence** : MIT (Open Source)
 
@@ -83,9 +83,10 @@ Cette version **V1.0.0** est **prête pour la production** avec toutes les fonct
 
 ### Déploiement
 - **Application web auto-hébergée** (pas de serveur externe)
-- **Build automatisé** : BuildWebApp.ps1
-- **Package self-contained** : ~124 MB (runtime .NET inclus)
-- **Port HTTPS** : 5001 (recommandé)
+- **Build automatisé** : build-standalone-release.ps1
+- **Package self-contained** : ~73 MB (runtime .NET 9.0 inclus)
+- **Mode HTTP** : Port 5000 (défaut, compatible Windows Server)
+- **Mode HTTPS** : Port 5001 (optionnel, voir INSTALLATION.md)
 - **Aucune installation requise** : Extraction et exécution
 
 ---
@@ -102,7 +103,7 @@ Cette version **V1.0.0** est **prête pour la production** avec toutes les fonct
 | **Total tests** | **118** |
 | Bundle size | 1,215 kB |
 | Bundle gzip | 359 kB |
-| Package size | ~124 MB |
+| Package size | ~73 MB |
 | Mesures de sécurité | 12 |
 
 ---
@@ -140,7 +141,15 @@ Cette version **V1.0.0** est **prête pour la production** avec toutes les fonct
 
 ## Installation & Lancement
 
-### Option 1 : Build Automatique (Recommandé)
+### Option 1 : Version Standalone (Recommandé)
+
+1. Téléchargez `PII-Scanner-v1.0.0-Windows-Standalone.zip` depuis [Releases](https://github.com/cyberprevs/pii-scanner/releases)
+2. Extrayez le ZIP
+3. Double-cliquez sur **`PiiScanner.Api.exe`**
+4. Le navigateur s'ouvre automatiquement sur **http://localhost:5000**
+5. Créez votre compte administrateur (premier compte = admin)
+
+### Option 2 : Build depuis sources
 
 ```powershell
 # Cloner le projet
@@ -148,14 +157,12 @@ git clone https://github.com/cyberprevs/pii-scanner.git
 cd pii-scanner
 
 # Build automatique
-.\BuildWebApp.ps1
+.\build-standalone-release.ps1
 
-# Lancer l'application
-cd PII-Scanner-WebApp
-.\Demarrer PII Scanner.bat
+# Le package sera créé dans releases/PII-Scanner-v1.0.0-Windows-Standalone.zip
 ```
 
-### Option 2 : Développement
+### Option 3 : Développement
 
 ```bash
 # Terminal 1 : API
@@ -167,7 +174,7 @@ cd pii-scanner-ui
 npm run dev
 ```
 
-**Accès** : https://localhost:5001
+**Accès** : http://localhost:5000 (ou https://localhost:5001 si HTTPS activé)
 
 ---
 
@@ -274,5 +281,5 @@ Merci à tous les contributeurs et utilisateurs qui ont testé et fourni des ret
 ---
 
 **Version** : 1.0.0
-**Date** : 10 janvier 2026
+**Date** : 18 janvier 2026
 **Tag Git** : `v1.0.0`
