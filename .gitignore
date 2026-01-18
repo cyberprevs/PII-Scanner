@@ -54,6 +54,9 @@ CLAUDE.md
 claude.json
 .claude-code/
 
+# Fichiers de ressources dupliqués (UI)
+pii-scanner-ui/resources/api/
+
 # Certificats et clés (SÉCURITÉ!)
 *.pfx
 *.p12
