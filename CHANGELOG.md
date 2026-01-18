@@ -5,7 +5,7 @@ Tous les changements notables de ce projet seront documentés dans ce fichier.
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/),
 et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
-## [1.0.0] - 2026-01-14
+## [1.0.0] - 2026-01-18
 
 ### 🎉 Version Initiale Stable - Production Ready
 
@@ -132,11 +132,11 @@ Première version stable de **PII Scanner** par Cyberprevs, prête pour un usage
 #### 📝 Documentation
 
 - README.md complet avec guide d'installation
-- CLAUDE.md pour développeurs
 - SECURITY.md avec politique de sécurité
 - CONTRIBUTING.md pour contributeurs
 - CODE_OF_CONDUCT.md
 - FEATURES.md pour fonctionnalités détaillées
+- INSTALLATION.md pour guide d'installation détaillé
 - RELEASE_V1.0.0.md pour documentation de release
 
 #### 📜 Licence
@@ -227,7 +227,7 @@ Cette version de développement a introduit deux fonctionnalités majeures d'ana
 **Documentation**
 - **FEATURES.md** : Documentation complète des nouvelles fonctionnalités
 - README.md mis à jour : 17 pages, analyse par catégories, fichiers dupliqués
-- CLAUDE.md mis à jour : section Performance, Duplicate File Detection
+- FEATURES.md mis à jour : section Performance, Duplicate File Detection
 - Exemples de code et cas d'usage ajoutés
 
 #### 🔧 Modifié
@@ -287,7 +287,7 @@ Cette version de développement a introduit le package portable qui est maintena
 **Documentation**
 - Section "Version Portable" ajoutée à README.md
 - INSTALLATION.md restructuré avec Option 1 (Portable) et Option 2 (Sources)
-- CLAUDE.md étendu avec section "Portable Deployment"
+- FEATURES.md étendu avec section "Portable Deployment"
 - LISEZMOI-PORTABLE.txt créé avec guide utilisateur complet
 - Dépannage Windows SmartScreen dans toute la documentation
 
@@ -300,13 +300,13 @@ Cette version de développement a introduit le package portable qui est maintena
 
 - README.md réduit de 70% avec liens vers docs spécialisées
 - INSTALLATION.md restructuré (Option 1: Portable, Option 2: Sources)
-- CLAUDE.md avec section build portable pour développeurs
+- FEATURES.md avec section build portable pour développeurs
 - LISEZMOI-PORTABLE.txt avec guide utilisateur complet
 - Solutions Windows SmartScreen documentées partout
 
 #### 🔧 Infrastructure
 
-- Build portable documenté dans CLAUDE.md
+- Build portable documenté dans FEATURES.md
 - Scripts batch Windows (Démarrer, Débloquer, Exclusion Defender)
 - Package ZIP ~196 MB (API + UI + .NET Runtime)
 

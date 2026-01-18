@@ -350,6 +350,6 @@ copy original.txt document_important.txt
 
 ---
 
-**Dernière mise à jour** : 14 janvier 2026
+**Dernière mise à jour** : 18 janvier 2026
 **Version** : 1.0.0
 **Auteur** : Équipe PII Scanner - Cyberprevs

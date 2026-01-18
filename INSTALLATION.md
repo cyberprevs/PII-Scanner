@@ -205,36 +205,15 @@ npm run dev
 
 ---
 
-## Créer un Package Web App (Développeurs)
+## Créer un Package Standalone (Développeurs)
 
 Pour créer votre propre package distributable :
 
 ```powershell
 # Script automatisé (Recommandé)
-.\BuildWebApp.ps1
+.\build-standalone-release.ps1
 
-# OU manuellement :
-
-# 1. Build React
-cd pii-scanner-ui
-npm run build
-
-# 2. Copier vers wwwroot
-xcopy /E /I dist ..\PiiScanner.Api\wwwroot
-
-# 3. Publish API (self-contained)
-cd ..\PiiScanner.Api
-dotnet publish -c Release -r win-x64 --self-contained true -o ..\PII-Scanner-WebApp
-
-# 4. Créer le fichier batch de lancement
-# (voir BuildWebApp.ps1 pour le contenu)
-```
-
-Le package sera créé dans `PII-Scanner-WebApp/` (~124 MB).
-
-Pour distribuer :
-```powershell
-Compress-Archive -Path PII-Scanner-WebApp\* -DestinationPath PII-Scanner-WebApp.zip
+# Le package sera créé dans releases/PII-Scanner-v1.0.0-Windows-Standalone.zip (~73 MB)
 ```
 
 ---
@@ -320,12 +299,12 @@ dotnet dev-certs https --trust
 ## Documentation
 
 - **Documentation complète** : [README.md](README.md)
-- **Guide de démarrage** : [DEMARRAGE.md](DEMARRAGE.md)
+- **Fonctionnalités** : [FEATURES.md](FEATURES.md)
 - **Sécurité** : [SECURITY.md](SECURITY.md)
 - **Changelog** : [CHANGELOG.md](CHANGELOG.md)
 
 ---
 
 **Version** : 1.0.0
-**Date** : 14 janvier 2026
+**Date** : 18 janvier 2026
 **Développé par** : [Cyberprevs](https://cyberprevs.fr)

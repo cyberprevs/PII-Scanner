@@ -35,7 +35,7 @@ npm run dev
 
 Le serveur de développement démarre sur http://localhost:5173 avec hot reload automatique.
 
-> **Note** : L'API doit être démarrée séparément sur https://localhost:5001
+> **Note** : L'API doit être démarrée séparément sur http://localhost:5000 (ou https://localhost:5001 si HTTPS activé)
 
 ### Build de production
 
@@ -244,7 +244,7 @@ Utilisez le script à la racine du projet :
 
 ```powershell
 # Build complet (React + API + Package)
-.\BuildWebApp.ps1
+.\build-standalone-release.ps1
 ```
 
 ## Dépannage
@@ -301,8 +301,9 @@ const StatCard = React.memo(({ title, value, icon }) => {
 
 ### Documentation
 
-- [CLAUDE.md](../CLAUDE.md) - Guide complet pour développeurs
-- [DEMARRAGE.md](../DEMARRAGE.md) - Guide de démarrage rapide
+- [README.md](../README.md) - Documentation principale
+- [INSTALLATION.md](../INSTALLATION.md) - Guide d'installation
+- [FEATURES.md](../FEATURES.md) - Fonctionnalités détaillées
 - [SECURITY.md](../SECURITY.md) - Documentation de sécurité
 
 ### Liens externes
@@ -320,6 +321,6 @@ Voir [LICENSE](../LICENSE) pour les détails.
 
 ---
 
-**Développé par** : [Cyberprevs](https://cyberprevs.com)
+**Développé par** : [Cyberprevs](https://cyberprevs.fr)
 **Version** : 1.0.0
-**Dernière mise à jour** : 4 Janvier 2025
+**Dernière mise à jour** : 18 Janvier 2026
