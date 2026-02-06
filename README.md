@@ -270,8 +270,7 @@ Voir [SECURITY.md](SECURITY.md) pour les instructions de signalement responsable
 
 Conforme à la **Loi N°2017-20 portant Code du Numérique en République du Bénin** :
 - Titre IV : Protection des données à caractère personnel
-- Autorité : APDP (Autorité de Protection des Données Personnelles)
-- Contact APDP : contact@apdp.bj
+
 
 ---
 
