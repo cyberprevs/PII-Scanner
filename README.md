@@ -21,7 +21,7 @@ Application web pour détecter et analyser les données personnelles identifiabl
 - Aucune installation requise - Application standalone (~73 MB, .NET 9.0 Runtime inclus)
 - Compatible Windows 10/11 et Windows Server 2016+
 - Mode HTTP par défaut (compatible tous environnements)
-- N'importe quel navigateur - Chrome, Edge, Firefox, etc.
+- N'importe quel navigateur - Chrome, Edge, Firefox, etc
 
 ### Mode HTTP vs HTTPS
 
