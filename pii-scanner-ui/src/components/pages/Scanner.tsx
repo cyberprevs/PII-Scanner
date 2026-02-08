@@ -23,17 +23,20 @@ import HistoryIcon from '@mui/icons-material/History';
 import DeleteIcon from '@mui/icons-material/Delete';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import SecurityIcon from '@mui/icons-material/Security';
+import StopIcon from '@mui/icons-material/Stop';
 import { scanApi } from '../../services/apiClient';
 import { useAuth } from '../../contexts/AuthContext';
 import type { ScanProgressResponse } from '../../types';
+import { useKeyboardShortcut } from '../../hooks/useKeyboardShortcut';
 
 interface ScannerProps {
   scanning: boolean;
   scanId: string | null;
   onStartScan: (directoryPath: string) => void;
+  onStopScan: () => void;
 }
 
-export default function Scanner({ scanning, scanId, onStartScan }: ScannerProps) {
+export default function Scanner({ scanning, scanId, onStartScan, onStopScan }: ScannerProps) {
   const { user } = useAuth();
   const [directoryPath, setDirectoryPath] = useState('');
   const [progress, setProgress] = useState<ScanProgressResponse | null>(null);
@@ -94,6 +97,15 @@ export default function Scanner({ scanning, scanId, onStartScan }: ScannerProps)
     saveRecentPath(directoryPath);
     onStartScan(directoryPath);
   };
+
+  // Raccourci clavier Ctrl+S pour lancer le scan
+  useKeyboardShortcut({
+    key: 's',
+    ctrlKey: true,
+    callback: handleStartScan,
+    enabled: !scanning && !!directoryPath,
+    preventDefault: true, // Empêche la boîte de dialogue "Enregistrer la page" du navigateur
+  });
 
   const handlePathChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setDirectoryPath(e.target.value);
@@ -262,33 +274,37 @@ export default function Scanner({ scanning, scanId, onStartScan }: ScannerProps)
                 </Grid>
 
                 {/* Start button */}
-                <Button
-                  variant="contained"
-                  size="large"
-                  fullWidth
-                  onClick={handleStartScan}
-                  disabled={!directoryPath || scanning}
-                  startIcon={<PlayArrowIcon />}
-                  sx={{
-                    py: 2,
-                    fontSize: '1.1rem',
-                    fontWeight: 700,
-                    background: directoryPath
-                      ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-                      : undefined,
-                    boxShadow: directoryPath ? 3 : 0,
-                    '&:hover': {
-                      background: directoryPath
-                        ? 'linear-gradient(135deg, #5568d3 0%, #653a8b 100%)'
-                        : undefined,
-                      boxShadow: directoryPath ? 6 : 0,
-                      transform: 'translateY(-2px)',
-                    },
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  Démarrer le scan
-                </Button>
+                <Tooltip title="Raccourci : Ctrl+S" placement="top">
+                  <span>
+                    <Button
+                      variant="contained"
+                      size="large"
+                      fullWidth
+                      onClick={handleStartScan}
+                      disabled={!directoryPath || scanning}
+                      startIcon={<PlayArrowIcon />}
+                      sx={{
+                        py: 2,
+                        fontSize: '1.1rem',
+                        fontWeight: 700,
+                        background: directoryPath
+                          ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                          : undefined,
+                        boxShadow: directoryPath ? 3 : 0,
+                        '&:hover': {
+                          background: directoryPath
+                            ? 'linear-gradient(135deg, #5568d3 0%, #653a8b 100%)'
+                            : undefined,
+                          boxShadow: directoryPath ? 6 : 0,
+                          transform: 'translateY(-2px)',
+                        },
+                        transition: 'all 0.2s',
+                      }}
+                    >
+                      Démarrer le scan
+                    </Button>
+                  </span>
+                </Tooltip>
               </CardContent>
             </Card>
           </Grid>
@@ -412,6 +428,26 @@ export default function Scanner({ scanning, scanId, onStartScan }: ScannerProps)
                     }}
                   />
                 </Paper>
+
+                {/* Bouton Arrêter le scan */}
+                <Box sx={{ mt: 3, mb: 3, display: 'flex', justifyContent: 'center' }}>
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    size="large"
+                    onClick={onStopScan}
+                    startIcon={<StopIcon />}
+                    sx={{
+                      minWidth: 200,
+                      borderWidth: 2,
+                      '&:hover': {
+                        borderWidth: 2,
+                      },
+                    }}
+                  >
+                    Arrêter le scan (Esc)
+                  </Button>
+                </Box>
 
                 <Alert severity="info" icon={<FolderOpenIcon />} sx={{ mb: 2 }}>
                   <Typography variant="caption" color="text.secondary" fontWeight={600} display="block" gutterBottom>
