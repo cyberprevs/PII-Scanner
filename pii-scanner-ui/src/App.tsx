@@ -29,6 +29,7 @@ import DuplicateFiles from './components/pages/DuplicateFiles';
 import { scanApi } from './services/apiClient';
 import type { ScanResultResponse } from './types';
 import axiosInstance, { initializeCsrfToken } from './services/axios';
+import { useKeyboardShortcut } from './hooks/useKeyboardShortcut';
 
 function App() {
   const [scanning, setScanning] = useState(false);
@@ -212,6 +213,56 @@ function App() {
     localStorage.removeItem('lastScanResults');
   };
 
+  const handleStopScan = async () => {
+    if (!scanId) return;
+
+    try {
+      // Appeler l'API pour nettoyer le scan côté serveur
+      await scanApi.cleanupScan(scanId);
+
+      // Réinitialiser l'état
+      setScanning(false);
+      setScanId(null);
+      setResults(null);
+
+      // Nettoyer le localStorage
+      localStorage.removeItem('lastScanId');
+      localStorage.removeItem('lastScanResults');
+
+      setSuccessMessage('Scan arrêté avec succès');
+    } catch (err: any) {
+      console.error('Erreur lors de l\'arrêt du scan:', err);
+      setError('Erreur lors de l\'arrêt du scan');
+
+      // Même en cas d'erreur API, réinitialiser l'état UI
+      setScanning(false);
+    }
+  };
+
+  // Raccourci Ctrl+E : Exporter en CSV
+  useKeyboardShortcut({
+    key: 'e',
+    ctrlKey: true,
+    callback: () => {
+      if (scanId) {
+        handleDownloadReport('csv');
+        setSuccessMessage('Rapport CSV téléchargé (Ctrl+E)');
+      } else {
+        setError('Aucun scan disponible pour l\'export');
+      }
+    },
+    enabled: scanId !== null,
+    preventDefault: true,
+  });
+
+  // Raccourci Escape : Arrêter le scan
+  useKeyboardShortcut({
+    key: 'Escape',
+    callback: handleStopScan,
+    enabled: scanning,
+    preventDefault: true,
+  });
+
   // Afficher un loader pendant la vérification
   if (checkingInit) {
     return (
@@ -285,6 +336,7 @@ function App() {
                   scanning={scanning}
                   scanId={scanId}
                   onStartScan={handleStartScan}
+                  onStopScan={handleStopScan}
                 />
               }
             />

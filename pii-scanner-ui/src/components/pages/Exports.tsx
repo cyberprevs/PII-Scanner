@@ -1,4 +1,4 @@
-import { Box, Typography, Card, CardContent, Button } from '@mui/material';
+import { Box, Typography, Card, CardContent, Button, Tooltip } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
 import TableChartIcon from '@mui/icons-material/TableChart';
 import DataObjectIcon from '@mui/icons-material/DataObject';
@@ -51,15 +51,22 @@ export default function Exports({ scanId, onDownloadReport }: ExportsProps) {
                 <Typography variant="body2" color="text.secondary" paragraph>
                   {format.description}
                 </Typography>
-                <Button
-                  variant="outlined"
-                  startIcon={<DownloadIcon />}
-                  disabled={!scanId}
-                  fullWidth
-                  onClick={() => onDownloadReport(format.format)}
+                <Tooltip
+                  title={format.format === 'csv' ? 'Raccourci : Ctrl+E (format par défaut)' : 'Raccourci : Ctrl+E télécharge le CSV'}
+                  placement="top"
                 >
-                  Télécharger
-                </Button>
+                  <span>
+                    <Button
+                      variant="outlined"
+                      startIcon={<DownloadIcon />}
+                      disabled={!scanId}
+                      fullWidth
+                      onClick={() => onDownloadReport(format.format)}
+                    >
+                      Télécharger
+                    </Button>
+                  </span>
+                </Tooltip>
               </CardContent>
             </Card>
           </Box>
