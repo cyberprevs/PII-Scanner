@@ -38,8 +38,6 @@ export interface RiskyFile {
   lastAccessedDate?: string;
   stalenessLevel?: string;
   staleDataWarning?: string;
-
-  // Informations d'exposition
   exposureLevel?: string;
   accessibleToEveryone?: boolean;
   isNetworkShare?: boolean;
@@ -52,11 +50,7 @@ export interface ScanDetection {
   piiType: string;
   match: string;
   lastAccessedDate?: string;
-
-  // Hash MD5 du fichier pour la détection de duplicatas
   fileHash?: string;
-
-  // Informations d'exposition
   exposureLevel?: string;
   accessibleToEveryone?: boolean;
 }
