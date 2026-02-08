@@ -544,4 +544,148 @@ public class PiiDetectorTests
     }
 
     #endregion
+
+    #region NPI (Numéro Personnel d'Identification) Tests
+
+    [Theory]
+    [InlineData("NPI: 1234567893")]        // NPI valide avec chiffre de contrôle Luhn: 3
+    [InlineData("Patient: 7992739875")]    // NPI valide avec chiffre de contrôle Luhn: 5
+    [InlineData("ID: 4992739878")]         // NPI valide avec chiffre de contrôle Luhn: 8
+    public void Detect_NPI_ShouldDetectValidNPIs(string content)
+    {
+        // Act
+        var results = PiiDetector.Detect(content, TestFilePath);
+
+        // Assert
+        results.Should().Contain(r => r.PiiType == "NPI");
+    }
+
+    [Fact]
+    public void Detect_NPI_ShouldValidateLuhnCheckDigit()
+    {
+        // Arrange - Numéros NPI valides avec chiffres de contrôle Luhn corrects
+        var validNPIs = new[]
+        {
+            "NPI: 1234567893",    // Chiffre de contrôle: 3 (somme=47, chiffre=50-47=3)
+            "ID: 7992739875",     // Chiffre de contrôle: 5 (somme=65, chiffre=70-65=5)
+            "Patient 4992739878", // Chiffre de contrôle: 8 (somme=62, chiffre=70-62=8)
+            "Number 1000000009"   // Chiffre de contrôle: 9 (somme=1, chiffre=10-1=9)
+        };
+
+        foreach (var content in validNPIs)
+        {
+            // Act
+            var results = PiiDetector.Detect(content, TestFilePath);
+
+            // Assert
+            results.Should().Contain(r => r.PiiType == "NPI",
+                because: $"'{content}' contient un NPI valide avec un chiffre de contrôle Luhn correct");
+        }
+    }
+
+    [Theory]
+    [InlineData("0000000000")]  // Tous zéros (rejeté)
+    [InlineData("1111111111")]  // Chiffres uniformes (rejeté)
+    [InlineData("9999999999")]  // Tous neuf (rejeté)
+    [InlineData("0123456789")]  // Séquence évidente (rejeté)
+    [InlineData("9876543210")]  // Séquence décroissante (rejeté)
+    [InlineData("1234567890")]  // Numéro factice (rejeté)
+    [InlineData("1234567894")]  // Mauvais chiffre de contrôle Luhn (devrait être 3, pas 4)
+    [InlineData("7992739872")]  // Mauvais chiffre de contrôle (devrait être 5, pas 2)
+    public void Detect_NPI_ShouldRejectInvalidNPIs(string content)
+    {
+        // Act
+        var results = PiiDetector.Detect(content, TestFilePath);
+
+        // Assert
+        results.Should().NotContain(r => r.PiiType == "NPI",
+            because: $"'{content}' devrait être rejeté comme NPI invalide");
+    }
+
+    [Fact]
+    public void Detect_NPI_LuhnAlgorithm_Example1()
+    {
+        // Arrange - Exemple de la spécification NPI
+        // Numéro: 123456789 + Chiffre de contrôle: 3 = 1234567893
+        // Étape 1: Doubler les chiffres alternés depuis la droite (avant le chiffre de contrôle)
+        //   9 8 7 6 5 4 3 2 1
+        //   9,16,7,12,5,8,3,4,1 (doublés: 8,6,4,2)
+        // Étape 2: Additionner les chiffres individuels
+        //   9+1+6+7+1+2+5+8+3+4+1 = 47
+        // Étape 3: Prochain nombre supérieur se terminant par zéro = 50, chiffre de contrôle = 50-47 = 3
+        var content = "Patient ID: 1234567893";
+
+        // Act
+        var results = PiiDetector.Detect(content, TestFilePath);
+
+        // Assert
+        results.Should().ContainSingle(r => r.PiiType == "NPI");
+        results.Should().Contain(r => r.Match == "1234567893");
+    }
+
+    [Fact]
+    public void Detect_NPI_LuhnAlgorithm_Example2()
+    {
+        // Arrange - Test d'un autre NPI valide
+        // Numéro: 799273987 + Chiffre de contrôle: 5 = 7992739875
+        var content = "Provider NPI: 7992739875";
+
+        // Act
+        var results = PiiDetector.Detect(content, TestFilePath);
+
+        // Assert
+        results.Should().ContainSingle(r => r.PiiType == "NPI");
+        results.Should().Contain(r => r.Match == "7992739875");
+    }
+
+    [Fact]
+    public void Detect_NPI_ShouldNotDetectLessThan10Digits()
+    {
+        // Arrange
+        var content = "Numéro: 123456789"; // Seulement 9 chiffres
+
+        // Act
+        var results = PiiDetector.Detect(content, TestFilePath);
+
+        // Assert
+        results.Should().NotContain(r => r.PiiType == "NPI",
+            because: "NPI nécessite exactement 10 chiffres");
+    }
+
+    [Fact]
+    public void Detect_NPI_ShouldNotDetectMoreThan10Digits()
+    {
+        // Arrange - 11 chiffres ne devraient pas correspondre à un NPI
+        var content = "Numéro: 12345678901";
+
+        // Act
+        var results = PiiDetector.Detect(content, TestFilePath);
+
+        // Assert
+        // Ne devrait pas détecter comme NPI (11 chiffres), mais pourrait détecter d'autres patterns
+        results.Where(r => r.PiiType == "NPI").Should().BeEmpty(
+            because: "NPI nécessite exactement 10 chiffres");
+    }
+
+    [Fact]
+    public void Detect_NPI_ShouldHandleMultipleNPIsInSameDocument()
+    {
+        // Arrange
+        var content = @"
+            Dossier médical:
+            Patient 1: NPI 1234567893
+            Patient 2: NPI 7992739875
+            Patient 3: NPI 4992739878
+        ";
+
+        // Act
+        var results = PiiDetector.Detect(content, TestFilePath);
+
+        // Assert
+        var npiResults = results.Where(r => r.PiiType == "NPI").ToList();
+        npiResults.Should().HaveCount(3);
+        npiResults.Select(r => r.Match).Should().Contain(new[] { "1234567893", "7992739875", "4992739878" });
+    }
+
+    #endregion
 }
