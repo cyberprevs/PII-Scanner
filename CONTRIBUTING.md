@@ -107,7 +107,7 @@ Utilisez [Conventional Commits](https://www.conventionalcommits.org/) :
 
 Si vous découvrez une **vulnérabilité de sécurité**, veuillez :
 
-1. **NE PAS** créer une issue publique
+1. **NE PAS** créer une issue publique .
 2. Consulter [SECURITY.md](SECURITY.md) pour le processus de signalement
 3. Nous contacter directement (voir SECURITY.md)
 
