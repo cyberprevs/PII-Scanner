@@ -70,6 +70,9 @@ public static class PiiDetector
         // Matricule fonctionnaire (commence par F ou M)
         { "Matricule_Fonctionnaire", @"\b[FM]\d{6,10}\b" },
 
+        // NPI - Numéro Personnel d'Identification (9 chiffres + 1 chiffre de contrôle Luhn)
+        { "NPI", @"\b\d{10}\b" },
+
         // ========== TRANSPORT BÉNIN ==========
 
         // Plaque d'immatriculation - Nouveau format (AB 1234 CD) ou ancien (1234 AB)
@@ -123,6 +126,7 @@ public static class PiiDetector
             "IBAN" => IsValidIbanBenin(value),
             "CNI_Benin" => IsValidCNI(value),
             "CNSS" => IsValidCNSS(value),
+            "NPI" => IsValidNPI(value),
             _ => true
         };
     }
@@ -296,5 +300,71 @@ public static class PiiDetector
             return false;
 
         return true;
+    }
+
+    private static bool IsValidNPI(string npi)
+    {
+        // NPI doit avoir exactement 10 chiffres (9 chiffres + 1 chiffre de contrôle)
+        if (npi.Length != 10 || !npi.All(char.IsDigit))
+            return false;
+
+        // Rejeter les numéros uniformes (0000000000, 1111111111, etc.)
+        if (npi.All(c => c == npi[0]))
+            return false;
+
+        // Rejeter les séquences évidentes (0123456789, 9876543210)
+        if (npi == "0123456789" || npi == "9876543210")
+            return false;
+
+        // Rejeter les numéros factices communs
+        if (npi == "9999999999" || npi == "0000000000" || npi == "1234567890")
+            return false;
+
+        // Validation Luhn (modulus 10 "double-add-double")
+        // Le dernier chiffre est le chiffre de contrôle
+        return ValidateLuhnCheckDigit(npi);
+    }
+
+    /// <summary>
+    /// Valide le chiffre de contrôle Luhn pour un numéro.
+    /// Algorithme: Double-Add-Double (Modulus 10)
+    /// 1. Doubler la valeur des chiffres alternés en commençant par le chiffre le plus à droite (avant le check digit)
+    /// 2. Additionner les chiffres individuels des produits de l'étape 1 aux chiffres non affectés du numéro original
+    /// 3. Soustraire le total obtenu à l'étape 2 du prochain nombre se terminant par zéro. C'est le chiffre de contrôle.
+    ///    Si le total obtenu à l'étape 2 se termine déjà par zéro, le chiffre de contrôle est zéro.
+    /// </summary>
+    private static bool ValidateLuhnCheckDigit(string number)
+    {
+        if (string.IsNullOrEmpty(number) || !number.All(char.IsDigit))
+            return false;
+
+        int sum = 0;
+        bool shouldDouble = false; // Commencer SANS doubler (on alterne, en doublant un chiffre sur deux)
+
+        // Parcourir de droite à gauche, en commençant par l'avant-dernier chiffre (avant le chiffre de contrôle)
+        // Le chiffre le plus à droite est le chiffre de contrôle lui-même
+        for (int i = number.Length - 2; i >= 0; i--)
+        {
+            int digit = number[i] - '0';
+
+            if (shouldDouble)
+            {
+                digit *= 2;
+                // Si le résultat est > 9, additionner les chiffres individuels (ex: 14 -> 1+4=5)
+                if (digit > 9)
+                    digit = digit / 10 + digit % 10; // Équivalent à: (digit - 9)
+            }
+
+            sum += digit;
+            shouldDouble = !shouldDouble; // Basculer pour la prochaine itération
+        }
+
+        // Calculer ce que devrait être le chiffre de contrôle
+        int calculatedCheckDigit = (10 - (sum % 10)) % 10;
+
+        // Comparer avec le chiffre de contrôle réel (dernier chiffre)
+        int actualCheckDigit = number[number.Length - 1] - '0';
+
+        return calculatedCheckDigit == actualCheckDigit;
     }
 }
