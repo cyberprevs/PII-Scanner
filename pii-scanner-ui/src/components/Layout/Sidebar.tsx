@@ -47,6 +47,7 @@ import BuildIcon from '@mui/icons-material/Build';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import { useAuth } from '../../contexts/AuthContext';
+import { tokens } from '../../theme/designSystem';
 
 const DRAWER_WIDTH = 240;
 const DRAWER_WIDTH_COLLAPSED = 65;
@@ -67,10 +68,7 @@ interface MenuItem {
 }
 
 const menuItems: MenuItem[] = [
-  // Section Scan
   { id: 'dashboard', label: 'Tableau de bord', icon: <DashboardIcon />, path: '/dashboard' },
-
-  // Section Scans (avec sous-menu)
   {
     id: 'scans',
     label: 'Scans',
@@ -81,8 +79,6 @@ const menuItems: MenuItem[] = [
       { id: 'history', label: 'Historique', icon: <HistoryIcon />, path: '/history' },
     ],
   },
-
-  // Section Analyse des résultats (avec sous-menu)
   {
     id: 'analysis',
     label: 'Analyse des résultats',
@@ -97,13 +93,9 @@ const menuItems: MenuItem[] = [
       { id: 'exposure', label: 'Exposition', icon: <LockOpenIcon />, path: '/exposure' },
     ],
   },
-
-  // Section Rapports & Exports
   { id: 'reports', label: 'Rapports & Analytics', icon: <AssessmentIcon />, path: '/reports' },
   { id: 'exports', label: 'Exports', icon: <DownloadIcon />, path: '/exports' },
   { id: 'data-retention', label: 'Rétention', icon: <DeleteSweepIcon />, path: '/data-retention', divider: true },
-
-  // Section Maintenance (avec sous-menu)
   {
     id: 'maintenance',
     label: 'Maintenance',
@@ -117,8 +109,6 @@ const menuItems: MenuItem[] = [
       { id: 'settings', label: 'Paramètres', icon: <SettingsIcon />, path: '/settings' },
     ],
   },
-
-  // Section Profil
   { id: 'profile', label: 'Mon Profil', icon: <AccountCircleIcon />, path: '/profile' },
   { id: 'support', label: 'Support', icon: <HelpIcon />, path: '/support' },
   { id: 'about', label: 'À propos', icon: <InfoIcon />, path: '/about' },
@@ -133,6 +123,7 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
   const location = useLocation();
   const { user, isAdmin, logout } = useAuth();
 
+  const c = tokens.colors;
   const drawerWidth = collapsed ? DRAWER_WIDTH_COLLAPSED : DRAWER_WIDTH;
 
   const handleNavigate = (path: string) => {
@@ -144,23 +135,38 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
     navigate('/login');
   };
 
-  // Filter menu items based on user role
   const filteredMenuItems = menuItems.filter(item => {
-    // Admin-only menu items
     if (item.adminOnly && !isAdmin) {
       return false;
     }
     return true;
   });
 
-  // Check if current path is under scans
   const isScansPath = ['/scanner', '/history'].includes(location.pathname);
-
-  // Check if current path is under maintenance
   const isMaintenancePath = ['/users', '/database', '/audit-trail', '/settings'].includes(location.pathname);
-
-  // Check if current path is under analysis
   const isAnalysisPath = ['/risky-files', '/detections', '/pii-category-analysis', '/duplicate-files', '/staleness', '/exposure'].includes(location.pathname);
+
+  const isSelected = (item: MenuItem) =>
+    item.id === 'scans' ? isScansPath :
+    item.id === 'analysis' ? isAnalysisPath :
+    item.id === 'maintenance' ? isMaintenancePath : false;
+
+  const getOpenState = (item: MenuItem) =>
+    item.id === 'scans' ? scansOpen :
+    item.id === 'analysis' ? analysisOpen :
+    maintenanceOpen;
+
+  const toggleOpen = (item: MenuItem) => {
+    if (item.id === 'scans') setScansOpen(!scansOpen);
+    else if (item.id === 'analysis') setAnalysisOpen(!analysisOpen);
+    else setMaintenanceOpen(!maintenanceOpen);
+  };
+
+  // Colors for sidebar depending on mode
+  const sidebarBg = darkMode ? c.bgSurface : c.light.bgSurface;
+  const sidebarBorder = darkMode ? c.borderDefault : c.light.borderDefault;
+  const iconInactive = darkMode ? c.textTertiary : c.light.textTertiary;
+  const hoverBg = darkMode ? c.accentPrimaryMuted : 'rgba(0, 229, 153, 0.06)';
 
   return (
     <Drawer
@@ -173,10 +179,8 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
           width: drawerWidth,
           boxSizing: 'border-box',
           transition: 'width 0.3s ease',
-          background: darkMode
-            ? 'linear-gradient(180deg, #1a1f37 0%, #2d3561 100%)'
-            : 'linear-gradient(180deg, #ffffff 0%, #f5f7fa 100%)',
-          borderRight: darkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.08)',
+          backgroundColor: sidebarBg,
+          borderRight: `1px solid ${sidebarBorder}`,
           overflowX: 'hidden',
         },
       }}
@@ -193,17 +197,19 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
       >
         {!collapsed && (
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <SecurityIcon sx={{ fontSize: 32, color: '#667eea' }} />
-            <Typography variant="h6" fontWeight={700} sx={{
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }}>
+            <Box
+              component="svg"
+              viewBox="0 0 24 24"
+              sx={{ width: 28, height: 28, fill: c.accentPrimary }}
+            >
+              <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 2.18l7 3.12v4.7c0 4.83-3.23 9.36-7 10.57-3.77-1.21-7-5.74-7-10.57V6.3l7-3.12z" />
+            </Box>
+            <Typography variant="h6" fontWeight={700} sx={{ color: c.accentPrimary }}>
               PII Scanner
             </Typography>
           </Box>
         )}
-        <IconButton onClick={() => setCollapsed(!collapsed)} size="small">
+        <IconButton onClick={() => setCollapsed(!collapsed)} size="small" sx={{ color: iconInactive }}>
           {collapsed ? <ChevronRightIcon /> : <ChevronLeftIcon />}
         </IconButton>
       </Box>
@@ -215,38 +221,23 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
         {filteredMenuItems.map((item) => (
           <Box key={item.id}>
             {item.subItems ? (
-              // Menu avec sous-items (Scans, Analyse, ou Maintenance)
               <>
                 <Tooltip title={collapsed ? item.label : ''} placement="right">
                   <ListItem disablePadding sx={{ mb: 0.5 }}>
                     <ListItemButton
-                      selected={
-                        item.id === 'scans' ? isScansPath :
-                        item.id === 'analysis' ? isAnalysisPath :
-                        item.id === 'maintenance' ? isMaintenancePath : false
-                      }
-                      onClick={() => !collapsed && (
-                        item.id === 'scans' ? setScansOpen(!scansOpen) :
-                        item.id === 'analysis' ? setAnalysisOpen(!analysisOpen) :
-                        setMaintenanceOpen(!maintenanceOpen)
-                      )}
+                      selected={isSelected(item)}
+                      onClick={() => !collapsed && toggleOpen(item)}
                       sx={{
                         borderRadius: 2,
-                        minHeight: 48,
+                        minHeight: 44,
                         justifyContent: collapsed ? 'center' : 'flex-start',
                         '&.Mui-selected': {
-                          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                          color: 'white',
-                          '&:hover': {
-                            background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
-                          },
-                          '& .MuiListItemIcon-root': {
-                            color: 'white',
-                          },
+                          backgroundColor: c.accentPrimaryMuted,
+                          color: c.accentPrimary,
+                          '&:hover': { backgroundColor: c.accentPrimaryMuted },
+                          '& .MuiListItemIcon-root': { color: c.accentPrimary },
                         },
-                        '&:hover': {
-                          backgroundColor: darkMode ? 'rgba(102, 126, 234, 0.1)' : 'rgba(102, 126, 234, 0.08)',
-                        },
+                        '&:hover': { backgroundColor: hoverBg },
                       }}
                     >
                       <ListItemIcon
@@ -254,11 +245,7 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
                           minWidth: 0,
                           mr: collapsed ? 0 : 2,
                           justifyContent: 'center',
-                          color: (
-                            item.id === 'scans' ? isScansPath :
-                            item.id === 'analysis' ? isAnalysisPath :
-                            item.id === 'maintenance' ? isMaintenancePath : false
-                          ) ? 'white' : (darkMode ? '#a0a4c1' : '#6b7280'),
+                          color: isSelected(item) ? c.accentPrimary : iconInactive,
                         }}
                       >
                         {item.icon}
@@ -266,76 +253,58 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
                       {!collapsed && (
                         <>
                           <ListItemText primary={item.label} />
-                          {(
-                            item.id === 'scans' ? scansOpen :
-                            item.id === 'analysis' ? analysisOpen :
-                            maintenanceOpen
-                          ) ? <ExpandLess /> : <ExpandMore />}
+                          {getOpenState(item) ? <ExpandLess /> : <ExpandMore />}
                         </>
                       )}
                     </ListItemButton>
                   </ListItem>
                 </Tooltip>
 
-                {/* Sous-menu */}
                 {!collapsed && (
-                  <Collapse in={
-                    item.id === 'scans' ? scansOpen :
-                    item.id === 'analysis' ? analysisOpen :
-                    maintenanceOpen
-                  } timeout="auto" unmountOnExit>
+                  <Collapse in={getOpenState(item)} timeout="auto" unmountOnExit>
                     <List component="div" disablePadding>
                       {item.subItems
                         .filter(subItem => !subItem.adminOnly || isAdmin)
                         .map((subItem) => (
-                          <Tooltip key={subItem.id} title={''} placement="right">
-                            <ListItem disablePadding sx={{ mb: 0.5 }}>
-                              <ListItemButton
-                                selected={location.pathname === subItem.path}
-                                onClick={() => subItem.path && handleNavigate(subItem.path)}
+                          <ListItem key={subItem.id} disablePadding sx={{ mb: 0.5 }}>
+                            <ListItemButton
+                              selected={location.pathname === subItem.path}
+                              onClick={() => subItem.path && handleNavigate(subItem.path)}
+                              sx={{
+                                borderRadius: 2,
+                                minHeight: 38,
+                                pl: 4,
+                                '&.Mui-selected': {
+                                  backgroundColor: c.accentPrimaryMuted,
+                                  color: c.accentPrimary,
+                                  '&:hover': { backgroundColor: c.accentPrimaryMuted },
+                                  '& .MuiListItemIcon-root': { color: c.accentPrimary },
+                                },
+                                '&:hover': { backgroundColor: hoverBg },
+                              }}
+                            >
+                              <ListItemIcon
                                 sx={{
-                                  borderRadius: 2,
-                                  minHeight: 40,
-                                  pl: 4,
-                                  '&.Mui-selected': {
-                                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                    color: 'white',
-                                    '&:hover': {
-                                      background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
-                                    },
-                                    '& .MuiListItemIcon-root': {
-                                      color: 'white',
-                                    },
-                                  },
-                                  '&:hover': {
-                                    backgroundColor: darkMode ? 'rgba(102, 126, 234, 0.1)' : 'rgba(102, 126, 234, 0.08)',
-                                  },
+                                  minWidth: 0,
+                                  mr: 2,
+                                  justifyContent: 'center',
+                                  color: location.pathname === subItem.path ? c.accentPrimary : iconInactive,
                                 }}
                               >
-                                <ListItemIcon
-                                  sx={{
-                                    minWidth: 0,
-                                    mr: 2,
-                                    justifyContent: 'center',
-                                    color: location.pathname === subItem.path ? 'white' : (darkMode ? '#a0a4c1' : '#6b7280'),
-                                  }}
-                                >
-                                  {subItem.icon}
-                                </ListItemIcon>
-                                <ListItemText
-                                  primary={subItem.label}
-                                  primaryTypographyProps={{ fontSize: '0.9rem' }}
-                                />
-                              </ListItemButton>
-                            </ListItem>
-                          </Tooltip>
+                                {subItem.icon}
+                              </ListItemIcon>
+                              <ListItemText
+                                primary={subItem.label}
+                                primaryTypographyProps={{ fontSize: '0.875rem' }}
+                              />
+                            </ListItemButton>
+                          </ListItem>
                         ))}
                     </List>
                   </Collapse>
                 )}
               </>
             ) : (
-              // Menu item normal (sans sous-items)
               <Tooltip title={collapsed ? item.label : ''} placement="right">
                 <ListItem disablePadding sx={{ mb: 0.5 }}>
                   <ListItemButton
@@ -343,21 +312,15 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
                     onClick={() => item.path && handleNavigate(item.path)}
                     sx={{
                       borderRadius: 2,
-                      minHeight: 48,
+                      minHeight: 44,
                       justifyContent: collapsed ? 'center' : 'flex-start',
                       '&.Mui-selected': {
-                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                        color: 'white',
-                        '&:hover': {
-                          background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
-                        },
-                        '& .MuiListItemIcon-root': {
-                          color: 'white',
-                        },
+                        backgroundColor: c.accentPrimaryMuted,
+                        color: c.accentPrimary,
+                        '&:hover': { backgroundColor: c.accentPrimaryMuted },
+                        '& .MuiListItemIcon-root': { color: c.accentPrimary },
                       },
-                      '&:hover': {
-                        backgroundColor: darkMode ? 'rgba(102, 126, 234, 0.1)' : 'rgba(102, 126, 234, 0.08)',
-                      },
+                      '&:hover': { backgroundColor: hoverBg },
                     }}
                   >
                     <ListItemIcon
@@ -365,7 +328,7 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
                         minWidth: 0,
                         mr: collapsed ? 0 : 2,
                         justifyContent: 'center',
-                        color: location.pathname === item.path ? 'white' : (darkMode ? '#a0a4c1' : '#6b7280'),
+                        color: location.pathname === item.path ? c.accentPrimary : iconInactive,
                       }}
                     >
                       {item.icon}
@@ -375,14 +338,14 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
                 </ListItem>
               </Tooltip>
             )}
-            {item.divider && <Divider sx={{ my: 1, opacity: 0.3 }} />}
+            {item.divider && <Divider sx={{ my: 1 }} />}
           </Box>
         ))}
       </List>
 
-      {/* Footer - User Info & Actions */}
+      {/* Footer */}
       <Box sx={{ mt: 'auto', p: 2 }}>
-        <Divider sx={{ mb: 2, opacity: 0.3 }} />
+        <Divider sx={{ mb: 2 }} />
 
         {/* User Info */}
         {user && (
@@ -391,14 +354,14 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
               <Tooltip title={`${user.fullName} (${user.role})`} placement="right">
                 <Avatar
                   sx={{
-                    width: 40,
-                    height: 40,
+                    width: 36,
+                    height: 36,
                     mx: 'auto',
-                    bgcolor: 'primary.main',
-                    cursor: 'default',
+                    bgcolor: c.accentPrimaryMuted,
+                    color: c.accentPrimary,
                   }}
                 >
-                  <PersonIcon />
+                  <PersonIcon fontSize="small" />
                 </Avatar>
               </Tooltip>
             ) : (
@@ -409,32 +372,35 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
                   gap: 1.5,
                   p: 1.5,
                   borderRadius: 2,
-                  bgcolor: darkMode ? 'rgba(102, 126, 234, 0.1)' : 'rgba(102, 126, 234, 0.08)',
+                  bgcolor: darkMode ? c.accentPrimaryMuted : 'rgba(0, 229, 153, 0.06)',
+                  border: `1px solid ${darkMode ? 'rgba(0, 229, 153, 0.15)' : 'rgba(0, 229, 153, 0.1)'}`,
                 }}
               >
                 <Avatar
                   sx={{
-                    width: 40,
-                    height: 40,
-                    bgcolor: 'primary.main',
+                    width: 36,
+                    height: 36,
+                    bgcolor: c.accentPrimaryMuted,
+                    color: c.accentPrimary,
                   }}
                 >
-                  <PersonIcon />
+                  <PersonIcon fontSize="small" />
                 </Avatar>
                 <Box sx={{ flex: 1, minWidth: 0 }}>
-                  <Typography
-                    variant="body2"
-                    fontWeight={600}
-                    noWrap
-                    sx={{ lineHeight: 1.2 }}
-                  >
+                  <Typography variant="body2" fontWeight={600} noWrap sx={{ lineHeight: 1.2 }}>
                     {user.fullName}
                   </Typography>
                   <Chip
                     label={user.role}
                     size="small"
-                    color={user.role === 'Admin' ? 'secondary' : 'primary'}
-                    sx={{ mt: 0.5, height: 20, fontSize: '0.7rem' }}
+                    sx={{
+                      mt: 0.5,
+                      height: 20,
+                      fontSize: '0.7rem',
+                      backgroundColor: user.role === 'Admin' ? c.accentPrimaryMuted : c.infoMuted,
+                      color: user.role === 'Admin' ? c.accentPrimary : c.info,
+                      border: `1px solid ${user.role === 'Admin' ? 'rgba(0, 229, 153, 0.2)' : 'rgba(59, 130, 246, 0.2)'}`,
+                    }}
                   />
                 </Box>
               </Box>
@@ -442,7 +408,7 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
           </Box>
         )}
 
-        {/* Logout Button */}
+        {/* Logout */}
         <Box sx={{ mb: 2 }}>
           {collapsed ? (
             <Tooltip title="Déconnexion" placement="right">
@@ -450,10 +416,8 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
                 onClick={handleLogout}
                 sx={{
                   width: '100%',
-                  color: darkMode ? '#ff6b6b' : '#dc2626',
-                  '&:hover': {
-                    bgcolor: darkMode ? 'rgba(255, 107, 107, 0.1)' : 'rgba(220, 38, 38, 0.1)',
-                  },
+                  color: c.danger,
+                  '&:hover': { bgcolor: c.dangerMuted },
                 }}
               >
                 <LogoutIcon />
@@ -466,11 +430,11 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
               startIcon={<LogoutIcon />}
               onClick={handleLogout}
               sx={{
-                borderColor: darkMode ? '#ff6b6b' : '#dc2626',
-                color: darkMode ? '#ff6b6b' : '#dc2626',
+                borderColor: 'rgba(244, 82, 82, 0.3)',
+                color: c.danger,
                 '&:hover': {
-                  borderColor: darkMode ? '#ff5252' : '#b91c1c',
-                  bgcolor: darkMode ? 'rgba(255, 107, 107, 0.1)' : 'rgba(220, 38, 38, 0.1)',
+                  borderColor: c.danger,
+                  bgcolor: c.dangerMuted,
                 },
               }}
             >
@@ -479,16 +443,25 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
           )}
         </Box>
 
-        {/* Dark Mode Toggle */}
+        {/* Dark Mode */}
         {collapsed ? (
           <Tooltip title={darkMode ? 'Mode clair' : 'Mode sombre'} placement="right">
-            <IconButton onClick={onToggleDarkMode} sx={{ width: '100%' }}>
+            <IconButton onClick={onToggleDarkMode} sx={{ width: '100%', color: iconInactive }}>
               {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
             </IconButton>
           </Tooltip>
         ) : (
           <FormControlLabel
-            control={<Switch checked={darkMode} onChange={onToggleDarkMode} />}
+            control={
+              <Switch
+                checked={darkMode}
+                onChange={onToggleDarkMode}
+                sx={{
+                  '& .Mui-checked': { color: c.accentPrimary },
+                  '& .Mui-checked + .MuiSwitch-track': { backgroundColor: c.accentPrimary },
+                }}
+              />
+            }
             label={
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 {darkMode ? <DarkModeIcon fontSize="small" /> : <LightModeIcon fontSize="small" />}
@@ -501,7 +474,7 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
           />
         )}
 
-        {/* Cyberprevs Branding */}
+        {/* Branding */}
         {!collapsed && (
           <Box
             sx={{
@@ -514,38 +487,21 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
           >
             <Typography
               variant="caption"
-              sx={{
-                color: 'text.secondary',
-                fontSize: '0.7rem',
-                display: 'block',
-                mb: 0.5,
-              }}
+              sx={{ color: c.textTertiary, fontSize: '0.65rem', display: 'block', mb: 0.5 }}
             >
               Développé par
             </Typography>
             <Typography
               variant="body2"
-              sx={{
-                fontWeight: 700,
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                fontSize: '0.95rem',
-                letterSpacing: '0.5px',
-              }}
+              sx={{ fontWeight: 700, color: c.accentPrimary, fontSize: '0.9rem', letterSpacing: '0.5px' }}
             >
               Cyberprevs
             </Typography>
             <Typography
               variant="caption"
-              sx={{
-                color: 'text.secondary',
-                fontSize: '0.65rem',
-                display: 'block',
-                mt: 0.5,
-              }}
+              sx={{ color: c.textTertiary, fontSize: '0.6rem', display: 'block', mt: 0.5 }}
             >
-              v1.0.0 • © 2025
+              v1.0.0
             </Typography>
           </Box>
         )}
