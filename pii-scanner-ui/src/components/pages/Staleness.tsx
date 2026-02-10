@@ -25,6 +25,7 @@ import {
   Cell,
 } from 'recharts';
 import type { ScanResultResponse } from '../../types';
+import StatCard from '../common/StatCard';
 
 interface StalenessProps {
   results: ScanResultResponse | null;
@@ -100,46 +101,13 @@ export default function Staleness({ results }: StalenessProps) {
 
       {/* Statistiques clés */}
       <Box sx={{ display: 'flex', gap: 3, mb: 4, flexWrap: 'wrap' }}>
-        <Box sx={{ flex: '1 1 200px' }}>
-          <Card sx={{ background: 'linear-gradient(135deg, #ff9800 0%, #ff5722 100%)' }}>
-            <CardContent>
-              <Typography variant="h3" fontWeight={700} color="white">
-                {totalStaleFiles}
-              </Typography>
-              <Typography variant="body2" color="rgba(255,255,255,0.9)">
-                Fichiers anciens (6 mois+)
-              </Typography>
-            </CardContent>
-          </Card>
-        </Box>
-        <Box sx={{ flex: '1 1 200px' }}>
-          <Card sx={{ background: 'linear-gradient(135deg, #f44336 0%, #e91e63 100%)' }}>
-            <CardContent>
-              <Typography variant="h3" fontWeight={700} color="white">
-                {criticalStaleFiles}
-              </Typography>
-              <Typography variant="body2" color="rgba(255,255,255,0.9)">
-                Fichiers critiques (3 ans+)
-              </Typography>
-            </CardContent>
-          </Card>
-        </Box>
-        <Box sx={{ flex: '1 1 200px' }}>
-          <Card sx={{ background: 'linear-gradient(135deg, #9c27b0 0%, #673ab7 100%)' }}>
-            <CardContent>
-              <Typography variant="h3" fontWeight={700} color="white">
-                {totalPiiInStaleFiles}
-              </Typography>
-              <Typography variant="body2" color="rgba(255,255,255,0.9)">
-                PII dans fichiers anciens
-              </Typography>
-            </CardContent>
-          </Card>
-        </Box>
+        <StatCard value={totalStaleFiles} label="Fichiers anciens (6 mois+)" gradient="linear-gradient(135deg, #F0A000 0%, #D48800 100%)" />
+        <StatCard value={criticalStaleFiles} label="Fichiers critiques (3 ans+)" gradient="linear-gradient(135deg, #F45252 0%, #D93636 100%)" />
+        <StatCard value={totalPiiInStaleFiles} label="PII dans fichiers anciens" gradient="linear-gradient(135deg, #A78BFA 0%, #7C3AED 100%)" />
       </Box>
 
       {/* Légende */}
-      <Card sx={{ mb: 3, backgroundColor: '#f5f5f5' }}>
+      <Card sx={{ mb: 3 }}>
         <CardContent>
           <Typography variant="h6" gutterBottom fontWeight={600} sx={{ mb: 2 }}>
             📖 Légende de l'ancienneté

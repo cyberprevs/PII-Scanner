@@ -47,7 +47,7 @@ interface ResultsProps {
   onNewScan: () => void;
 }
 
-const COLORS = ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#00f2fe', '#43e97b', '#fa709a', '#fee140'];
+const COLORS = ['#00E599', '#3B82F6', '#f093fb', '#4facfe', '#00f2fe', '#43e97b', '#fa709a', '#fee140'];
 
 const getRiskColor = (riskLevel: string) => {
   switch (riskLevel) {
@@ -164,7 +164,7 @@ export default function Results({ results, onDownloadReport, onNewScan }: Result
       {/* En-tête avec statistiques principales */}
       <Box sx={{ display: 'flex', gap: 3, mb: 4, flexWrap: 'wrap' }}>
         <Box sx={{ flex: '1 1 200px' }}>
-          <Card sx={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+          <Card sx={{ background: 'linear-gradient(135deg, #00E599 0%, #3B82F6 100%)' }}>
             <CardContent>
               <Typography variant="h3" fontWeight={700} color="white">
                 {statistics.totalFilesScanned}
@@ -368,7 +368,7 @@ export default function Results({ results, onDownloadReport, onNewScan }: Result
                       <YAxis />
                       <RechartsTooltip />
                       <Legend />
-                      <Bar dataKey="count" fill="#667eea" name="Nombre de PII" />
+                      <Bar dataKey="count" fill="#00E599" name="Nombre de PII" />
                     </BarChart>
                   </ResponsiveContainer>
                 </Box>

@@ -174,7 +174,7 @@ export default function Reports({ results, onDownloadReport }: ReportsProps) {
     },
     {
       format: 'json' as const,
-      icon: <DataObjectIcon sx={{ fontSize: 40, color: '#667eea' }} />,
+      icon: <DataObjectIcon sx={{ fontSize: 40, color: '#00E599' }} />,
       title: 'JSON',
       description: 'Données brutes structurées',
       details: 'Format pour intégration API ou traitement automatisé',
@@ -219,28 +219,28 @@ export default function Reports({ results, onDownloadReport }: ReportsProps) {
               <StatCard
                 value={statistics.totalFilesScanned.toLocaleString()}
                 label="Fichiers analysés"
-                gradient="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+                gradient="linear-gradient(135deg, #00E599 0%, #3B82F6 100%)"
               />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
               <StatCard
                 value={totalPii.toLocaleString()}
                 label="PII détectées"
-                gradient="linear-gradient(135deg, #f093fb 0%, #f5576c 100%)"
+                gradient="linear-gradient(135deg, #F45252 0%, #D93636 100%)"
               />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
               <StatCard
                 value={statistics.filesWithPii.toLocaleString()}
                 label="Fichiers avec PII"
-                gradient="linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)"
+                gradient="linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)"
               />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
               <StatCard
                 value={uniquePiiTypes}
                 label="Types de PII"
-                gradient="linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)"
+                gradient="linear-gradient(135deg, #00E599 0%, #00B876 100%)"
               />
             </Grid>
           </Grid>
@@ -264,8 +264,8 @@ export default function Reports({ results, onDownloadReport }: ReportsProps) {
                   <BarChart data={piiTypeData} layout="vertical">
                     <defs>
                       <linearGradient id="barGradient" x1="0" y1="0" x2="1" y2="0">
-                        <stop offset="0%" stopColor="#667eea" />
-                        <stop offset="100%" stopColor="#764ba2" />
+                        <stop offset="0%" stopColor="#00E599" />
+                        <stop offset="100%" stopColor="#00B876" />
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
@@ -406,9 +406,10 @@ export default function Reports({ results, onDownloadReport }: ReportsProps) {
                       sx={{
                         fontSize: '0.8rem',
                         py: 0.75,
-                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        backgroundColor: '#00E599',
+                        color: '#0A0A0A',
                         '&:hover': {
-                          background: 'linear-gradient(135deg, #5568d3 0%, #6a3f91 100%)',
+                          backgroundColor: '#00CC88',
                         },
                       }}
                     >
@@ -448,7 +449,7 @@ export default function Reports({ results, onDownloadReport }: ReportsProps) {
               </Alert>
             ))}
 
-            <Paper sx={{ p: 3, bgcolor: 'rgba(102, 126, 234, 0.05)', border: '1px solid rgba(102, 126, 234, 0.2)' }}>
+            <Paper sx={{ p: 3, bgcolor: 'rgba(0, 229, 153, 0.05)', border: '1px solid rgba(0, 229, 153, 0.2)' }}>
               <Typography variant="subtitle2" fontWeight={600} gutterBottom>
                 Actions suggérées :
               </Typography>

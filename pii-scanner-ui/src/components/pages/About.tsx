@@ -47,7 +47,7 @@ const About: React.FC = () => {
         <Grid item xs={12} md={6}>
           <Card
             sx={{
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
               color: 'white',
             }}
           >
@@ -82,7 +82,7 @@ const About: React.FC = () => {
                 variant="h5"
                 sx={{
                   fontWeight: 700,
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                   mb: 2,
@@ -227,8 +227,8 @@ const About: React.FC = () => {
             mt: 3,
             p: 2,
             borderRadius: 2,
-            bgcolor: 'rgba(102, 126, 234, 0.1)',
-            border: '1px solid rgba(102, 126, 234, 0.3)',
+            bgcolor: 'rgba(0, 229, 153, 0.1)',
+            border: '1px solid rgba(0, 229, 153, 0.3)',
           }}
         >
           <Typography variant="body2" color="text.secondary" paragraph>

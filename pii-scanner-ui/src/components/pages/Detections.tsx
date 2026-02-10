@@ -18,13 +18,11 @@ import {
   FormControl,
   InputLabel,
   Container,
-  Grid,
   Button,
 } from '@mui/material';
 import SecurityIcon from '@mui/icons-material/Security';
-import CategoryIcon from '@mui/icons-material/Category';
-import DescriptionIcon from '@mui/icons-material/Description';
 import FilterListIcon from '@mui/icons-material/FilterList';
+import StatCard from '../common/StatCard';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import type { ScanResultResponse } from '../../types';
 
@@ -108,55 +106,11 @@ export default function Detections({ results }: DetectionsProps) {
       </Box>
 
       {/* KPI Cards */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={6} md={4}>
-          <Card sx={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white' }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <SecurityIcon sx={{ mr: 1, opacity: 0.8 }} />
-                <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                  Total détections
-                </Typography>
-              </Box>
-              <Typography variant="h3" fontWeight={700}>
-                {detections.length}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={4}>
-          <Card sx={{ background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', color: 'white' }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <CategoryIcon sx={{ mr: 1, opacity: 0.8 }} />
-                <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                  Types de PII
-                </Typography>
-              </Box>
-              <Typography variant="h3" fontWeight={700}>
-                {uniqueTypesCount}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={4}>
-          <Card sx={{ background: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)', color: 'white' }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <DescriptionIcon sx={{ mr: 1, opacity: 0.8 }} />
-                <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                  Fichiers affectés
-                </Typography>
-              </Box>
-              <Typography variant="h3" fontWeight={700}>
-                {uniqueFilesCount}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
+      <Box sx={{ display: 'flex', gap: 3, mb: 4, flexWrap: 'wrap' }}>
+        <StatCard value={detections.length} label="Total détections" gradient="linear-gradient(135deg, #00E599 0%, #3B82F6 100%)" />
+        <StatCard value={uniqueTypesCount} label="Types de PII" gradient="linear-gradient(135deg, #A78BFA 0%, #7C3AED 100%)" />
+        <StatCard value={uniqueFilesCount} label="Fichiers affectés" gradient="linear-gradient(135deg, #F0A000 0%, #D48800 100%)" />
+      </Box>
 
       {/* Filtres */}
       <Card sx={{ mb: 3 }}>
