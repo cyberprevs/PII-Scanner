@@ -25,6 +25,7 @@ import {
   Cell,
 } from 'recharts';
 import type { ScanResultResponse } from '../../types';
+import StatCard from '../common/StatCard';
 
 interface ExposureProps {
   results: ScanResultResponse | null;
@@ -120,58 +121,14 @@ export default function Exposure({ results }: ExposureProps) {
 
       {/* Statistiques clés */}
       <Box sx={{ display: 'flex', gap: 3, mb: 4, flexWrap: 'wrap' }}>
-        <Box sx={{ flex: '1 1 200px' }}>
-          <Card sx={{ background: 'linear-gradient(135deg, #ff9800 0%, #ff5722 100%)' }}>
-            <CardContent>
-              <Typography variant="h3" fontWeight={700} color="white">
-                {totalExposedFiles}
-              </Typography>
-              <Typography variant="body2" color="rgba(255,255,255,0.9)">
-                Fichiers sur-exposés (Moyen+)
-              </Typography>
-            </CardContent>
-          </Card>
-        </Box>
-        <Box sx={{ flex: '1 1 200px' }}>
-          <Card sx={{ background: 'linear-gradient(135deg, #f44336 0%, #e91e63 100%)' }}>
-            <CardContent>
-              <Typography variant="h3" fontWeight={700} color="white">
-                {criticalExposedFiles}
-              </Typography>
-              <Typography variant="body2" color="rgba(255,255,255,0.9)">
-                Fichiers critiques (Everyone)
-              </Typography>
-            </CardContent>
-          </Card>
-        </Box>
-        <Box sx={{ flex: '1 1 200px' }}>
-          <Card sx={{ background: 'linear-gradient(135deg, #9c27b0 0%, #673ab7 100%)' }}>
-            <CardContent>
-              <Typography variant="h3" fontWeight={700} color="white">
-                {totalPiiInExposedFiles}
-              </Typography>
-              <Typography variant="body2" color="rgba(255,255,255,0.9)">
-                PII dans fichiers exposés
-              </Typography>
-            </CardContent>
-          </Card>
-        </Box>
-        <Box sx={{ flex: '1 1 200px' }}>
-          <Card sx={{ background: 'linear-gradient(135deg, #00bcd4 0%, #3f51b5 100%)' }}>
-            <CardContent>
-              <Typography variant="h3" fontWeight={700} color="white">
-                {filesOnNetworkShare}
-              </Typography>
-              <Typography variant="body2" color="rgba(255,255,255,0.9)">
-                Fichiers sur partage réseau
-              </Typography>
-            </CardContent>
-          </Card>
-        </Box>
+        <StatCard value={totalExposedFiles} label="Fichiers sur-exposés (Moyen+)" gradient="linear-gradient(135deg, #F0A000 0%, #D48800 100%)" />
+        <StatCard value={criticalExposedFiles} label="Fichiers critiques (Everyone)" gradient="linear-gradient(135deg, #F45252 0%, #D93636 100%)" />
+        <StatCard value={totalPiiInExposedFiles} label="PII dans fichiers exposés" gradient="linear-gradient(135deg, #A78BFA 0%, #7C3AED 100%)" />
+        <StatCard value={filesOnNetworkShare} label="Fichiers sur partage réseau" gradient="linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)" />
       </Box>
 
       {/* Légende */}
-      <Card sx={{ mb: 3, backgroundColor: '#f5f5f5' }}>
+      <Card sx={{ mb: 3 }}>
         <CardContent>
           <Typography variant="h6" gutterBottom fontWeight={600} sx={{ mb: 2 }}>
             📖 Légende de l'exposition

@@ -18,13 +18,11 @@ import {
   FormControl,
   InputLabel,
   Container,
-  Grid,
   Button,
 } from '@mui/material';
 import FolderIcon from '@mui/icons-material/Folder';
-import WarningAmberIcon from '@mui/icons-material/WarningAmber';
-import DescriptionIcon from '@mui/icons-material/Description';
 import FilterListIcon from '@mui/icons-material/FilterList';
+import StatCard from '../common/StatCard';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import type { ScanResultResponse } from '../../types';
 
@@ -124,71 +122,12 @@ export default function RiskyFiles({ results }: RiskyFilesProps) {
       </Box>
 
       {/* KPI Cards */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card sx={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white' }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <DescriptionIcon sx={{ mr: 1, opacity: 0.8 }} />
-                <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                  Total fichiers
-                </Typography>
-              </Box>
-              <Typography variant="h3" fontWeight={700}>
-                {statistics.topRiskyFiles.length}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={3}>
-          <Card sx={{ background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', color: 'white' }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <WarningAmberIcon sx={{ mr: 1, opacity: 0.8 }} />
-                <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                  Risque élevé
-                </Typography>
-              </Box>
-              <Typography variant="h3" fontWeight={700}>
-                {highRiskFiles}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={3}>
-          <Card sx={{ background: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)', color: 'white' }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <WarningAmberIcon sx={{ mr: 1, opacity: 0.8 }} />
-                <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                  Exposition critique
-                </Typography>
-              </Box>
-              <Typography variant="h3" fontWeight={700}>
-                {criticalExposureFiles}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={3}>
-          <Card sx={{ background: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)', color: '#333' }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <WarningAmberIcon sx={{ mr: 1, opacity: 0.7 }} />
-                <Typography variant="body2" sx={{ opacity: 0.8 }}>
-                  Fichiers obsolètes
-                </Typography>
-              </Box>
-              <Typography variant="h3" fontWeight={700}>
-                {oldFiles}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
+      <Box sx={{ display: 'flex', gap: 3, mb: 4, flexWrap: 'wrap' }}>
+        <StatCard value={statistics.topRiskyFiles.length} label="Total fichiers" gradient="linear-gradient(135deg, #00E599 0%, #3B82F6 100%)" />
+        <StatCard value={highRiskFiles} label="Risque élevé" gradient="linear-gradient(135deg, #F45252 0%, #D93636 100%)" />
+        <StatCard value={criticalExposureFiles} label="Exposition critique" gradient="linear-gradient(135deg, #F0A000 0%, #D48800 100%)" />
+        <StatCard value={oldFiles} label="Fichiers obsolètes" gradient="linear-gradient(135deg, #A78BFA 0%, #7C3AED 100%)" />
+      </Box>
 
       {/* Filtres */}
       <Card sx={{ mb: 3 }}>

@@ -62,7 +62,7 @@ interface AuditStats {
   dailyActivity: { date: string; count: number }[];
 }
 
-const COLORS = ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#43e97b', '#fa709a'];
+const COLORS = ['#00E599', '#3B82F6', '#F0A000', '#F45252', '#A78BFA', '#EC4899'];
 
 const AuditTrail: React.FC = () => {
   const [logs, setLogs] = useState<AuditLog[]>([]);
@@ -336,7 +336,7 @@ const AuditTrail: React.FC = () => {
                 <XAxis dataKey="username" />
                 <YAxis />
                 <RechartsTooltip />
-                <Bar dataKey="count" fill="#667eea" />
+                <Bar dataKey="count" fill="#00E599" />
               </BarChart>
             </ResponsiveContainer>
           </Paper>

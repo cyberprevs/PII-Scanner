@@ -1,23 +1,22 @@
 import React, { useState } from 'react';
 import {
   Box,
-  Card,
-  CardContent,
   TextField,
   Button,
   Typography,
   Alert,
-  Container,
   LinearProgress,
   InputAdornment,
-  IconButton
+  IconButton,
+  ThemeProvider,
+  CssBaseline,
 } from '@mui/material';
 import {
   Visibility,
   VisibilityOff,
-  Security as SecurityIcon
 } from '@mui/icons-material';
 import axiosInstance from '../services/axios';
+import { createAppTheme, tokens } from '../theme/designSystem';
 
 interface FormData {
   username: string;
@@ -44,6 +43,9 @@ const InitialSetup: React.FC<InitialSetupProps> = ({ onSetupComplete }) => {
     confirmPassword: ''
   });
 
+  const theme = createAppTheme(true); // Always dark
+  const c = tokens.colors;
+
   const validateForm = (): boolean => {
     if (!formData.username || formData.username.length < 3) {
       setError('Le nom d\'utilisateur doit contenir au moins 3 caractères');
@@ -66,7 +68,6 @@ const InitialSetup: React.FC<InitialSetupProps> = ({ onSetupComplete }) => {
       return false;
     }
 
-    // Vérifier la complexité du mot de passe
     const hasUpperCase = /[A-Z]/.test(formData.password);
     const hasLowerCase = /[a-z]/.test(formData.password);
     const hasNumber = /[0-9]/.test(formData.password);
@@ -105,13 +106,10 @@ const InitialSetup: React.FC<InitialSetupProps> = ({ onSetupComplete }) => {
       });
 
       if (response.data.success) {
-        // Notifier le parent que le setup est terminé
         if (onSetupComplete) {
           onSetupComplete();
         }
 
-        // Forcer un rechargement complet de la page pour réinitialiser l'état
-        // Cela va déclencher la vérification d'initialisation et rediriger vers login
         setTimeout(() => {
           window.location.href = '/login';
         }, 100);
@@ -126,36 +124,131 @@ const InitialSetup: React.FC<InitialSetupProps> = ({ onSetupComplete }) => {
 
   const handleChange = (field: keyof FormData) => (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [field]: e.target.value });
-    setError(''); // Clear error when user types
+    setError('');
+  };
+
+  const inputSx = {
+    '& .MuiOutlinedInput-root': {
+      backgroundColor: c.bgInput,
+      '& fieldset': { borderColor: c.borderDefault },
+      '&:hover fieldset': { borderColor: '#3A3A3A' },
+      '&.Mui-focused fieldset': { borderColor: c.accentPrimary, borderWidth: '1px' },
+    },
+    '& .MuiOutlinedInput-input': {
+      color: c.textPrimary,
+      '&::placeholder': { color: c.textTertiary, opacity: 1 },
+    },
+    '& .MuiInputLabel-root': { color: c.textSecondary, '&.Mui-focused': { color: c.accentPrimary } },
+    '& .MuiFormHelperText-root': { color: c.textTertiary },
   };
 
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        p: 2
-      }}
-    >
-      <Container maxWidth="sm">
-        <Card elevation={8} sx={{ borderRadius: 3 }}>
-          {loading && <LinearProgress />}
-          <CardContent sx={{ p: 4 }}>
-            <Box sx={{ textAlign: 'center', mb: 4 }}>
-              <SecurityIcon sx={{ fontSize: 60, color: 'primary.main', mb: 2 }} />
-              <Typography variant="h4" gutterBottom fontWeight="bold">
-                Configuration Initiale
-              </Typography>
-              <Typography variant="body1" color="text.secondary">
-                Créez votre compte administrateur pour commencer
-              </Typography>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Box
+        sx={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: c.bgPrimary,
+          position: 'relative',
+          overflow: 'hidden',
+          p: 2,
+        }}
+      >
+        {/* Subtle background glow */}
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '15%',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: 700,
+            height: 700,
+            borderRadius: '50%',
+            background: `radial-gradient(circle, ${c.accentPrimaryMuted} 0%, transparent 70%)`,
+            pointerEvents: 'none',
+          }}
+        />
+
+        <Box
+          sx={{
+            width: '100%',
+            maxWidth: 480,
+            position: 'relative',
+            zIndex: 1,
+          }}
+        >
+          {/* Header */}
+          <Box sx={{ textAlign: 'center', mb: 4 }}>
+            <Box
+              sx={{
+                width: 48,
+                height: 48,
+                borderRadius: tokens.radii.md,
+                backgroundColor: c.accentPrimaryMuted,
+                border: `1px solid ${c.accentPrimary}`,
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                mb: 3,
+              }}
+            >
+              <Box
+                component="svg"
+                viewBox="0 0 24 24"
+                sx={{ width: 24, height: 24, fill: c.accentPrimary }}
+              >
+                <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 2.18l7 3.12v4.7c0 4.83-3.23 9.36-7 10.57-3.77-1.21-7-5.74-7-10.57V6.3l7-3.12z" />
+              </Box>
             </Box>
+            <Typography
+              variant="h4"
+              sx={{ fontWeight: 700, color: c.textPrimary, mb: 1, letterSpacing: '-0.02em' }}
+            >
+              Configuration Initiale
+            </Typography>
+            <Typography variant="body2" sx={{ color: c.textSecondary }}>
+              Créez votre compte administrateur pour commencer
+            </Typography>
+          </Box>
+
+          {/* Card */}
+          <Box
+            sx={{
+              backgroundColor: c.bgSurface,
+              border: `1px solid ${c.borderDefault}`,
+              borderRadius: `${tokens.radii.xl}px`,
+              p: 4,
+              position: 'relative',
+              overflow: 'hidden',
+            }}
+          >
+            {loading && (
+              <LinearProgress
+                sx={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  backgroundColor: c.accentPrimaryMuted,
+                  '& .MuiLinearProgress-bar': { backgroundColor: c.accentPrimary },
+                }}
+              />
+            )}
 
             {error && (
-              <Alert severity="error" sx={{ mb: 3 }}>
+              <Alert
+                severity="error"
+                sx={{
+                  mb: 3,
+                  backgroundColor: c.dangerMuted,
+                  color: c.danger,
+                  border: '1px solid rgba(244, 82, 82, 0.2)',
+                  '& .MuiAlert-icon': { color: c.danger },
+                }}
+              >
                 {error}
               </Alert>
             )}
@@ -165,12 +258,14 @@ const InitialSetup: React.FC<InitialSetupProps> = ({ onSetupComplete }) => {
                 label="Nom d'utilisateur"
                 fullWidth
                 margin="normal"
+                size="small"
                 value={formData.username}
                 onChange={handleChange('username')}
                 required
                 disabled={loading}
                 helperText="Minimum 3 caractères"
                 autoFocus
+                sx={inputSx}
               />
 
               <TextField
@@ -178,22 +273,26 @@ const InitialSetup: React.FC<InitialSetupProps> = ({ onSetupComplete }) => {
                 type="email"
                 fullWidth
                 margin="normal"
+                size="small"
                 value={formData.email}
                 onChange={handleChange('email')}
                 required
                 disabled={loading}
                 helperText="Utilisé pour la récupération de compte"
+                sx={inputSx}
               />
 
               <TextField
                 label="Nom complet"
                 fullWidth
                 margin="normal"
+                size="small"
                 value={formData.fullName}
                 onChange={handleChange('fullName')}
                 required
                 disabled={loading}
                 helperText="Votre nom et prénom"
+                sx={inputSx}
               />
 
               <TextField
@@ -201,17 +300,20 @@ const InitialSetup: React.FC<InitialSetupProps> = ({ onSetupComplete }) => {
                 type={showPassword ? 'text' : 'password'}
                 fullWidth
                 margin="normal"
+                size="small"
                 value={formData.password}
                 onChange={handleChange('password')}
                 required
                 disabled={loading}
-                helperText="Minimum 12 caractères, avec majuscule, minuscule, chiffre et caractère spécial"
+                helperText="Min. 12 caractères, majuscule, minuscule, chiffre, caractère spécial"
+                sx={inputSx}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
                       <IconButton
                         onClick={() => setShowPassword(!showPassword)}
                         edge="end"
+                        sx={{ color: c.textTertiary }}
                       >
                         {showPassword ? <VisibilityOff /> : <Visibility />}
                       </IconButton>
@@ -225,16 +327,19 @@ const InitialSetup: React.FC<InitialSetupProps> = ({ onSetupComplete }) => {
                 type={showConfirmPassword ? 'text' : 'password'}
                 fullWidth
                 margin="normal"
+                size="small"
                 value={formData.confirmPassword}
                 onChange={handleChange('confirmPassword')}
                 required
                 disabled={loading}
+                sx={inputSx}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
                       <IconButton
                         onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                         edge="end"
+                        sx={{ color: c.textTertiary }}
                       >
                         {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
                       </IconButton>
@@ -249,61 +354,66 @@ const InitialSetup: React.FC<InitialSetupProps> = ({ onSetupComplete }) => {
                 fullWidth
                 size="large"
                 disabled={loading}
-                sx={{ mt: 3, mb: 2, py: 1.5 }}
+                sx={{
+                  mt: 3,
+                  mb: 2,
+                  py: 1.4,
+                  backgroundColor: c.accentPrimary,
+                  color: c.accentPrimaryText,
+                  fontWeight: 600,
+                  fontSize: '0.9rem',
+                  '&:hover': { backgroundColor: c.accentPrimaryHover },
+                  '&.Mui-disabled': {
+                    backgroundColor: 'rgba(0, 229, 153, 0.3)',
+                    color: 'rgba(10, 10, 10, 0.5)',
+                  },
+                }}
               >
                 {loading ? 'Initialisation en cours...' : 'Créer le compte administrateur'}
               </Button>
 
-              <Alert severity="info" sx={{ mt: 2 }}>
-                <Typography variant="body2">
+              <Alert
+                severity="info"
+                sx={{
+                  mt: 2,
+                  backgroundColor: c.infoMuted,
+                  color: c.info,
+                  border: '1px solid rgba(59, 130, 246, 0.2)',
+                  '& .MuiAlert-icon': { color: c.info },
+                }}
+              >
+                <Typography variant="body2" sx={{ color: c.info }}>
                   <strong>Important :</strong> Ce compte aura tous les privilèges d'administration.
                   Conservez ces identifiants en lieu sûr.
                 </Typography>
               </Alert>
             </form>
+          </Box>
 
-            {/* Cyberprevs Branding */}
-            <Box sx={{ mt: 4, textAlign: 'center' }}>
-              <Typography
-                variant="caption"
-                sx={{
-                  color: 'text.secondary',
-                  fontSize: '0.75rem',
-                  display: 'block',
-                  mb: 0.5,
-                }}
-              >
-                Développé par
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{
-                  fontWeight: 700,
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  fontSize: '1rem',
-                  letterSpacing: '0.5px',
-                }}
-              >
-                Cyberprevs
-              </Typography>
-              <Typography
-                variant="caption"
-                sx={{
-                  color: 'text.secondary',
-                  fontSize: '0.7rem',
-                  display: 'block',
-                  mt: 0.5,
-                }}
-              >
-                v1.0.0 • © 2025
-              </Typography>
-            </Box>
-          </CardContent>
-        </Card>
-      </Container>
-    </Box>
+          {/* Branding */}
+          <Box sx={{ mt: 4, textAlign: 'center' }}>
+            <Typography
+              variant="caption"
+              sx={{ color: c.textTertiary, fontSize: '0.7rem', display: 'block', mb: 0.5 }}
+            >
+              Développé par
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{ fontWeight: 700, color: c.accentPrimary, fontSize: '0.95rem', letterSpacing: '0.5px' }}
+            >
+              Cyberprevs
+            </Typography>
+            <Typography
+              variant="caption"
+              sx={{ color: c.textTertiary, fontSize: '0.65rem', display: 'block', mt: 0.5 }}
+            >
+              v1.0.0
+            </Typography>
+          </Box>
+        </Box>
+      </Box>
+    </ThemeProvider>
   );
 };
 

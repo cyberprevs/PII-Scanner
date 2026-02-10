@@ -39,7 +39,7 @@ interface ResultsProps {
   onNewScan: () => void;
 }
 
-const COLORS = ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#00f2fe', '#43e97b', '#fa709a', '#fee140'];
+const COLORS = ['#00E599', '#3B82F6', '#F0A000', '#F45252', '#A78BFA', '#EC4899', '#06B6D4', '#84CC16'];
 
 const getRiskColor = (riskLevel: string) => {
   switch (riskLevel) {
@@ -148,22 +148,22 @@ export default function Results({ results, onDownloadReport, onNewScan }: Result
         <StatCard
           value={statistics.totalFilesScanned}
           label="Fichiers scannés"
-          gradient="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+          gradient="linear-gradient(135deg, #00E599 0%, #3B82F6 100%)"
         />
         <StatCard
           value={statistics.filesWithPii}
           label="Fichiers avec PII"
-          gradient="linear-gradient(135deg, #f093fb 0%, #f5576c 100%)"
+          gradient="linear-gradient(135deg, #F45252 0%, #D93636 100%)"
         />
         <StatCard
           value={statistics.totalPiiFound}
           label="PII détectées"
-          gradient="linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)"
+          gradient="linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)"
         />
         <StatCard
           value={Object.keys(statistics.piiByType).length}
           label="Types de PII"
-          gradient="linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)"
+          gradient="linear-gradient(135deg, #00E599 0%, #00B876 100%)"
         />
       </Box>
 
@@ -183,7 +183,7 @@ export default function Results({ results, onDownloadReport, onNewScan }: Result
         <CardContent sx={{ p: 3 }}>
             <Box>
               {/* Légende des indicateurs */}
-              <Card sx={{ mb: 3, backgroundColor: '#f5f5f5' }}>
+              <Card sx={{ mb: 3 }}>
                 <CardContent>
                   <Typography variant="h6" gutterBottom fontWeight={600} sx={{ mb: 2 }}>
                     📖 Légende des indicateurs
@@ -281,7 +281,7 @@ export default function Results({ results, onDownloadReport, onNewScan }: Result
                       <YAxis />
                       <RechartsTooltip />
                       <Legend />
-                      <Bar dataKey="count" fill="#667eea" name="Nombre de PII" />
+                      <Bar dataKey="count" fill="#00E599" name="Nombre de PII" />
                     </BarChart>
                   </ResponsiveContainer>
                 </Box>
