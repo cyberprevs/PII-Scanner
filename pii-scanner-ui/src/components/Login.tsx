@@ -148,6 +148,7 @@ const Login: React.FC = () => {
               <Box sx={{ mb: 2.5 }}>
                 <Typography
                   component="label"
+                  htmlFor="login-username"
                   variant="body2"
                   sx={{
                     display: 'block',
@@ -160,6 +161,7 @@ const Login: React.FC = () => {
                   Nom d'utilisateur
                 </Typography>
                 <TextField
+                  id="login-username"
                   fullWidth
                   placeholder="Entrez votre identifiant"
                   variant="outlined"
@@ -190,6 +192,7 @@ const Login: React.FC = () => {
               <Box sx={{ mb: 3 }}>
                 <Typography
                   component="label"
+                  htmlFor="login-password"
                   variant="body2"
                   sx={{
                     display: 'block',
@@ -202,6 +205,7 @@ const Login: React.FC = () => {
                   Mot de passe
                 </Typography>
                 <TextField
+                  id="login-password"
                   fullWidth
                   placeholder="Entrez votre mot de passe"
                   type="password"

@@ -185,7 +185,7 @@ const ScanHistory: React.FC = () => {
       {/* Header */}
       <Box sx={{ mb: 4 }}>
         <Typography variant="h4" fontWeight={700} gutterBottom sx={{
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
         }}>
@@ -225,12 +225,12 @@ const ScanHistory: React.FC = () => {
 
       {/* Table */}
       <TableContainer component={Paper} sx={{
-        background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.02) 0%, rgba(118, 75, 162, 0.02) 100%)',
+        background: 'linear-gradient(135deg, rgba(0, 229, 153, 0.02) 0%, rgba(0, 229, 153, 0.02) 100%)',
         border: '1px solid',
         borderColor: 'divider',
       }}>
         <Table>
-          <TableHead sx={{ bgcolor: 'rgba(102, 126, 234, 0.05)' }}>
+          <TableHead sx={{ bgcolor: 'rgba(0, 229, 153, 0.05)' }}>
             <TableRow>
               <TableCell sx={{ fontWeight: 600 }}>Date</TableCell>
               <TableCell sx={{ fontWeight: 600 }}>Utilisateur</TableCell>
@@ -263,7 +263,7 @@ const ScanHistory: React.FC = () => {
                   hover
                   sx={{
                     '&:hover': {
-                      bgcolor: 'rgba(102, 126, 234, 0.03)',
+                      bgcolor: 'rgba(0, 229, 153, 0.03)',
                     },
                   }}
                 >
@@ -321,7 +321,7 @@ const ScanHistory: React.FC = () => {
                               onClick={() => downloadReport(scan.scanId, 'csv')}
                               sx={{
                                 '&:hover': {
-                                  bgcolor: 'rgba(102, 126, 234, 0.1)',
+                                  bgcolor: 'rgba(0, 229, 153, 0.1)',
                                 },
                               }}
                             >

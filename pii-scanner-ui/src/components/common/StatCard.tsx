@@ -1,4 +1,4 @@
-import { Box, Card, CardContent, Typography } from '@mui/material';
+import { Box, CardContent, Typography } from '@mui/material';
 import { ReactNode } from 'react';
 import { tokens } from '../../theme/designSystem';
 
@@ -16,50 +16,56 @@ interface StatCardProps {
  */
 export default function StatCard({ value, label, gradient, icon, subtext }: StatCardProps) {
   const c = tokens.colors;
+  const borderGradient = gradient || `linear-gradient(135deg, ${c.accentPrimary} 0%, ${c.info} 100%)`;
 
   return (
     <Box sx={{ flex: '1 1 200px' }}>
-      <Card
+      {/* Outer box acts as gradient border via background + padding trick */}
+      <Box
         sx={{
-          background: gradient || c.bgSurface,
-          border: gradient ? 'none' : `1px solid ${c.borderDefault}`,
-          color: gradient ? 'white' : c.textPrimary,
+          borderRadius: `${tokens.radii.lg}px`,
+          padding: '1px',
+          background: borderGradient,
           height: '100%',
         }}
       >
-        <CardContent>
-          {icon && (
-            <Box sx={{ mb: 2, color: gradient ? 'white' : c.accentPrimary }}>
-              {icon}
-            </Box>
-          )}
-          <Typography
-            variant="h3"
-            fontWeight={700}
-            sx={{ color: gradient ? 'white' : c.accentPrimary }}
-          >
-            {value}
-          </Typography>
-          <Typography
-            variant="body2"
-            sx={{ color: gradient ? 'rgba(255,255,255,0.9)' : c.textSecondary }}
-          >
-            {label}
-          </Typography>
-          {subtext && (
+        <Box
+          sx={{
+            borderRadius: `${tokens.radii.lg - 1}px`,
+            backgroundColor: 'background.default',
+            height: '100%',
+          }}
+        >
+          <CardContent>
+            {icon && (
+              <Box sx={{ mb: 2, color: 'text.secondary' }}>
+                {icon}
+              </Box>
+            )}
             <Typography
-              variant="caption"
-              sx={{
-                mt: 1,
-                display: 'block',
-                color: gradient ? 'rgba(255,255,255,0.7)' : c.textTertiary,
-              }}
+              variant="h3"
+              fontWeight={700}
+              sx={{ color: 'text.primary' }}
             >
-              {subtext}
+              {value}
             </Typography>
-          )}
-        </CardContent>
-      </Card>
+            <Typography
+              variant="body2"
+              sx={{ color: 'text.secondary' }}
+            >
+              {label}
+            </Typography>
+            {subtext && (
+              <Typography
+                variant="caption"
+                sx={{ mt: 1, display: 'block', color: 'text.disabled' }}
+              >
+                {subtext}
+              </Typography>
+            )}
+          </CardContent>
+        </Box>
+      </Box>
     </Box>
   );
 }

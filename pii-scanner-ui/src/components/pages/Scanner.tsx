@@ -109,7 +109,7 @@ export default function Scanner({ scanning, scanId, onStartScan }: ScannerProps)
       {/* Header */}
       <Box sx={{ mb: 4 }}>
         <Typography variant="h4" fontWeight={700} gutterBottom sx={{
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
         }}>
@@ -127,7 +127,7 @@ export default function Scanner({ scanning, scanId, onStartScan }: ScannerProps)
           {/* Configuration principale */}
           <Grid item xs={12} lg={8}>
             <Card sx={{
-              background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.03) 0%, rgba(118, 75, 162, 0.03) 100%)',
+              background: 'linear-gradient(135deg, rgba(0, 229, 153, 0.03) 0%, rgba(0, 229, 153, 0.03) 100%)',
               border: '1px solid',
               borderColor: 'divider',
             }}>
@@ -181,11 +181,11 @@ export default function Scanner({ scanning, scanId, onStartScan }: ScannerProps)
                             cursor: 'pointer',
                             border: '1px solid',
                             borderColor: directoryPath === path ? 'primary.main' : 'divider',
-                            bgcolor: directoryPath === path ? 'rgba(102, 126, 234, 0.08)' : 'background.paper',
+                            bgcolor: directoryPath === path ? 'rgba(0, 229, 153, 0.08)' : 'background.paper',
                             transition: 'all 0.2s',
                             '&:hover': {
                               borderColor: 'primary.main',
-                              bgcolor: 'rgba(102, 126, 234, 0.08)',
+                              bgcolor: 'rgba(0, 229, 153, 0.08)',
                               transform: 'translateX(4px)',
                             },
                           }}
@@ -274,12 +274,12 @@ export default function Scanner({ scanning, scanId, onStartScan }: ScannerProps)
                     fontSize: '1.1rem',
                     fontWeight: 700,
                     background: directoryPath
-                      ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                      ? 'linear-gradient(135deg, #00E599 0%, #00B876 100%)'
                       : undefined,
                     boxShadow: directoryPath ? 3 : 0,
                     '&:hover': {
                       background: directoryPath
-                        ? 'linear-gradient(135deg, #5568d3 0%, #653a8b 100%)'
+                        ? 'linear-gradient(135deg, #00CC88 0%, #00A86B 100%)'
                         : undefined,
                       boxShadow: directoryPath ? 6 : 0,
                       transform: 'translateY(-2px)',
@@ -297,7 +297,7 @@ export default function Scanner({ scanning, scanId, onStartScan }: ScannerProps)
           <Grid item xs={12} lg={4}>
             <Card sx={{
               height: '100%',
-              background: 'linear-gradient(135deg, rgba(118, 75, 162, 0.05) 0%, rgba(102, 126, 234, 0.05) 100%)',
+              background: 'linear-gradient(135deg, rgba(0, 229, 153, 0.05) 0%, rgba(0, 229, 153, 0.05) 100%)',
               border: '1px solid',
               borderColor: 'divider',
             }}>
@@ -324,13 +324,13 @@ export default function Scanner({ scanning, scanId, onStartScan }: ScannerProps)
                       label={item}
                       size="small"
                       sx={{
-                        bgcolor: 'rgba(118, 75, 162, 0.1)',
+                        bgcolor: 'rgba(0, 229, 153, 0.1)',
                         border: '1px solid',
-                        borderColor: 'rgba(118, 75, 162, 0.2)',
+                        borderColor: 'rgba(0, 229, 153, 0.2)',
                         fontSize: '0.75rem',
                         fontWeight: 500,
                         '&:hover': {
-                          bgcolor: 'rgba(118, 75, 162, 0.2)',
+                          bgcolor: 'rgba(0, 229, 153, 0.2)',
                         },
                       }}
                     />
@@ -345,7 +345,7 @@ export default function Scanner({ scanning, scanId, onStartScan }: ScannerProps)
           {/* Scan en cours */}
           <Grid item xs={12} lg={8}>
             <Card sx={{
-              background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.03) 0%, rgba(118, 75, 162, 0.03) 100%)',
+              background: 'linear-gradient(135deg, rgba(0, 229, 153, 0.03) 0%, rgba(0, 229, 153, 0.03) 100%)',
               border: '1px solid',
               borderColor: 'divider',
             }}>
@@ -363,7 +363,7 @@ export default function Scanner({ scanning, scanId, onStartScan }: ScannerProps)
                       <Box sx={{ textAlign: 'center' }}>
                         <Typography variant="h1" fontWeight={700} sx={{
                           fontSize: '4rem',
-                          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                          background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
                           WebkitBackgroundClip: 'text',
                           WebkitTextFillColor: 'transparent',
                         }}>
@@ -404,10 +404,10 @@ export default function Scanner({ scanning, scanId, onStartScan }: ScannerProps)
                     sx={{
                       height: 16,
                       borderRadius: 8,
-                      bgcolor: 'rgba(103, 126, 234, 0.15)',
+                      bgcolor: 'rgba(0, 229, 153, 0.15)',
                       '& .MuiLinearProgress-bar': {
                         borderRadius: 8,
-                        background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)',
+                        background: 'linear-gradient(90deg, #00E599 0%, #00B876 100%)',
                       },
                     }}
                   />
@@ -434,7 +434,7 @@ export default function Scanner({ scanning, scanId, onStartScan }: ScannerProps)
           {/* Statistiques en temps réel */}
           <Grid item xs={12} lg={4}>
             <Card sx={{
-              background: 'linear-gradient(135deg, rgba(118, 75, 162, 0.05) 0%, rgba(102, 126, 234, 0.05) 100%)',
+              background: 'linear-gradient(135deg, rgba(0, 229, 153, 0.05) 0%, rgba(0, 229, 153, 0.05) 100%)',
               border: '1px solid',
               borderColor: 'divider',
             }}>
@@ -462,7 +462,7 @@ export default function Scanner({ scanning, scanId, onStartScan }: ScannerProps)
                     </Typography>
                   </Paper>
 
-                  <Paper elevation={0} sx={{ p: 2, bgcolor: 'rgba(118, 75, 162, 0.1)', borderRadius: 2, border: '1px solid', borderColor: 'rgba(118, 75, 162, 0.3)' }}>
+                  <Paper elevation={0} sx={{ p: 2, bgcolor: 'rgba(0, 229, 153, 0.1)', borderRadius: 2, border: '1px solid', borderColor: 'rgba(0, 229, 153, 0.3)' }}>
                     <Typography variant="caption" fontWeight={600} sx={{ fontSize: '0.7rem', letterSpacing: '0.5px', color: 'secondary.main' }}>
                       PII DÉTECTÉES
                     </Typography>
@@ -471,7 +471,7 @@ export default function Scanner({ scanning, scanId, onStartScan }: ScannerProps)
                     </Typography>
                   </Paper>
 
-                  <Paper elevation={0} sx={{ p: 2, bgcolor: 'rgba(102, 126, 234, 0.1)', borderRadius: 2, border: '1px solid', borderColor: 'rgba(102, 126, 234, 0.3)' }}>
+                  <Paper elevation={0} sx={{ p: 2, bgcolor: 'rgba(0, 229, 153, 0.1)', borderRadius: 2, border: '1px solid', borderColor: 'rgba(0, 229, 153, 0.3)' }}>
                     <Typography variant="caption" fontWeight={600} sx={{ fontSize: '0.7rem', letterSpacing: '0.5px', color: 'primary.main' }}>
                       PROGRESSION
                     </Typography>

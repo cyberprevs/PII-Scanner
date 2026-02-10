@@ -161,7 +161,7 @@ const Profile: React.FC = () => {
       {/* Header */}
       <Box sx={{ mb: 4 }}>
         <Typography variant="h4" fontWeight={700} gutterBottom sx={{
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
         }}>
@@ -176,7 +176,7 @@ const Profile: React.FC = () => {
       <Paper sx={{
         p: 3,
         mb: 3,
-        background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%)',
+        background: 'linear-gradient(135deg, rgba(0, 229, 153, 0.1) 0%, rgba(0, 229, 153, 0.1) 100%)',
         border: '1px solid',
         borderColor: 'divider',
       }}>
@@ -186,7 +186,7 @@ const Profile: React.FC = () => {
               width: 80,
               height: 80,
               borderRadius: '50%',
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -218,7 +218,7 @@ const Profile: React.FC = () => {
         <Grid item xs={12} md={6}>
           <Paper sx={{
             p: 3,
-            background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.02) 0%, rgba(118, 75, 162, 0.02) 100%)',
+            background: 'linear-gradient(135deg, rgba(0, 229, 153, 0.02) 0%, rgba(0, 229, 153, 0.02) 100%)',
             border: '1px solid',
             borderColor: 'divider',
             height: '100%',
@@ -302,9 +302,9 @@ const Profile: React.FC = () => {
                 mt: 3,
                 py: 1.5,
                 fontWeight: 600,
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
                 '&:hover': {
-                  background: 'linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%)',
+                  background: 'linear-gradient(135deg, #00CC88 0%, #00A86B 100%)',
                 },
               }}
             >
@@ -317,7 +317,7 @@ const Profile: React.FC = () => {
         <Grid item xs={12} md={6}>
           <Paper sx={{
             p: 3,
-            background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.02) 0%, rgba(118, 75, 162, 0.02) 100%)',
+            background: 'linear-gradient(135deg, rgba(0, 229, 153, 0.02) 0%, rgba(0, 229, 153, 0.02) 100%)',
             border: '1px solid',
             borderColor: 'divider',
             height: '100%',
@@ -421,9 +421,9 @@ const Profile: React.FC = () => {
                 mt: 3,
                 py: 1.5,
                 fontWeight: 600,
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
                 '&:hover': {
-                  background: 'linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%)',
+                  background: 'linear-gradient(135deg, #00CC88 0%, #00A86B 100%)',
                 },
               }}
             >

@@ -72,7 +72,7 @@ export default function Support() {
   return (
     <Box>
       <Typography variant="h4" gutterBottom fontWeight={700} sx={{
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
         WebkitBackgroundClip: 'text',
         WebkitTextFillColor: 'transparent',
       }}>
@@ -173,7 +173,7 @@ export default function Support() {
           }}>
             <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <ArticleIcon sx={{ fontSize: 32, color: '#667eea', mr: 1.5 }} />
+                <ArticleIcon sx={{ fontSize: 32, color: '#00E599', mr: 1.5 }} />
                 <Typography variant="h6" fontWeight={600} fontSize="1.1rem">
                   Documentation
                 </Typography>
@@ -207,7 +207,7 @@ export default function Support() {
           }}>
             <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <EmailIcon sx={{ fontSize: 32, color: '#667eea', mr: 1.5 }} />
+                <EmailIcon sx={{ fontSize: 32, color: '#00E599', mr: 1.5 }} />
                 <Typography variant="h6" fontWeight={600} fontSize="1.1rem">
                   Contactez-nous
                 </Typography>
@@ -234,7 +234,7 @@ export default function Support() {
       {/* FAQ */}
       <Paper sx={{ p: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-          <HelpOutlineIcon sx={{ fontSize: 32, color: '#667eea', mr: 2 }} />
+          <HelpOutlineIcon sx={{ fontSize: 32, color: '#00E599', mr: 2 }} />
           <Typography variant="h6" fontWeight={600}>
             Questions fréquentes (FAQ)
           </Typography>

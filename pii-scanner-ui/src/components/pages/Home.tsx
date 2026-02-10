@@ -12,23 +12,23 @@ export default function Home() {
     {
       title: 'Scanner',
       description: 'Lancer un nouveau scan de fichiers pour détecter les PII',
-      icon: <SearchIcon sx={{ fontSize: 48, color: '#667eea' }} />,
+      icon: <SearchIcon sx={{ fontSize: 48, color: '#00E599' }} />,
       path: '/scanner',
-      color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      color: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
     },
     {
       title: 'Tableau de bord',
       description: 'Vue d\'ensemble et graphiques des données scannées',
-      icon: <DashboardIcon sx={{ fontSize: 48, color: '#4facfe' }} />,
+      icon: <DashboardIcon sx={{ fontSize: 48, color: '#3B82F6' }} />,
       path: '/dashboard',
-      color: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+      color: 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)',
     },
     {
       title: 'Rapports',
       description: 'Analytics détaillés et visualisations avancées',
-      icon: <AssessmentIcon sx={{ fontSize: 48, color: '#43e97b' }} />,
+      icon: <AssessmentIcon sx={{ fontSize: 48, color: '#00E599' }} />,
       path: '/reports',
-      color: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+      color: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
     },
   ];
 
@@ -37,7 +37,7 @@ export default function Home() {
       {/* Hero Section */}
       <Box
         sx={{
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
           borderRadius: 4,
           p: 6,
           color: 'white',
@@ -59,7 +59,7 @@ export default function Home() {
           sx={{
             mt: 3,
             backgroundColor: 'white',
-            color: '#667eea',
+            color: '#00E599',
             px: 4,
             py: 1.5,
             fontSize: '1.1rem',
@@ -124,7 +124,7 @@ export default function Home() {
         </Typography>
         <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mt: 2 }}>
           <Box sx={{ flex: '1 1 calc(25% - 12px)', minWidth: 200 }}>
-            <Card sx={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+            <Card sx={{ background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)' }}>
               <CardContent>
                 <Typography variant="h4" fontWeight={700} color="white">
                   20
@@ -136,7 +136,7 @@ export default function Home() {
             </Card>
           </Box>
           <Box sx={{ flex: '1 1 calc(25% - 12px)', minWidth: 200 }}>
-            <Card sx={{ background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' }}>
+            <Card sx={{ background: 'linear-gradient(135deg, #F45252 0%, #D93636 100%)' }}>
               <CardContent>
                 <Typography variant="h4" fontWeight={700} color="white">
                   100%
@@ -148,7 +148,7 @@ export default function Home() {
             </Card>
           </Box>
           <Box sx={{ flex: '1 1 calc(25% - 12px)', minWidth: 200 }}>
-            <Card sx={{ background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' }}>
+            <Card sx={{ background: 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)' }}>
               <CardContent>
                 <Typography variant="h4" fontWeight={700} color="white">
                   4
@@ -160,7 +160,7 @@ export default function Home() {
             </Card>
           </Box>
           <Box sx={{ flex: '1 1 calc(25% - 12px)', minWidth: 200 }}>
-            <Card sx={{ background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' }}>
+            <Card sx={{ background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)' }}>
               <CardContent>
                 <Typography variant="h4" fontWeight={700} color="white">
                   ⚡

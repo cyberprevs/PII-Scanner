@@ -58,7 +58,7 @@ export class ErrorBoundary extends Component<Props, State> {
             justifyContent: 'center',
             alignItems: 'center',
             minHeight: '100vh',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            backgroundColor: '#0A0A0A',
             p: 3,
           }}
         >
