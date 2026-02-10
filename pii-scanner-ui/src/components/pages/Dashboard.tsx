@@ -48,15 +48,15 @@ interface DashboardProps {
 }
 
 const COLORS = {
-  primary: '#667eea',
-  secondary: '#764ba2',
+  primary: '#00E599',
+  secondary: '#00B876',
   success: '#4caf50',
   warning: '#ff9800',
   error: '#f44336',
   info: '#2196f3',
 };
 
-const DONUT_COLORS = ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#00f2fe', '#43e97b', '#fa709a', '#fee140'];
+const DONUT_COLORS = ['#00E599', '#3B82F6', '#F0A000', '#F45252', '#A78BFA', '#EC4899', '#06B6D4', '#84CC16'];
 
 export default function Dashboard({ results }: DashboardProps) {
   const navigate = useNavigate();
@@ -79,7 +79,7 @@ export default function Dashboard({ results }: DashboardProps) {
         {/* Header */}
         <Box sx={{ mb: 4 }}>
           <Typography variant="h4" fontWeight={700} gutterBottom sx={{
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
           }}>
@@ -94,7 +94,7 @@ export default function Dashboard({ results }: DashboardProps) {
         <Card sx={{
           textAlign: 'center',
           py: 8,
-          background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%)',
+          background: 'linear-gradient(135deg, rgba(0, 229, 153, 0.05) 0%, rgba(0, 229, 153, 0.05) 100%)',
         }}>
           <CardContent>
             <Box sx={{ mb: 3 }}>
@@ -116,9 +116,9 @@ export default function Dashboard({ results }: DashboardProps) {
                 py: 1.5,
                 fontSize: '1rem',
                 fontWeight: 600,
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
                 '&:hover': {
-                  background: 'linear-gradient(135deg, #5568d3 0%, #653a8b 100%)',
+                  background: 'linear-gradient(135deg, #00CC88 0%, #00A86B 100%)',
                 },
               }}
             >
@@ -161,7 +161,7 @@ export default function Dashboard({ results }: DashboardProps) {
       <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Box>
           <Typography variant="h4" fontWeight={700} gutterBottom sx={{
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
           }}>
@@ -176,8 +176,8 @@ export default function Dashboard({ results }: DashboardProps) {
             <IconButton
               onClick={() => window.location.reload()}
               sx={{
-                bgcolor: 'rgba(102, 126, 234, 0.1)',
-                '&:hover': { bgcolor: 'rgba(102, 126, 234, 0.2)' },
+                bgcolor: 'rgba(0, 229, 153, 0.1)',
+                '&:hover': { bgcolor: 'rgba(0, 229, 153, 0.2)' },
               }}
             >
               <RefreshIcon />
@@ -188,9 +188,9 @@ export default function Dashboard({ results }: DashboardProps) {
             startIcon={<FolderOpenIcon />}
             onClick={() => navigate('/scanner')}
             sx={{
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
               '&:hover': {
-                background: 'linear-gradient(135deg, #5568d3 0%, #653a8b 100%)',
+                background: 'linear-gradient(135deg, #00CC88 0%, #00A86B 100%)',
               },
             }}
           >
@@ -205,7 +205,7 @@ export default function Dashboard({ results }: DashboardProps) {
         <Grid item xs={12} sm={6} md={3}>
           <Card sx={{
             height: '100%',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
             color: 'white',
             position: 'relative',
             overflow: 'hidden',
@@ -325,7 +325,7 @@ export default function Dashboard({ results }: DashboardProps) {
                 <Chip
                   label={`${Object.keys(statistics.piiByType).length} types`}
                   size="small"
-                  sx={{ bgcolor: 'rgba(102, 126, 234, 0.1)', color: 'primary.main', fontWeight: 600 }}
+                  sx={{ bgcolor: 'rgba(0, 229, 153, 0.1)', color: 'primary.main', fontWeight: 600 }}
                 />
               </Box>
               <ResponsiveContainer width="100%" height={300}>
@@ -383,8 +383,8 @@ export default function Dashboard({ results }: DashboardProps) {
                 <AreaChart data={trendData}>
                   <defs>
                     <linearGradient id="colorPii" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#667eea" stopOpacity={0.8}/>
-                      <stop offset="95%" stopColor="#667eea" stopOpacity={0.1}/>
+                      <stop offset="5%" stopColor="#00E599" stopOpacity={0.8}/>
+                      <stop offset="95%" stopColor="#00E599" stopOpacity={0.1}/>
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
@@ -408,7 +408,7 @@ export default function Dashboard({ results }: DashboardProps) {
                   <Area
                     type="monotone"
                     dataKey="pii"
-                    stroke="#667eea"
+                    stroke="#00E599"
                     strokeWidth={3}
                     fillOpacity={1}
                     fill="url(#colorPii)"
@@ -617,9 +617,9 @@ export default function Dashboard({ results }: DashboardProps) {
                   sx={{
                     flex: 1,
                     fontWeight: 600,
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
                     '&:hover': {
-                      background: 'linear-gradient(135deg, #5568d3 0%, #653a8b 100%)',
+                      background: 'linear-gradient(135deg, #00CC88 0%, #00A86B 100%)',
                     },
                   }}
                 >

@@ -2,6 +2,8 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import { initializeCsrfToken } from '../services/axios';
 import axiosInstance from '../services/axios';
+import { MOCK_USER } from '../mocks/mockData';
+import { IS_MOCK } from '../config';
 
 interface User {
   id: number;
@@ -35,12 +37,14 @@ export const useAuth = () => {
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(IS_MOCK ? MOCK_USER : null);
+  const [token, setToken] = useState<string | null>(IS_MOCK ? 'mock-token' : null);
+  const [isLoading, setIsLoading] = useState(IS_MOCK ? false : true);
 
   // Charger le token depuis localStorage au démarrage
   useEffect(() => {
+    if (IS_MOCK) return;
+
     const storedToken = localStorage.getItem('token');
     const storedUser = localStorage.getItem('user');
 

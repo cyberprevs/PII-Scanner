@@ -42,6 +42,7 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import { ScanResultResponse } from '../../types';
+import StatCard from '../common/StatCard';
 
 interface Props {
   results: ScanResultResponse | null;
@@ -330,79 +331,12 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results }) => {
       </Box>
 
       {/* Indicateurs clés */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card
-            sx={{
-              background: 'linear-gradient(135deg, #f44336 0%, #e91e63 100%)',
-              color: 'white',
-            }}
-          >
-            <CardContent>
-              <Typography variant="h3" fontWeight={700}>
-                {severityStats.find((s) => s.severity === 'Critique')?.count || 0}
-              </Typography>
-              <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                🔴 Détections Critiques
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={3}>
-          <Card
-            sx={{
-              background: 'linear-gradient(135deg, #ff9800 0%, #ff5722 100%)',
-              color: 'white',
-            }}
-          >
-            <CardContent>
-              <Typography variant="h3" fontWeight={700}>
-                {severityStats.find((s) => s.severity === 'Élevé')?.count || 0}
-              </Typography>
-              <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                🟠 Détections Élevées
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={3}>
-          <Card
-            sx={{
-              background: 'linear-gradient(135deg, #ffc107 0%, #ff9800 100%)',
-              color: 'white',
-            }}
-          >
-            <CardContent>
-              <Typography variant="h3" fontWeight={700}>
-                {severityStats.find((s) => s.severity === 'Moyen')?.count || 0}
-              </Typography>
-              <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                🟡 Détections Moyennes
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={3}>
-          <Card
-            sx={{
-              background: 'linear-gradient(135deg, #4caf50 0%, #8bc34a 100%)',
-              color: 'white',
-            }}
-          >
-            <CardContent>
-              <Typography variant="h3" fontWeight={700}>
-                {severityStats.find((s) => s.severity === 'Faible')?.count || 0}
-              </Typography>
-              <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                🟢 Détections Faibles
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
+      <Box sx={{ display: 'flex', gap: 3, mb: 4, flexWrap: 'wrap' }}>
+        <StatCard value={severityStats.find((s) => s.severity === 'Critique')?.count || 0} label="Détections Critiques" gradient="linear-gradient(135deg, #F45252 0%, #D93636 100%)" />
+        <StatCard value={severityStats.find((s) => s.severity === 'Élevé')?.count || 0} label="Détections Élevées" gradient="linear-gradient(135deg, #F0A000 0%, #D48800 100%)" />
+        <StatCard value={severityStats.find((s) => s.severity === 'Moyen')?.count || 0} label="Détections Moyennes" gradient="linear-gradient(135deg, #F0A000 0%, #FF9800 100%)" />
+        <StatCard value={severityStats.find((s) => s.severity === 'Faible')?.count || 0} label="Détections Faibles" gradient="linear-gradient(135deg, #00E599 0%, #00B876 100%)" />
+      </Box>
 
       {/* Graphiques - Pleine largeur */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
@@ -444,14 +378,14 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results }) => {
                     />
                     <Bar
                       dataKey="detections"
-                      fill="#667eea"
+                      fill="#00E599"
                       name="Détections"
                       radius={[0, 8, 8, 0]}
                       barSize={40}
                     />
                     <Bar
                       dataKey="files"
-                      fill="#764ba2"
+                      fill="#00B876"
                       name="Fichiers"
                       radius={[0, 8, 8, 0]}
                       barSize={40}
@@ -706,9 +640,9 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results }) => {
                   startIcon={<FileDownloadIcon />}
                   onClick={exportToCSV}
                   sx={{
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
                     '&:hover': {
-                      background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+                      background: 'linear-gradient(135deg, #00CC88 0%, #00A86B 100%)',
                     },
                   }}
                 >

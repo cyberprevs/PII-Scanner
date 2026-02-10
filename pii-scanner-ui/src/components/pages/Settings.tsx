@@ -212,8 +212,8 @@ export default function Settings() {
 
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case 'Identité': return '#667eea';
-      case 'Contact': return '#4facfe';
+      case 'Identité': return '#00E599';
+      case 'Contact': return '#3B82F6';
       case 'Bancaire': return '#f44336';
       case 'Santé': return '#43e97b';
       case 'Éducation': return '#ff9800';
@@ -479,9 +479,10 @@ export default function Settings() {
           startIcon={<SaveIcon />}
           onClick={handleSave}
           sx={{
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            backgroundColor: '#00E599',
+            color: '#0A0A0A',
             '&:hover': {
-              background: 'linear-gradient(135deg, #5568d3 0%, #65408b 100%)',
+              backgroundColor: '#00CC88',
             },
           }}
         >

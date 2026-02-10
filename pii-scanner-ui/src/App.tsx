@@ -29,18 +29,23 @@ import DuplicateFiles from './components/pages/DuplicateFiles';
 import { scanApi } from './services/apiClient';
 import type { ScanResultResponse } from './types';
 import axiosInstance, { initializeCsrfToken } from './services/axios';
+import { MOCK_SCAN_RESULTS } from './mocks/mockData';
+import { tokens } from './theme/designSystem';
+import { IS_MOCK } from './config';
 
 function App() {
   const [scanning, setScanning] = useState(false);
-  const [scanId, setScanId] = useState<string | null>(null);
-  const [results, setResults] = useState<ScanResultResponse | null>(null);
+  const [scanId, setScanId] = useState<string | null>(IS_MOCK ? 'mock-scan-001' : null);
+  const [results, setResults] = useState<ScanResultResponse | null>(IS_MOCK ? MOCK_SCAN_RESULTS : null);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [isInitialized, setIsInitialized] = useState<boolean | null>(null);
-  const [checkingInit, setCheckingInit] = useState(true);
+  const [isInitialized, setIsInitialized] = useState<boolean | null>(IS_MOCK ? true : null);
+  const [checkingInit, setCheckingInit] = useState(IS_MOCK ? false : true);
 
   // Vérifier si l'application est initialisée et initialiser le token CSRF
   useEffect(() => {
+    if (IS_MOCK) return;
+
     const checkInitialization = async () => {
       try {
         // Initialiser le token CSRF en premier
@@ -62,6 +67,8 @@ function App() {
 
   // Restaurer les résultats du dernier scan depuis localStorage
   useEffect(() => {
+    if (IS_MOCK) return;
+
     const restoreLastScan = async () => {
       try {
         const savedScanId = localStorage.getItem('lastScanId');
@@ -111,6 +118,8 @@ function App() {
   }, [isInitialized, checkingInit]);
 
   useEffect(() => {
+    if (IS_MOCK) return;
+
     // Connecter SignalR au démarrage
     const connectSignalR = async () => {
       try {
@@ -221,10 +230,10 @@ function App() {
           justifyContent: 'center',
           alignItems: 'center',
           minHeight: '100vh',
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+          backgroundColor: tokens.colors.bgPrimary
         }}
       >
-        <CircularProgress size={60} sx={{ color: 'white' }} />
+        <CircularProgress size={60} sx={{ color: tokens.colors.accentPrimary }} />
       </Box>
     );
   }
