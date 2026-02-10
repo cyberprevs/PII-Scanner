@@ -1,5 +1,6 @@
 import { Box, Card, CardContent, Typography, Button } from '@mui/material';
 import { ReactNode } from 'react';
+import { tokens } from '../../theme/designSystem';
 
 interface EmptyStateProps {
   icon?: ReactNode;
@@ -22,12 +23,14 @@ export default function EmptyState({
   onAction,
   actionIcon,
 }: EmptyStateProps) {
+  const c = tokens.colors;
+
   return (
     <Box sx={{ p: 3 }}>
       <Card sx={{ textAlign: 'center', py: 8 }}>
         <CardContent>
           {icon && (
-            <Box sx={{ mb: 2, display: 'flex', justifyContent: 'center' }}>
+            <Box sx={{ mb: 2, display: 'flex', justifyContent: 'center', color: c.accentPrimary }}>
               {icon}
             </Box>
           )}

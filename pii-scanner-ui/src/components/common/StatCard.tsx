@@ -1,5 +1,6 @@
 import { Box, Card, CardContent, Typography } from '@mui/material';
 import { ReactNode } from 'react';
+import { tokens } from '../../theme/designSystem';
 
 interface StatCardProps {
   value: string | number;
@@ -14,31 +15,46 @@ interface StatCardProps {
  * Utilisé dans : DashboardPage, Scanner, RiskyFiles, PiiCategoryAnalysis, et autres pages de statistiques
  */
 export default function StatCard({ value, label, gradient, icon, subtext }: StatCardProps) {
-  const defaultGradient = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+  const c = tokens.colors;
 
   return (
     <Box sx={{ flex: '1 1 200px' }}>
       <Card
         sx={{
-          background: gradient || defaultGradient,
-          color: 'white',
+          background: gradient || c.bgSurface,
+          border: gradient ? 'none' : `1px solid ${c.borderDefault}`,
+          color: gradient ? 'white' : c.textPrimary,
           height: '100%',
         }}
       >
         <CardContent>
           {icon && (
-            <Box sx={{ mb: 2 }}>
+            <Box sx={{ mb: 2, color: gradient ? 'white' : c.accentPrimary }}>
               {icon}
             </Box>
           )}
-          <Typography variant="h3" fontWeight={700} color="white">
+          <Typography
+            variant="h3"
+            fontWeight={700}
+            sx={{ color: gradient ? 'white' : c.accentPrimary }}
+          >
             {value}
           </Typography>
-          <Typography variant="body2" color="rgba(255,255,255,0.9)">
+          <Typography
+            variant="body2"
+            sx={{ color: gradient ? 'rgba(255,255,255,0.9)' : c.textSecondary }}
+          >
             {label}
           </Typography>
           {subtext && (
-            <Typography variant="caption" color="rgba(255,255,255,0.7)" sx={{ mt: 1, display: 'block' }}>
+            <Typography
+              variant="caption"
+              sx={{
+                mt: 1,
+                display: 'block',
+                color: gradient ? 'rgba(255,255,255,0.7)' : c.textTertiary,
+              }}
+            >
               {subtext}
             </Typography>
           )}
