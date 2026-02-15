@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Support Cyberprevs
+    url: https://cyberprevs.fr
+    about: Pour toute question générale, visitez notre site
+  - name: Discussions GitHub
+    url: https://github.com/cyberprevs/PII-Scanner/discussions
+    about: Posez vos questions ou partagez vos idées dans les discussions
