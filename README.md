@@ -82,10 +82,12 @@ dotnet run
 - **Fichiers dupliqués** : Détection MD5 des copies redondantes (même contenu = même risque multiplié)
 - **Analyse par catégories** : Regroupement par type (Bancaire, Identité, Santé, Contact, Éducation, Transport)
 - **Classification automatique** : Risque FAIBLE/MOYEN/ÉLEVÉ
+- **Ouverture rapide du dossier** : Bouton d'accès direct à Windows Explorer depuis les résultats
 
 ### Interface web moderne
 
 - 17 pages spécialisées : Dashboard, Scanner, Historique, Analyse par catégories, Fichiers dupliqués, Analytics, Exports, etc.
+- Accès direct aux fichiers détectés depuis l'interface (ouvre Windows Explorer)
 - Thème sombre Material-UI v7 avec graphiques interactifs (Recharts)
 - Mise à jour en temps réel via SignalR WebSocket
 - Exports avancés : CSV et Excel pour analyses par catégorie
@@ -171,7 +173,7 @@ PII-Scanner/
 ### API REST
 
 **Endpoints principaux** :
-- `/api/scan/*` - Scan, progression, résultats, rapports
+- `/api/scan/*` - Scan, progression, résultats, rapports, ouverture dossier
 - `/api/auth/*` - Login, refresh token, logout
 - `/api/dataretention/*` - Gestion rétention des données
 - `/api/users/*` - CRUD utilisateurs (Admin)
@@ -314,7 +316,7 @@ L'application dispose d'une page Support complète avec :
 
 **Développé par [Cyberprevs](https://cyberprevs.fr)**
 
-**Version** : 1.0.0 | **Dernière mise à jour** : 18 Janvier 2026
+**Version** : 1.0.1 | **Dernière mise à jour** : 28 Février 2026
 
 **Conformité** : Loi N°2017-20 du Bénin (APDP)
 <img width="998" height="645" alt="image" src="https://github.com/user-attachments/assets/c2394a30-fc99-4074-b3ef-a6d15e244ca6" />
