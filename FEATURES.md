@@ -97,6 +97,54 @@ if (detections.Count > 0)
 
 ---
 
+## Ouverture de Dossier depuis l'Interface
+
+### Vue d'ensemble
+
+Depuis les pages *Fichiers à risque* et *Détections PII*, un bouton dossier permet d'ouvrir directement Windows Explorer sur le fichier détecté, sans avoir à naviguer manuellement dans l'arborescence.
+
+### Fonctionnement
+
+1. L'utilisateur clique sur l'icône dossier d'une ligne de résultat
+2. Le frontend envoie `POST /api/scan/open-folder` avec le chemin du fichier
+3. Le backend valide le chemin (PathValidator), puis appelle `explorer.exe /select,"<chemin>"`
+4. Windows Explorer s'ouvre et sélectionne le fichier concerné
+
+### Implémentation
+
+**Backend** (`PiiScanner.Api/Controllers/ScanController.cs`) :
+```csharp
+[HttpPost("open-folder")]
+public ActionResult OpenFolder([FromBody] OpenFolderRequest request)
+{
+    // Validation PathValidator anti-traversal
+    // Si fichier existe → explorer.exe /select,"<path>" (sélectionne le fichier)
+    // Sinon → explorer.exe "<dossier>" (ouvre le dossier)
+}
+```
+
+**Frontend** (`pii-scanner-ui/src/services/apiClient.ts`) :
+```typescript
+async openFolder(filePath: string): Promise<void> {
+  await apiClient.post('/scan/open-folder', { filePath });
+}
+```
+
+### Pages concernées
+
+| Page | Colonne ajoutée |
+|------|----------------|
+| Fichiers à risque (`RiskyFiles.tsx`) | "Dossier" — icône par ligne de fichier |
+| Détections PII (`Detections.tsx`) | "Dossier" — icône par ligne de détection |
+
+### Sécurité
+
+- Le chemin est validé par `PathValidator` (bloque `..`, `~`, `%`, chemins UNC, répertoires système)
+- Le endpoint est protégé par `[Authorize]` (JWT obligatoire)
+- Fonctionne uniquement sur Windows (appel `explorer.exe`)
+
+---
+
 ## Analyse par Catégories de PII
 
 ### Vue d'ensemble

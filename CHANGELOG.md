@@ -5,6 +5,19 @@ Tous les changements notables de ce projet seront documentés dans ce fichier.
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/),
 et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [1.0.1] - 2026-02-28
+
+### ✨ Ajouté
+
+- **Ouverture du dossier depuis l'interface** : Bouton "Dossier" sur les pages *Fichiers à risque* et *Détections PII* — ouvre Windows Explorer directement sur le fichier détecté (`explorer.exe /select`)
+- Nouvel endpoint backend `POST /api/scan/open-folder` avec validation du chemin (PathValidator)
+
+### 🐛 Corrigé
+
+- Conflit `File` / `System.IO.File` dans `ScanController.cs` (ambiguïté avec `ControllerBase.File()`)
+
+---
+
 ## [1.0.0] - 2026-01-18
 
 ### 🎉 Version Initiale Stable - Production Ready
