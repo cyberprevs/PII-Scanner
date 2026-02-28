@@ -331,7 +331,7 @@ copy original.txt document_important.txt
 - Analyse par catégories de PII avec graphiques
 - Exports CSV/Excel enrichis
 - Optimisation performance : calcul hash conditionnel (10-50x plus rapide)
-- 17 types de PII détectés automatiquement
+- 18 types de PII détectés automatiquement
 - Support de 7 formats de fichiers (.txt, .log, .csv, .json, .docx, .xlsx, .pdf)
 - Interface web moderne avec Material-UI v7
 - Authentification JWT et chiffrement AES-256

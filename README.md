@@ -62,9 +62,9 @@ dotnet run
 
 ## Fonctionnalités principales
 
-### Détection de 17 types de PII spécifiques au Bénin
+### Détection de 18 types de PII spécifiques au Bénin
 
-**Identité** : IFU, CNI, Passeport, RCCM, Acte de naissance
+**Identité** : IFU, CNI, Passeport, RCCM, Acte de naissance, NPI
 **Contact** : Email, Téléphone (+229), MTN MoMo, Moov Money
 **Bancaire** : IBAN Bénin, Carte bancaire
 **Santé** : CNSS, RAMU

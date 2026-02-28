@@ -14,7 +14,7 @@ Première version stable de **PII Scanner** par Cyberprevs, prête pour un usage
 #### ✨ Fonctionnalités Principales
 
 **Détection de PII**
-- Détection automatique de **17 types de PII** conformes Loi N°2017-20 (APDP Bénin)
+- Détection automatique de **18 types de PII** conformes Loi N°2017-20 (APDP Bénin)
 - Validation avancée avec réduction de ~87% des faux positifs
 - Support de 7 formats : .txt, .log, .csv, .json, .docx, .xlsx, .pdf
 - Traitement parallèle avec performance optimale (tous les cœurs CPU)
