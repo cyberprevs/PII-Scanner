@@ -19,12 +19,16 @@ import {
   InputLabel,
   Container,
   Button,
+  IconButton,
+  Tooltip,
 } from '@mui/material';
 import SecurityIcon from '@mui/icons-material/Security';
 import FilterListIcon from '@mui/icons-material/FilterList';
+import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import StatCard from '../common/StatCard';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import type { ScanResultResponse } from '../../types';
+import { scanApi } from '../../services/apiClient';
 
 interface DetectionsProps {
   results: ScanResultResponse | null;
@@ -188,6 +192,7 @@ export default function Detections({ results }: DetectionsProps) {
                 <TableCell><strong>Type PII</strong></TableCell>
                 <TableCell><strong>Valeur détectée</strong></TableCell>
                 <TableCell><strong>Fichier</strong></TableCell>
+                <TableCell align="center"><strong>Dossier</strong></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -207,6 +212,17 @@ export default function Detections({ results }: DetectionsProps) {
                         ? '...' + detection.filePath.slice(-60)
                         : detection.filePath}
                     </Typography>
+                  </TableCell>
+                  <TableCell align="center">
+                    <Tooltip title="Ouvrir le dossier dans l'explorateur">
+                      <IconButton
+                        size="small"
+                        onClick={() => scanApi.openFolder(detection.filePath)}
+                        sx={{ color: 'primary.main' }}
+                      >
+                        <FolderOpenIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
                   </TableCell>
                 </TableRow>
               ))}

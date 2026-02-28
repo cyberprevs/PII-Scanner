@@ -259,4 +259,43 @@ public class ScanController : ControllerBase
         _scanService.CleanupScan(scanId);
         return NoContent();
     }
+
+    /// <summary>
+    /// Ouvre le dossier contenant un fichier dans l'explorateur Windows
+    /// </summary>
+    [HttpPost("open-folder")]
+    public ActionResult OpenFolder([FromBody] OpenFolderRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.FilePath))
+            return BadRequest("Chemin de fichier requis.");
+
+        if (!PathValidator.ValidateDirectoryPath(
+                Path.GetDirectoryName(request.FilePath) ?? request.FilePath,
+                out var error))
+            return BadRequest(error);
+
+        var folderPath = System.IO.File.Exists(request.FilePath)
+            ? Path.GetDirectoryName(request.FilePath)!
+            : request.FilePath;
+
+        if (!Directory.Exists(folderPath))
+            return NotFound("Dossier introuvable.");
+
+        try
+        {
+            if (System.IO.File.Exists(request.FilePath))
+                System.Diagnostics.Process.Start("explorer.exe", $"/select,\"{request.FilePath}\"");
+            else
+                System.Diagnostics.Process.Start("explorer.exe", $"\"{folderPath}\"");
+
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erreur lors de l'ouverture du dossier {Path}", folderPath);
+            return StatusCode(500, "Impossible d'ouvrir le dossier.");
+        }
+    }
 }
+
+public record OpenFolderRequest(string FilePath);
