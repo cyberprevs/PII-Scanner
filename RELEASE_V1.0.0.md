@@ -17,7 +17,7 @@ Cette version **V1.0.0** est **prête pour la production** avec toutes les fonct
 ## Fonctionnalités Clés
 
 ### Détection de PII
-- **17 types de PII** détectés automatiquement
+- **18 types de PII** détectés automatiquement
 - Validation avancée avec **~87% de réduction des faux positifs**
 - Support de **7 formats** : .txt, .log, .csv, .json, .docx, .xlsx, .pdf
 - Traitement **parallèle** utilisant tous les cœurs CPU

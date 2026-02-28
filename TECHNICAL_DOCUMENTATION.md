@@ -33,7 +33,7 @@
 
 ### Qu'est-ce que PII Scanner ?
 
-PII Scanner est une application de sécurité des données qui **détecte automatiquement les informations personnelles identifiables (PII)** dans les fichiers d'un système de fichiers. L'application scanne récursivement les répertoires, analyse le contenu de 7 types de fichiers différents, et identifie **17 types de données sensibles** spécifiques au contexte béninois et international.
+PII Scanner est une application de sécurité des données qui **détecte automatiquement les informations personnelles identifiables (PII)** dans les fichiers d'un système de fichiers. L'application scanne récursivement les répertoires, analyse le contenu de 7 types de fichiers différents, et identifie **18 types de données sensibles** spécifiques au contexte béninois et international.
 
 ### Problème résolu
 
@@ -57,7 +57,7 @@ PII Scanner répond à ces questions en fournissant un **audit complet et automa
 | Fonctionnalité | Description |
 |----------------|-------------|
 | Scan récursif | Analyse complète d'arborescences de fichiers |
-| 17 types de PII | Détection spécialisée avec validation (Luhn, checksums) |
+| 18 types de PII | Détection spécialisée avec validation (Luhn, checksums) |
 | 7 formats de fichiers | TXT, LOG, CSV, JSON, DOCX, XLSX, PDF |
 | Analyse des permissions | Audit NTFS (Everyone, groupes, partages réseau) |
 | Analyse d'ancienneté | Détection des fichiers obsolètes (6 mois → +5 ans) |
@@ -108,7 +108,7 @@ PII Scanner répond à ces questions en fournissant un **audit complet et automa
 │                                                         │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐ │
 │  │ FileScanner   │  │ PiiDetector  │  │ DocumentReader│ │
-│  │(Orchestration)│  │  (17 regex)  │  │ (7 formats)  │ │
+│  │(Orchestration)│  │  (18 regex)  │  │ (7 formats)  │ │
 │  └──────────────┘  └──────────────┘  └──────────────┘ │
 │                                                         │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐ │
@@ -321,7 +321,7 @@ private static readonly Dictionary<string, Regex> CompiledPatterns =
 
 `RegexOptions.Compiled` transforme les expressions régulières en code IL natif au démarrage, ce qui **multiplie par 2-3x la vitesse** de matching par rapport aux regex interprétées.
 
-### 5.2 Les 17 types de PII détectés
+### 5.2 Les 18 types de PII détectés
 
 #### 1. Email
 ```
@@ -438,9 +438,23 @@ Supporte :
 - Nouveau format : `AA 1234 BB`
 - Ancien format : `1234 AB`
 
-#### 16-17. Autres patterns contextuels
+#### 16. Date de naissance
+```
+Pattern : \b(?:0[1-9]|[12][0-9]|3[01])/(?:0[1-9]|1[0-2])/(?:19|20)\d{2}\b
+```
+**Validation** : La date doit correspondre à un âge entre 5 et 120 ans.
 
-Le système est extensible : de nouveaux patterns peuvent être ajoutés en modifiant le dictionnaire `PatternStrings` dans `PiiDetector.cs`.
+#### 17. RAMU (Régime d'Assurance Maladie Universelle)
+```
+Pattern : \bRAMU[\s-]?\d{8,10}\b
+```
+Format : `RAMU-12345678` ou `RAMU 1234567890`.
+
+#### 18. NPI (Numéro Personnel d'Identification)
+```
+Pattern : \b\d{10}\b
+```
+**Validation par algorithme de Luhn** : 10 chiffres dont 1 chiffre de contrôle. Anti-faux-positifs : rejette les suites répétitives (`1111111111`), les suites connues (`0123456789`, `1234567890`), et les valeurs nulles.
 
 ### 5.3 Processus de détection complet
 
@@ -448,7 +462,7 @@ Le système est extensible : de nouveaux patterns peuvent être ajoutés en modi
 Contenu du fichier (string)
     │
     ▼
-Pour chaque type de PII (17 types) :
+Pour chaque type de PII (18 types) :
     │
     ├── 1. Regex.Matches(content) → Liste de matches
     │
@@ -1217,7 +1231,7 @@ Graphiques Recharts :
 - Section "Chemins récents" (localStorage, max 5)
 - Alerte : formats supportés
 - Alerte : "100% local - aucune donnée envoyée"
-- Liste des 17 types de PII (Chips)
+- Liste des 18 types de PII (Chips)
 - Bouton "Lancer le scan" (gradient)
 
 **Pendant le scan** :

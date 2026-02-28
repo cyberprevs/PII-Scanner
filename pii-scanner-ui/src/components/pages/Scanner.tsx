@@ -317,7 +317,7 @@ export default function Scanner({ scanning, scanId, onStartScan, onStopScan }: S
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
                   <SecurityIcon sx={{ fontSize: 28, mr: 1.5, color: 'secondary.main' }} />
                   <Typography variant="h6" fontWeight={600}>
-                    17 types de PII
+                    18 types de PII
                   </Typography>
                 </Box>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
@@ -329,7 +329,7 @@ export default function Scanner({ scanning, scanId, onStartScan, onStopScan }: S
                     'Email', 'Date naissance', 'Carte bancaire', 'IFU', 'CNI',
                     'Passeport', 'RCCM', 'Acte naissance', 'Téléphone', 'IBAN',
                     'MTN MoMo', 'Moov Money', 'CNSS', 'RAMU', 'INE',
-                    'Matricule', 'Plaque'
+                    'Matricule', 'Plaque', 'NPI'
                   ].map((item, index) => (
                     <Chip
                       key={index}

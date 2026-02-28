@@ -12,7 +12,7 @@ Faire de PII Scanner **l'outil de référence pour la protection des données pe
 
 ## Ce qui existe aujourd'hui — v1.0.0 (Janvier 2026)
 
-- Détection de **17 types de données personnelles** adaptés au Bénin
+- Détection de **18 types de données personnelles** adaptés au Bénin
 - Analyse de **7 formats de fichiers** (PDF, Word, Excel, CSV, JSON, TXT, LOG)
 - Analyse des **permissions NTFS** (qui a accès aux fichiers sensibles)
 - Analyse de **l'ancienneté** des fichiers (données oubliées depuis des années)
@@ -164,7 +164,7 @@ Un kanban GitHub Projects organise les tâches avec des issues adaptées à chaq
 | Métrique | Mi-2026 | Fin 2026 |
 |----------|---------|----------|
 | Formats de fichiers supportés | 10 | 10+ images |
-| Types de PII détectés | 17 | 20+ (patterns custom) |
+| Types de PII détectés | 18 | 20+ (patterns custom) |
 | Plateformes | Windows | Windows + Linux |
 | Langues de l'interface | 2 (FR/EN) | 3+ |
 | Audits de sécurité réalisés | 3 | 6 |
