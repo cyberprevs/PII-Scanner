@@ -355,7 +355,7 @@ function App() {
             <Route path="duplicate-files" element={<DuplicateFiles results={results} />} />
             <Route path="staleness" element={<Staleness results={results} />} />
             <Route path="exposure" element={<Exposure results={results} />} />
-            <Route path="reports" element={<Reports results={results} />} />
+            <Route path="reports" element={<Reports results={results} onDownloadReport={handleDownloadReport} />} />
             <Route
               path="exports"
               element={
