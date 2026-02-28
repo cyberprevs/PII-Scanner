@@ -19,12 +19,16 @@ import {
   InputLabel,
   Container,
   Button,
+  IconButton,
+  Tooltip,
 } from '@mui/material';
 import FolderIcon from '@mui/icons-material/Folder';
+import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import StatCard from '../common/StatCard';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import type { ScanResultResponse } from '../../types';
+import { scanApi } from '../../services/apiClient';
 
 interface RiskyFilesProps {
   results: ScanResultResponse | null;
@@ -199,6 +203,7 @@ export default function RiskyFiles({ results }: RiskyFilesProps) {
                 <TableCell align="right"><strong>Nombre de PII</strong></TableCell>
                 <TableCell><strong>Ancienneté</strong></TableCell>
                 <TableCell><strong>Exposition</strong></TableCell>
+                <TableCell align="center"><strong>Dossier</strong></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -254,12 +259,23 @@ export default function RiskyFiles({ results }: RiskyFilesProps) {
                         </Box>
                       )}
                     </TableCell>
+                    <TableCell align="center">
+                      <Tooltip title="Ouvrir le dossier dans l'explorateur">
+                        <IconButton
+                          size="small"
+                          onClick={() => scanApi.openFolder(file.filePath)}
+                          sx={{ color: 'primary.main' }}
+                        >
+                          <FolderOpenIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    </TableCell>
                   </TableRow>
 
                   {/* Alerte ancienneté */}
                   {file.staleDataWarning && (
                     <TableRow key={`${index}-staleness-warning`}>
-                      <TableCell colSpan={5} sx={{ py: 0.5, backgroundColor: 'rgba(255, 152, 0, 0.08)' }}>
+                      <TableCell colSpan={6} sx={{ py: 0.5, backgroundColor: 'rgba(255, 152, 0, 0.08)' }}>
                         <Alert
                           severity="warning"
                           sx={{ py: 0, '& .MuiAlert-message': { fontSize: '0.875rem' } }}
@@ -273,7 +289,7 @@ export default function RiskyFiles({ results }: RiskyFilesProps) {
                   {/* Alerte exposition */}
                   {file.exposureWarning && (
                     <TableRow key={`${index}-exposure-warning`}>
-                      <TableCell colSpan={5} sx={{ py: 0.5, backgroundColor: 'rgba(244, 67, 54, 0.08)' }}>
+                      <TableCell colSpan={6} sx={{ py: 0.5, backgroundColor: 'rgba(244, 67, 54, 0.08)' }}>
                         <Alert
                           severity={file.exposureLevel === 'Critique' ? 'error' : 'warning'}
                           sx={{ py: 0, '& .MuiAlert-message': { fontSize: '0.875rem' } }}

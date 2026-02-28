@@ -141,6 +141,10 @@ export class ScanApiClient {
     });
     return response.data;
   }
+
+  async openFolder(filePath: string): Promise<void> {
+    await apiClient.post('/scan/open-folder', { filePath });
+  }
 }
 
 export const scanApi = new ScanApiClient();
