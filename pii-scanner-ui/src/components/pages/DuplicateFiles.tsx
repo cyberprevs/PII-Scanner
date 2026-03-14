@@ -26,6 +26,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import WarningIcon from '@mui/icons-material/Warning';
 import type { ScanResultResponse } from '../../types';
+import { useTranslation } from 'react-i18next';
 
 interface DuplicateFilesProps {
   results: ScanResultResponse | null;
@@ -40,6 +41,7 @@ interface DuplicateGroup {
 
 function DuplicateRow({ group }: { group: DuplicateGroup }) {
   const [open, setOpen] = useState(false);
+  const { t } = useTranslation();
 
   return (
     <>
@@ -53,7 +55,7 @@ function DuplicateRow({ group }: { group: DuplicateGroup }) {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <ContentCopyIcon color="warning" />
             <Typography variant="body2" fontWeight={600}>
-              {group.files.length} copies
+              {group.files.length} {t('duplicates.copies')}
             </Typography>
           </Box>
         </TableCell>
@@ -96,13 +98,13 @@ function DuplicateRow({ group }: { group: DuplicateGroup }) {
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 2 }}>
               <Typography variant="subtitle2" gutterBottom fontWeight={600}>
-                📂 Emplacements des copies ({group.files.length})
+                {t('duplicates.locations', { count: group.files.length })}
               </Typography>
               <Table size="small">
                 <TableHead>
                   <TableRow>
                     <TableCell width={60}>#</TableCell>
-                    <TableCell>Chemin du fichier</TableCell>
+                    <TableCell>{t('duplicates.colPath')}</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -110,7 +112,7 @@ function DuplicateRow({ group }: { group: DuplicateGroup }) {
                     <TableRow key={index}>
                       <TableCell>
                         <Chip
-                          label={index === 0 ? 'Original' : `Copie ${index}`}
+                          label={index === 0 ? t('duplicates.original') : t('duplicates.copy', { n: index })}
                           size="small"
                           color={index === 0 ? 'primary' : 'default'}
                         />
@@ -142,22 +144,20 @@ function DuplicateRow({ group }: { group: DuplicateGroup }) {
 export default function DuplicateFiles({ results }: DuplicateFilesProps) {
   const [minCopies, setMinCopies] = useState<number>(2);
   const [sortBy, setSortBy] = useState<string>('copies');
+  const { t } = useTranslation();
 
-  // Grouper les fichiers par hash MD5
   const duplicateGroups = useMemo(() => {
     if (!results?.detections) return [];
 
-    // Grouper les détections par fichier, puis par hash
     const fileMap = new Map<string, { hash: string; piiTypes: Set<string>; count: number }>();
 
     results.detections.forEach((detection) => {
       if (!detection.filePath || !detection.piiType) return;
 
-      // Utiliser le hash du fichier s'il existe, sinon utiliser le chemin comme clé
       const key = detection.filePath;
       const hash = (detection as any).fileHash || '';
 
-      if (!hash) return; // Ignorer les fichiers sans hash
+      if (!hash) return;
 
       if (!fileMap.has(key)) {
         fileMap.set(key, { hash, piiTypes: new Set(), count: 0 });
@@ -168,7 +168,6 @@ export default function DuplicateFiles({ results }: DuplicateFilesProps) {
       fileData.count++;
     });
 
-    // Grouper par hash
     const hashMap = new Map<string, { files: string[]; piiCount: number; piiTypes: Set<string> }>();
 
     fileMap.forEach((data, filePath) => {
@@ -182,7 +181,6 @@ export default function DuplicateFiles({ results }: DuplicateFilesProps) {
       data.piiTypes.forEach((type) => group.piiTypes.add(type));
     });
 
-    // Convertir en tableau et filtrer les doublons (>= minCopies)
     const groups: DuplicateGroup[] = [];
     hashMap.forEach((data, hash) => {
       if (data.files.length >= minCopies) {
@@ -195,7 +193,6 @@ export default function DuplicateFiles({ results }: DuplicateFilesProps) {
       }
     });
 
-    // Trier
     groups.sort((a, b) => {
       if (sortBy === 'copies') {
         return b.files.length - a.files.length;
@@ -212,13 +209,12 @@ export default function DuplicateFiles({ results }: DuplicateFilesProps) {
     return (
       <Box>
         <Typography variant="h4" fontWeight={700} gutterBottom>
-          📋 Fichiers dupliqués
+          {t('duplicates.titleEmpty')}
         </Typography>
         <Card sx={{ mt: 3 }}>
           <CardContent>
             <Typography variant="body1" color="text.secondary">
-              Aucun scan disponible. Lancez un scan depuis la page Scanner pour détecter les fichiers dupliqués
-              contenant des PII.
+              {t('duplicates.noScan')}
             </Typography>
           </CardContent>
         </Card>
@@ -232,10 +228,10 @@ export default function DuplicateFiles({ results }: DuplicateFilesProps) {
   return (
     <Box>
       <Typography variant="h4" fontWeight={700} gutterBottom>
-        📋 Fichiers dupliqués contenant des PII
+        {t('duplicates.title')}
       </Typography>
       <Typography variant="body1" color="text.secondary" paragraph>
-        Détection des fichiers identiques (même contenu) contenant des données personnelles
+        {t('duplicates.subtitle')}
       </Typography>
 
       {/* Statistiques */}
@@ -246,7 +242,7 @@ export default function DuplicateFiles({ results }: DuplicateFilesProps) {
               {duplicateGroups.length}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Groupes de fichiers dupliqués
+              {t('duplicates.groups')}
             </Typography>
           </CardContent>
         </Card>
@@ -256,7 +252,7 @@ export default function DuplicateFiles({ results }: DuplicateFilesProps) {
               {totalDuplicates}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Total de copies détectées
+              {t('duplicates.totalCopies')}
             </Typography>
           </CardContent>
         </Card>
@@ -266,7 +262,7 @@ export default function DuplicateFiles({ results }: DuplicateFilesProps) {
               {totalDuplicates - totalOriginals}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Copies redondantes (à supprimer)
+              {t('duplicates.redundant')}
             </Typography>
           </CardContent>
         </Card>
@@ -276,12 +272,10 @@ export default function DuplicateFiles({ results }: DuplicateFilesProps) {
       {duplicateGroups.length > 0 && (
         <Alert severity="warning" icon={<WarningIcon />} sx={{ mb: 3 }}>
           <Typography variant="body2" fontWeight={600}>
-            ⚠️ Propagation de risque détectée
+            {t('duplicates.riskAlert')}
           </Typography>
           <Typography variant="body2">
-            Les fichiers dupliqués augmentent le risque d'exposition des PII. Chaque copie représente un point
-            d'accès supplémentaire. Il est recommandé de conserver une seule copie par fichier et de supprimer
-            les duplicatas.
+            {t('duplicates.riskAlertText')}
           </Typography>
         </Alert>
       )}
@@ -289,10 +283,10 @@ export default function DuplicateFiles({ results }: DuplicateFilesProps) {
       {duplicateGroups.length === 0 && (
         <Alert severity="success" sx={{ mb: 3 }}>
           <Typography variant="body2" fontWeight={600}>
-            ✅ Aucun fichier dupliqué détecté
+            {t('duplicates.noDuplicates')}
           </Typography>
           <Typography variant="body2">
-            Aucune copie de fichiers contenant des PII n'a été trouvée dans le répertoire scanné.
+            {t('duplicates.noDuplicatesText')}
           </Typography>
         </Alert>
       )}
@@ -301,24 +295,24 @@ export default function DuplicateFiles({ results }: DuplicateFilesProps) {
       {duplicateGroups.length > 0 && (
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mb: 2, gap: 2 }}>
           <FormControl size="small" sx={{ minWidth: 180 }}>
-            <InputLabel>Nombre minimum de copies</InputLabel>
+            <InputLabel>{t('duplicates.minCopies')}</InputLabel>
             <Select
               value={minCopies}
-              label="Nombre minimum de copies"
+              label={t('duplicates.minCopies')}
               onChange={(e) => setMinCopies(e.target.value as number)}
             >
-              <MenuItem value={2}>2 copies ou plus</MenuItem>
-              <MenuItem value={3}>3 copies ou plus</MenuItem>
-              <MenuItem value={4}>4 copies ou plus</MenuItem>
-              <MenuItem value={5}>5 copies ou plus</MenuItem>
+              <MenuItem value={2}>{t('duplicates.copiesOrMore', { n: 2 })}</MenuItem>
+              <MenuItem value={3}>{t('duplicates.copiesOrMore', { n: 3 })}</MenuItem>
+              <MenuItem value={4}>{t('duplicates.copiesOrMore', { n: 4 })}</MenuItem>
+              <MenuItem value={5}>{t('duplicates.copiesOrMore', { n: 5 })}</MenuItem>
             </Select>
           </FormControl>
 
           <FormControl size="small" sx={{ minWidth: 160 }}>
-            <InputLabel>Trier par</InputLabel>
-            <Select value={sortBy} label="Trier par" onChange={(e) => setSortBy(e.target.value as string)}>
-              <MenuItem value="copies">Nombre de copies</MenuItem>
-              <MenuItem value="pii">Nombre de PII</MenuItem>
+            <InputLabel>{t('duplicates.sortBy')}</InputLabel>
+            <Select value={sortBy} label={t('duplicates.sortBy')} onChange={(e) => setSortBy(e.target.value as string)}>
+              <MenuItem value="copies">{t('duplicates.sortByCopies')}</MenuItem>
+              <MenuItem value="pii">{t('duplicates.sortByPii')}</MenuItem>
             </Select>
           </FormControl>
         </Box>
@@ -331,10 +325,10 @@ export default function DuplicateFiles({ results }: DuplicateFilesProps) {
             <TableHead>
               <TableRow>
                 <TableCell width={60} />
-                <TableCell>Nombre de copies</TableCell>
-                <TableCell>PII détectés</TableCell>
-                <TableCell>Types de PII</TableCell>
-                <TableCell>Hash MD5</TableCell>
+                <TableCell>{t('duplicates.colCopies')}</TableCell>
+                <TableCell>{t('duplicates.colPii')}</TableCell>
+                <TableCell>{t('duplicates.colPiiTypes')}</TableCell>
+                <TableCell>{t('duplicates.colHash')}</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>

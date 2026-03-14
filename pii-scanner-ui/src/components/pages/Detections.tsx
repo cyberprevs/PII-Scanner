@@ -21,14 +21,18 @@ import {
   Button,
   IconButton,
   Tooltip,
+  TextField,
+  InputAdornment,
 } from '@mui/material';
 import SecurityIcon from '@mui/icons-material/Security';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
+import SearchIcon from '@mui/icons-material/Search';
 import StatCard from '../common/StatCard';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import type { ScanResultResponse } from '../../types';
 import { scanApi } from '../../services/apiClient';
+import { useTranslation } from 'react-i18next';
 
 interface DetectionsProps {
   results: ScanResultResponse | null;
@@ -37,6 +41,9 @@ interface DetectionsProps {
 export default function Detections({ results }: DetectionsProps) {
   const [stalenessFilter, setStalenessFilter] = useState<string>('all');
   const [piiTypeFilter, setPiiTypeFilter] = useState<string>('all');
+  const [riskFilter, setRiskFilter] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const { t } = useTranslation();
 
   if (!results) {
     return (
@@ -45,17 +52,17 @@ export default function Detections({ results }: DetectionsProps) {
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
             <SecurityIcon sx={{ fontSize: 40, mr: 2, color: 'primary.main' }} />
             <Typography variant="h4" fontWeight={700}>
-              Données sensibles
+              {t('detections.title')}
             </Typography>
           </Box>
           <Typography variant="body1" color="text.secondary">
-            Liste complète des détections de données personnelles identifiables
+            {t('detections.noScan')}
           </Typography>
         </Box>
         <Card sx={{ mt: 3 }}>
           <CardContent>
             <Typography variant="body1" color="text.secondary">
-              Aucun scan disponible. Lancez un scan depuis la page Scanner pour voir les détections de PII.
+              {t('detections.noScan')}
             </Typography>
           </CardContent>
         </Card>
@@ -65,7 +72,7 @@ export default function Detections({ results }: DetectionsProps) {
 
   const { statistics, detections } = results;
 
-  // Filtrer les détections par ancienneté et type de PII
+  // Filtrer les détections par ancienneté, type de PII, risque et recherche
   const filteredDetections = detections.filter(detection => {
     // Filtre par ancienneté
     if (stalenessFilter !== 'all') {
@@ -73,8 +80,22 @@ export default function Detections({ results }: DetectionsProps) {
       if (!file || file.stalenessLevel !== stalenessFilter) return false;
     }
 
+    // Filtre par niveau de risque (via le fichier associé)
+    if (riskFilter !== 'all') {
+      const file = statistics.topRiskyFiles.find(f => f.filePath === detection.filePath);
+      if (!file || file.riskLevel !== riskFilter) return false;
+    }
+
     // Filtre par type de PII
     if (piiTypeFilter !== 'all' && detection.piiType !== piiTypeFilter) return false;
+
+    // Recherche textuelle sur le chemin du fichier ou la valeur détectée
+    if (searchQuery !== '') {
+      const q = searchQuery.toLowerCase();
+      const matchesPath = detection.filePath.toLowerCase().includes(q);
+      const matchesValue = detection.match.toLowerCase().includes(q);
+      if (!matchesPath && !matchesValue) return false;
+    }
 
     return true;
   });
@@ -92,6 +113,8 @@ export default function Detections({ results }: DetectionsProps) {
   const resetFilters = () => {
     setStalenessFilter('all');
     setPiiTypeFilter('all');
+    setRiskFilter('all');
+    setSearchQuery('');
   };
 
   return (
@@ -101,19 +124,19 @@ export default function Detections({ results }: DetectionsProps) {
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
           <SecurityIcon sx={{ fontSize: 40, mr: 2, color: 'primary.main' }} />
           <Typography variant="h4" fontWeight={700}>
-            Données sensibles
+            {t('detections.title')}
           </Typography>
         </Box>
         <Typography variant="body1" color="text.secondary">
-          {detections.length} détections de PII trouvées au total
+          {t('detections.subtitle', { count: detections.length })}
         </Typography>
       </Box>
 
       {/* KPI Cards */}
       <Box sx={{ display: 'flex', gap: 3, mb: 4, flexWrap: 'wrap' }}>
-        <StatCard value={detections.length} label="Total détections" gradient="linear-gradient(135deg, #00E599 0%, #3B82F6 100%)" />
-        <StatCard value={uniqueTypesCount} label="Types de PII" gradient="linear-gradient(135deg, #A78BFA 0%, #7C3AED 100%)" />
-        <StatCard value={uniqueFilesCount} label="Fichiers affectés" gradient="linear-gradient(135deg, #F0A000 0%, #D48800 100%)" />
+        <StatCard value={detections.length} label={t('detections.totalDetections')} gradient="linear-gradient(135deg, #00E599 0%, #3B82F6 100%)" />
+        <StatCard value={uniqueTypesCount} label={t('detections.piiTypes')} gradient="linear-gradient(135deg, #A78BFA 0%, #7C3AED 100%)" />
+        <StatCard value={uniqueFilesCount} label={t('detections.affectedFiles')} gradient="linear-gradient(135deg, #F0A000 0%, #D48800 100%)" />
       </Box>
 
       {/* Filtres */}
@@ -122,46 +145,73 @@ export default function Detections({ results }: DetectionsProps) {
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
             <FilterListIcon sx={{ mr: 1, color: 'primary.main' }} />
             <Typography variant="h6" fontWeight={600}>
-              Filtres
+              {t('detections.filters')}
             </Typography>
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
-            <FormControl size="small" sx={{ minWidth: 200 }}>
-              <InputLabel>Filtrer par type de PII</InputLabel>
+            <TextField
+              size="small"
+              placeholder={t('detections.searchPlaceholder')}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              sx={{ minWidth: 280 }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ color: 'text.secondary' }} />
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <FormControl size="small" sx={{ minWidth: 180 }}>
+              <InputLabel>{t('detections.piiType')}</InputLabel>
               <Select
                 value={piiTypeFilter}
-                label="Filtrer par type de PII"
+                label={t('detections.piiType')}
                 onChange={(e) => setPiiTypeFilter(e.target.value)}
               >
-                <MenuItem value="all">Tous les types</MenuItem>
+                <MenuItem value="all">{t('detections.allTypes')}</MenuItem>
                 {uniquePiiTypes.map(type => (
                   <MenuItem key={type} value={type}>{type}</MenuItem>
                 ))}
               </Select>
             </FormControl>
-            <FormControl size="small" sx={{ minWidth: 200 }}>
-              <InputLabel>Filtrer par ancienneté</InputLabel>
+            <FormControl size="small" sx={{ minWidth: 180 }}>
+              <InputLabel>{t('detections.riskLevel')}</InputLabel>
               <Select
-                value={stalenessFilter}
-                label="Filtrer par ancienneté"
-                onChange={(e) => setStalenessFilter(e.target.value)}
+                value={riskFilter}
+                label={t('detections.riskLevel')}
+                onChange={(e) => setRiskFilter(e.target.value)}
               >
-                <MenuItem value="all">Tous les fichiers</MenuItem>
-                <MenuItem value="Récent">Récent (&lt; 6 mois)</MenuItem>
-                <MenuItem value="6 mois">6 mois - 1 an</MenuItem>
-                <MenuItem value="1 an">1 an - 3 ans</MenuItem>
-                <MenuItem value="3 ans">3 ans - 5 ans</MenuItem>
-                <MenuItem value="+5 ans">Plus de 5 ans</MenuItem>
+                <MenuItem value="all">{t('detections.allLevels')}</MenuItem>
+                <MenuItem value="ÉLEVÉ">🔴 ÉLEVÉ</MenuItem>
+                <MenuItem value="MOYEN">🟡 MOYEN</MenuItem>
+                <MenuItem value="FAIBLE">🟢 FAIBLE</MenuItem>
               </Select>
             </FormControl>
-            {(stalenessFilter !== 'all' || piiTypeFilter !== 'all') && (
+            <FormControl size="small" sx={{ minWidth: 180 }}>
+              <InputLabel>{t('detections.staleness')}</InputLabel>
+              <Select
+                value={stalenessFilter}
+                label={t('detections.staleness')}
+                onChange={(e) => setStalenessFilter(e.target.value)}
+              >
+                <MenuItem value="all">{t('detections.allFiles')}</MenuItem>
+                <MenuItem value="Récent">{t('common.recent')}</MenuItem>
+                <MenuItem value="6 mois">{t('common.sixMonths')}</MenuItem>
+                <MenuItem value="1 an">{t('common.oneYear')}</MenuItem>
+                <MenuItem value="3 ans">{t('common.threeYears')}</MenuItem>
+                <MenuItem value="+5 ans">{t('common.fiveYears')}</MenuItem>
+              </Select>
+            </FormControl>
+            {(stalenessFilter !== 'all' || piiTypeFilter !== 'all' || riskFilter !== 'all' || searchQuery !== '') && (
               <Button
                 variant="outlined"
                 size="small"
                 startIcon={<RestartAltIcon />}
                 onClick={resetFilters}
               >
-                Réinitialiser
+                {t('detections.reset')}
               </Button>
             )}
           </Box>
@@ -169,15 +219,13 @@ export default function Detections({ results }: DetectionsProps) {
           {/* Alertes de filtrage */}
           {filteredDetections.length > 500 && (
             <Alert severity="info" sx={{ mt: 2 }}>
-              Affichage des 500 premières détections sur {filteredDetections.length} au total
-              {stalenessFilter !== 'all' && ` (filtrées par ancienneté: ${stalenessFilter})`}
-              {piiTypeFilter !== 'all' && ` (filtrées par type: ${piiTypeFilter})`}.
-              Téléchargez les rapports pour voir toutes les détections.
+              {t('detections.limitAlert', { total: filteredDetections.length })}
+              {' '}{t('common.downloadReports')}
             </Alert>
           )}
-          {(stalenessFilter !== 'all' || piiTypeFilter !== 'all') && filteredDetections.length <= 500 && filteredDetections.length > 0 && (
+          {(stalenessFilter !== 'all' || piiTypeFilter !== 'all' || riskFilter !== 'all' || searchQuery !== '') && filteredDetections.length <= 500 && filteredDetections.length > 0 && (
             <Alert severity="info" sx={{ mt: 2 }}>
-              {filteredDetections.length} détection(s) correspondent aux filtres sélectionnés
+              {t('detections.resultsCount', { count: filteredDetections.length })}
             </Alert>
           )}
         </CardContent>
@@ -189,10 +237,10 @@ export default function Detections({ results }: DetectionsProps) {
           <Table stickyHeader size="small">
             <TableHead>
               <TableRow>
-                <TableCell><strong>Type PII</strong></TableCell>
-                <TableCell><strong>Valeur détectée</strong></TableCell>
-                <TableCell><strong>Fichier</strong></TableCell>
-                <TableCell align="center"><strong>Dossier</strong></TableCell>
+                <TableCell><strong>{t('detections.colType')}</strong></TableCell>
+                <TableCell><strong>{t('detections.colValue')}</strong></TableCell>
+                <TableCell><strong>{t('detections.colFile')}</strong></TableCell>
+                <TableCell align="center"><strong>{t('detections.colFolder')}</strong></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -214,7 +262,7 @@ export default function Detections({ results }: DetectionsProps) {
                     </Typography>
                   </TableCell>
                   <TableCell align="center">
-                    <Tooltip title="Ouvrir le dossier dans l'explorateur">
+                    <Tooltip title={t('detections.openFolder')}>
                       <IconButton
                         size="small"
                         onClick={() => scanApi.openFolder(detection.filePath)}
@@ -233,7 +281,7 @@ export default function Detections({ results }: DetectionsProps) {
         <Card>
           <CardContent>
             <Typography variant="body2" color="text.secondary" align="center">
-              Aucune détection ne correspond aux filtres sélectionnés
+              {t('detections.noResults')}
             </Typography>
           </CardContent>
         </Card>

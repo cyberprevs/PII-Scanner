@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Box,
   Card,
@@ -102,6 +103,7 @@ const SEVERITY_COLORS = {
 };
 
 const PiiCategoryAnalysis: React.FC<Props> = ({ results }) => {
+  const { t } = useTranslation();
   const [selectedCategory, setSelectedCategory] = useState<string>('Toutes');
   const [selectedSeverity, setSelectedSeverity] = useState<string>('Toutes');
   const [selectedPiiType, setSelectedPiiType] = useState<string>('Tous');
@@ -109,7 +111,7 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results }) => {
   // Fonction pour exporter en CSV
   const exportToCSV = () => {
     if (groupedFiles.length === 0) {
-      alert('Aucune donnée à exporter');
+      alert(t('categoryAnalysis.noData'));
       return;
     }
 
@@ -137,7 +139,7 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results }) => {
   // Fonction pour exporter en Excel (format CSV avec extension .xlsx simulée)
   const exportToExcel = () => {
     if (groupedFiles.length === 0) {
-      alert('Aucune donnée à exporter');
+      alert(t('categoryAnalysis.noData'));
       return;
     }
 
@@ -306,10 +308,10 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results }) => {
           <CardContent sx={{ textAlign: 'center', py: 8 }}>
             <CategoryIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
             <Typography variant="h6" gutterBottom>
-              Aucun scan disponible
+              {t('categoryAnalysis.noScan')}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Lancez un scan pour voir l'analyse par catégories de PII
+              {t('categoryAnalysis.noScanSubtitle')}
             </Typography>
           </CardContent>
         </Card>
@@ -323,19 +325,19 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results }) => {
       <Box sx={{ mb: 4 }}>
         <Typography variant="h4" fontWeight={700} gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <CategoryIcon sx={{ fontSize: 32 }} />
-          Analyse PII par Catégories
+          {t('categoryAnalysis.title')}
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Visualisez et analysez les détections de PII par catégorie, niveau de sensibilité et type
+          {t('categoryAnalysis.subtitle')}
         </Typography>
       </Box>
 
       {/* Indicateurs clés */}
       <Box sx={{ display: 'flex', gap: 3, mb: 4, flexWrap: 'wrap' }}>
-        <StatCard value={severityStats.find((s) => s.severity === 'Critique')?.count || 0} label="Détections Critiques" gradient="linear-gradient(135deg, #F45252 0%, #D93636 100%)" />
-        <StatCard value={severityStats.find((s) => s.severity === 'Élevé')?.count || 0} label="Détections Élevées" gradient="linear-gradient(135deg, #F0A000 0%, #D48800 100%)" />
-        <StatCard value={severityStats.find((s) => s.severity === 'Moyen')?.count || 0} label="Détections Moyennes" gradient="linear-gradient(135deg, #F0A000 0%, #FF9800 100%)" />
-        <StatCard value={severityStats.find((s) => s.severity === 'Faible')?.count || 0} label="Détections Faibles" gradient="linear-gradient(135deg, #00E599 0%, #00B876 100%)" />
+        <StatCard value={severityStats.find((s) => s.severity === 'Critique')?.count || 0} label={t('categoryAnalysis.criticalDetections')} gradient="linear-gradient(135deg, #F45252 0%, #D93636 100%)" />
+        <StatCard value={severityStats.find((s) => s.severity === 'Élevé')?.count || 0} label={t('categoryAnalysis.highDetections')} gradient="linear-gradient(135deg, #F0A000 0%, #D48800 100%)" />
+        <StatCard value={severityStats.find((s) => s.severity === 'Moyen')?.count || 0} label={t('categoryAnalysis.mediumDetections')} gradient="linear-gradient(135deg, #F0A000 0%, #FF9800 100%)" />
+        <StatCard value={severityStats.find((s) => s.severity === 'Faible')?.count || 0} label={t('categoryAnalysis.lowDetections')} gradient="linear-gradient(135deg, #00E599 0%, #00B876 100%)" />
       </Box>
 
       {/* Graphiques - Pleine largeur */}
@@ -347,7 +349,7 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results }) => {
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
                 <BarChartIcon sx={{ mr: 1.5, fontSize: 28, color: 'primary.main' }} />
                 <Typography variant="h5" fontWeight={700}>
-                  Répartition par Catégorie
+                  {t('categoryAnalysis.byCategory')}
                 </Typography>
               </Box>
               <Box sx={{ width: '100%', height: 450 }}>
@@ -379,14 +381,14 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results }) => {
                     <Bar
                       dataKey="detections"
                       fill="#00E599"
-                      name="Détections"
+                      name={t('categoryAnalysis.colDetections')}
                       radius={[0, 8, 8, 0]}
                       barSize={40}
                     />
                     <Bar
                       dataKey="files"
                       fill="#00B876"
-                      name="Fichiers"
+                      name={t('categoryAnalysis.colFiles')}
                       radius={[0, 8, 8, 0]}
                       barSize={40}
                     />
@@ -404,7 +406,7 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results }) => {
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
                 <SecurityIcon sx={{ mr: 1.5, fontSize: 28, color: 'secondary.main' }} />
                 <Typography variant="h5" fontWeight={700}>
-                  Par Sensibilité
+                  {t('categoryAnalysis.bySeverity')}
                 </Typography>
               </Box>
               <Box sx={{ width: '100%', height: 450, display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -499,17 +501,17 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results }) => {
       <Card sx={{ mb: 4 }}>
         <CardContent>
           <Typography variant="h6" fontWeight={600} gutterBottom>
-            📂 Détails par Catégorie
+            {t('categoryAnalysis.categoryDetails')}
           </Typography>
           <TableContainer>
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>Catégorie</TableCell>
-                  <TableCell align="center">Sensibilité</TableCell>
-                  <TableCell align="right">Détections</TableCell>
-                  <TableCell align="right">Fichiers</TableCell>
-                  <TableCell>Types PII</TableCell>
+                  <TableCell>{t('categoryAnalysis.colCategory')}</TableCell>
+                  <TableCell align="center">{t('categoryAnalysis.colSeverity')}</TableCell>
+                  <TableCell align="right">{t('categoryAnalysis.colDetections')}</TableCell>
+                  <TableCell align="right">{t('categoryAnalysis.colFiles')}</TableCell>
+                  <TableCell>{t('categoryAnalysis.colPiiTypes')}</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -565,7 +567,7 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results }) => {
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
             <FilterListIcon sx={{ mr: 1, color: 'primary.main' }} />
             <Typography variant="h6" fontWeight={600}>
-              Filtres
+              {t('categoryAnalysis.filters')}
             </Typography>
           </Box>
 
@@ -573,14 +575,14 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results }) => {
             <Grid item xs={12} md={4}>
               <FormControl fullWidth>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
-                  Catégorie
+                  {t('categoryAnalysis.filterCategory')}
                 </Typography>
                 <Select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
                   size="small"
                 >
-                  <MenuItem value="Toutes">Toutes les catégories</MenuItem>
+                  <MenuItem value="Toutes">{t('categoryAnalysis.allCategories')}</MenuItem>
                   {Object.keys(PII_CATEGORIES).map((cat) => (
                     <MenuItem key={cat} value={cat}>
                       {PII_CATEGORIES[cat as keyof typeof PII_CATEGORIES].icon} {cat}
@@ -593,14 +595,14 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results }) => {
             <Grid item xs={12} md={4}>
               <FormControl fullWidth>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
-                  Sensibilité
+                  {t('categoryAnalysis.filterSeverity')}
                 </Typography>
                 <Select
                   value={selectedSeverity}
                   onChange={(e) => setSelectedSeverity(e.target.value)}
                   size="small"
                 >
-                  <MenuItem value="Toutes">Tous les niveaux</MenuItem>
+                  <MenuItem value="Toutes">{t('categoryAnalysis.allLevels')}</MenuItem>
                   <MenuItem value="Critique">🔴 Critique</MenuItem>
                   <MenuItem value="Moyen">🟡 Moyen</MenuItem>
                   <MenuItem value="Faible">🟢 Faible</MenuItem>
@@ -611,14 +613,14 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results }) => {
             <Grid item xs={12} md={4}>
               <FormControl fullWidth>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
-                  Type PII
+                  {t('categoryAnalysis.filterType')}
                 </Typography>
                 <Select
                   value={selectedPiiType}
                   onChange={(e) => setSelectedPiiType(e.target.value)}
                   size="small"
                 >
-                  <MenuItem value="Tous">Tous les types</MenuItem>
+                  <MenuItem value="Tous">{t('categoryAnalysis.allTypes')}</MenuItem>
                   {availablePiiTypes.map((type) => (
                     <MenuItem key={type} value={type}>
                       {type}
@@ -630,7 +632,7 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results }) => {
           </Grid>
 
           <Alert severity="info" sx={{ mt: 2 }}>
-            {filteredFiles.length} détection(s) • {groupedFiles.length} fichier(s) correspondent aux filtres
+            {t('categoryAnalysis.resultsInfo', { detections: filteredFiles.length, files: groupedFiles.length })}
           </Alert>
 
           {groupedFiles.length > 0 && (
@@ -646,7 +648,7 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results }) => {
                     },
                   }}
                 >
-                  Exporter CSV
+                  {t('categoryAnalysis.exportCsv')}
                 </Button>
                 <Button
                   startIcon={<FileDownloadIcon />}
@@ -658,7 +660,7 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results }) => {
                     },
                   }}
                 >
-                  Exporter Excel
+                  {t('categoryAnalysis.exportExcel')}
                 </Button>
               </ButtonGroup>
             </Box>
@@ -670,24 +672,24 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results }) => {
       <Card>
         <CardContent>
           <Typography variant="h6" fontWeight={600} gutterBottom>
-            📄 Fichiers Détectés ({groupedFiles.length} résultats)
+            {t('categoryAnalysis.detectedFiles', { count: groupedFiles.length })}
           </Typography>
 
           {groupedFiles.length === 0 ? (
             <Alert severity="warning" sx={{ mt: 2 }}>
-              Aucun fichier ne correspond aux filtres sélectionnés
+              {t('categoryAnalysis.noFiles')}
             </Alert>
           ) : (
             <TableContainer sx={{ maxHeight: 600 }}>
               <Table stickyHeader>
                 <TableHead>
                   <TableRow>
-                    <TableCell sx={{ fontWeight: 600 }}>Fichier</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>{t('categoryAnalysis.colFile')}</TableCell>
                     <TableCell align="center" sx={{ fontWeight: 600 }}>
-                      Types PII
+                      {t('categoryAnalysis.colPiiTypes')}
                     </TableCell>
                     <TableCell align="right" sx={{ fontWeight: 600 }}>
-                      Détections
+                      {t('categoryAnalysis.colDetections')}
                     </TableCell>
                   </TableRow>
                 </TableHead>

@@ -26,6 +26,7 @@ import {
 } from 'recharts';
 import type { ScanResultResponse } from '../../types';
 import StatCard from '../common/StatCard';
+import { useTranslation } from 'react-i18next';
 
 interface ExposureProps {
   results: ScanResultResponse | null;
@@ -60,16 +61,18 @@ const getExposureColor = (exposureLevel?: string) => {
 };
 
 export default function Exposure({ results }: ExposureProps) {
+  const { t } = useTranslation();
+
   if (!results) {
     return (
       <Box>
         <Typography variant="h4" fontWeight={700} gutterBottom>
-          🔓 Exposition des fichiers (Over-Exposed Data)
+          {t('exposure.title')}
         </Typography>
         <Card sx={{ mt: 3 }}>
           <CardContent>
             <Typography variant="body1" color="text.secondary">
-              Aucun scan disponible. Lancez un scan depuis la page Scanner.
+              {t('exposure.noScan')}
             </Typography>
           </CardContent>
         </Card>
@@ -79,7 +82,6 @@ export default function Exposure({ results }: ExposureProps) {
 
   const { statistics } = results;
 
-  // Calculer les statistiques d'exposition
   const exposureData = [
     { level: 'Faible', count: 0, color: '#4caf50', description: 'Moins de 5 groupes' },
     { level: 'Moyen', count: 0, color: '#ff9800', description: '5-10 groupes' },
@@ -88,7 +90,6 @@ export default function Exposure({ results }: ExposureProps) {
   ];
 
   let totalPiiInExposedFiles = 0;
-  let filesWithEveryone = 0;
   let filesOnNetworkShare = 0;
 
   const exposedFiles = statistics.topRiskyFiles.filter(file => {
@@ -96,12 +97,10 @@ export default function Exposure({ results }: ExposureProps) {
       const item = exposureData.find(d => d.level === file.exposureLevel);
       if (item) item.count++;
 
-      // Compter les PII dans les fichiers exposés (Moyen+)
       if (['Moyen', 'Élevé', 'Critique'].includes(file.exposureLevel)) {
         totalPiiInExposedFiles += file.piiCount;
       }
 
-      if (file.accessibleToEveryone) filesWithEveryone++;
       if (file.isNetworkShare) filesOnNetworkShare++;
     }
     return file.exposureLevel && file.exposureLevel !== 'Faible';
@@ -113,25 +112,25 @@ export default function Exposure({ results }: ExposureProps) {
   return (
     <Box>
       <Typography variant="h4" fontWeight={700} gutterBottom>
-        🔓 Exposition des fichiers (Over-Exposed Data)
+        {t('exposure.title')}
       </Typography>
       <Typography variant="body1" color="text.secondary" paragraph>
-        Analyse des permissions Windows et détection des fichiers sur-exposés - Risque d'accès non autorisé
+        {t('exposure.subtitle')}
       </Typography>
 
       {/* Statistiques clés */}
       <Box sx={{ display: 'flex', gap: 3, mb: 4, flexWrap: 'wrap' }}>
-        <StatCard value={totalExposedFiles} label="Fichiers sur-exposés (Moyen+)" gradient="linear-gradient(135deg, #F0A000 0%, #D48800 100%)" />
-        <StatCard value={criticalExposedFiles} label="Fichiers critiques (Everyone)" gradient="linear-gradient(135deg, #F45252 0%, #D93636 100%)" />
-        <StatCard value={totalPiiInExposedFiles} label="PII dans fichiers exposés" gradient="linear-gradient(135deg, #A78BFA 0%, #7C3AED 100%)" />
-        <StatCard value={filesOnNetworkShare} label="Fichiers sur partage réseau" gradient="linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)" />
+        <StatCard value={totalExposedFiles} label={t('exposure.overExposed')} gradient="linear-gradient(135deg, #F0A000 0%, #D48800 100%)" />
+        <StatCard value={criticalExposedFiles} label={t('exposure.critical')} gradient="linear-gradient(135deg, #F45252 0%, #D93636 100%)" />
+        <StatCard value={totalPiiInExposedFiles} label={t('exposure.piiInExposed')} gradient="linear-gradient(135deg, #A78BFA 0%, #7C3AED 100%)" />
+        <StatCard value={filesOnNetworkShare} label={t('exposure.networkShare')} gradient="linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)" />
       </Box>
 
       {/* Légende */}
       <Card sx={{ mb: 3 }}>
         <CardContent>
           <Typography variant="h6" gutterBottom fontWeight={600} sx={{ mb: 2 }}>
-            📖 Légende de l'exposition
+            {t('exposure.legend')}
           </Typography>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
             {exposureData.map(item => (
@@ -142,8 +141,7 @@ export default function Exposure({ results }: ExposureProps) {
             ))}
           </Box>
           <Alert severity="error" sx={{ mt: 2 }}>
-            Les fichiers accessibles à "Everyone" représentent un risque critique de violation de données.
-            Révisez immédiatement les permissions de ces fichiers.
+            {t('exposure.criticalWarning')}
           </Alert>
         </CardContent>
       </Card>
@@ -152,7 +150,7 @@ export default function Exposure({ results }: ExposureProps) {
       <Card sx={{ mb: 3 }}>
         <CardContent>
           <Typography variant="h6" gutterBottom fontWeight={600}>
-            📊 Distribution par niveau d'exposition
+            {t('exposure.distribution')}
           </Typography>
           <ResponsiveContainer width="100%" height={350}>
             <BarChart data={exposureData}>
@@ -161,7 +159,7 @@ export default function Exposure({ results }: ExposureProps) {
               <YAxis />
               <RechartsTooltip />
               <Legend />
-              <Bar dataKey="count" name="Nombre de fichiers" radius={[8, 8, 0, 0]}>
+              <Bar dataKey="count" name={t('exposure.fileCount')} radius={[8, 8, 0, 0]}>
                 {exposureData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
@@ -175,18 +173,18 @@ export default function Exposure({ results }: ExposureProps) {
       <Card>
         <CardContent>
           <Typography variant="h6" gutterBottom fontWeight={600}>
-            📋 Fichiers sur-exposés nécessitant une action
+            {t('exposure.tableTitle')}
           </Typography>
           {exposedFiles.length > 0 ? (
             <TableContainer component={Paper} sx={{ mt: 2, maxHeight: 600 }}>
               <Table stickyHeader>
                 <TableHead>
                   <TableRow>
-                    <TableCell><strong>Exposition</strong></TableCell>
-                    <TableCell><strong>Fichier</strong></TableCell>
-                    <TableCell align="right"><strong>Nombre de PII</strong></TableCell>
-                    <TableCell><strong>Niveau de risque</strong></TableCell>
-                    <TableCell><strong>Indicateurs</strong></TableCell>
+                    <TableCell><strong>{t('exposure.colExposure')}</strong></TableCell>
+                    <TableCell><strong>{t('exposure.colFile')}</strong></TableCell>
+                    <TableCell align="right"><strong>{t('exposure.colPiiCount')}</strong></TableCell>
+                    <TableCell><strong>{t('exposure.colRisk')}</strong></TableCell>
+                    <TableCell><strong>{t('exposure.colIndicators')}</strong></TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -247,7 +245,7 @@ export default function Exposure({ results }: ExposureProps) {
             </TableContainer>
           ) : (
             <Alert severity="success" sx={{ mt: 2 }}>
-              Aucun fichier sur-exposé détecté. Tous les fichiers avec PII ont des permissions appropriées (Faible).
+              {t('exposure.noExposed')}
             </Alert>
           )}
         </CardContent>
