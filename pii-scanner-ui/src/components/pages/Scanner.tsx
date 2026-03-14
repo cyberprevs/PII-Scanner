@@ -28,6 +28,7 @@ import { scanApi } from '../../services/apiClient';
 import { useAuth } from '../../contexts/AuthContext';
 import type { ScanProgressResponse } from '../../types';
 import { useKeyboardShortcut } from '../../hooks/useKeyboardShortcut';
+import { useTranslation } from 'react-i18next';
 
 interface ScannerProps {
   scanning: boolean;
@@ -38,6 +39,7 @@ interface ScannerProps {
 
 export default function Scanner({ scanning, scanId, onStartScan, onStopScan }: ScannerProps) {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [directoryPath, setDirectoryPath] = useState('');
   const [progress, setProgress] = useState<ScanProgressResponse | null>(null);
   const [recentPaths, setRecentPaths] = useState<string[]>([]);
@@ -89,7 +91,7 @@ export default function Scanner({ scanning, scanId, onStartScan, onStopScan }: S
 
   const handleStartScan = () => {
     if (!directoryPath) {
-      setPathError('Veuillez saisir un chemin de dossier');
+      setPathError(t('scanner.pathError'));
       return;
     }
 
@@ -125,12 +127,12 @@ export default function Scanner({ scanning, scanId, onStartScan, onStopScan }: S
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
         }}>
-          {scanning ? 'Scan en cours' : 'Nouveau Scan'}
+          {scanning ? t('scanner.titleScanning') : t('scanner.title')}
         </Typography>
         <Typography variant="body1" color="text.secondary">
           {scanning
-            ? 'Analyse de vos documents en cours...'
-            : 'Démarrez un scan pour détecter automatiquement les données personnelles (PII)'}
+            ? t('scanner.subtitleScanning')
+            : t('scanner.subtitle')}
         </Typography>
       </Box>
 
@@ -147,7 +149,7 @@ export default function Scanner({ scanning, scanId, onStartScan, onStopScan }: S
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
                   <FolderOpenIcon sx={{ fontSize: 32, mr: 2, color: 'primary.main' }} />
                   <Typography variant="h6" fontWeight={600}>
-                    Sélection du dossier
+                    {t('scanner.folderLabel')}
                   </Typography>
                 </Box>
 
@@ -157,10 +159,10 @@ export default function Scanner({ scanning, scanId, onStartScan, onStopScan }: S
                   variant="outlined"
                   value={directoryPath}
                   onChange={handlePathChange}
-                  placeholder="Exemple: C:\Documents\MonDossier ou /home/user/documents"
+                  placeholder={t('scanner.placeholder')}
                   disabled={scanning}
                   error={!!pathError}
-                  helperText={pathError || 'Saisissez le chemin complet du dossier à analyser'}
+                  helperText={pathError || t('scanner.helperText')}
                   sx={{ mb: 3 }}
                   InputProps={{
                     startAdornment: <FolderOpenIcon sx={{ mr: 1, color: 'text.secondary' }} />,
@@ -177,7 +179,7 @@ export default function Scanner({ scanning, scanId, onStartScan, onStopScan }: S
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                       <HistoryIcon sx={{ fontSize: 20, mr: 1, color: 'text.secondary' }} />
                       <Typography variant="body2" color="text.secondary" fontWeight={600}>
-                        Dossiers récents
+                        {t('scanner.recentFolders')}
                       </Typography>
                     </Box>
                     <Stack spacing={1}>
@@ -217,7 +219,7 @@ export default function Scanner({ scanning, scanId, onStartScan, onStopScan }: S
                               {path}
                             </Typography>
                           </Box>
-                          <Tooltip title="Supprimer de l'historique">
+                          <Tooltip title={t('scanner.removeHistory')}>
                             <IconButton
                               size="small"
                               onClick={(e) => {
@@ -247,7 +249,7 @@ export default function Scanner({ scanning, scanId, onStartScan, onStopScan }: S
                       }}
                     >
                       <Typography variant="caption" fontWeight={600} display="block" gutterBottom>
-                        Formats supportés
+                        {t('scanner.formatsLabel')}
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
                         .txt, .log, .csv, .json, .docx, .xlsx, .pdf
@@ -264,10 +266,10 @@ export default function Scanner({ scanning, scanId, onStartScan, onStopScan }: S
                       }}
                     >
                       <Typography variant="caption" fontWeight={600} display="block" gutterBottom>
-                        Traitement sécurisé
+                        {t('scanner.secureLabel')}
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
-                        100% local - aucune donnée envoyée en ligne
+                        {t('scanner.secureText')}
                       </Typography>
                     </Alert>
                   </Grid>
@@ -299,7 +301,7 @@ export default function Scanner({ scanning, scanId, onStartScan, onStopScan }: S
                     transition: 'all 0.2s',
                   }}
                 >
-                  Démarrer le scan
+                  {t('scanner.startButton')}
                 </Button>
               </CardContent>
             </Card>
@@ -317,11 +319,11 @@ export default function Scanner({ scanning, scanId, onStartScan, onStopScan }: S
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
                   <SecurityIcon sx={{ fontSize: 28, mr: 1.5, color: 'secondary.main' }} />
                   <Typography variant="h6" fontWeight={600}>
-                    18 types de PII
+                    {t('scanner.piiTypes')}
                   </Typography>
                 </Box>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                  Données détectées automatiquement :
+                  {t('scanner.piiSubtitle')}
                 </Typography>
 
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
@@ -365,7 +367,7 @@ export default function Scanner({ scanning, scanId, onStartScan, onStopScan }: S
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
                   <SearchIcon sx={{ fontSize: 32, mr: 2, color: 'primary.main' }} />
                   <Typography variant="h6" fontWeight={600}>
-                    Analyse en cours...
+                    {t('scanner.subtitleScanning')}
                   </Typography>
                 </Box>
 
@@ -390,7 +392,7 @@ export default function Scanner({ scanning, scanId, onStartScan, onStopScan }: S
                       <Stack spacing={2.5}>
                         <Box>
                           <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ fontSize: '0.7rem', letterSpacing: '0.5px' }}>
-                            FICHIERS TRAITÉS
+                            {t('scanner.filesScanned').toUpperCase()}
                           </Typography>
                           <Typography variant="h6" fontWeight={700} sx={{ mt: 0.5 }}>
                             {progress
@@ -400,7 +402,7 @@ export default function Scanner({ scanning, scanId, onStartScan, onStopScan }: S
                         </Box>
                         <Box>
                           <Typography variant="caption" fontWeight={600} sx={{ fontSize: '0.7rem', letterSpacing: '0.5px', color: 'secondary.main' }}>
-                            PII DÉTECTÉES
+                            {t('scanner.piiFound').toUpperCase()}
                           </Typography>
                           <Typography variant="h6" fontWeight={700} color="secondary.main" sx={{ mt: 0.5 }}>
                             {progress ? progress.piiFound.toLocaleString() : '0'}
@@ -441,7 +443,7 @@ export default function Scanner({ scanning, scanId, onStartScan, onStopScan }: S
                       },
                     }}
                   >
-                    Arrêter le scan (Esc)
+                    {t('scanner.stopButton')} (Esc)
                   </Button>
                 </Box>
 
@@ -472,13 +474,13 @@ export default function Scanner({ scanning, scanId, onStartScan, onStopScan }: S
             }}>
               <CardContent sx={{ p: 3 }}>
                 <Typography variant="subtitle1" fontWeight={600} gutterBottom>
-                  Statut en temps réel
+                  {t('scanner.scanProgress')}
                 </Typography>
 
                 <Stack spacing={2} sx={{ mt: 3 }}>
                   <Paper elevation={0} sx={{ p: 2, bgcolor: 'background.paper', borderRadius: 2 }}>
                     <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ fontSize: '0.7rem', letterSpacing: '0.5px' }}>
-                      FICHIERS TRAITÉS
+                      {t('scanner.filesScanned').toUpperCase()}
                     </Typography>
                     <Typography variant="h5" fontWeight={700} sx={{ mt: 1 }}>
                       {progress ? progress.processedFiles.toLocaleString() : '0'}
@@ -487,7 +489,7 @@ export default function Scanner({ scanning, scanId, onStartScan, onStopScan }: S
 
                   <Paper elevation={0} sx={{ p: 2, bgcolor: 'background.paper', borderRadius: 2 }}>
                     <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ fontSize: '0.7rem', letterSpacing: '0.5px' }}>
-                      FICHIERS TOTAUX
+                      {t('scanner.filesTotal').toUpperCase()}
                     </Typography>
                     <Typography variant="h5" fontWeight={700} sx={{ mt: 1 }}>
                       {progress ? progress.totalFiles.toLocaleString() : '0'}
@@ -496,7 +498,7 @@ export default function Scanner({ scanning, scanId, onStartScan, onStopScan }: S
 
                   <Paper elevation={0} sx={{ p: 2, bgcolor: 'rgba(0, 229, 153, 0.1)', borderRadius: 2, border: '1px solid', borderColor: 'rgba(0, 229, 153, 0.3)' }}>
                     <Typography variant="caption" fontWeight={600} sx={{ fontSize: '0.7rem', letterSpacing: '0.5px', color: 'secondary.main' }}>
-                      PII DÉTECTÉES
+                      {t('scanner.piiFound').toUpperCase()}
                     </Typography>
                     <Typography variant="h5" fontWeight={700} color="secondary.main" sx={{ mt: 1 }}>
                       {progress ? progress.piiFound.toLocaleString() : '0'}
@@ -505,7 +507,7 @@ export default function Scanner({ scanning, scanId, onStartScan, onStopScan }: S
 
                   <Paper elevation={0} sx={{ p: 2, bgcolor: 'rgba(0, 229, 153, 0.1)', borderRadius: 2, border: '1px solid', borderColor: 'rgba(0, 229, 153, 0.3)' }}>
                     <Typography variant="caption" fontWeight={600} sx={{ fontSize: '0.7rem', letterSpacing: '0.5px', color: 'primary.main' }}>
-                      PROGRESSION
+                      {t('scanner.scanProgress').toUpperCase()}
                     </Typography>
                     <Typography variant="h5" fontWeight={700} color="primary.main" sx={{ mt: 1 }}>
                       {percentage}%

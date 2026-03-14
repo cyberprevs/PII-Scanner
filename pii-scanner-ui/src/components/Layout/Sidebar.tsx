@@ -48,6 +48,8 @@ import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import { useAuth } from '../../contexts/AuthContext';
 import { tokens } from '../../theme/designSystem';
+import { useTranslation } from 'react-i18next';
+import LanguageIcon from '@mui/icons-material/Language';
 
 const DRAWER_WIDTH = 240;
 const DRAWER_WIDTH_COLLAPSED = 65;
@@ -67,51 +69,51 @@ interface MenuItem {
   adminOnly?: boolean;
 }
 
-const menuItems: MenuItem[] = [
-  { id: 'dashboard', label: 'Tableau de bord', icon: <DashboardIcon />, path: '/dashboard' },
+const buildMenuItems = (t: (key: string) => string): MenuItem[] => [
+  { id: 'dashboard', label: t('sidebar.dashboard'), icon: <DashboardIcon />, path: '/dashboard' },
   {
     id: 'scans',
-    label: 'Scans',
+    label: t('sidebar.scans'),
     icon: <SearchIcon />,
     divider: true,
     subItems: [
-      { id: 'scanner', label: 'Nouveau Scan', icon: <SearchIcon />, path: '/scanner' },
-      { id: 'history', label: 'Historique', icon: <HistoryIcon />, path: '/history' },
+      { id: 'scanner', label: t('sidebar.newScan'), icon: <SearchIcon />, path: '/scanner' },
+      { id: 'history', label: t('sidebar.history'), icon: <HistoryIcon />, path: '/history' },
     ],
   },
   {
     id: 'analysis',
-    label: 'Analyse des résultats',
+    label: t('sidebar.analysis'),
     icon: <AssessmentIcon />,
     divider: true,
     subItems: [
-      { id: 'risky-files', label: 'Fichiers à risque', icon: <FolderIcon />, path: '/risky-files' },
-      { id: 'detections', label: 'Données sensibles', icon: <SecurityIcon />, path: '/detections' },
-      { id: 'pii-category-analysis', label: 'Analyse par Catégories', icon: <CategoryIcon />, path: '/pii-category-analysis' },
-      { id: 'duplicate-files', label: 'Fichiers dupliqués', icon: <ContentCopyIcon />, path: '/duplicate-files' },
-      { id: 'staleness', label: 'Ancienneté', icon: <AccessTimeIcon />, path: '/staleness' },
-      { id: 'exposure', label: 'Exposition', icon: <LockOpenIcon />, path: '/exposure' },
+      { id: 'risky-files', label: t('sidebar.riskyFiles'), icon: <FolderIcon />, path: '/risky-files' },
+      { id: 'detections', label: t('sidebar.detections'), icon: <SecurityIcon />, path: '/detections' },
+      { id: 'pii-category-analysis', label: t('sidebar.categoryAnalysis'), icon: <CategoryIcon />, path: '/pii-category-analysis' },
+      { id: 'duplicate-files', label: t('sidebar.duplicateFiles'), icon: <ContentCopyIcon />, path: '/duplicate-files' },
+      { id: 'staleness', label: t('sidebar.staleness'), icon: <AccessTimeIcon />, path: '/staleness' },
+      { id: 'exposure', label: t('sidebar.exposure'), icon: <LockOpenIcon />, path: '/exposure' },
     ],
   },
-  { id: 'reports', label: 'Rapports & Analytics', icon: <AssessmentIcon />, path: '/reports' },
-  { id: 'exports', label: 'Exports', icon: <DownloadIcon />, path: '/exports' },
-  { id: 'data-retention', label: 'Rétention', icon: <DeleteSweepIcon />, path: '/data-retention', divider: true },
+  { id: 'reports', label: t('sidebar.reports'), icon: <AssessmentIcon />, path: '/reports' },
+  { id: 'exports', label: t('sidebar.exports'), icon: <DownloadIcon />, path: '/exports' },
+  { id: 'data-retention', label: t('sidebar.retention'), icon: <DeleteSweepIcon />, path: '/data-retention', divider: true },
   {
     id: 'maintenance',
-    label: 'Maintenance',
+    label: t('sidebar.maintenance'),
     icon: <BuildIcon />,
     adminOnly: true,
     divider: true,
     subItems: [
-      { id: 'users', label: 'Utilisateurs', icon: <PeopleIcon />, path: '/users', adminOnly: true },
-      { id: 'database', label: 'Base de données', icon: <AdminPanelSettingsIcon />, path: '/database', adminOnly: true },
-      { id: 'audit-trail', label: 'Audit Trail', icon: <HistoryIcon />, path: '/audit-trail', adminOnly: true },
-      { id: 'settings', label: 'Paramètres', icon: <SettingsIcon />, path: '/settings' },
+      { id: 'users', label: t('sidebar.users'), icon: <PeopleIcon />, path: '/users', adminOnly: true },
+      { id: 'database', label: t('sidebar.database'), icon: <AdminPanelSettingsIcon />, path: '/database', adminOnly: true },
+      { id: 'audit-trail', label: t('sidebar.auditTrail'), icon: <HistoryIcon />, path: '/audit-trail', adminOnly: true },
+      { id: 'settings', label: t('sidebar.settings'), icon: <SettingsIcon />, path: '/settings' },
     ],
   },
-  { id: 'profile', label: 'Mon Profil', icon: <AccountCircleIcon />, path: '/profile' },
-  { id: 'support', label: 'Support', icon: <HelpIcon />, path: '/support' },
-  { id: 'about', label: 'À propos', icon: <InfoIcon />, path: '/about' },
+  { id: 'profile', label: t('sidebar.profile'), icon: <AccountCircleIcon />, path: '/profile' },
+  { id: 'support', label: t('sidebar.support'), icon: <HelpIcon />, path: '/support' },
+  { id: 'about', label: t('sidebar.about'), icon: <InfoIcon />, path: '/about' },
 ];
 
 export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
@@ -122,6 +124,13 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, isAdmin, logout } = useAuth();
+  const { t, i18n } = useTranslation();
+
+  const menuItems = buildMenuItems(t);
+
+  const toggleLanguage = () => {
+    i18n.changeLanguage(i18n.language === 'fr' ? 'en' : 'fr');
+  };
 
   const c = tokens.colors;
   const drawerWidth = collapsed ? DRAWER_WIDTH_COLLAPSED : DRAWER_WIDTH;
@@ -411,7 +420,7 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
         {/* Logout */}
         <Box sx={{ mb: 2 }}>
           {collapsed ? (
-            <Tooltip title="Déconnexion" placement="right">
+            <Tooltip title={t('sidebar.logout')} placement="right">
               <IconButton
                 onClick={handleLogout}
                 sx={{
@@ -438,14 +447,39 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
                 },
               }}
             >
-              Déconnexion
+              {t('sidebar.logout')}
             </Button>
           )}
         </Box>
 
+        {/* Language Toggle */}
+        {collapsed ? (
+          <Tooltip title={i18n.language === 'fr' ? 'Switch to English' : 'Passer en Français'} placement="right">
+            <IconButton onClick={toggleLanguage} sx={{ width: '100%', color: iconInactive, mb: 1 }}>
+              <LanguageIcon />
+            </IconButton>
+          </Tooltip>
+        ) : (
+          <Button
+            fullWidth
+            variant="outlined"
+            size="small"
+            startIcon={<LanguageIcon />}
+            onClick={toggleLanguage}
+            sx={{
+              mb: 1,
+              borderColor: 'divider',
+              color: 'text.secondary',
+              '&:hover': { borderColor: 'primary.main', color: 'primary.main' },
+            }}
+          >
+            {i18n.language === 'fr' ? 'English' : 'Français'}
+          </Button>
+        )}
+
         {/* Dark Mode */}
         {collapsed ? (
-          <Tooltip title={darkMode ? 'Mode clair' : 'Mode sombre'} placement="right">
+          <Tooltip title={darkMode ? t('sidebar.lightMode') : t('sidebar.darkMode')} placement="right">
             <IconButton onClick={onToggleDarkMode} sx={{ width: '100%', color: iconInactive }}>
               {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
             </IconButton>
@@ -466,7 +500,7 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 {darkMode ? <DarkModeIcon fontSize="small" /> : <LightModeIcon fontSize="small" />}
                 <Typography variant="body2">
-                  {darkMode ? 'Mode sombre' : 'Mode clair'}
+                  {darkMode ? t('sidebar.darkMode') : t('sidebar.lightMode')}
                 </Typography>
               </Box>
             }
@@ -489,7 +523,7 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
               variant="caption"
               sx={{ color: c.textTertiary, fontSize: '0.65rem', display: 'block', mb: 0.5 }}
             >
-              Développé par
+              {t('sidebar.developedBy')}
             </Typography>
             <Typography
               variant="body2"

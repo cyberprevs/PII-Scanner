@@ -19,48 +19,11 @@ import ArticleIcon from '@mui/icons-material/Article';
 import EmailIcon from '@mui/icons-material/Email';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-
-interface FAQ {
-  question: string;
-  answer: string;
-}
-
-const faqs: FAQ[] = [
-  {
-    question: 'Comment démarrer un nouveau scan ?',
-    answer: 'Accédez à la page "Nouveau Scan" depuis le menu latéral, sélectionnez le répertoire à analyser, puis cliquez sur "Démarrer le scan". Les résultats apparaîtront automatiquement une fois l\'analyse terminée.'
-  },
-  {
-    question: 'Quels types de fichiers sont analysés ?',
-    answer: 'PII Scanner analyse les fichiers .docx, .xlsx, .pdf, .txt, .log, .csv et .json. Les fichiers binaires et exécutables sont ignorés.'
-  },
-  {
-    question: 'Comment interpréter les niveaux de risque ?',
-    answer: 'ÉLEVÉ : Données bancaires détectées ou plus de 10 PII. MOYEN : 3 à 10 PII détectés. FAIBLE : 1 à 2 PII détectés.'
-  },
-  {
-    question: 'Mes données sont-elles envoyées à un serveur externe ?',
-    answer: 'Non, toutes les analyses sont effectuées localement sur votre machine. Aucune donnée n\'est transmise à l\'extérieur.'
-  },
-  {
-    question: 'Comment exporter les résultats ?',
-    answer: 'Rendez-vous sur la page "Exports" et choisissez le format souhaité : CSV, JSON, HTML ou Excel. Le rapport sera téléchargé automatiquement.'
-  },
-  {
-    question: 'Puis-je sauvegarder ma base de données ?',
-    answer: 'Oui, si vous êtes administrateur, accédez à "Base de données" et cliquez sur "Créer une sauvegarde". Vous pouvez restaurer ou télécharger les sauvegardes à tout moment.'
-  },
-  {
-    question: 'Comment gérer les utilisateurs ?',
-    answer: 'Les administrateurs peuvent créer, modifier ou supprimer des utilisateurs depuis la page "Utilisateurs".'
-  },
-  {
-    question: 'L\'application fonctionne-t-elle hors ligne ?',
-    answer: 'Oui, PII Scanner fonctionne entièrement en local. Une connexion Internet n\'est pas nécessaire pour analyser vos fichiers.'
-  },
-];
+import { useTranslation } from 'react-i18next';
 
 export default function Support() {
+  const { t } = useTranslation();
+
   const openExternalLink = (url: string) => {
     const link = document.createElement('a');
     link.href = url;
@@ -69,6 +32,17 @@ export default function Support() {
     link.click();
   };
 
+  const faqs = [
+    { question: t('support.faq.q1'), answer: t('support.faq.a1') },
+    { question: t('support.faq.q2'), answer: t('support.faq.a2') },
+    { question: t('support.faq.q3'), answer: t('support.faq.a3') },
+    { question: t('support.faq.q4'), answer: t('support.faq.a4') },
+    { question: t('support.faq.q5'), answer: t('support.faq.a5') },
+    { question: t('support.faq.q6'), answer: t('support.faq.a6') },
+    { question: t('support.faq.q7'), answer: t('support.faq.a7') },
+    { question: t('support.faq.q8'), answer: t('support.faq.a8') },
+  ];
+
   return (
     <Box>
       <Typography variant="h4" gutterBottom fontWeight={700} sx={{
@@ -76,18 +50,17 @@ export default function Support() {
         WebkitBackgroundClip: 'text',
         WebkitTextFillColor: 'transparent',
       }}>
-        Centre d'aide et Support
+        {t('support.title')}
       </Typography>
       <Typography variant="body1" color="text.secondary" paragraph>
-        Trouvez de l'aide, consultez la documentation ou contactez-nous
+        {t('support.subtitle')}
       </Typography>
 
       <Typography variant="h5" fontWeight={700} gutterBottom sx={{ mb: 2 }}>
-        📚 Ressources
+        {t('support.resources')}
       </Typography>
 
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        {/* Actions rapides */}
         <Grid item xs={12} md={3}>
           <Card sx={{
             height: 220,
@@ -103,11 +76,11 @@ export default function Support() {
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <BugReportIcon sx={{ fontSize: 32, color: '#e74c3c', mr: 1.5 }} />
                 <Typography variant="h6" fontWeight={600} fontSize="1.1rem">
-                  Signaler un bug
+                  {t('support.reportBug')}
                 </Typography>
               </Box>
               <Typography variant="body2" color="text.secondary" sx={{ flexGrow: 1 }}>
-                Vous avez rencontré un problème ? Signalez-le rapidement.
+                {t('support.reportBugDesc')}
               </Typography>
             </CardContent>
             <CardActions sx={{ p: 2, pt: 0 }}>
@@ -118,7 +91,7 @@ export default function Support() {
                 endIcon={<OpenInNewIcon />}
                 onClick={() => openExternalLink('https://github.com/cyberprevs/pii-scanner/issues/new')}
               >
-                Créer un ticket
+                {t('support.createTicket')}
               </Button>
             </CardActions>
           </Card>
@@ -139,11 +112,11 @@ export default function Support() {
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <AddCircleOutlineIcon sx={{ fontSize: 32, color: '#27ae60', mr: 1.5 }} />
                 <Typography variant="h6" fontWeight={600} fontSize="1.1rem">
-                  Suggérer un pattern
+                  {t('support.suggestPattern')}
                 </Typography>
               </Box>
               <Typography variant="body2" color="text.secondary" sx={{ flexGrow: 1 }}>
-                Proposez un nouveau pattern de détection PII.
+                {t('support.suggestPatternDesc')}
               </Typography>
             </CardContent>
             <CardActions sx={{ p: 2, pt: 0 }}>
@@ -154,7 +127,7 @@ export default function Support() {
                 endIcon={<OpenInNewIcon />}
                 onClick={() => openExternalLink('https://github.com/cyberprevs/pii-scanner/issues/new?labels=enhancement,pattern&template=suggest_pattern.md&title=[Pattern]%20')}
               >
-                Proposer un pattern
+                {t('support.proposePattern')}
               </Button>
             </CardActions>
           </Card>
@@ -175,11 +148,11 @@ export default function Support() {
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <ArticleIcon sx={{ fontSize: 32, color: '#00E599', mr: 1.5 }} />
                 <Typography variant="h6" fontWeight={600} fontSize="1.1rem">
-                  Documentation
+                  {t('support.documentation')}
                 </Typography>
               </Box>
               <Typography variant="body2" color="text.secondary" sx={{ flexGrow: 1 }}>
-                Guides complets et informations techniques.
+                {t('support.documentationDesc')}
               </Typography>
             </CardContent>
             <CardActions sx={{ p: 2, pt: 0 }}>
@@ -188,7 +161,7 @@ export default function Support() {
                 variant="outlined"
                 onClick={() => window.location.href = '/about'}
               >
-                Voir À propos
+                {t('support.viewAbout')}
               </Button>
             </CardActions>
           </Card>
@@ -209,11 +182,11 @@ export default function Support() {
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <EmailIcon sx={{ fontSize: 32, color: '#00E599', mr: 1.5 }} />
                 <Typography variant="h6" fontWeight={600} fontSize="1.1rem">
-                  Contactez-nous
+                  {t('support.contact')}
                 </Typography>
               </Box>
               <Typography variant="body2" color="text.secondary" sx={{ flexGrow: 1 }}>
-                Écrivez-nous directement par email.
+                {t('support.contactDesc')}
               </Typography>
             </CardContent>
             <CardActions sx={{ p: 2, pt: 0 }}>
@@ -224,7 +197,7 @@ export default function Support() {
                 href="mailto:contact@cyberpervs.fr"
                 sx={{ textDecoration: 'none' }}
               >
-                Envoyer un email
+                {t('support.sendEmail')}
               </Button>
             </CardActions>
           </Card>
@@ -236,7 +209,7 @@ export default function Support() {
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
           <HelpOutlineIcon sx={{ fontSize: 32, color: '#00E599', mr: 2 }} />
           <Typography variant="h6" fontWeight={600}>
-            Questions fréquentes (FAQ)
+            {t('support.faqTitle')}
           </Typography>
         </Box>
 

@@ -4,28 +4,30 @@ import SearchIcon from '@mui/icons-material/Search';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import SecurityIcon from '@mui/icons-material/Security';
+import { useTranslation } from 'react-i18next';
 
 export default function Home() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const features = [
     {
-      title: 'Scanner',
-      description: 'Lancer un nouveau scan de fichiers pour détecter les PII',
+      title: t('sidebar.newScan'),
+      description: t('home.scanDesc'),
       icon: <SearchIcon sx={{ fontSize: 48, color: '#00E599' }} />,
       path: '/scanner',
       color: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
     },
     {
-      title: 'Tableau de bord',
-      description: 'Vue d\'ensemble et graphiques des données scannées',
+      title: t('home.dashboardTitle'),
+      description: t('home.dashboardDesc'),
       icon: <DashboardIcon sx={{ fontSize: 48, color: '#3B82F6' }} />,
       path: '/dashboard',
       color: 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)',
     },
     {
-      title: 'Rapports',
-      description: 'Analytics détaillés et visualisations avancées',
+      title: t('home.reportsTitle'),
+      description: t('home.reportsDesc'),
       icon: <AssessmentIcon sx={{ fontSize: 48, color: '#00E599' }} />,
       path: '/reports',
       color: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
@@ -50,7 +52,7 @@ export default function Home() {
           PII Scanner
         </Typography>
         <Typography variant="h6" sx={{ opacity: 0.9, maxWidth: 600, mx: 'auto' }}>
-          Détection intelligente de données personnelles identifiables (PII) conforme à la Loi N°2017-20 du Bénin
+          {t('home.heroSubtitle')}
         </Typography>
         <Button
           variant="contained"
@@ -69,7 +71,7 @@ export default function Home() {
           }}
           startIcon={<SearchIcon />}
         >
-          Lancer un scan
+          {t('home.launchScan')}
         </Button>
       </Box>
 
@@ -120,7 +122,7 @@ export default function Home() {
       {/* Stats Section */}
       <Box>
         <Typography variant="h5" fontWeight={600} gutterBottom>
-          Fonctionnalités clés
+          {t('home.keyFeatures')}
         </Typography>
         <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mt: 2 }}>
           <Box sx={{ flex: '1 1 calc(25% - 12px)', minWidth: 200 }}>
@@ -130,7 +132,7 @@ export default function Home() {
                   20
                 </Typography>
                 <Typography variant="body2" color="rgba(255,255,255,0.9)">
-                  Types de PII béninois
+                  {t('home.piiTypes')}
                 </Typography>
               </CardContent>
             </Card>
@@ -142,7 +144,7 @@ export default function Home() {
                   100%
                 </Typography>
                 <Typography variant="body2" color="rgba(255,255,255,0.9)">
-                  Local et sécurisé
+                  {t('home.localSecure')}
                 </Typography>
               </CardContent>
             </Card>
@@ -154,7 +156,7 @@ export default function Home() {
                   4
                 </Typography>
                 <Typography variant="body2" color="rgba(255,255,255,0.9)">
-                  Formats de rapports
+                  {t('home.reportFormats')}
                 </Typography>
               </CardContent>
             </Card>
@@ -166,7 +168,7 @@ export default function Home() {
                   ⚡
                 </Typography>
                 <Typography variant="body2" color="rgba(255,255,255,0.9)">
-                  Traitement parallèle
+                  {t('home.parallelProcessing')}
                 </Typography>
               </CardContent>
             </Card>

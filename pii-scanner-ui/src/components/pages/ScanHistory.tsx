@@ -28,6 +28,7 @@ import DownloadIcon from '@mui/icons-material/Download';
 import FolderIcon from '@mui/icons-material/Folder';
 import DeleteIcon from '@mui/icons-material/Delete';
 import axios from '../../services/axios';
+import { useTranslation } from 'react-i18next';
 
 interface ScanHistoryItem {
   id: number;
@@ -42,6 +43,7 @@ interface ScanHistoryItem {
 }
 
 const ScanHistory: React.FC = () => {
+  const { t, i18n } = useTranslation();
   const [scans, setScans] = useState<ScanHistoryItem[]>([]);
   const [filteredScans, setFilteredScans] = useState<ScanHistoryItem[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -77,7 +79,7 @@ const ScanHistory: React.FC = () => {
       setFilteredScans(response.data);
     } catch (err: any) {
       console.error('Error loading history:', err);
-      setError(err.response?.data?.message || 'Erreur lors du chargement de l\'historique');
+      setError(err.response?.data?.message || t('history.errorLoad'));
     } finally {
       setLoading(false);
     }
@@ -95,7 +97,6 @@ const ScanHistory: React.FC = () => {
       setDeleting(true);
       await axios.delete(`/scan/history/${scanToDelete.scanId}`);
 
-      // Mettre à jour la liste localement
       const updatedScans = scans.filter(s => s.scanId !== scanToDelete.scanId);
       setScans(updatedScans);
       setFilteredScans(updatedScans);
@@ -104,7 +105,7 @@ const ScanHistory: React.FC = () => {
       setScanToDelete(null);
     } catch (err: any) {
       console.error('Delete error:', err);
-      setError(err.response?.data?.message || 'Erreur lors de la suppression du scan');
+      setError(err.response?.data?.message || t('history.errorDelete'));
       setTimeout(() => setError(''), 3000);
     } finally {
       setDeleting(false);
@@ -133,7 +134,7 @@ const ScanHistory: React.FC = () => {
       document.body.removeChild(a);
     } catch (err) {
       console.error('Download error:', err);
-      setError(`Erreur lors du téléchargement du rapport`);
+      setError(t('history.errorDownload'));
       setTimeout(() => setError(''), 3000);
     }
   };
@@ -153,7 +154,7 @@ const ScanHistory: React.FC = () => {
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return '-';
-    return new Date(dateString).toLocaleString('fr-FR', {
+    return new Date(dateString).toLocaleString(i18n.language === 'fr' ? 'fr-FR' : 'en-US', {
       year: 'numeric',
       month: '2-digit',
       day: '2-digit',
@@ -189,10 +190,10 @@ const ScanHistory: React.FC = () => {
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
         }}>
-          Historique des scans
+          {t('history.title')}
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Consultez l'historique complet de vos scans et téléchargez les rapports
+          {t('history.subtitle')}
         </Typography>
       </Box>
 
@@ -207,7 +208,7 @@ const ScanHistory: React.FC = () => {
         <TextField
           fullWidth
           variant="outlined"
-          placeholder="Rechercher par répertoire, utilisateur ou ID de scan..."
+          placeholder={t('history.searchPlaceholder')}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           InputProps={{
@@ -232,14 +233,14 @@ const ScanHistory: React.FC = () => {
         <Table>
           <TableHead sx={{ bgcolor: 'rgba(0, 229, 153, 0.05)' }}>
             <TableRow>
-              <TableCell sx={{ fontWeight: 600 }}>Date</TableCell>
-              <TableCell sx={{ fontWeight: 600 }}>Utilisateur</TableCell>
-              <TableCell sx={{ fontWeight: 600 }}>Répertoire</TableCell>
-              <TableCell align="center" sx={{ fontWeight: 600 }}>Statut</TableCell>
-              <TableCell align="center" sx={{ fontWeight: 600 }}>Fichiers</TableCell>
-              <TableCell align="center" sx={{ fontWeight: 600 }}>PII détectés</TableCell>
-              <TableCell align="center" sx={{ fontWeight: 600 }}>Durée</TableCell>
-              <TableCell align="center" sx={{ fontWeight: 600 }}>Actions</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>{t('history.colDate')}</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>{t('history.colUser')}</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>{t('history.colDirectory')}</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 600 }}>{t('history.colStatus')}</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 600 }}>{t('history.colFiles')}</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 600 }}>{t('history.colPii')}</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 600 }}>{t('history.colDuration')}</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 600 }}>{t('history.colActions')}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -248,10 +249,10 @@ const ScanHistory: React.FC = () => {
                 <TableCell colSpan={8} align="center">
                   <Box sx={{ py: 6 }}>
                     <Typography variant="body1" color="text.secondary" fontWeight={500} gutterBottom>
-                      Aucun scan trouvé
+                      {t('history.noScans')}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                      {searchTerm ? 'Aucun résultat ne correspond à votre recherche' : 'Démarrez un scan pour voir l\'historique'}
+                      {searchTerm ? t('history.noResults') : t('history.startScan')}
                     </Typography>
                   </Box>
                 </TableCell>
@@ -315,7 +316,7 @@ const ScanHistory: React.FC = () => {
                     <Box sx={{ display: 'flex', justifyContent: 'center', gap: 0.5 }}>
                       {scan.status.toLowerCase() === 'completed' && (
                         <>
-                          <Tooltip title="Télécharger CSV">
+                          <Tooltip title={t('history.downloadCsv')}>
                             <IconButton
                               size="small"
                               onClick={() => downloadReport(scan.scanId, 'csv')}
@@ -328,7 +329,7 @@ const ScanHistory: React.FC = () => {
                               <DownloadIcon fontSize="small" />
                             </IconButton>
                           </Tooltip>
-                          <Tooltip title="Télécharger Excel">
+                          <Tooltip title={t('history.downloadExcel')}>
                             <IconButton
                               size="small"
                               onClick={() => downloadReport(scan.scanId, 'excel')}
@@ -344,7 +345,7 @@ const ScanHistory: React.FC = () => {
                           </Tooltip>
                         </>
                       )}
-                      <Tooltip title="Supprimer le scan">
+                      <Tooltip title={t('history.deleteScan')}>
                         <IconButton
                           size="small"
                           onClick={() => handleDeleteClick(scan)}
@@ -369,7 +370,10 @@ const ScanHistory: React.FC = () => {
 
       <Box sx={{ mt: 3, textAlign: 'center' }}>
         <Typography variant="body2" color="text.secondary" fontWeight={500}>
-          Total: {filteredScans.length} scan(s) • {scans.filter(s => s.status.toLowerCase() === 'completed').length} complété(s)
+          {t('history.total', {
+            total: filteredScans.length,
+            completed: scans.filter(s => s.status.toLowerCase() === 'completed').length
+          })}
         </Typography>
       </Box>
 
@@ -381,21 +385,21 @@ const ScanHistory: React.FC = () => {
         fullWidth
       >
         <DialogTitle sx={{ fontWeight: 600 }}>
-          Confirmer la suppression
+          {t('history.confirmDelete')}
         </DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Êtes-vous sûr de vouloir supprimer ce scan ?
+            {t('history.confirmDeleteMsg')}
             <Box sx={{ mt: 2, p: 2, bgcolor: 'rgba(244, 67, 54, 0.05)', borderRadius: 1, border: '1px solid', borderColor: 'rgba(244, 67, 54, 0.2)' }}>
               <Typography variant="body2" fontWeight={500} gutterBottom>
-                ID: {scanToDelete?.scanId}
+                {t('history.scanId', { id: scanToDelete?.scanId })}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Dossier: {scanToDelete?.directoryPath}
+                {t('history.scanFolder', { path: scanToDelete?.directoryPath })}
               </Typography>
             </Box>
             <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-              Cette action est irréversible. Le scan et tous ses rapports seront supprimés définitivement.
+              {t('history.deleteWarning')}
             </Typography>
           </DialogContentText>
         </DialogContent>
@@ -405,7 +409,7 @@ const ScanHistory: React.FC = () => {
             disabled={deleting}
             sx={{ fontWeight: 600 }}
           >
-            Annuler
+            {t('history.cancel')}
           </Button>
           <Button
             onClick={handleDeleteConfirm}
@@ -415,7 +419,7 @@ const ScanHistory: React.FC = () => {
             startIcon={deleting ? <CircularProgress size={16} color="inherit" /> : <DeleteIcon />}
             sx={{ fontWeight: 600 }}
           >
-            {deleting ? 'Suppression...' : 'Supprimer'}
+            {deleting ? t('history.deleting') : t('history.delete')}
           </Button>
         </DialogActions>
       </Dialog>
