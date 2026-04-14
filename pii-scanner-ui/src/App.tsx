@@ -346,6 +346,7 @@ function App() {
                   scanId={scanId}
                   onStartScan={handleStartScan}
                   onStopScan={handleStopScan}
+                  hasResults={results !== null}
                 />
               }
             />

@@ -20,6 +20,7 @@ import EmailIcon from '@mui/icons-material/Email';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { useTranslation } from 'react-i18next';
+import PageHeader from '../common/PageHeader';
 
 export default function Support() {
   const { t } = useTranslation();
@@ -45,23 +46,18 @@ export default function Support() {
 
   return (
     <Box>
-      <Typography variant="h4" gutterBottom fontWeight={700} sx={{
-        background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
-        WebkitBackgroundClip: 'text',
-        WebkitTextFillColor: 'transparent',
-      }}>
-        {t('support.title')}
-      </Typography>
-      <Typography variant="body1" color="text.secondary" paragraph>
-        {t('support.subtitle')}
-      </Typography>
+      <PageHeader
+        icon={<HelpOutlineIcon />}
+        title={t('support.title')}
+        subtitle={t('support.subtitle')}
+      />
 
       <Typography variant="h5" fontWeight={700} gutterBottom sx={{ mb: 2 }}>
         {t('support.resources')}
       </Typography>
 
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} md={3}>
+        <Grid size={{ xs: 12, md: 3 }}>
           <Card sx={{
             height: 220,
             display: 'flex',
@@ -97,7 +93,7 @@ export default function Support() {
           </Card>
         </Grid>
 
-        <Grid item xs={12} md={3}>
+        <Grid size={{ xs: 12, md: 3 }}>
           <Card sx={{
             height: 220,
             display: 'flex',
@@ -133,7 +129,7 @@ export default function Support() {
           </Card>
         </Grid>
 
-        <Grid item xs={12} md={3}>
+        <Grid size={{ xs: 12, md: 3 }}>
           <Card sx={{
             height: 220,
             display: 'flex',
@@ -167,7 +163,7 @@ export default function Support() {
           </Card>
         </Grid>
 
-        <Grid item xs={12} md={3}>
+        <Grid size={{ xs: 12, md: 3 }}>
           <Card sx={{
             height: 220,
             display: 'flex',

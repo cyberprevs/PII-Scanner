@@ -245,8 +245,20 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
                           color: c.accentPrimary,
                           '&:hover': { backgroundColor: c.accentPrimaryMuted },
                           '& .MuiListItemIcon-root': { color: c.accentPrimary },
+                          '&::before': {
+                            content: '""',
+                            position: 'absolute',
+                            left: 0,
+                            top: 6,
+                            bottom: 6,
+                            width: 3,
+                            bgcolor: c.accentPrimary,
+                            borderRadius: '0 2px 2px 0',
+                            background: c.accentPrimary,
+                          },
                         },
                         '&:hover': { backgroundColor: hoverBg },
+                        position: 'relative',
                       }}
                     >
                       <ListItemIcon
@@ -381,8 +393,15 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
                   gap: 1.5,
                   p: 1.5,
                   borderRadius: 2,
-                  bgcolor: darkMode ? c.accentPrimaryMuted : 'rgba(0, 229, 153, 0.06)',
-                  border: `1px solid ${darkMode ? 'rgba(0, 229, 153, 0.15)' : 'rgba(0, 229, 153, 0.1)'}`,
+                  ...(darkMode ? {
+                    backgroundColor: 'rgba(255,255,255,0.03)',
+                    backdropFilter: 'blur(8px)',
+                    WebkitBackdropFilter: 'blur(8px)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                  } : {
+                    bgcolor: 'rgba(0, 229, 153, 0.06)',
+                    border: '1px solid rgba(0, 229, 153, 0.1)',
+                  }),
                 }}
               >
                 <Avatar

@@ -1,6 +1,5 @@
 import {
   Box,
-  Typography,
   Card,
   CardContent,
   Paper,
@@ -12,7 +11,9 @@ import {
   TableRow,
   Chip,
   Alert,
+  Stack,
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import {
   BarChart,
   Bar,
@@ -20,12 +21,15 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip as RechartsTooltip,
-  Legend,
   ResponsiveContainer,
   Cell,
 } from 'recharts';
+import LockOpenIcon from '@mui/icons-material/LockOpen';
 import type { ScanResultResponse } from '../../types';
 import StatCard from '../common/StatCard';
+import EmptyState from '../common/EmptyState';
+import PageHeader from '../common/PageHeader';
+import { glassCardSx, getRechartsTooltipStyle, tokens } from '../../theme/designSystem';
 import { useTranslation } from 'react-i18next';
 
 interface ExposureProps {
@@ -34,48 +38,35 @@ interface ExposureProps {
 
 const getRiskColor = (riskLevel: string) => {
   switch (riskLevel) {
-    case 'ÉLEVÉ':
-      return 'error';
-    case 'MOYEN':
-      return 'warning';
-    case 'FAIBLE':
-      return 'success';
-    default:
-      return 'default';
+    case 'ÉLEVÉ': return 'error';
+    case 'MOYEN': return 'warning';
+    case 'FAIBLE': return 'success';
+    default: return 'default';
   }
 };
 
 const getExposureColor = (exposureLevel?: string) => {
   switch (exposureLevel) {
-    case 'Critique':
-      return 'error';
-    case 'Élevé':
-      return 'warning';
-    case 'Moyen':
-      return 'warning';
-    case 'Faible':
-      return 'success';
-    default:
-      return 'default';
+    case 'Critique': return 'error';
+    case 'Élevé': return 'warning';
+    case 'Moyen': return 'warning';
+    case 'Faible': return 'success';
+    default: return 'default';
   }
 };
 
 export default function Exposure({ results }: ExposureProps) {
   const { t } = useTranslation();
+  const theme = useTheme();
+  const dark = theme.palette.mode === 'dark';
+  const c = tokens.colors;
+  const axisStyle = { fontSize: 12, fill: dark ? c.textTertiary : c.light.textTertiary };
 
   if (!results) {
     return (
       <Box>
-        <Typography variant="h4" fontWeight={700} gutterBottom>
-          {t('exposure.title')}
-        </Typography>
-        <Card sx={{ mt: 3 }}>
-          <CardContent>
-            <Typography variant="body1" color="text.secondary">
-              {t('exposure.noScan')}
-            </Typography>
-          </CardContent>
-        </Card>
+        <PageHeader icon={<LockOpenIcon />} title={t('exposure.title')} subtitle={t('exposure.subtitle')} />
+        <EmptyState title={t('exposure.noScan')} description={t('exposure.noScanSubtitle', { defaultValue: '' })} />
       </Box>
     );
   }
@@ -96,11 +87,7 @@ export default function Exposure({ results }: ExposureProps) {
     if (file.exposureLevel) {
       const item = exposureData.find(d => d.level === file.exposureLevel);
       if (item) item.count++;
-
-      if (['Moyen', 'Élevé', 'Critique'].includes(file.exposureLevel)) {
-        totalPiiInExposedFiles += file.piiCount;
-      }
-
+      if (['Moyen', 'Élevé', 'Critique'].includes(file.exposureLevel)) totalPiiInExposedFiles += file.piiCount;
       if (file.isNetworkShare) filesOnNetworkShare++;
     }
     return file.exposureLevel && file.exposureLevel !== 'Faible';
@@ -111,55 +98,46 @@ export default function Exposure({ results }: ExposureProps) {
 
   return (
     <Box>
-      <Typography variant="h4" fontWeight={700} gutterBottom>
-        {t('exposure.title')}
-      </Typography>
-      <Typography variant="body1" color="text.secondary" paragraph>
-        {t('exposure.subtitle')}
-      </Typography>
+      <PageHeader icon={<LockOpenIcon />} title={t('exposure.title')} subtitle={t('exposure.subtitle')} />
 
-      {/* Statistiques clés */}
+      {/* KPI Cards */}
       <Box sx={{ display: 'flex', gap: 3, mb: 4, flexWrap: 'wrap' }}>
-        <StatCard value={totalExposedFiles} label={t('exposure.overExposed')} gradient="linear-gradient(135deg, #F0A000 0%, #D48800 100%)" />
-        <StatCard value={criticalExposedFiles} label={t('exposure.critical')} gradient="linear-gradient(135deg, #F45252 0%, #D93636 100%)" />
-        <StatCard value={totalPiiInExposedFiles} label={t('exposure.piiInExposed')} gradient="linear-gradient(135deg, #A78BFA 0%, #7C3AED 100%)" />
-        <StatCard value={filesOnNetworkShare} label={t('exposure.networkShare')} gradient="linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)" />
+        <StatCard topBorderOnly accentColor={c.warning} value={totalExposedFiles} label={t('exposure.overExposed')} />
+        <StatCard topBorderOnly accentColor={c.danger} value={criticalExposedFiles} label={t('exposure.critical')} />
+        <StatCard topBorderOnly accentColor="#A78BFA" value={totalPiiInExposedFiles} label={t('exposure.piiInExposed')} />
+        <StatCard topBorderOnly accentColor={c.info} value={filesOnNetworkShare} label={t('exposure.networkShare')} />
       </Box>
 
-      {/* Légende */}
+      {/* Legend — compact horizontal chips */}
       <Card sx={{ mb: 3 }}>
         <CardContent>
-          <Typography variant="h6" gutterBottom fontWeight={600} sx={{ mb: 2 }}>
-            {t('exposure.legend')}
-          </Typography>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+          <Stack direction="row" alignItems="center" flexWrap="wrap" sx={{ gap: 1, mb: 1.5 }}>
             {exposureData.map(item => (
-              <Box key={item.level} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Chip label={item.level} size="small" color={getExposureColor(item.level)} />
-                <Typography variant="body2">{item.description}</Typography>
-              </Box>
+              <Chip
+                key={item.level}
+                label={`${item.level} — ${item.description}`}
+                size="small"
+                color={getExposureColor(item.level) as 'error' | 'warning' | 'success' | 'default'}
+                sx={{ fontWeight: 500 }}
+              />
             ))}
-          </Box>
-          <Alert severity="error" sx={{ mt: 2 }}>
+          </Stack>
+          <Alert severity="error" sx={{ mt: 0 }}>
             {t('exposure.criticalWarning')}
           </Alert>
         </CardContent>
       </Card>
 
-      {/* Graphique */}
-      <Card sx={{ mb: 3 }}>
+      {/* Chart */}
+      <Card sx={{ mb: 3, ...glassCardSx(dark) }}>
         <CardContent>
-          <Typography variant="h6" gutterBottom fontWeight={600}>
-            {t('exposure.distribution')}
-          </Typography>
-          <ResponsiveContainer width="100%" height={350}>
+          <ResponsiveContainer width="100%" height={300}>
             <BarChart data={exposureData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="level" />
-              <YAxis />
-              <RechartsTooltip />
-              <Legend />
-              <Bar dataKey="count" name={t('exposure.fileCount')} radius={[8, 8, 0, 0]}>
+              <CartesianGrid horizontal={true} vertical={false} stroke={dark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)'} />
+              <XAxis dataKey="level" tick={axisStyle} axisLine={false} tickLine={false} />
+              <YAxis tick={axisStyle} axisLine={false} tickLine={false} />
+              <RechartsTooltip contentStyle={getRechartsTooltipStyle(dark)} />
+              <Bar dataKey="count" name={t('exposure.fileCount')} radius={[6, 6, 0, 0]}>
                 {exposureData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
@@ -169,14 +147,14 @@ export default function Exposure({ results }: ExposureProps) {
         </CardContent>
       </Card>
 
-      {/* Table des fichiers exposés */}
+      {/* Table */}
       <Card>
         <CardContent>
-          <Typography variant="h6" gutterBottom fontWeight={600}>
-            {t('exposure.tableTitle')}
-          </Typography>
           {exposedFiles.length > 0 ? (
-            <TableContainer component={Paper} sx={{ mt: 2, maxHeight: 600 }}>
+            <TableContainer
+              component={Paper}
+              sx={{ mt: 2, maxHeight: 600, border: '1px solid', borderColor: 'divider', borderRadius: `${tokens.radii.lg}px` }}
+            >
               <Table stickyHeader>
                 <TableHead>
                   <TableRow>
@@ -192,47 +170,30 @@ export default function Exposure({ results }: ExposureProps) {
                     <>
                       <TableRow key={index} hover>
                         <TableCell>
-                          <Chip
-                            label={file.exposureLevel}
-                            size="small"
-                            color={getExposureColor(file.exposureLevel)}
-                          />
+                          <Chip label={file.exposureLevel} size="small" color={getExposureColor(file.exposureLevel) as 'error' | 'warning' | 'success' | 'default'} />
                         </TableCell>
                         <TableCell>
-                          <Typography variant="body2" fontFamily="monospace">
-                            {file.filePath.length > 80
-                              ? '...' + file.filePath.slice(-80)
-                              : file.filePath}
-                          </Typography>
+                          <Box component="span" sx={{ fontFamily: 'monospace', fontSize: '0.85rem' }}>
+                            {file.filePath.length > 80 ? '...' + file.filePath.slice(-80) : file.filePath}
+                          </Box>
                         </TableCell>
                         <TableCell align="right">
                           <Chip label={file.piiCount} color="primary" size="small" />
                         </TableCell>
                         <TableCell>
-                          <Chip
-                            label={file.riskLevel}
-                            color={getRiskColor(file.riskLevel)}
-                            size="small"
-                          />
+                          <Chip label={file.riskLevel} color={getRiskColor(file.riskLevel) as 'error' | 'warning' | 'success' | 'default'} size="small" />
                         </TableCell>
                         <TableCell>
                           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                            {file.accessibleToEveryone && (
-                              <Chip label="Everyone" size="small" color="error" variant="outlined" />
-                            )}
-                            {file.isNetworkShare && (
-                              <Chip label="Réseau" size="small" color="warning" variant="outlined" />
-                            )}
+                            {file.accessibleToEveryone && <Chip label="Everyone" size="small" color="error" variant="outlined" />}
+                            {file.isNetworkShare && <Chip label="Réseau" size="small" color="warning" variant="outlined" />}
                           </Box>
                         </TableCell>
                       </TableRow>
                       {file.exposureWarning && (
                         <TableRow key={`${index}-warning`}>
-                          <TableCell colSpan={5} sx={{ py: 0.5, backgroundColor: 'rgba(244, 67, 54, 0.08)' }}>
-                            <Alert
-                              severity={file.exposureLevel === 'Critique' ? 'error' : 'warning'}
-                              sx={{ py: 0, '& .MuiAlert-message': { fontSize: '0.875rem' } }}
-                            >
+                          <TableCell colSpan={5} sx={{ py: 0.5, bgcolor: 'rgba(244, 67, 54, 0.08)' }}>
+                            <Alert severity={file.exposureLevel === 'Critique' ? 'error' : 'warning'} sx={{ py: 0, '& .MuiAlert-message': { fontSize: '0.875rem' } }}>
                               {file.exposureWarning}
                             </Alert>
                           </TableCell>
@@ -244,9 +205,7 @@ export default function Exposure({ results }: ExposureProps) {
               </Table>
             </TableContainer>
           ) : (
-            <Alert severity="success" sx={{ mt: 2 }}>
-              {t('exposure.noExposed')}
-            </Alert>
+            <Alert severity="success" sx={{ mt: 2 }}>{t('exposure.noExposed')}</Alert>
           )}
         </CardContent>
       </Card>

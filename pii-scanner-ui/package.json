@@ -8,8 +8,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:mock": "VITE_MOCK=true vite",
-    "dev:live": "VITE_MOCK=false vite",
+    "dev:mock": "cross-env VITE_MOCK=true vite",
+    "dev:live": "cross-env VITE_MOCK=false vite",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
@@ -42,6 +42,7 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
     "@vitest/coverage-v8": "^4.0.16",
+    "cross-env": "^10.1.0",
     "eslint": "^9.39.1",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",

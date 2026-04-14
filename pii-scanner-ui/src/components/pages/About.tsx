@@ -17,6 +17,7 @@ import {
   Alert,
 } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
+import PageHeader from '../common/PageHeader';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import SecurityIcon from '@mui/icons-material/Security';
@@ -27,24 +28,17 @@ import GitHubIcon from '@mui/icons-material/GitHub';
 const About: React.FC = () => {
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      {/* Header */}
-      <Box sx={{ mb: 4 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-          <InfoIcon sx={{ fontSize: 40, mr: 2, color: 'primary.main' }} />
-          <Typography variant="h4" fontWeight={700}>
-            À propos de PII Scanner
-          </Typography>
-        </Box>
-        <Typography variant="body1" color="text.secondary">
-          Détecteur de Données Personnelles pour la conformité RGPD et APDP
-        </Typography>
-      </Box>
+      <PageHeader
+        icon={<InfoIcon />}
+        title="À propos de PII Scanner"
+        subtitle="Détecteur de Données Personnelles pour la conformité RGPD et APDP"
+      />
 
       <Divider sx={{ mb: 4 }} />
 
       {/* Version & Developer Info */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Card
             sx={{
               background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
@@ -71,7 +65,7 @@ const About: React.FC = () => {
           </Card>
         </Grid>
 
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Card>
             <CardContent>
               <BusinessIcon sx={{ fontSize: 48, mb: 2, color: 'primary.main' }} />
@@ -114,7 +108,7 @@ const About: React.FC = () => {
 
         <Grid container spacing={3} sx={{ mt: 2 }}>
           {/* What you CAN do */}
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Box
               sx={{
                 p: 2,
@@ -168,7 +162,7 @@ const About: React.FC = () => {
           </Grid>
 
           {/* Obligations */}
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Box
               sx={{
                 p: 2,
@@ -259,7 +253,7 @@ const About: React.FC = () => {
         </Alert>
 
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={6} md={4}>
+          <Grid size={{ xs: 12, sm: 6, md: 4 }}>
             <Link
               href="https://github.com/cyberprevs/pii-scanner"
               target="_blank"
@@ -277,7 +271,7 @@ const About: React.FC = () => {
             </Link>
           </Grid>
 
-          <Grid item xs={12} sm={6} md={4}>
+          <Grid size={{ xs: 12, sm: 6, md: 4 }}>
             <Link
               href="https://github.com/cyberprevs/pii-scanner/blob/main/SECURITY.md"
               target="_blank"
@@ -295,7 +289,7 @@ const About: React.FC = () => {
             </Link>
           </Grid>
 
-          <Grid item xs={12} sm={6} md={4}>
+          <Grid size={{ xs: 12, sm: 6, md: 4 }}>
             <Link
               href="https://opensource.org/licenses/MIT"
               target="_blank"

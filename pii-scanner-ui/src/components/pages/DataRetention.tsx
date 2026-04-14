@@ -36,6 +36,7 @@ import WarningIcon from '@mui/icons-material/Warning';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import FolderIcon from '@mui/icons-material/Folder';
 import ScheduleIcon from '@mui/icons-material/Schedule';
+import PageHeader from '../common/PageHeader';
 
 interface RetentionPolicy {
   category: string;
@@ -149,12 +150,11 @@ export default function DataRetention() {
 
   return (
     <Box>
-      <Typography variant="h4" fontWeight={700} gutterBottom>
-        Rétention et suppression des données
-      </Typography>
-      <Typography variant="body1" color="text.secondary" paragraph>
-        Gérer la rétention des données personnelles conformément à la Loi N°2017-20 du Bénin (APDP)
-      </Typography>
+      <PageHeader
+        icon={<ScheduleIcon />}
+        title="Rétention et suppression des données"
+        subtitle="Gérer la rétention des données personnelles conformément à la Loi N°2017-20 du Bénin (APDP)"
+      />
 
       <Alert severity="info" icon={<ScheduleIcon />} sx={{ mb: 3 }}>
         <strong>Principe de minimisation des données (Art. 6 APDP)</strong> : Les données personnelles ne doivent pas être conservées

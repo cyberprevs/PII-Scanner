@@ -1,6 +1,5 @@
 import {
   Box,
-  Typography,
   Card,
   CardContent,
   Paper,
@@ -12,7 +11,9 @@ import {
   TableRow,
   Chip,
   Alert,
+  Stack,
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import {
   BarChart,
   Bar,
@@ -20,12 +21,15 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip as RechartsTooltip,
-  Legend,
   ResponsiveContainer,
   Cell,
 } from 'recharts';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import type { ScanResultResponse } from '../../types';
 import StatCard from '../common/StatCard';
+import EmptyState from '../common/EmptyState';
+import PageHeader from '../common/PageHeader';
+import { glassCardSx, getRechartsTooltipStyle, tokens } from '../../theme/designSystem';
 import { useTranslation } from 'react-i18next';
 
 interface StalenessProps {
@@ -34,113 +38,89 @@ interface StalenessProps {
 
 const getRiskColor = (riskLevel: string) => {
   switch (riskLevel) {
-    case 'ÉLEVÉ':
-      return 'error';
-    case 'MOYEN':
-      return 'warning';
-    case 'FAIBLE':
-      return 'success';
-    default:
-      return 'default';
+    case 'ÉLEVÉ': return 'error';
+    case 'MOYEN': return 'warning';
+    case 'FAIBLE': return 'success';
+    default: return 'default';
   }
 };
 
 export default function Staleness({ results }: StalenessProps) {
   const { t } = useTranslation();
+  const theme = useTheme();
+  const dark = theme.palette.mode === 'dark';
+  const c = tokens.colors;
+  const axisStyle = { fontSize: 12, fill: dark ? c.textTertiary : c.light.textTertiary };
 
   if (!results) {
     return (
       <Box>
-        <Typography variant="h4" fontWeight={700} gutterBottom>
-          {t('staleness.title')}
-        </Typography>
-        <Card sx={{ mt: 3 }}>
-          <CardContent>
-            <Typography variant="body1" color="text.secondary">
-              {t('staleness.noScan')}
-            </Typography>
-          </CardContent>
-        </Card>
+        <PageHeader icon={<AccessTimeIcon />} title={t('staleness.title')} subtitle={t('staleness.subtitle')} />
+        <EmptyState title={t('staleness.noScan')} description={t('staleness.noScanSubtitle', { defaultValue: '' })} />
       </Box>
     );
   }
 
   const { statistics } = results;
 
-  const stalenessData = [
-    { level: 'Récent', count: 0, color: '#4caf50', description: t('common.recent') },
-    { level: '6 mois', count: 0, color: '#8bc34a', description: t('common.sixMonths') },
-    { level: '1 an', count: 0, color: '#ff9800', description: t('common.oneYear') },
-    { level: '3 ans', count: 0, color: '#ff5722', description: t('common.threeYears') },
-    { level: '+5 ans', count: 0, color: '#f44336', description: t('common.fiveYears') },
+  const stalenessMeta = [
+    { level: 'Récent', color: '#4caf50', description: t('common.recent') },
+    { level: '6 mois', color: '#8bc34a', description: t('common.sixMonths') },
+    { level: '1 an', color: '#ff9800', description: t('common.oneYear') },
+    { level: '3 ans', color: '#ff5722', description: t('common.threeYears') },
+    { level: '+5 ans', color: '#f44336', description: t('common.fiveYears') },
   ];
 
-  let totalPiiInStaleFiles = 0;
-  const staleFiles = statistics.topRiskyFiles.filter(file => {
-    if (file.stalenessLevel) {
-      const item = stalenessData.find(d => d.level === file.stalenessLevel);
-      if (item) item.count++;
+  const staleFiles = statistics.topRiskyFiles.filter(
+    file => file.stalenessLevel && file.stalenessLevel !== 'Récent'
+  );
 
-      if (['1 an', '3 ans', '+5 ans'].includes(file.stalenessLevel)) {
-        totalPiiInStaleFiles += file.piiCount;
-      }
-    }
-    return file.stalenessLevel && file.stalenessLevel !== 'Récent';
-  });
+  const stalenessData = stalenessMeta.map(meta => ({
+    ...meta,
+    count: statistics.topRiskyFiles.filter(f => f.stalenessLevel === meta.level).length,
+  }));
 
   const totalStaleFiles = staleFiles.length;
   const criticalStaleFiles = staleFiles.filter(f => ['3 ans', '+5 ans'].includes(f.stalenessLevel || '')).length;
+  const totalPiiInStaleFiles = staleFiles
+    .filter(f => f.stalenessLevel && ['1 an', '3 ans', '+5 ans'].includes(f.stalenessLevel))
+    .reduce((sum, f) => sum + f.piiCount, 0);
 
   return (
     <Box>
-      <Typography variant="h4" fontWeight={700} gutterBottom>
-        {t('staleness.title')}
-      </Typography>
-      <Typography variant="body1" color="text.secondary" paragraph>
-        {t('staleness.subtitle')}
-      </Typography>
+      <PageHeader icon={<AccessTimeIcon />} title={t('staleness.title')} subtitle={t('staleness.subtitle')} />
 
-      {/* Statistiques clés */}
+      {/* KPI Cards */}
       <Box sx={{ display: 'flex', gap: 3, mb: 4, flexWrap: 'wrap' }}>
-        <StatCard value={totalStaleFiles} label={t('staleness.oldFiles')} gradient="linear-gradient(135deg, #F0A000 0%, #D48800 100%)" />
-        <StatCard value={criticalStaleFiles} label={t('staleness.criticalFiles')} gradient="linear-gradient(135deg, #F45252 0%, #D93636 100%)" />
-        <StatCard value={totalPiiInStaleFiles} label={t('staleness.piiInOldFiles')} gradient="linear-gradient(135deg, #A78BFA 0%, #7C3AED 100%)" />
+        <StatCard topBorderOnly accentColor={c.warning} value={totalStaleFiles} label={t('staleness.oldFiles')} />
+        <StatCard topBorderOnly accentColor={c.danger} value={criticalStaleFiles} label={t('staleness.criticalFiles')} />
+        <StatCard topBorderOnly accentColor="#A78BFA" value={totalPiiInStaleFiles} label={t('staleness.piiInOldFiles')} />
       </Box>
 
-      {/* Légende */}
+      {/* Legend — compact horizontal chips */}
       <Card sx={{ mb: 3 }}>
         <CardContent>
-          <Typography variant="h6" gutterBottom fontWeight={600} sx={{ mb: 2 }}>
-            {t('staleness.legend')}
-          </Typography>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+          <Stack direction="row" alignItems="center" flexWrap="wrap" sx={{ gap: 1, mb: 1.5 }}>
             {stalenessData.map(item => (
-              <Box key={item.level} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Chip label={item.level} size="small" sx={{ backgroundColor: item.color, color: 'white' }} />
-                <Typography variant="body2">{item.description}</Typography>
-              </Box>
+              <Chip key={item.level} label={`${item.level} — ${item.description}`} size="small" sx={{ backgroundColor: item.color, color: 'white', fontWeight: 500 }} />
             ))}
-          </Box>
-          <Alert severity="warning" sx={{ mt: 2 }}>
+          </Stack>
+          <Alert severity="warning" sx={{ mt: 0 }}>
             {t('staleness.legalWarning')}
           </Alert>
         </CardContent>
       </Card>
 
-      {/* Graphique */}
-      <Card sx={{ mb: 3 }}>
+      {/* Chart */}
+      <Card sx={{ mb: 3, ...glassCardSx(dark) }}>
         <CardContent>
-          <Typography variant="h6" gutterBottom fontWeight={600}>
-            {t('staleness.distribution')}
-          </Typography>
-          <ResponsiveContainer width="100%" height={350}>
+          <ResponsiveContainer width="100%" height={300}>
             <BarChart data={stalenessData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="level" />
-              <YAxis />
-              <RechartsTooltip />
-              <Legend />
-              <Bar dataKey="count" name={t('staleness.fileCount')} radius={[8, 8, 0, 0]}>
+              <CartesianGrid horizontal={true} vertical={false} stroke={dark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)'} />
+              <XAxis dataKey="level" tick={axisStyle} axisLine={false} tickLine={false} />
+              <YAxis tick={axisStyle} axisLine={false} tickLine={false} />
+              <RechartsTooltip contentStyle={getRechartsTooltipStyle(dark)} />
+              <Bar dataKey="count" name={t('staleness.fileCount')} radius={[6, 6, 0, 0]}>
                 {stalenessData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
@@ -150,14 +130,14 @@ export default function Staleness({ results }: StalenessProps) {
         </CardContent>
       </Card>
 
-      {/* Table des fichiers anciens */}
+      {/* Table */}
       <Card>
         <CardContent>
-          <Typography variant="h6" gutterBottom fontWeight={600}>
-            {t('staleness.tableTitle')}
-          </Typography>
           {staleFiles.length > 0 ? (
-            <TableContainer component={Paper} sx={{ mt: 2, maxHeight: 600 }}>
+            <TableContainer
+              component={Paper}
+              sx={{ mt: 2, maxHeight: 600, border: '1px solid', borderColor: 'divider', borderRadius: `${tokens.radii.lg}px` }}
+            >
               <Table stickyHeader>
                 <TableHead>
                   <TableRow>
@@ -175,37 +155,25 @@ export default function Staleness({ results }: StalenessProps) {
                           <Chip
                             label={file.stalenessLevel}
                             size="small"
-                            sx={{
-                              backgroundColor: stalenessData.find(d => d.level === file.stalenessLevel)?.color,
-                              color: 'white'
-                            }}
+                            sx={{ backgroundColor: stalenessData.find(d => d.level === file.stalenessLevel)?.color, color: 'white' }}
                           />
                         </TableCell>
                         <TableCell>
-                          <Typography variant="body2" fontFamily="monospace">
-                            {file.filePath.length > 80
-                              ? '...' + file.filePath.slice(-80)
-                              : file.filePath}
-                          </Typography>
+                          <Box component="span" sx={{ fontFamily: 'monospace', fontSize: '0.85rem' }}>
+                            {file.filePath.length > 80 ? '...' + file.filePath.slice(-80) : file.filePath}
+                          </Box>
                         </TableCell>
                         <TableCell align="right">
                           <Chip label={file.piiCount} color="primary" size="small" />
                         </TableCell>
                         <TableCell>
-                          <Chip
-                            label={file.riskLevel}
-                            color={getRiskColor(file.riskLevel)}
-                            size="small"
-                          />
+                          <Chip label={file.riskLevel} color={getRiskColor(file.riskLevel) as 'error' | 'warning' | 'success' | 'default'} size="small" />
                         </TableCell>
                       </TableRow>
                       {file.staleDataWarning && (
                         <TableRow key={`${index}-warning`}>
-                          <TableCell colSpan={4} sx={{ py: 0.5, backgroundColor: 'rgba(255, 152, 0, 0.08)' }}>
-                            <Alert
-                              severity="warning"
-                              sx={{ py: 0, '& .MuiAlert-message': { fontSize: '0.875rem' } }}
-                            >
+                          <TableCell colSpan={4} sx={{ py: 0.5, bgcolor: 'rgba(255, 152, 0, 0.08)' }}>
+                            <Alert severity="warning" sx={{ py: 0, '& .MuiAlert-message': { fontSize: '0.875rem' } }}>
                               {file.staleDataWarning}
                             </Alert>
                           </TableCell>
@@ -217,9 +185,7 @@ export default function Staleness({ results }: StalenessProps) {
               </Table>
             </TableContainer>
           ) : (
-            <Alert severity="success" sx={{ mt: 2 }}>
-              {t('staleness.noOldFiles')}
-            </Alert>
+            <Alert severity="success" sx={{ mt: 2 }}>{t('staleness.noOldFiles')}</Alert>
           )}
         </CardContent>
       </Card>

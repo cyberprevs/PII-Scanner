@@ -40,11 +40,11 @@ export const tokens = {
 
     // Light mode overrides
     light: {
-      bgPrimary: '#F8F9FA',
+      bgPrimary: '#F4F6F8',
       bgSurface: '#FFFFFF',
-      bgSurfaceRaised: '#FFFFFF',
-      bgInput: '#F8F9FA',
-      borderDefault: '#E2E2E2',
+      bgSurfaceRaised: '#FAFAFA',
+      bgInput: '#F4F6F8',
+      borderDefault: '#E5E7EB',
       borderMuted: '#F0F0F0',
       textPrimary: '#111111',
       textSecondary: '#6B6B6B',
@@ -61,6 +61,11 @@ export const tokens = {
 
   spacing: {
     page: 3, // MUI spacing units (24px)
+  },
+
+  shadows: {
+    card: '0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04)',
+    cardHover: '0 4px 12px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.06)',
   },
 } as const;
 
@@ -81,6 +86,30 @@ export const chartColors = [
   '#00E599', '#3B82F6', '#F0A000', '#F45252',
   '#A78BFA', '#EC4899', '#06B6D4', '#84CC16',
 ];
+
+// ─── Glassmorphism helper ────────────────────────────────────────────────────
+export function glassCardSx(darkMode: boolean): Record<string, unknown> {
+  if (!darkMode) return {};
+  return {
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    backdropFilter: 'blur(12px)',
+    WebkitBackdropFilter: 'blur(12px)',
+    border: '1px solid rgba(255, 255, 255, 0.08)',
+  };
+}
+
+// ─── Recharts tooltip style ──────────────────────────────────────────────────
+export function getRechartsTooltipStyle(darkMode: boolean): Record<string, unknown> {
+  return {
+    backgroundColor: darkMode ? '#1E1E1E' : '#FFFFFF',
+    border: `1px solid ${darkMode ? '#2A2A2A' : '#E5E7EB'}`,
+    borderRadius: 8,
+    boxShadow: darkMode
+      ? '0 4px 16px rgba(0,0,0,0.4)'
+      : '0 4px 12px rgba(0,0,0,0.08)',
+    color: darkMode ? '#FAFAFA' : '#111111',
+  };
+}
 
 // ─── MUI Theme Factory ─────────────────────────────────────────────────────
 export function createAppTheme(darkMode: boolean) {
@@ -284,6 +313,24 @@ export function createAppTheme(darkMode: boolean) {
         styleOverrides: {
           root: {
             borderBottom: `1px solid ${darkMode ? c.borderMuted : light.borderMuted}`,
+          },
+        },
+      },
+
+      MuiTableRow: {
+        styleOverrides: {
+          root: {
+            '&:nth-of-type(even):not(.MuiTableRow-head)': {
+              backgroundColor: darkMode
+                ? 'rgba(255, 255, 255, 0.015)'
+                : 'rgba(0, 0, 0, 0.015)',
+            },
+            '&:hover:not(.MuiTableRow-head)': {
+              backgroundColor: darkMode
+                ? 'rgba(0, 229, 153, 0.04) !important'
+                : 'rgba(0, 229, 153, 0.03) !important',
+              cursor: 'pointer',
+            },
           },
         },
       },

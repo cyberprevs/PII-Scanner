@@ -46,6 +46,7 @@ import {
 import type { ScanResultResponse } from '../../types';
 import EmptyState from '../common/EmptyState';
 import StatCard from '../common/StatCard';
+import PageHeader from '../common/PageHeader';
 
 interface ReportsProps {
   results: ScanResultResponse | null;
@@ -192,18 +193,11 @@ export default function Reports({ results, onDownloadReport }: ReportsProps) {
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
-      {/* Header */}
-      <Box sx={{ mb: 4 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-          <AssessmentIcon sx={{ fontSize: 40, mr: 2, color: 'primary.main' }} />
-          <Typography variant="h4" fontWeight={700}>
-            Rapports et Exports
-          </Typography>
-        </Box>
-        <Typography variant="body1" color="text.secondary">
-          Résumé exécutif, analyses visuelles et exports de données
-        </Typography>
-      </Box>
+      <PageHeader
+        icon={<AssessmentIcon />}
+        title="Rapports et Exports"
+        subtitle="Résumé exécutif, analyses visuelles et exports de données"
+      />
 
       {/* Section 1: Résumé Exécutif */}
       <Card sx={{ mb: 4 }}>
@@ -215,33 +209,17 @@ export default function Reports({ results, onDownloadReport }: ReportsProps) {
           <Divider sx={{ mb: 3 }} />
 
           <Grid container spacing={3}>
-            <Grid item xs={12} sm={6} md={3}>
-              <StatCard
-                value={statistics.totalFilesScanned.toLocaleString()}
-                label="Fichiers analysés"
-                gradient="linear-gradient(135deg, #00E599 0%, #3B82F6 100%)"
-              />
+            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+              <StatCard topBorderOnly accentColor="#00E599" value={statistics.totalFilesScanned.toLocaleString()} label="Fichiers analysés" />
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <StatCard
-                value={totalPii.toLocaleString()}
-                label="PII détectées"
-                gradient="linear-gradient(135deg, #F45252 0%, #D93636 100%)"
-              />
+            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+              <StatCard topBorderOnly accentColor="#F45252" value={totalPii.toLocaleString()} label="PII détectées" />
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <StatCard
-                value={statistics.filesWithPii.toLocaleString()}
-                label="Fichiers avec PII"
-                gradient="linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)"
-              />
+            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+              <StatCard topBorderOnly accentColor="#3B82F6" value={statistics.filesWithPii.toLocaleString()} label="Fichiers avec PII" />
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <StatCard
-                value={uniquePiiTypes}
-                label="Types de PII"
-                gradient="linear-gradient(135deg, #00E599 0%, #00B876 100%)"
-              />
+            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+              <StatCard topBorderOnly accentColor="#A78BFA" value={uniquePiiTypes} label="Types de PII" />
             </Grid>
           </Grid>
         </CardContent>
@@ -250,7 +228,7 @@ export default function Reports({ results, onDownloadReport }: ReportsProps) {
       {/* Section 2: Visualisations Essentielles */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         {/* Top 10 Types de PII - Moitié gauche */}
-        <Grid item xs={12} lg={6}>
+        <Grid size={{ xs: 12, lg: 6 }}>
           <Card sx={{ height: '100%' }}>
             <CardContent>
               <Typography variant="h6" fontWeight={600} gutterBottom>
@@ -260,7 +238,7 @@ export default function Reports({ results, onDownloadReport }: ReportsProps) {
                 Distribution des données personnelles par catégorie
               </Typography>
               <Box sx={{ width: '100%', height: 450 }}>
-                <ResponsiveContainer>
+                <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={piiTypeData} layout="vertical">
                     <defs>
                       <linearGradient id="barGradient" x1="0" y1="0" x2="1" y2="0">
@@ -268,7 +246,7 @@ export default function Reports({ results, onDownloadReport }: ReportsProps) {
                         <stop offset="100%" stopColor="#00B876" />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                    <CartesianGrid horizontal={true} vertical={false} stroke="rgba(128,128,128,0.08)" />
                     <XAxis type="number" tick={{ fontSize: 12 }} />
                     <YAxis dataKey="type" type="category" width={150} tick={{ fontSize: 11 }} />
                     <RechartsTooltip
@@ -297,7 +275,7 @@ export default function Reports({ results, onDownloadReport }: ReportsProps) {
         </Grid>
 
         {/* Distribution des Risques - Moitié droite */}
-        <Grid item xs={12} lg={6}>
+        <Grid size={{ xs: 12, lg: 6 }}>
           <Card sx={{ height: '100%' }}>
             <CardContent>
               <Typography variant="h6" fontWeight={600} gutterBottom>
@@ -308,7 +286,7 @@ export default function Reports({ results, onDownloadReport }: ReportsProps) {
               </Typography>
               <Box sx={{ width: '100%', height: 450, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                 <Box sx={{ width: '100%', height: '60%', display: 'flex', justifyContent: 'center' }}>
-                  <ResponsiveContainer>
+                  <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
                         data={riskData}
@@ -337,7 +315,7 @@ export default function Reports({ results, onDownloadReport }: ReportsProps) {
                 <Box sx={{ width: '100%', mt: 2 }}>
                   <Grid container spacing={2}>
                     {riskData.map((item, index) => (
-                      <Grid item xs={4} key={index}>
+                      <Grid size={{ xs: 4 }} key={index}>
                         <Card sx={{ p: 2, bgcolor: `${item.color}15`, border: `1px solid ${item.color}40`, textAlign: 'center' }}>
                           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, mb: 1 }}>
                             <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: item.color }} />
@@ -373,7 +351,7 @@ export default function Reports({ results, onDownloadReport }: ReportsProps) {
 
           <Grid container spacing={2}>
             {exportFormats.map((format) => (
-              <Grid item xs={12} sm={6} md={3} key={format.format}>
+              <Grid size={{ xs: 12, sm: 6, md: 3 }} key={format.format}>
                 <Card sx={{
                   height: '100%',
                   transition: 'transform 0.2s, box-shadow 0.2s',

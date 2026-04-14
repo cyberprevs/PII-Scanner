@@ -226,7 +226,7 @@ const AuditTrail: React.FC = () => {
   return (
     <Box sx={{ p: 3 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" sx={{ fontWeight: 600 }}>
+        <Typography variant="h5" sx={{ fontWeight: 700 }}>
           Audit Trail
         </Typography>
         <Box sx={{ display: 'flex', gap: 1 }}>
@@ -332,7 +332,7 @@ const AuditTrail: React.FC = () => {
             </Typography>
             <ResponsiveContainer width="100%" height={250}>
               <BarChart data={stats.userActivityCounts}>
-                <CartesianGrid strokeDasharray="3 3" />
+                <CartesianGrid horizontal={true} vertical={false} stroke="rgba(128,128,128,0.08)" />
                 <XAxis dataKey="username" />
                 <YAxis />
                 <RechartsTooltip />
