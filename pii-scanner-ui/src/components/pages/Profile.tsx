@@ -12,6 +12,7 @@ import {
   IconButton,
 } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
+import PageHeader from '../common/PageHeader';
 import SaveIcon from '@mui/icons-material/Save';
 import LockIcon from '@mui/icons-material/Lock';
 import EmailIcon from '@mui/icons-material/Email';
@@ -158,19 +159,11 @@ const Profile: React.FC = () => {
 
   return (
     <Box>
-      {/* Header */}
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" fontWeight={700} gutterBottom sx={{
-          background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-        }}>
-          Mon Profil
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          Gérez vos informations personnelles et paramètres de sécurité
-        </Typography>
-      </Box>
+      <PageHeader
+        icon={<PersonIcon />}
+        title="Mon Profil"
+        subtitle="Gérez vos informations personnelles et paramètres de sécurité"
+      />
 
       {/* User Info Card */}
       <Paper sx={{
@@ -181,7 +174,7 @@ const Profile: React.FC = () => {
         borderColor: 'divider',
       }}>
         <Grid container spacing={3} alignItems="center">
-          <Grid item>
+          <Grid size="auto">
             <Box sx={{
               width: 80,
               height: 80,
@@ -194,7 +187,7 @@ const Profile: React.FC = () => {
               <PersonIcon sx={{ fontSize: 40, color: 'white' }} />
             </Box>
           </Grid>
-          <Grid item xs>
+          <Grid size="grow">
             <Typography variant="h5" fontWeight={700} gutterBottom>
               {user.fullName}
             </Typography>
@@ -215,7 +208,7 @@ const Profile: React.FC = () => {
 
       <Grid container spacing={3}>
         {/* Informations personnelles */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Paper sx={{
             p: 3,
             background: 'linear-gradient(135deg, rgba(0, 229, 153, 0.02) 0%, rgba(0, 229, 153, 0.02) 100%)',
@@ -314,7 +307,7 @@ const Profile: React.FC = () => {
         </Grid>
 
         {/* Changement de mot de passe */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Paper sx={{
             p: 3,
             background: 'linear-gradient(135deg, rgba(0, 229, 153, 0.02) 0%, rgba(0, 229, 153, 0.02) 100%)',

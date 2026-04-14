@@ -27,6 +27,8 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import WarningIcon from '@mui/icons-material/Warning';
 import type { ScanResultResponse } from '../../types';
 import { useTranslation } from 'react-i18next';
+import PageHeader from '../common/PageHeader';
+import EmptyState from '../common/EmptyState';
 
 interface DuplicateFilesProps {
   results: ScanResultResponse | null;
@@ -208,16 +210,8 @@ export default function DuplicateFiles({ results }: DuplicateFilesProps) {
   if (!results) {
     return (
       <Box>
-        <Typography variant="h4" fontWeight={700} gutterBottom>
-          {t('duplicates.titleEmpty')}
-        </Typography>
-        <Card sx={{ mt: 3 }}>
-          <CardContent>
-            <Typography variant="body1" color="text.secondary">
-              {t('duplicates.noScan')}
-            </Typography>
-          </CardContent>
-        </Card>
+        <PageHeader icon={<ContentCopyIcon />} title={t('duplicates.titleEmpty')} />
+        <EmptyState icon={<ContentCopyIcon />} title={t('duplicates.titleEmpty')} description={t('duplicates.noScan')} />
       </Box>
     );
   }
@@ -227,12 +221,7 @@ export default function DuplicateFiles({ results }: DuplicateFilesProps) {
 
   return (
     <Box>
-      <Typography variant="h4" fontWeight={700} gutterBottom>
-        {t('duplicates.title')}
-      </Typography>
-      <Typography variant="body1" color="text.secondary" paragraph>
-        {t('duplicates.subtitle')}
-      </Typography>
+      <PageHeader icon={<ContentCopyIcon />} title={t('duplicates.title')} subtitle={t('duplicates.subtitle')} />
 
       {/* Statistiques */}
       <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>

@@ -7,73 +7,91 @@ import {
   Button,
   TextField,
   LinearProgress,
-  Grid,
   Alert,
   Paper,
   Chip,
   Stack,
   IconButton,
   Tooltip,
+  Divider,
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import SearchIcon from '@mui/icons-material/Search';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import HistoryIcon from '@mui/icons-material/History';
 import DeleteIcon from '@mui/icons-material/Delete';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import SecurityIcon from '@mui/icons-material/Security';
 import StopIcon from '@mui/icons-material/Stop';
+import FileOpenIcon from '@mui/icons-material/FileOpen';
+import LockIcon from '@mui/icons-material/Lock';
 import { scanApi } from '../../services/apiClient';
 import { useAuth } from '../../contexts/AuthContext';
 import type { ScanProgressResponse } from '../../types';
 import { useKeyboardShortcut } from '../../hooks/useKeyboardShortcut';
 import { useTranslation } from 'react-i18next';
+import { glassCardSx, tokens } from '../../theme/designSystem';
+import { useNavigate } from 'react-router-dom';
 
 interface ScannerProps {
   scanning: boolean;
   scanId: string | null;
   onStartScan: (directoryPath: string) => void;
   onStopScan: () => void;
+  hasResults?: boolean;
 }
 
-export default function Scanner({ scanning, scanId, onStartScan, onStopScan }: ScannerProps) {
+const PII_TYPES = [
+  'Email', 'Date naissance', 'Carte bancaire', 'IFU', 'CNI',
+  'Passeport', 'RCCM', 'Acte naissance', 'Téléphone', 'IBAN',
+  'MTN MoMo', 'Moov Money', 'CNSS', 'RAMU', 'INE',
+  'Matricule', 'Plaque', 'NPI',
+];
+
+export default function Scanner({ scanning, scanId, onStartScan, onStopScan, hasResults }: ScannerProps) {
   const { user } = useAuth();
   const { t } = useTranslation();
+  const theme = useTheme();
+  const dark = theme.palette.mode === 'dark';
+  const c = tokens.colors;
+  const navigate = useNavigate();
+
   const [directoryPath, setDirectoryPath] = useState('');
   const [progress, setProgress] = useState<ScanProgressResponse | null>(null);
   const [recentPaths, setRecentPaths] = useState<string[]>([]);
   const [pathError, setPathError] = useState('');
 
-  // Get user-specific localStorage key
-  const getRecentPathsKey = () => {
-    return user ? `recentScanPaths_${user.username}` : 'recentScanPaths';
-  };
+  const getRecentPathsKey = () => user ? `recentScanPaths_${user.username}` : 'recentScanPaths';
 
-  // Load recent paths from localStorage on mount
+  const [wasScanning, setWasScanning] = useState(false);
+
+  useEffect(() => {
+    if (scanning) setWasScanning(true);
+  }, [scanning]);
+
+  // Navigate to dashboard when scan completes (only if we were actually scanning)
+  useEffect(() => {
+    if (wasScanning && !scanning && hasResults) {
+      navigate('/dashboard');
+    }
+  }, [wasScanning, scanning, hasResults]);
+
   useEffect(() => {
     const stored = localStorage.getItem(getRecentPathsKey());
     if (stored) {
-      try {
-        setRecentPaths(JSON.parse(stored));
-      } catch (err) {
-        console.error('Error loading recent paths:', err);
-      }
+      try { setRecentPaths(JSON.parse(stored)); } catch { /* ignore */ }
     }
   }, [user]);
 
   useEffect(() => {
     if (!scanning || !scanId) return;
-
     const interval = setInterval(async () => {
       try {
         const progressData = await scanApi.getProgress(scanId);
         setProgress(progressData);
-      } catch (err) {
-        console.error('Error fetching progress:', err);
-      }
+      } catch { /* ignore */ }
     }, 2000);
-
     return () => clearInterval(interval);
   }, [scanning, scanId]);
 
@@ -90,23 +108,17 @@ export default function Scanner({ scanning, scanId, onStartScan, onStopScan }: S
   };
 
   const handleStartScan = () => {
-    if (!directoryPath) {
-      setPathError(t('scanner.pathError'));
-      return;
-    }
-
+    if (!directoryPath) { setPathError(t('scanner.pathError')); return; }
     setPathError('');
     saveRecentPath(directoryPath);
     onStartScan(directoryPath);
   };
 
-  // Raccourci clavier Ctrl+S pour lancer le scan
   useKeyboardShortcut({
-    key: 's',
-    ctrlKey: true,
+    key: 's', ctrlKey: true,
     callback: handleStartScan,
     enabled: !scanning && !!directoryPath,
-    preventDefault: true, // Empêche la boîte de dialogue "Enregistrer la page" du navigateur
+    preventDefault: true,
   });
 
   const handlePathChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -114,411 +126,355 @@ export default function Scanner({ scanning, scanId, onStartScan, onStopScan }: S
     if (pathError) setPathError('');
   };
 
-  const percentage = progress
-    ? Math.floor((progress.processedFiles / progress.totalFiles) * 100)
-    : 0;
+  const percentage = progress ? Math.floor((progress.processedFiles / progress.totalFiles) * 100) : 0;
 
+  // ─── Scanning state ────────────────────────────────────────────────────────
+  if (scanning) {
+    return (
+      <Box sx={{ maxWidth: 720, mx: 'auto', px: 2 }}>
+        {/* Header */}
+        <Box sx={{ textAlign: 'center', mb: 5 }}>
+          <Box
+            sx={{
+              width: 56, height: 56, borderRadius: '50%',
+              bgcolor: c.accentPrimaryMuted, mx: 'auto', mb: 2,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              animation: 'pulse 2s infinite',
+              '@keyframes pulse': {
+                '0%': { boxShadow: `0 0 0 0 ${c.accentPrimary}40` },
+                '70%': { boxShadow: `0 0 0 12px ${c.accentPrimary}00` },
+                '100%': { boxShadow: `0 0 0 0 ${c.accentPrimary}00` },
+              },
+            }}
+          >
+            <SearchIcon sx={{ color: c.accentPrimary, fontSize: 28 }} />
+          </Box>
+          <Typography variant="h5" fontWeight={700} sx={{
+            background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
+            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+          }}>
+            {t('scanner.titleScanning')}
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+            {directoryPath}
+          </Typography>
+        </Box>
+
+        {/* Progress card */}
+        <Card sx={{ mb: 3, ...glassCardSx(dark) }}>
+          <CardContent sx={{ p: 4 }}>
+            {/* Big percentage */}
+            <Box sx={{ textAlign: 'center', mb: 4 }}>
+              <Typography
+                variant="h1"
+                fontWeight={800}
+                sx={{
+                  fontSize: '5rem', lineHeight: 1,
+                  background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
+                  WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+                }}
+              >
+                {percentage}%
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                Progression globale
+              </Typography>
+            </Box>
+
+            {/* Progress bar */}
+            <LinearProgress
+              variant="determinate"
+              value={percentage}
+              sx={{
+                height: 8, borderRadius: 4, mb: 4,
+                bgcolor: c.accentPrimaryMuted,
+                '& .MuiLinearProgress-bar': {
+                  borderRadius: 4,
+                  background: 'linear-gradient(90deg, #00E599 0%, #00B876 100%)',
+                },
+              }}
+            />
+
+            {/* Stats row */}
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <Box sx={{
+                flex: 1, p: 2.5, borderRadius: 2,
+                bgcolor: dark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)',
+                border: '1px solid', borderColor: 'divider',
+                textAlign: 'center',
+              }}>
+                <Typography variant="h5" fontWeight={700}>
+                  {progress ? progress.processedFiles.toLocaleString() : '0'}
+                </Typography>
+                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
+                  Fichiers traités
+                </Typography>
+              </Box>
+              <Box sx={{
+                flex: 1, p: 2.5, borderRadius: 2,
+                bgcolor: dark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)',
+                border: '1px solid', borderColor: 'divider',
+                textAlign: 'center',
+              }}>
+                <Typography variant="h5" fontWeight={700}>
+                  {progress ? progress.totalFiles.toLocaleString() : '—'}
+                </Typography>
+                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
+                  Total fichiers
+                </Typography>
+              </Box>
+              <Box sx={{
+                flex: 1, p: 2.5, borderRadius: 2,
+                bgcolor: c.accentPrimaryMuted,
+                border: `1px solid ${c.accentPrimary}33`,
+                textAlign: 'center',
+              }}>
+                <Typography variant="h5" fontWeight={700} sx={{ color: c.accentPrimary }}>
+                  {progress ? progress.piiFound.toLocaleString() : '0'}
+                </Typography>
+                <Typography variant="caption" sx={{ color: c.accentPrimary, opacity: 0.8, display: 'block', mt: 0.5 }}>
+                  PII détectées
+                </Typography>
+              </Box>
+            </Box>
+          </CardContent>
+        </Card>
+
+        {/* Stop button */}
+        <Box sx={{ textAlign: 'center', mb: 3 }}>
+          <Button
+            variant="outlined"
+            color="error"
+            size="large"
+            onClick={onStopScan}
+            startIcon={<StopIcon />}
+            sx={{ px: 5, py: 1.5, fontWeight: 600, borderWidth: 1.5 }}
+          >
+            {t('scanner.stopButton')} (Esc)
+          </Button>
+        </Box>
+
+        <Alert severity="warning" sx={{ borderRadius: 2 }}>
+          <Typography variant="body2" fontWeight={500}>Scan en cours — Ne fermez pas cette fenêtre</Typography>
+        </Alert>
+      </Box>
+    );
+  }
+
+  // ─── Idle state ─────────────────────────────────────────────────────────────
   return (
-    <Box>
-      {/* Header */}
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" fontWeight={700} gutterBottom sx={{
+    <Box sx={{ maxWidth: 760, mx: 'auto', px: 2 }}>
+      {/* Page header — centered */}
+      <Box sx={{ textAlign: 'center', mb: 5 }}>
+        <Box
+          sx={{
+            width: 56, height: 56, borderRadius: '50%',
+            bgcolor: c.accentPrimaryMuted, mx: 'auto', mb: 2,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}
+        >
+          <SecurityIcon sx={{ color: c.accentPrimary, fontSize: 28 }} />
+        </Box>
+        <Typography variant="h4" fontWeight={700} sx={{
           background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
+          WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
         }}>
-          {scanning ? t('scanner.titleScanning') : t('scanner.title')}
+          {t('scanner.title')}
         </Typography>
-        <Typography variant="body1" color="text.secondary">
-          {scanning
-            ? t('scanner.subtitleScanning')
-            : t('scanner.subtitle')}
+        <Typography variant="body1" color="text.secondary" sx={{ mt: 1 }}>
+          {t('scanner.subtitle')}
         </Typography>
       </Box>
 
-      {!scanning ? (
-        <Grid container spacing={3}>
-          {/* Configuration principale */}
-          <Grid item xs={12} lg={8}>
-            <Card sx={{
-              background: 'linear-gradient(135deg, rgba(0, 229, 153, 0.03) 0%, rgba(0, 229, 153, 0.03) 100%)',
-              border: '1px solid',
-              borderColor: 'divider',
-            }}>
-              <CardContent sx={{ p: 4 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                  <FolderOpenIcon sx={{ fontSize: 32, mr: 2, color: 'primary.main' }} />
-                  <Typography variant="h6" fontWeight={600}>
-                    {t('scanner.folderLabel')}
-                  </Typography>
-                </Box>
+      {/* Main card */}
+      <Card sx={{ mb: 3, ...glassCardSx(dark) }}>
+        <CardContent sx={{ p: 4 }}>
+          {/* Path input */}
+          <Typography variant="body2" fontWeight={600} sx={{ mb: 1 }}>
+            {t('scanner.folderLabel')}
+          </Typography>
+          <TextField
+            fullWidth
+            variant="outlined"
+            value={directoryPath}
+            onChange={handlePathChange}
+            placeholder={t('scanner.placeholder')}
+            disabled={scanning}
+            error={!!pathError}
+            helperText={pathError || t('scanner.helperText')}
+            sx={{ mb: 3 }}
+            InputProps={{
+              startAdornment: (
+                <FolderOpenIcon sx={{ mr: 1.5, color: directoryPath ? c.accentPrimary : 'text.secondary', fontSize: 22 }} />
+              ),
+            }}
+          />
 
-                {/* Path input */}
-                <TextField
-                  fullWidth
-                  variant="outlined"
-                  value={directoryPath}
-                  onChange={handlePathChange}
-                  placeholder={t('scanner.placeholder')}
-                  disabled={scanning}
-                  error={!!pathError}
-                  helperText={pathError || t('scanner.helperText')}
-                  sx={{ mb: 3 }}
-                  InputProps={{
-                    startAdornment: <FolderOpenIcon sx={{ mr: 1, color: 'text.secondary' }} />,
-                    sx: {
-                      fontSize: '0.95rem',
-                      bgcolor: 'background.paper',
-                    }
-                  }}
-                />
+          {/* Start button */}
+          <Button
+            variant="contained"
+            size="large"
+            fullWidth
+            onClick={handleStartScan}
+            disabled={!directoryPath}
+            startIcon={<PlayArrowIcon />}
+            sx={{
+              py: 1.75,
+              fontSize: '1rem',
+              fontWeight: 700,
+              background: directoryPath
+                ? 'linear-gradient(135deg, #00E599 0%, #00B876 100%)'
+                : undefined,
+              boxShadow: directoryPath ? '0 4px 14px rgba(0,229,153,0.3)' : 0,
+              '&:hover': {
+                background: directoryPath
+                  ? 'linear-gradient(135deg, #00CC88 0%, #00A86B 100%)'
+                  : undefined,
+                boxShadow: directoryPath ? '0 6px 20px rgba(0,229,153,0.4)' : 0,
+                transform: 'translateY(-1px)',
+              },
+              '&:active': { transform: 'scale(0.99)' },
+              transition: 'all 0.2s',
+              mb: pathError ? 0 : 1,
+            }}
+          >
+            {t('scanner.startButton')}
+          </Button>
 
-                {/* Recent paths */}
-                {recentPaths.length > 0 && (
-                  <Box sx={{ mb: 3 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                      <HistoryIcon sx={{ fontSize: 20, mr: 1, color: 'text.secondary' }} />
-                      <Typography variant="body2" color="text.secondary" fontWeight={600}>
-                        {t('scanner.recentFolders')}
-                      </Typography>
-                    </Box>
-                    <Stack spacing={1}>
-                      {recentPaths.map((path, index) => (
-                        <Paper
-                          key={index}
-                          elevation={0}
-                          sx={{
-                            p: 2,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            cursor: 'pointer',
-                            border: '1px solid',
-                            borderColor: directoryPath === path ? 'primary.main' : 'divider',
-                            bgcolor: directoryPath === path ? 'rgba(0, 229, 153, 0.08)' : 'background.paper',
-                            transition: 'all 0.2s',
-                            '&:hover': {
-                              borderColor: 'primary.main',
-                              bgcolor: 'rgba(0, 229, 153, 0.08)',
-                              transform: 'translateX(4px)',
-                            },
-                          }}
-                          onClick={() => setDirectoryPath(path)}
-                        >
-                          <Box sx={{ display: 'flex', alignItems: 'center', flex: 1, minWidth: 0 }}>
-                            <FolderOpenIcon sx={{ fontSize: 20, mr: 2, color: 'primary.main', flexShrink: 0 }} />
-                            <Typography
-                              variant="body2"
-                              fontWeight={500}
-                              sx={{
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                whiteSpace: 'nowrap',
-                              }}
-                            >
-                              {path}
-                            </Typography>
-                          </Box>
-                          <Tooltip title={t('scanner.removeHistory')}>
-                            <IconButton
-                              size="small"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                removeRecentPath(path);
-                              }}
-                              sx={{ ml: 2 }}
-                            >
-                              <DeleteIcon fontSize="small" />
-                            </IconButton>
-                          </Tooltip>
-                        </Paper>
-                      ))}
-                    </Stack>
-                  </Box>
-                )}
+          <Typography variant="caption" color="text.disabled" sx={{ display: 'block', textAlign: 'center', mt: 1 }}>
+            Ou appuyez sur <strong>Ctrl+S</strong> pour démarrer rapidement
+          </Typography>
+        </CardContent>
+      </Card>
 
-                {/* Info boxes */}
-                <Grid container spacing={2} sx={{ mb: 3 }}>
-                  <Grid item xs={12} sm={6}>
-                    <Alert
-                      severity="info"
-                      icon={<InfoOutlinedIcon />}
-                      sx={{
-                        height: '100%',
-                        '& .MuiAlert-message': { width: '100%' }
-                      }}
-                    >
-                      <Typography variant="caption" fontWeight={600} display="block" gutterBottom>
-                        {t('scanner.formatsLabel')}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        .txt, .log, .csv, .json, .docx, .xlsx, .pdf
-                      </Typography>
-                    </Alert>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Alert
-                      severity="success"
-                      icon={<CheckCircleIcon />}
-                      sx={{
-                        height: '100%',
-                        '& .MuiAlert-message': { width: '100%' }
-                      }}
-                    >
-                      <Typography variant="caption" fontWeight={600} display="block" gutterBottom>
-                        {t('scanner.secureLabel')}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        {t('scanner.secureText')}
-                      </Typography>
-                    </Alert>
-                  </Grid>
-                </Grid>
-
-                {/* Start button */}
-                <Button
-                  variant="contained"
-                  size="large"
-                  fullWidth
-                  onClick={handleStartScan}
-                  disabled={!directoryPath || scanning}
-                  startIcon={<PlayArrowIcon />}
+      {/* Recent paths */}
+      {recentPaths.length > 0 && (
+        <Card sx={{ mb: 3 }}>
+          <CardContent sx={{ p: 3 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+              <HistoryIcon sx={{ fontSize: 18, mr: 1, color: 'text.secondary' }} />
+              <Typography variant="body2" fontWeight={600} color="text.secondary">
+                {t('scanner.recentFolders')}
+              </Typography>
+            </Box>
+            <Stack spacing={1}>
+              {recentPaths.map((path, index) => (
+                <Paper
+                  key={index}
+                  elevation={0}
                   sx={{
-                    py: 2,
-                    fontSize: '1.1rem',
-                    fontWeight: 700,
-                    background: directoryPath
-                      ? 'linear-gradient(135deg, #00E599 0%, #00B876 100%)'
-                      : undefined,
-                    boxShadow: directoryPath ? 3 : 0,
+                    px: 2, py: 1.5,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    cursor: 'pointer',
+                    border: '1px solid',
+                    borderColor: directoryPath === path ? c.accentPrimary : 'divider',
+                    bgcolor: directoryPath === path ? c.accentPrimaryMuted : 'transparent',
+                    borderRadius: 2,
+                    transition: 'all 0.15s',
                     '&:hover': {
-                      background: directoryPath
-                        ? 'linear-gradient(135deg, #00CC88 0%, #00A86B 100%)'
-                        : undefined,
-                      boxShadow: directoryPath ? 6 : 0,
-                      transform: 'translateY(-2px)',
+                      borderColor: c.accentPrimary,
+                      bgcolor: c.accentPrimaryMuted,
                     },
-                    transition: 'all 0.2s',
                   }}
+                  onClick={() => setDirectoryPath(path)}
                 >
-                  {t('scanner.startButton')}
-                </Button>
-              </CardContent>
-            </Card>
-          </Grid>
-
-          {/* Section droite - Types de PII */}
-          <Grid item xs={12} lg={4}>
-            <Card sx={{
-              height: '100%',
-              background: 'linear-gradient(135deg, rgba(0, 229, 153, 0.05) 0%, rgba(0, 229, 153, 0.05) 100%)',
-              border: '1px solid',
-              borderColor: 'divider',
-            }}>
-              <CardContent sx={{ p: 4 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                  <SecurityIcon sx={{ fontSize: 28, mr: 1.5, color: 'secondary.main' }} />
-                  <Typography variant="h6" fontWeight={600}>
-                    {t('scanner.piiTypes')}
-                  </Typography>
-                </Box>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                  {t('scanner.piiSubtitle')}
-                </Typography>
-
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                  {[
-                    'Email', 'Date naissance', 'Carte bancaire', 'IFU', 'CNI',
-                    'Passeport', 'RCCM', 'Acte naissance', 'Téléphone', 'IBAN',
-                    'MTN MoMo', 'Moov Money', 'CNSS', 'RAMU', 'INE',
-                    'Matricule', 'Plaque', 'NPI'
-                  ].map((item, index) => (
-                    <Chip
-                      key={index}
-                      label={item}
+                  <Box sx={{ display: 'flex', alignItems: 'center', flex: 1, minWidth: 0 }}>
+                    <FolderOpenIcon sx={{ fontSize: 18, mr: 1.5, color: c.accentPrimary, flexShrink: 0 }} />
+                    <Typography variant="body2" fontWeight={500} noWrap>
+                      {path}
+                    </Typography>
+                  </Box>
+                  <Tooltip title={t('scanner.removeHistory')}>
+                    <IconButton
                       size="small"
-                      sx={{
-                        bgcolor: 'rgba(0, 229, 153, 0.1)',
-                        border: '1px solid',
-                        borderColor: 'rgba(0, 229, 153, 0.2)',
-                        fontSize: '0.75rem',
-                        fontWeight: 500,
-                        '&:hover': {
-                          bgcolor: 'rgba(0, 229, 153, 0.2)',
-                        },
-                      }}
-                    />
-                  ))}
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-      ) : (
-        <Grid container spacing={3}>
-          {/* Scan en cours */}
-          <Grid item xs={12} lg={8}>
-            <Card sx={{
-              background: 'linear-gradient(135deg, rgba(0, 229, 153, 0.03) 0%, rgba(0, 229, 153, 0.03) 100%)',
-              border: '1px solid',
-              borderColor: 'divider',
-            }}>
-              <CardContent sx={{ p: 4 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
-                  <SearchIcon sx={{ fontSize: 32, mr: 2, color: 'primary.main' }} />
-                  <Typography variant="h6" fontWeight={600}>
-                    {t('scanner.subtitleScanning')}
-                  </Typography>
-                </Box>
-
-                <Paper elevation={0} sx={{ mb: 4, p: 4, bgcolor: 'background.paper', borderRadius: 3 }}>
-                  <Grid container spacing={3} sx={{ mb: 3 }}>
-                    <Grid item xs={12} sm={6}>
-                      <Box sx={{ textAlign: 'center' }}>
-                        <Typography variant="h1" fontWeight={700} sx={{
-                          fontSize: '4rem',
-                          background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
-                          WebkitBackgroundClip: 'text',
-                          WebkitTextFillColor: 'transparent',
-                        }}>
-                          {percentage}%
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary" fontWeight={500}>
-                          Progression globale
-                        </Typography>
-                      </Box>
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <Stack spacing={2.5}>
-                        <Box>
-                          <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ fontSize: '0.7rem', letterSpacing: '0.5px' }}>
-                            {t('scanner.filesScanned').toUpperCase()}
-                          </Typography>
-                          <Typography variant="h6" fontWeight={700} sx={{ mt: 0.5 }}>
-                            {progress
-                              ? `${progress.processedFiles.toLocaleString()} / ${progress.totalFiles.toLocaleString()}`
-                              : 'Initialisation...'}
-                          </Typography>
-                        </Box>
-                        <Box>
-                          <Typography variant="caption" fontWeight={600} sx={{ fontSize: '0.7rem', letterSpacing: '0.5px', color: 'secondary.main' }}>
-                            {t('scanner.piiFound').toUpperCase()}
-                          </Typography>
-                          <Typography variant="h6" fontWeight={700} color="secondary.main" sx={{ mt: 0.5 }}>
-                            {progress ? progress.piiFound.toLocaleString() : '0'}
-                          </Typography>
-                        </Box>
-                      </Stack>
-                    </Grid>
-                  </Grid>
-
-                  <LinearProgress
-                    variant="determinate"
-                    value={percentage}
-                    sx={{
-                      height: 16,
-                      borderRadius: 8,
-                      bgcolor: 'rgba(0, 229, 153, 0.15)',
-                      '& .MuiLinearProgress-bar': {
-                        borderRadius: 8,
-                        background: 'linear-gradient(90deg, #00E599 0%, #00B876 100%)',
-                      },
-                    }}
-                  />
+                      onClick={(e) => { e.stopPropagation(); removeRecentPath(path); }}
+                      sx={{ ml: 1, color: 'text.disabled', '&:hover': { color: 'error.main' } }}
+                    >
+                      <DeleteIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
                 </Paper>
-
-                {/* Bouton Arrêter le scan */}
-                <Box sx={{ mt: 3, mb: 3, display: 'flex', justifyContent: 'center' }}>
-                  <Button
-                    variant="outlined"
-                    color="error"
-                    size="large"
-                    onClick={onStopScan}
-                    startIcon={<StopIcon />}
-                    sx={{
-                      minWidth: 200,
-                      borderWidth: 2,
-                      '&:hover': {
-                        borderWidth: 2,
-                      },
-                    }}
-                  >
-                    {t('scanner.stopButton')} (Esc)
-                  </Button>
-                </Box>
-
-                <Alert severity="info" icon={<FolderOpenIcon />} sx={{ mb: 2 }}>
-                  <Typography variant="caption" color="text.secondary" fontWeight={600} display="block" gutterBottom>
-                    DOSSIER SCANNÉ
-                  </Typography>
-                  <Typography variant="body2" sx={{ wordBreak: 'break-all', fontWeight: 500 }}>
-                    {directoryPath}
-                  </Typography>
-                </Alert>
-
-                <Alert severity="warning">
-                  <Typography variant="body2" fontWeight={500}>
-                    Scan en cours - Ne fermez pas cette fenêtre
-                  </Typography>
-                </Alert>
-              </CardContent>
-            </Card>
-          </Grid>
-
-          {/* Statistiques en temps réel */}
-          <Grid item xs={12} lg={4}>
-            <Card sx={{
-              background: 'linear-gradient(135deg, rgba(0, 229, 153, 0.05) 0%, rgba(0, 229, 153, 0.05) 100%)',
-              border: '1px solid',
-              borderColor: 'divider',
-            }}>
-              <CardContent sx={{ p: 3 }}>
-                <Typography variant="subtitle1" fontWeight={600} gutterBottom>
-                  {t('scanner.scanProgress')}
-                </Typography>
-
-                <Stack spacing={2} sx={{ mt: 3 }}>
-                  <Paper elevation={0} sx={{ p: 2, bgcolor: 'background.paper', borderRadius: 2 }}>
-                    <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ fontSize: '0.7rem', letterSpacing: '0.5px' }}>
-                      {t('scanner.filesScanned').toUpperCase()}
-                    </Typography>
-                    <Typography variant="h5" fontWeight={700} sx={{ mt: 1 }}>
-                      {progress ? progress.processedFiles.toLocaleString() : '0'}
-                    </Typography>
-                  </Paper>
-
-                  <Paper elevation={0} sx={{ p: 2, bgcolor: 'background.paper', borderRadius: 2 }}>
-                    <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ fontSize: '0.7rem', letterSpacing: '0.5px' }}>
-                      {t('scanner.filesTotal').toUpperCase()}
-                    </Typography>
-                    <Typography variant="h5" fontWeight={700} sx={{ mt: 1 }}>
-                      {progress ? progress.totalFiles.toLocaleString() : '0'}
-                    </Typography>
-                  </Paper>
-
-                  <Paper elevation={0} sx={{ p: 2, bgcolor: 'rgba(0, 229, 153, 0.1)', borderRadius: 2, border: '1px solid', borderColor: 'rgba(0, 229, 153, 0.3)' }}>
-                    <Typography variant="caption" fontWeight={600} sx={{ fontSize: '0.7rem', letterSpacing: '0.5px', color: 'secondary.main' }}>
-                      {t('scanner.piiFound').toUpperCase()}
-                    </Typography>
-                    <Typography variant="h5" fontWeight={700} color="secondary.main" sx={{ mt: 1 }}>
-                      {progress ? progress.piiFound.toLocaleString() : '0'}
-                    </Typography>
-                  </Paper>
-
-                  <Paper elevation={0} sx={{ p: 2, bgcolor: 'rgba(0, 229, 153, 0.1)', borderRadius: 2, border: '1px solid', borderColor: 'rgba(0, 229, 153, 0.3)' }}>
-                    <Typography variant="caption" fontWeight={600} sx={{ fontSize: '0.7rem', letterSpacing: '0.5px', color: 'primary.main' }}>
-                      {t('scanner.scanProgress').toUpperCase()}
-                    </Typography>
-                    <Typography variant="h5" fontWeight={700} color="primary.main" sx={{ mt: 1 }}>
-                      {percentage}%
-                    </Typography>
-                  </Paper>
-                </Stack>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
+              ))}
+            </Stack>
+          </CardContent>
+        </Card>
       )}
+
+      {/* Info pills */}
+      <Box sx={{ display: 'flex', gap: 2, mb: 4 }}>
+        <Box sx={{
+          flex: 1, display: 'flex', alignItems: 'center', gap: 1.5,
+          p: 2, borderRadius: 2,
+          border: '1px solid', borderColor: 'divider',
+          bgcolor: dark ? 'rgba(59,130,246,0.06)' : 'rgba(59,130,246,0.04)',
+        }}>
+          <FileOpenIcon sx={{ color: '#3B82F6', fontSize: 20, flexShrink: 0 }} />
+          <Box>
+            <Typography variant="caption" fontWeight={600} sx={{ color: '#3B82F6', display: 'block' }}>
+              {t('scanner.formatsLabel')}
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              .txt, .log, .csv, .json, .docx, .xlsx, .pdf
+            </Typography>
+          </Box>
+        </Box>
+        <Box sx={{
+          flex: 1, display: 'flex', alignItems: 'center', gap: 1.5,
+          p: 2, borderRadius: 2,
+          border: '1px solid', borderColor: 'divider',
+          bgcolor: dark ? 'rgba(0,229,153,0.06)' : 'rgba(0,229,153,0.04)',
+        }}>
+          <LockIcon sx={{ color: c.accentPrimary, fontSize: 20, flexShrink: 0 }} />
+          <Box>
+            <Typography variant="caption" fontWeight={600} sx={{ color: c.accentPrimary, display: 'block' }}>
+              {t('scanner.secureLabel')}
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              {t('scanner.secureText')}
+            </Typography>
+          </Box>
+        </Box>
+      </Box>
+
+      {/* PII types */}
+      <Card>
+        <CardContent sx={{ p: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <SecurityIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
+              <Typography variant="body2" fontWeight={600} color="text.secondary">
+                {t('scanner.piiTypes')}
+              </Typography>
+            </Box>
+            <Chip
+              label={`${PII_TYPES.length} types`}
+              size="small"
+              sx={{ bgcolor: c.accentPrimaryMuted, color: c.accentPrimary, fontWeight: 600 }}
+            />
+          </Box>
+          <Divider sx={{ mb: 2 }} />
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
+            {PII_TYPES.map((item, index) => (
+              <Chip
+                key={index}
+                label={item}
+                size="small"
+                sx={{
+                  bgcolor: dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)',
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  fontSize: '0.75rem',
+                  fontWeight: 500,
+                  '&:hover': { bgcolor: c.accentPrimaryMuted, borderColor: c.accentPrimary },
+                  transition: 'all 0.15s',
+                }}
+              />
+            ))}
+          </Box>
+        </CardContent>
+      </Card>
     </Box>
   );
 }
