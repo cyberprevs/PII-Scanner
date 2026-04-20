@@ -7,11 +7,13 @@
 
 Application web pour détecter et analyser les données personnelles identifiables (PII) dans vos fichiers, conforme à la **Loi N°2017-20 du Bénin** (APDP).
 
+> **Version 2.0** — Conformité APDP renforcée : consentement éclairé, chiffrement AES-256 des exports, droit à l'effacement, déchiffrement intégré.
+
 ## Quick Start
 
 ### Version portable (Recommandée)
 
-1. Téléchargez `PII-Scanner-v1.0.0-Windows-Standalone.zip` : [Releases](https://github.com/cyberprevs/pii-scanner/releases)
+1. Téléchargez `PII-Scanner-v2.0.0-Windows-Standalone.zip` : [Releases](https://github.com/cyberprevs/pii-scanner/releases)
 2. Extrayez le ZIP
 3. Double-cliquez sur **`PiiScanner.Api.exe`**
 4. Le navigateur s'ouvre automatiquement sur **http://localhost:5000**
@@ -86,7 +88,7 @@ dotnet run
 
 ### Interface web moderne
 
-- 17 pages spécialisées : Dashboard, Scanner, Historique, Analyse par catégories, Fichiers dupliqués, Analytics, Exports, etc.
+- 18 pages spécialisées : Dashboard, Scanner, Historique, Analyse par catégories, Fichiers dupliqués, Analytics, Exports, **Déchiffrer un rapport**, etc.
 - Accès direct aux fichiers détectés depuis l'interface (ouvre Windows Explorer)
 - Thème sombre Material-UI v7 avec graphiques interactifs (Recharts)
 - Mise à jour en temps réel via SignalR WebSocket
@@ -98,17 +100,27 @@ dotnet run
 
 - 100% local : Aucune donnée envoyée en ligne
 - Base de données chiffrée avec SQLCipher (AES-256)
+- **Exports chiffrés AES-256-CBC** avec mot de passe unique par téléchargement (v2.0)
 - Authentification JWT avec refresh tokens (7 jours + 30 jours)
 - Contrôle d'accès basé sur les rôles (Admin/User)
 - Protection CSRF, Rate Limiting, Path Traversal, HTTPS/TLS 1.2+
-- Traçabilité complète via audit logs
+- Traçabilité complète via audit logs (consentements, téléchargements, effacements)
+
+### Conformité APDP (nouveau en v2.0)
+
+- **Consentement éclairé** : Modal obligatoire avant tout scan, traçable dans l'audit log
+- **Chiffrement des exports** : Tous les rapports chiffrés AES-256-CBC + PBKDF2-SHA256 (100 000 itérations)
+- **Déchiffrement intégré** : Page `/decrypt` — ouvre un `.enc` dans le navigateur sans serveur
+- **Droit à l'effacement** : `DELETE /api/users/{id}/data` — suppression complète en cascade conforme Art. 424
 
 ### Rapports et exports
 
-- **CSV** : Tableau simple (UTF-8, point-virgule)
-- **JSON** : Données structurées avec statistiques
-- **HTML** : Rapport visuel avec graphiques
-- **Excel** : Fichier .xlsx (3 onglets: Stats, Fichiers à risque, Détections)
+- **CSV** : Tableau simple (UTF-8, point-virgule) — chiffré `.enc`
+- **JSON** : Données structurées avec statistiques — chiffré `.enc`
+- **HTML** : Rapport visuel avec graphiques — chiffré `.enc`
+- **Excel** : Fichier .xlsx (3 onglets: Stats, Fichiers à risque, Détections) — chiffré `.enc`
+
+> Chaque export génère un mot de passe unique affiché une seule fois. Le fichier `.enc` est illisible sans ce mot de passe.
 
 ---
 
@@ -176,9 +188,9 @@ PII-Scanner/
 - `/api/scan/*` - Scan, progression, résultats, rapports, ouverture dossier
 - `/api/auth/*` - Login, refresh token, logout
 - `/api/dataretention/*` - Gestion rétention des données
-- `/api/users/*` - CRUD utilisateurs (Admin)
+- `/api/users/*` - CRUD utilisateurs (Admin) + `DELETE /api/users/{id}/data` (droit à l'effacement)
 - `/api/database/*` - Backup/restore (Admin)
-- `/api/audit` - Logs d'audit (Admin)
+- `/api/audit` - Logs d'audit (Admin) + `POST /api/audit/consent` (tous utilisateurs)
 
 **SignalR** : `/scanhub` - Mises à jour temps réel
 
@@ -248,19 +260,21 @@ Invoke-RestMethod -Uri "http://localhost:5000/api/scan/start" -Method POST -Body
 
 ## Sécurité
 
-### Protections implémentées (11 mécanismes)
+### Protections implémentées (13 mécanismes)
 
 1. HTTPS/TLS 1.2+ - Communication chiffrée
 2. SQLCipher AES-256 - Base de données chiffrée
-3. JWT + Refresh Tokens - Authentification sécurisée (7 jours + 30 jours)
-4. RBAC - Séparation Admin/User
-5. CSRF Protection - Header-Based Tokens (32 bytes)
-6. Rate Limiting - Anti-brute force (5 tentatives/15min)
-7. Path Traversal Protection - Validation stricte des chemins
-8. SQL Injection Protection - Entity Framework paramétré
-9. BCrypt Password Hashing - Salt automatique
-10. Audit Logging - Traçabilité complète
-11. Security Headers - HSTS, X-Frame-Options, CSP
+3. **AES-256-CBC + PBKDF2-SHA256 - Exports chiffrés** (v2.0)
+4. JWT + Refresh Tokens - Authentification sécurisée (7 jours + 30 jours)
+5. RBAC - Séparation Admin/User
+6. CSRF Protection - Header-Based Tokens (32 bytes)
+7. Rate Limiting - Anti-brute force (5 tentatives/15min)
+8. Path Traversal Protection - Validation stricte des chemins
+9. SQL Injection Protection - Entity Framework paramétré
+10. BCrypt Password Hashing - Salt automatique
+11. Audit Logging - Traçabilité complète (consentements, téléchargements, effacements)
+12. Security Headers - HSTS, X-Frame-Options, CSP
+13. **Consentement éclairé tracé** (v2.0)
 
 ### Signaler une vulnérabilité
 
@@ -316,7 +330,7 @@ L'application dispose d'une page Support complète avec :
 
 **Développé par [Cyberprevs](https://cyberprevs.fr)**
 
-**Version** : 1.0.1 | **Dernière mise à jour** : 28 Février 2026
+**Version** : 2.0.0 | **Dernière mise à jour** : 21 Avril 2026
 
 **Conformité** : Loi N°2017-20 du Bénin (APDP)
 <img width="998" height="645" alt="image" src="https://github.com/user-attachments/assets/c2394a30-fc99-4074-b3ef-a6d15e244ca6" />

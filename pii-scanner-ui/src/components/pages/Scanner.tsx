@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Box,
   Card,
@@ -19,7 +19,6 @@ import { useTheme } from '@mui/material/styles';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import SearchIcon from '@mui/icons-material/Search';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import HistoryIcon from '@mui/icons-material/History';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SecurityIcon from '@mui/icons-material/Security';
@@ -33,6 +32,8 @@ import { useKeyboardShortcut } from '../../hooks/useKeyboardShortcut';
 import { useTranslation } from 'react-i18next';
 import { glassCardSx, tokens } from '../../theme/designSystem';
 import { useNavigate } from 'react-router-dom';
+import ConsentModal from '../common/ConsentModal';
+import axios from '../../services/axios';
 
 interface ScannerProps {
   scanning: boolean;
@@ -59,30 +60,31 @@ export default function Scanner({ scanning, scanId, onStartScan, onStopScan, has
 
   const [directoryPath, setDirectoryPath] = useState('');
   const [progress, setProgress] = useState<ScanProgressResponse | null>(null);
-  const [recentPaths, setRecentPaths] = useState<string[]>([]);
   const [pathError, setPathError] = useState('');
 
   const getRecentPathsKey = () => user ? `recentScanPaths_${user.username}` : 'recentScanPaths';
 
-  const [wasScanning, setWasScanning] = useState(false);
+  const [recentPaths, setRecentPaths] = useState<string[]>(() => {
+    const key = user ? `recentScanPaths_${user.username}` : 'recentScanPaths';
+    try { return JSON.parse(localStorage.getItem(key) ?? '[]'); } catch { return []; }
+  });
 
-  useEffect(() => {
-    if (scanning) setWasScanning(true);
-  }, [scanning]);
+  const wasScanning = useRef(false);
+
+  const getConsentKey = () => user ? `scanConsent_${user.username}` : 'scanConsent';
+  const [consentOpen, setConsentOpen] = useState(false);
+  const [pendingPath, setPendingPath] = useState<string | null>(null);
 
   // Navigate to dashboard when scan completes (only if we were actually scanning)
   useEffect(() => {
-    if (wasScanning && !scanning && hasResults) {
+    if (scanning) {
+      wasScanning.current = true;
+    } else if (wasScanning.current && hasResults) {
+      wasScanning.current = false;
       navigate('/dashboard');
     }
-  }, [wasScanning, scanning, hasResults]);
+  }, [scanning, hasResults, navigate]);
 
-  useEffect(() => {
-    const stored = localStorage.getItem(getRecentPathsKey());
-    if (stored) {
-      try { setRecentPaths(JSON.parse(stored)); } catch { /* ignore */ }
-    }
-  }, [user]);
 
   useEffect(() => {
     if (!scanning || !scanId) return;
@@ -110,8 +112,43 @@ export default function Scanner({ scanning, scanId, onStartScan, onStopScan, has
   const handleStartScan = () => {
     if (!directoryPath) { setPathError(t('scanner.pathError')); return; }
     setPathError('');
+
+    // Vérifier si le consentement a déjà été donné pour cet utilisateur
+    const alreadyConsented = localStorage.getItem(getConsentKey()) === 'true';
+    if (!alreadyConsented) {
+      setPendingPath(directoryPath);
+      setConsentOpen(true);
+      return;
+    }
+
     saveRecentPath(directoryPath);
     onStartScan(directoryPath);
+  };
+
+  const handleConsentAccept = async () => {
+    localStorage.setItem(getConsentKey(), 'true');
+    setConsentOpen(false);
+
+    // Tracer l'acceptation du consentement dans l'audit trail
+    try {
+      await axios.post('/audit/consent', {
+        action: 'ConsentAccepted',
+        details: `Consentement au traitement des données accepté pour le scan du dossier: ${pendingPath}`,
+      });
+    } catch {
+      // Ne pas bloquer le scan si le log échoue
+    }
+
+    if (pendingPath) {
+      saveRecentPath(pendingPath);
+      onStartScan(pendingPath);
+      setPendingPath(null);
+    }
+  };
+
+  const handleConsentDecline = () => {
+    setConsentOpen(false);
+    setPendingPath(null);
   };
 
   useKeyboardShortcut({
@@ -475,6 +512,12 @@ export default function Scanner({ scanning, scanId, onStartScan, onStopScan, has
           </Box>
         </CardContent>
       </Card>
+
+      <ConsentModal
+        open={consentOpen}
+        onAccept={handleConsentAccept}
+        onDecline={handleConsentDecline}
+      />
     </Box>
   );
 }

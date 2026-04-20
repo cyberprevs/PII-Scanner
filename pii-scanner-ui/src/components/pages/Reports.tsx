@@ -28,7 +28,6 @@ import {
   PieChart,
   Pie,
   Cell,
-  Legend,
 } from 'recharts';
 import {
   Download as DownloadIcon,
@@ -237,8 +236,8 @@ export default function Reports({ results, onDownloadReport }: ReportsProps) {
               <Typography variant="body2" color="text.secondary" paragraph>
                 Distribution des données personnelles par catégorie
               </Typography>
-              <Box sx={{ width: '100%', height: 450 }}>
-                <ResponsiveContainer width="100%" height="100%">
+              <Box sx={{ width: '100%' }}>
+                <ResponsiveContainer width="100%" height={450}>
                   <BarChart data={piiTypeData} layout="vertical">
                     <defs>
                       <linearGradient id="barGradient" x1="0" y1="0" x2="1" y2="0">
@@ -284,9 +283,9 @@ export default function Reports({ results, onDownloadReport }: ReportsProps) {
               <Typography variant="body2" color="text.secondary" paragraph>
                 Classification par niveau de risque
               </Typography>
-              <Box sx={{ width: '100%', height: 450, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                <Box sx={{ width: '100%', height: '60%', display: 'flex', justifyContent: 'center' }}>
-                  <ResponsiveContainer width="100%" height="100%">
+              <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                  <ResponsiveContainer width="100%" height={270}>
                     <PieChart>
                       <Pie
                         data={riskData}

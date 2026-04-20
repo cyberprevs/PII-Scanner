@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -126,7 +127,7 @@ public class ScanController : ControllerBase
     /// Télécharger un rapport
     /// </summary>
     [HttpGet("{scanId}/report/{format}")]
-    public ActionResult DownloadReport(string scanId, string format)
+    public async Task<ActionResult> DownloadReport(string scanId, string format)
     {
         var filePath = _scanService.GetReportPath(scanId, format);
         if (filePath == null)
@@ -152,7 +153,32 @@ public class ScanController : ControllerBase
             _ => "rapport"
         };
 
-        return PhysicalFile(filePath, contentType, fileName);
+        var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
+
+        // Chiffrement AES-256-CBC du rapport avant envoi
+        // Le mot de passe est généré aléatoirement et retourné une seule fois dans X-Report-Password
+        var password = ReportEncryption.GenerateReportPassword();
+        var encryptedBytes = ReportEncryption.EncryptFileAes(filePath, password);
+
+        // Audit: tracer tous les téléchargements de rapports contenant des données PII
+        await _db.AuditLogs.AddAsync(new AuditLog
+        {
+            UserId = userId,
+            Action = "DownloadReport",
+            EntityType = "Report",
+            EntityId = scanId,
+            IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            Details = $"Rapport chiffré téléchargé au format {format.ToUpper()} pour le scan {scanId}"
+        });
+        await _db.SaveChangesAsync();
+
+        _logger.LogInformation("Rapport {Format} chiffré téléchargé pour le scan {ScanId} par l'utilisateur {UserId}", format, scanId, userId);
+
+        // Exposer le mot de passe dans un header CORS-accessible (affiché une seule fois dans l'UI)
+        Response.Headers.Append("X-Report-Password", password);
+        Response.Headers.Append("Access-Control-Expose-Headers", "X-Report-Password");
+
+        return File(encryptedBytes, "application/octet-stream", fileName + ".enc");
     }
 
     /// <summary>
@@ -299,3 +325,48 @@ public class ScanController : ControllerBase
 }
 
 public record OpenFolderRequest(string FilePath);
+
+public static partial class ReportEncryption
+{
+    /// <summary>
+    /// Génère un mot de passe aléatoire de 16 caractères (alphanumérique + symboles).
+    /// </summary>
+    public static string GenerateReportPassword()
+    {
+        const string chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$";
+        var bytes = RandomNumberGenerator.GetBytes(16);
+        return new string(bytes.Select(b => chars[b % chars.Length]).ToArray());
+    }
+
+    /// <summary>
+    /// Chiffre un fichier avec AES-256-CBC.
+    /// Format du fichier chiffré : [salt 16B][IV 16B][données chiffrées]
+    /// Clé dérivée via PBKDF2-SHA256 (100 000 itérations).
+    /// </summary>
+    public static byte[] EncryptFileAes(string filePath, string password)
+    {
+        var plainBytes = File.ReadAllBytes(filePath);
+        var salt = RandomNumberGenerator.GetBytes(16);
+
+        using var deriveBytes = new Rfc2898DeriveBytes(password, salt, 100_000, HashAlgorithmName.SHA256);
+        var key = deriveBytes.GetBytes(32); // AES-256
+        var iv = deriveBytes.GetBytes(16);  // AES block size
+
+        using var aes = Aes.Create();
+        aes.Key = key;
+        aes.IV = iv;
+        aes.Mode = CipherMode.CBC;
+        aes.Padding = PaddingMode.PKCS7;
+
+        using var encryptor = aes.CreateEncryptor();
+        var encrypted = encryptor.TransformFinalBlock(plainBytes, 0, plainBytes.Length);
+
+        // Préfixer salt + IV pour permettre le déchiffrement ultérieur
+        var result = new byte[salt.Length + iv.Length + encrypted.Length];
+        Buffer.BlockCopy(salt, 0, result, 0, salt.Length);
+        Buffer.BlockCopy(iv, 0, result, salt.Length, iv.Length);
+        Buffer.BlockCopy(encrypted, 0, result, salt.Length + iv.Length, encrypted.Length);
+
+        return result;
+    }
+}

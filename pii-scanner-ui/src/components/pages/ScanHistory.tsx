@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { IS_MOCK } from '../../config';
 import {
   Box,
   Card,
@@ -31,6 +32,8 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import FolderIcon from '@mui/icons-material/Folder';
 import DeleteIcon from '@mui/icons-material/Delete';
 import HistoryIcon from '@mui/icons-material/History';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import LockIcon from '@mui/icons-material/Lock';
 import axios from '../../services/axios';
 import PageHeader from '../common/PageHeader';
 import { tokens } from '../../theme/designSystem';
@@ -57,6 +60,7 @@ const ScanHistory: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [reportPassword, setReportPassword] = useState<{ password: string; format: string } | null>(null);
   const [scanToDelete, setScanToDelete] = useState<ScanHistoryItem | null>(null);
   const [deleting, setDeleting] = useState(false);
 
@@ -75,6 +79,7 @@ const ScanHistory: React.FC = () => {
   }, [searchTerm, scans]);
 
   const loadHistory = async () => {
+    if (IS_MOCK) { setLoading(false); return; }
     try {
       setLoading(true);
       const response = await axios.get('/scan/history');
@@ -114,14 +119,19 @@ const ScanHistory: React.FC = () => {
   const downloadReport = async (scanId: string, format: 'csv' | 'json' | 'html' | 'excel') => {
     try {
       const response = await axios.get(`/scan/${scanId}/report/${format}`, { responseType: 'blob' });
+      const ext = format === 'excel' ? 'xlsx' : format;
       const url = window.URL.createObjectURL(response.data);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `rapport_${scanId}.${format === 'excel' ? 'xlsx' : format}`;
+      a.download = `rapport_${scanId}.${ext}.enc`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
+      const password = response.headers['x-report-password'] ?? null;
+      if (password) {
+        setReportPassword({ password, format: format.toUpperCase() });
+      }
     } catch {
       setError(t('history.errorDownload'));
       setTimeout(() => setError(''), 3000);
@@ -304,6 +314,42 @@ const ScanHistory: React.FC = () => {
           <Button onClick={handleDeleteCancel} disabled={deleting} sx={{ fontWeight: 600 }}>{t('history.cancel')}</Button>
           <Button onClick={handleDeleteConfirm} variant="contained" color="error" disabled={deleting} startIcon={deleting ? <CircularProgress size={16} color="inherit" /> : <DeleteIcon />} sx={{ fontWeight: 600 }}>
             {deleting ? t('history.deleting') : t('history.delete')}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Dialog mot de passe rapport chiffré */}
+      <Dialog open={!!reportPassword} maxWidth="xs" fullWidth PaperProps={{ sx: { borderRadius: 3 } }}>
+        <DialogTitle sx={{ pb: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <LockIcon sx={{ color: '#00E599' }} />
+            <Typography variant="h6" fontWeight={700}>Rapport chiffré téléchargé</Typography>
+          </Box>
+        </DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Votre rapport <strong>{reportPassword?.format}</strong> a été chiffré (AES-256). Notez ce mot de passe — il ne sera plus affiché.
+          </Typography>
+          <Box sx={{
+            display: 'flex', alignItems: 'center', gap: 1,
+            p: 1.5, borderRadius: 2,
+            bgcolor: 'rgba(0,229,153,0.08)',
+            border: '1px solid rgba(0,229,153,0.3)',
+          }}>
+            <Typography variant="h6" fontWeight={700} sx={{ flex: 1, fontFamily: 'monospace', letterSpacing: 2, color: '#00E599' }}>
+              {reportPassword?.password}
+            </Typography>
+            <IconButton size="small" onClick={() => { if (reportPassword) navigator.clipboard.writeText(reportPassword.password); }} title="Copier">
+              <ContentCopyIcon fontSize="small" />
+            </IconButton>
+          </Box>
+          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1.5 }}>
+            Le fichier porte l'extension <code>.enc</code>. Déchiffrez-le avec PII Scanner ou OpenSSL (AES-256-CBC).
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button variant="contained" onClick={() => setReportPassword(null)} sx={{ background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)', fontWeight: 600 }}>
+            J'ai noté le mot de passe
           </Button>
         </DialogActions>
       </Dialog>

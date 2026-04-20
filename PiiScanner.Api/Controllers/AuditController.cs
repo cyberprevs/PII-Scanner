@@ -289,6 +289,30 @@ public class AuditController : ControllerBase
     }
 
     /// <summary>
+    /// Enregistrer l'acceptation du consentement au traitement des données par un utilisateur.
+    /// Accessible à tous les utilisateurs authentifiés (pas seulement admin).
+    /// </summary>
+    [HttpPost("consent")]
+    [Authorize]
+    public async Task<IActionResult> LogConsent([FromBody] ConsentLogRequest request)
+    {
+        var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
+
+        await _db.AuditLogs.AddAsync(new AuditLog
+        {
+            UserId = userId,
+            Action = "ConsentAccepted",
+            EntityType = "Consent",
+            EntityId = userId.ToString(),
+            IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            Details = request.Details ?? "Consentement au traitement des données accepté"
+        });
+        await _db.SaveChangesAsync();
+
+        return Ok(new { message = "Consentement enregistré" });
+    }
+
+    /// <summary>
     /// Nettoyer les anciens logs selon la politique de rétention
     /// </summary>
     [HttpDelete("cleanup")]
@@ -385,4 +409,10 @@ public class DailyActivity
 {
     public DateTime Date { get; set; }
     public int Count { get; set; }
+}
+
+public class ConsentLogRequest
+{
+    public string? Action { get; set; }
+    public string? Details { get; set; }
 }
