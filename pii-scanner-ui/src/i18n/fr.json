@@ -13,6 +13,7 @@
     "exposure": "Exposition",
     "reports": "Rapports & Analytics",
     "exports": "Exports",
+    "decrypt": "Déchiffrer un rapport",
     "retention": "Rétention",
     "maintenance": "Maintenance",
     "users": "Utilisateurs",
@@ -26,6 +27,22 @@
     "darkMode": "Mode sombre",
     "lightMode": "Mode clair",
     "developedBy": "Développé par"
+  },
+  "consent": {
+    "title": "Consentement au traitement des données",
+    "intro": "Avant de lancer votre premier scan, veuillez prendre connaissance des modalités de traitement des données par PII Scanner.",
+    "point1Title": "Accès aux fichiers",
+    "point1Desc": "PII Scanner va analyser les fichiers du dossier sélectionné pour détecter des données à caractère personnel (DCP). Seuls les chemins de fichiers et les métadonnées sont conservés — le contenu des fichiers n'est jamais stocké.",
+    "point2Title": "Traitement 100% local",
+    "point2Desc": "Tout le traitement s'effectue localement sur votre machine. Aucune donnée n'est transmise à des serveurs externes.",
+    "point3Title": "Stockage sécurisé",
+    "point3Desc": "Les résultats de scan (chemins de fichiers, nombre de PII détectés) sont chiffrés en AES-256 dans une base de données locale. Les rapports exportés contiennent des données sensibles — protégez-les en conséquence.",
+    "point4Title": "Droit à l'effacement",
+    "point4Desc": "Vous pouvez demander la suppression de toutes vos données à l'administrateur à tout moment, conformément à la Loi N°2017-20 (APDP - Bénin).",
+    "legalNote": "Ce traitement est réalisé dans le cadre d'une démarche de conformité RGPD / APDP. En acceptant, vous autorisez PII Scanner à analyser les fichiers du dossier sélectionné à des fins de détection de données personnelles.",
+    "checkboxLabel": "J'ai lu et j'accepte les modalités de traitement des données. Je confirme être autorisé(e) à scanner les fichiers sélectionnés.",
+    "accept": "Accepter et continuer",
+    "decline": "Refuser"
   },
   "scanner": {
     "title": "Nouveau Scan",
@@ -285,6 +302,19 @@
       "q8": "L'application fonctionne-t-elle hors ligne ?",
       "a8": "Oui, PII Scanner fonctionne entièrement en local. Une connexion Internet n'est pas nécessaire pour analyser vos fichiers."
     }
+  },
+  "decrypt": {
+    "title": "Déchiffrer un rapport",
+    "subtitle": "Ouvrez un fichier .enc en entrant le mot de passe reçu lors du téléchargement",
+    "dropZone": "Glissez votre fichier .enc ici ou cliquez pour sélectionner",
+    "dropZoneHint": "Uniquement les fichiers .enc générés par PII Scanner",
+    "passwordLabel": "Mot de passe du rapport",
+    "decrypt": "Déchiffrer et télécharger",
+    "decrypting": "Déchiffrement en cours...",
+    "success": "Fichier déchiffré téléchargé : {{name}}",
+    "errorNotEnc": "Le fichier doit avoir l'extension .enc",
+    "errorWrongPassword": "Mot de passe incorrect ou fichier corrompu",
+    "localNote": "Le déchiffrement s'effectue entièrement dans votre navigateur — aucune donnée n'est envoyée en ligne."
   },
   "common": {
     "reset": "Réinitialiser",

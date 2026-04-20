@@ -25,6 +25,7 @@ import FolderIcon from '@mui/icons-material/Folder';
 import SecurityIcon from '@mui/icons-material/Security';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
+import KeyIcon from '@mui/icons-material/Key';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import DownloadIcon from '@mui/icons-material/Download';
 import CategoryIcon from '@mui/icons-material/Category';
@@ -97,6 +98,7 @@ const buildMenuItems = (t: (key: string) => string): MenuItem[] => [
   },
   { id: 'reports', label: t('sidebar.reports'), icon: <AssessmentIcon />, path: '/reports' },
   { id: 'exports', label: t('sidebar.exports'), icon: <DownloadIcon />, path: '/exports' },
+  { id: 'decrypt', label: t('sidebar.decrypt'), icon: <KeyIcon />, path: '/decrypt' },
   { id: 'data-retention', label: t('sidebar.retention'), icon: <DeleteSweepIcon />, path: '/data-retention', divider: true },
   {
     id: 'maintenance',

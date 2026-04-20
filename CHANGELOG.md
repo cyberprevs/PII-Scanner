@@ -5,6 +5,57 @@ Tous les changements notables de ce projet seront documentés dans ce fichier.
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/),
 et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [2.0.0] - 2026-04-21
+
+### 🎉 Version Majeure — Conformité APDP & Sécurité des Exports
+
+Cette version introduit 4 nouvelles fonctionnalités majeures en réponse aux exigences de conformité de l'**APDP** (Autorité de Protection des Données à caractère Personnel du Bénin).
+
+#### ✨ Ajouté
+
+**Consentement éclairé (RGPD/APDP Art. 424-426)**
+- Modal de consentement obligatoire avant le premier scan par utilisateur
+- Explication des 4 modalités de traitement : accès fichiers, traitement local, stockage sécurisé, droit à l'effacement
+- Case à cocher requise — bypass impossible (pas d'échappement clavier)
+- Consentement enregistré par utilisateur dans localStorage (`scanConsent_<username>`)
+- Log d'audit automatique envoyé à `POST /api/audit/consent` à chaque acceptation
+
+**Chiffrement AES-256-CBC des rapports exportés**
+- Tous les rapports (CSV, JSON, HTML, Excel) chiffrés avec AES-256-CBC
+- Dérivation PBKDF2-SHA256 : 100 000 itérations, salt aléatoire 16 bytes
+- Format fichier : `[salt 16B][IV 16B][données chiffrées]`, extension `.enc`
+- Mot de passe aléatoire 16 caractères affiché une seule fois via header `X-Report-Password`
+- Dialog UI avec bouton "Copier" — mot de passe jamais persisté côté serveur
+
+**Déchiffrement intégré (Web Crypto API)**
+- Nouvelle page `/decrypt` accessible depuis la sidebar
+- Glisser-déposer du fichier `.enc` + saisie du mot de passe
+- Déchiffrement 100% navigateur — aucune donnée envoyée en ligne
+- Téléchargement automatique du fichier original déchiffré
+
+**Droit à l'effacement (APDP Art. 424)**
+- Nouvel endpoint `DELETE /api/users/{id}/data`
+- Suppression en cascade : sessions → scans → paramètres → audit logs → compte
+- Dernier log d'audit conservé avec mention "droit à l'effacement APDP"
+
+**Enregistrement du consentement (backend)**
+- Nouvel endpoint `POST /api/audit/consent` (tous utilisateurs authentifiés)
+- Enregistre IP, userId, timestamp dans la table AuditLog
+
+#### 🐛 Corrigé
+
+- **ScanHistory mode mock** : appel API 401 → intercepteur axios → reload → perte session. Fix : guard `IS_MOCK` en début de `loadHistory()`
+- **Reports.tsx warnings Recharts** : `ResponsiveContainer height="100%"` dans `Card height="100%"` → dimensions `-1×-1` au premier render React 18 concurrent. Fix : hauteurs fixes en pixels
+- **Scanner.tsx setState dans useEffect** : `wasScanning` migré vers `useRef`, `recentPaths` vers initialiseur lazy `useState`
+
+#### 🔒 Sécurité
+
+- Chiffrement systématique de tous les exports — aucun rapport en clair
+- Consentement traçable et auditable conforme APDP
+- Droit à l'effacement opérationnel
+
+---
+
 ## [1.0.1] - 2026-02-28
 
 ### ✨ Ajouté

@@ -75,11 +75,12 @@ export class ScanApiClient {
     return response.data;
   }
 
-  async downloadReport(scanId: string, format: 'csv' | 'json' | 'html' | 'excel'): Promise<Blob> {
+  async downloadReport(scanId: string, format: 'csv' | 'json' | 'html' | 'excel'): Promise<{ blob: Blob; password: string | null }> {
     const response = await apiClient.get(`/scan/${scanId}/report/${format}`, {
       responseType: 'blob',
     });
-    return response.data;
+    const password = response.headers['x-report-password'] ?? null;
+    return { blob: response.data, password };
   }
 
   async cleanupScan(scanId: string): Promise<void> {

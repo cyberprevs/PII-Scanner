@@ -231,6 +231,68 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
+    /// Suppression complète de toutes les données d'un utilisateur (droit à l'effacement — APDP / Loi N°2017-20)
+    /// Supprime : sessions, scans, paramètres utilisateur, logs d'audit, puis le compte.
+    /// </summary>
+    [HttpDelete("{id}/data")]
+    public async Task<IActionResult> DeleteAllUserData(int id)
+    {
+        var user = await _db.Users.FindAsync(id);
+        if (user == null)
+        {
+            return NotFound(new { error = "Utilisateur introuvable" });
+        }
+
+        if (user.Id == 1)
+        {
+            return BadRequest(new { error = "Les données du compte admin par défaut ne peuvent pas être effacées" });
+        }
+
+        var currentUserId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
+        if (user.Id == currentUserId)
+        {
+            return BadRequest(new { error = "Vous ne pouvez pas effacer vos propres données via cet endpoint" });
+        }
+
+        var deletedUsername = user.Username;
+
+        // 1. Supprimer les sessions actives
+        var sessions = _db.Sessions.Where(s => s.UserId == id);
+        _db.Sessions.RemoveRange(sessions);
+
+        // 2. Supprimer les scans associés
+        var scans = _db.Scans.Where(s => s.UserId == id);
+        _db.Scans.RemoveRange(scans);
+
+        // 3. Supprimer les paramètres utilisateur
+        var userSettings = _db.UserSettings.Where(us => us.UserId == id);
+        _db.UserSettings.RemoveRange(userSettings);
+
+        // 4. Supprimer les logs d'audit liés à cet utilisateur
+        var auditLogs = _db.AuditLogs.Where(a => a.UserId == id);
+        _db.AuditLogs.RemoveRange(auditLogs);
+
+        // 5. Supprimer le compte utilisateur lui-même
+        _db.Users.Remove(user);
+
+        await _db.SaveChangesAsync();
+
+        // 6. Enregistrer l'action d'effacement (log avec UserId null car l'utilisateur n'existe plus)
+        await _db.AuditLogs.AddAsync(new AuditLog
+        {
+            UserId = currentUserId,
+            Action = "EraseUserData",
+            EntityType = "User",
+            EntityId = id.ToString(),
+            IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            Details = $"Effacement complet des données de l'utilisateur: {deletedUsername} (droit à l'effacement APDP)"
+        });
+        await _db.SaveChangesAsync();
+
+        return Ok(new { message = $"Toutes les données de l'utilisateur '{deletedUsername}' ont été effacées conformément au droit à l'effacement." });
+    }
+
+    /// <summary>
     /// Changer le mot de passe (accessible à tous les utilisateurs authentifiés)
     /// </summary>
     [HttpPut("change-password")]

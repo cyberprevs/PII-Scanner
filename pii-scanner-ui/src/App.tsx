@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Alert, Snackbar, CircularProgress, Box } from '@mui/material';
+import { Alert, Snackbar, CircularProgress, Box, Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, IconButton } from '@mui/material';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import LockIcon from '@mui/icons-material/Lock';
 import { AuthProvider } from './contexts/AuthContext';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -26,6 +28,7 @@ import Support from './components/pages/Support';
 import About from './components/pages/About';
 import PiiCategoryAnalysis from './components/pages/PiiCategoryAnalysis';
 import DuplicateFiles from './components/pages/DuplicateFiles';
+import DecryptReport from './components/pages/DecryptReport';
 import { scanApi } from './services/apiClient';
 import type { ScanResultResponse } from './types';
 import axiosInstance, { initializeCsrfToken } from './services/axios';
@@ -42,6 +45,7 @@ function App() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isInitialized, setIsInitialized] = useState<boolean | null>(IS_MOCK ? true : null);
   const [checkingInit, setCheckingInit] = useState(IS_MOCK ? false : true);
+  const [reportPassword, setReportPassword] = useState<{ password: string; format: string } | null>(null);
 
   // Vérifier si l'application est initialisée et initialiser le token CSRF
   useEffect(() => {
@@ -195,17 +199,40 @@ function App() {
   const handleDownloadReport = async (format: 'csv' | 'json' | 'html' | 'excel') => {
     if (!scanId) return;
 
-    try {
-      const blob = await scanApi.downloadReport(scanId, format);
+    if (IS_MOCK) {
+      // Simuler un téléchargement chiffré en mode mock
+      const fakeContent = `mock-encrypted-report-${format}`;
+      const blob = new Blob([fakeContent], { type: 'application/octet-stream' });
+      const ext = format === 'excel' ? 'xlsx' : format;
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `rapport_pii.${format === 'excel' ? 'xlsx' : format}`;
+      a.download = `rapport_pii.${ext}.enc`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
-      setSuccessMessage(`Rapport ${format.toUpperCase()} téléchargé !`);
+      setReportPassword({ password: 'MockPwd#Demo1234', format: format.toUpperCase() });
+      return;
+    }
+
+    try {
+      const { blob, password } = await scanApi.downloadReport(scanId, format);
+      const ext = format === 'excel' ? 'xlsx' : format;
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `rapport_pii.${ext}.enc`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      if (password) {
+        setReportPassword({ password, format: format.toUpperCase() });
+      } else {
+        setSuccessMessage(`Rapport ${format.toUpperCase()} téléchargé !`);
+      }
     } catch (err) {
       console.error('Download error:', err);
       setError(`Erreur lors du téléchargement du rapport ${format}`);
@@ -368,6 +395,7 @@ function App() {
             />
             <Route path="data-retention" element={<DataRetention />} />
             <Route path="history" element={<ScanHistory />} />
+            <Route path="decrypt" element={<DecryptReport />} />
             <Route path="profile" element={<Profile />} />
             <Route path="settings" element={<Settings />} />
             <Route path="support" element={<Support />} />
@@ -423,6 +451,60 @@ function App() {
             {successMessage}
           </Alert>
         </Snackbar>
+
+        {/* Dialog mot de passe du rapport chiffré */}
+        <Dialog
+          open={!!reportPassword}
+          maxWidth="xs"
+          fullWidth
+          PaperProps={{ sx: { borderRadius: 3 } }}
+        >
+          <DialogTitle sx={{ pb: 1 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <LockIcon sx={{ color: '#00E599' }} />
+              <Typography variant="h6" fontWeight={700}>Rapport chiffré téléchargé</Typography>
+            </Box>
+          </DialogTitle>
+          <DialogContent>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              Votre rapport <strong>{reportPassword?.format}</strong> a été chiffré (AES-256). Notez ce mot de passe — il ne sera plus affiché.
+            </Typography>
+            <Box sx={{
+              display: 'flex', alignItems: 'center', gap: 1,
+              p: 1.5, borderRadius: 2,
+              bgcolor: 'rgba(0,229,153,0.08)',
+              border: '1px solid rgba(0,229,153,0.3)',
+            }}>
+              <Typography
+                variant="h6"
+                fontWeight={700}
+                sx={{ flex: 1, fontFamily: 'monospace', letterSpacing: 2, color: '#00E599' }}
+              >
+                {reportPassword?.password}
+              </Typography>
+              <IconButton
+                size="small"
+                onClick={() => { if (reportPassword) navigator.clipboard.writeText(reportPassword.password); }}
+                title="Copier le mot de passe"
+              >
+                <ContentCopyIcon fontSize="small" />
+              </IconButton>
+            </Box>
+            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1.5 }}>
+              Le fichier téléchargé porte l'extension <code>.enc</code>. Pour le déchiffrer, utilisez PII Scanner ou un outil AES-256-CBC compatible (OpenSSL, etc.).
+            </Typography>
+          </DialogContent>
+          <DialogActions sx={{ px: 3, pb: 2 }}>
+            <Button
+              variant="contained"
+              onClick={() => setReportPassword(null)}
+              sx={{ background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)', fontWeight: 600 }}
+            >
+              J'ai noté le mot de passe
+            </Button>
+          </DialogActions>
+        </Dialog>
+
         </Router>
       </AuthProvider>
     </ErrorBoundary>
