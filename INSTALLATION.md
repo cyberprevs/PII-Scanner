@@ -11,7 +11,7 @@ Guide complet pour installer et utiliser PII Scanner en tant qu'application web.
 ### Téléchargement
 
 1. Téléchargez la dernière version : [Releases](https://github.com/cyberprevs/pii-scanner/releases)
-2. Extrayez le fichier `PII-Scanner-v1.0.0-Windows-Standalone.zip`
+2. Extrayez le fichier `PII-Scanner-v2.0.0-Windows-Standalone.zip`
 
 ### Démarrage Rapide
 
@@ -22,7 +22,7 @@ Le navigateur s'ouvre automatiquement sur **http://localhost:5000**
 ### Contenu du Package
 
 ```
-PII-Scanner-v1.0.0-Windows-Standalone/
+PII-Scanner-v2.0.0-Windows-Standalone/
 ├── PiiScanner.Api.exe           ← Lance l'application (ouvre le navigateur)
 ├── START.bat                    ← Alternative de lancement
 ├── wwwroot/                     ← Interface React
@@ -213,7 +213,7 @@ Pour créer votre propre package distributable :
 # Script automatisé (Recommandé)
 .\build-standalone-release.ps1
 
-# Le package sera créé dans releases/PII-Scanner-v1.0.0-Windows-Standalone.zip (~73 MB)
+# Le package sera créé dans releases/PII-Scanner-v2.0.0-Windows-Standalone.zip (~73 MB)
 ```
 
 ---
@@ -305,6 +305,6 @@ dotnet dev-certs https --trust
 
 ---
 
-**Version** : 1.0.0
-**Date** : 18 janvier 2026
+**Version** : 2.0.0
+**Date** : 21 avril 2026
 **Développé par** : [Cyberprevs](https://cyberprevs.fr)

@@ -7,52 +7,78 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 ## [2.0.0] - 2026-04-21
 
-### 🎉 Version Majeure — Conformité APDP & Sécurité des Exports
+### 🎉 Version Majeure — Conformité APDP, Sécurité des Exports & Modernisation UI
 
-Cette version introduit 4 nouvelles fonctionnalités majeures en réponse aux exigences de conformité de l'**APDP** (Autorité de Protection des Données à caractère Personnel du Bénin).
+Cette version introduit 4 nouvelles fonctionnalités de conformité **APDP** (Loi N°2017-20 du Bénin) et une modernisation complète de l'interface utilisateur (style Stripe/Datadog).
 
-#### ✨ Ajouté
+#### ✨ Ajouté — Conformité APDP
 
-**Consentement éclairé (RGPD/APDP Art. 424-426)**
+**Consentement éclairé (Art. 424-426 Code du Numérique)**
 - Modal de consentement obligatoire avant le premier scan par utilisateur
 - Explication des 4 modalités de traitement : accès fichiers, traitement local, stockage sécurisé, droit à l'effacement
-- Case à cocher requise — bypass impossible (pas d'échappement clavier)
+- Case à cocher requise — bypass impossible (touche Échap désactivée, clic extérieur bloqué)
 - Consentement enregistré par utilisateur dans localStorage (`scanConsent_<username>`)
-- Log d'audit automatique envoyé à `POST /api/audit/consent` à chaque acceptation
+- Log d'audit automatique `POST /api/audit/consent` — userId, IP, timestamp UTC
 
 **Chiffrement AES-256-CBC des rapports exportés**
 - Tous les rapports (CSV, JSON, HTML, Excel) chiffrés avec AES-256-CBC
-- Dérivation PBKDF2-SHA256 : 100 000 itérations, salt aléatoire 16 bytes
+- Dérivation PBKDF2-SHA256 : 100 000 itérations, salt aléatoire 16 bytes (NIST SP 800-132)
 - Format fichier : `[salt 16B][IV 16B][données chiffrées]`, extension `.enc`
-- Mot de passe aléatoire 16 caractères affiché une seule fois via header `X-Report-Password`
+- Mot de passe **20 caractères** (~127 bits entropie) — affiché une seule fois via header `X-Report-Password`
 - Dialog UI avec bouton "Copier" — mot de passe jamais persisté côté serveur
 
 **Déchiffrement intégré (Web Crypto API)**
-- Nouvelle page `/decrypt` accessible depuis la sidebar
+- Nouvelle page `/decrypt` accessible depuis la sidebar ("Déchiffrer un rapport")
 - Glisser-déposer du fichier `.enc` + saisie du mot de passe
-- Déchiffrement 100% navigateur — aucune donnée envoyée en ligne
-- Téléchargement automatique du fichier original déchiffré
+- Déchiffrement 100% navigateur (Web Crypto API) — aucune donnée envoyée en ligne
+- Téléchargement automatique du fichier original déchiffré avec le bon type MIME
 
 **Droit à l'effacement (APDP Art. 424)**
 - Nouvel endpoint `DELETE /api/users/{id}/data`
-- Suppression en cascade : sessions → scans → paramètres → audit logs → compte
-- Dernier log d'audit conservé avec mention "droit à l'effacement APDP"
+- Suppression en cascade irréversible : sessions → scans → paramètres → audit logs → compte
+- Dernier log conservé avec mention "Suppression des données personnelles — droit à l'effacement APDP"
 
-**Enregistrement du consentement (backend)**
+**Backend**
 - Nouvel endpoint `POST /api/audit/consent` (tous utilisateurs authentifiés)
-- Enregistre IP, userId, timestamp dans la table AuditLog
+
+#### ✨ Ajouté — Interface utilisateur
+
+**Nouveaux composants partagés**
+- `PageHeader.tsx` — en-tête standardisé pour toutes les pages : breadcrumb, icône 28px, titre (gradient optionnel), actions à droite
+- `StatCard.tsx` — nouveau variant `topBorderOnly` avec `accentColor`, `trend` (↑↓ avec icône + couleur sémantique), `sparkline` (mini graphique SVG 60×24 inline)
+
+**`designSystem.ts` enrichi**
+- `glassCardSx(dark)` — helper glassmorphisme exporté (backdrop-filter blur 12px, border rgba)
+- `getRechartsTooltipStyle(dark)` — tooltips Recharts thème-aware (fond, bordure, ombre selon dark/light)
+- `tokens.shadows` — tokens `card` et `cardHover` pour ombres cohérentes
+- `MuiTableRow` override — lignes paires alternées + hover vert doux `rgba(0,229,153,0.04)`
+- Tokens light mode affinés : `bgPrimary: #F4F6F8`, `borderDefault: #E5E7EB`
+
+**Pages modernisées (26 fichiers)**
+- Dashboard, Scanner, RiskyFiles, Detections, PiiCategoryAnalysis, Staleness, Exposure, ScanHistory, Results, Exports, DuplicateFiles, DataRetention, Profile, About, Support, AuditTrail
+- Migration vers `PageHeader` et `StatCard topBorderOnly` sur toutes les pages
+- Recharts : CartesianGrid horizontal uniquement, tooltips thémés, animations (`animationBegin=0`)
+- Charts Dashboard/PiiCategoryAnalysis : gradients `<defs>` + `linearGradient`, donut agrandi, légende personnalisée MUI
+- Sidebar : indicateur de page active (barre verte 3px à gauche), user info avec `glassCardSx`
+
+**Internationalisation**
+- Interface bilingue FR/EN — détection automatique de la langue navigateur
+- Clé `sidebar.decrypt` ajoutée dans `fr.json` et `en.json`
+- Namespace `decrypt` complet (titre, zone drop, erreurs, note locale)
 
 #### 🐛 Corrigé
 
 - **ScanHistory mode mock** : appel API 401 → intercepteur axios → reload → perte session. Fix : guard `IS_MOCK` en début de `loadHistory()`
-- **Reports.tsx warnings Recharts** : `ResponsiveContainer height="100%"` dans `Card height="100%"` → dimensions `-1×-1` au premier render React 18 concurrent. Fix : hauteurs fixes en pixels
+- **Reports.tsx warnings Recharts** : `ResponsiveContainer height="100%"` dans `Card height="100%"` → dimensions `-1×-1` au premier render React 18 concurrent. Fix : hauteurs fixes en pixels (`height={450}`, `height={270}`)
 - **Scanner.tsx setState dans useEffect** : `wasScanning` migré vers `useRef`, `recentPaths` vers initialiseur lazy `useState`
+- **Password dialog mock** : `handleDownloadReport` sans guard `IS_MOCK` → appel API silencieux. Fix : bloc `IS_MOCK` complet avec faux blob `.enc` et mot de passe mock 20 chars
 
 #### 🔒 Sécurité
 
-- Chiffrement systématique de tous les exports — aucun rapport en clair
+- Mot de passe exports passé de 16 à **20 caractères** (~127 bits d'entropie)
+- Chiffrement systématique de tous les exports — aucun rapport en clair transmis
 - Consentement traçable et auditable conforme APDP
-- Droit à l'effacement opérationnel
+- Droit à l'effacement opérationnel avec traçabilité finale
 
 ---
 

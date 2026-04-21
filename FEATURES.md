@@ -1,4 +1,4 @@
-# Fonctionnalités - PII Scanner v1.0.0
+# Fonctionnalités - PII Scanner v2.0.0
 
 ## Détection des Fichiers Dupliqués
 
@@ -243,6 +243,78 @@ const exportToCSV = () => {
 
 ---
 
+## Modernisation de l'Interface (v2.0)
+
+### Vue d'ensemble
+
+La v2.0 introduit une refonte visuelle complète de l'interface, inspirée des standards modernes (Stripe, Datadog), avec un support complet dark/light mode sur toutes les pages.
+
+### Nouveaux composants partagés
+
+**`PageHeader.tsx`**
+
+En-tête standardisé utilisé sur toutes les pages :
+
+```tsx
+<PageHeader
+  icon={<ScannerIcon />}
+  breadcrumb="Analyse / Fichiers à risque"
+  title="Fichiers à risque"
+  subtitle="Fichiers contenant des PII classés par niveau de risque"
+  titleGradient   // titre avec dégradé accentPrimary → info
+  actions={<Button>Exporter</Button>}
+/>
+```
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `icon` | `ReactNode` | Icône 28px colorée `accentPrimary` |
+| `breadcrumb` | `string` | Chemin en caption `text.disabled` au-dessus du titre |
+| `title` | `string` | Titre h4 fontWeight 700 |
+| `titleGradient` | `boolean` | Dégradé CSS `-webkit-background-clip: text` |
+| `subtitle` | `string` | Sous-titre `body1 text.secondary` |
+| `actions` | `ReactNode` | Boutons alignés à droite en `Stack direction="row"` |
+
+**`StatCard.tsx` — nouveau variant `topBorderOnly`**
+
+Carte KPI style Stripe avec bordure colorée en haut :
+
+```tsx
+<StatCard
+  topBorderOnly
+  accentColor="#00E599"
+  value="1 234"
+  label="PII détectées"
+  trend={{ direction: 'up', value: '+12%' }}
+  sparkline={[10, 25, 18, 40, 33, 52]}
+/>
+```
+
+| Prop | Description |
+|------|-------------|
+| `topBorderOnly` | Active le variant : `borderTop: 3px solid accentColor`, ombre légère en light |
+| `accentColor` | Couleur de la bordure (par défaut `accentPrimary`) |
+| `trend` | Direction `up`/`down` + texte — affiché en `success.main` / `error.main` |
+| `sparkline` | Tableau de valeurs → mini graphique SVG 60×24px (sans axes, trait uniquement) |
+
+### `designSystem.ts` — nouvelles exports
+
+| Export | Usage |
+|--------|-------|
+| `glassCardSx(dark)` | `sx={glassCardSx(dark)}` sur les Cards en dark mode (blur 12px, border rgba) |
+| `getRechartsTooltipStyle(dark)` | `<Tooltip contentStyle={getRechartsTooltipStyle(dark)} />` — thème-aware |
+| `tokens.shadows.card` | Ombre légère standard pour les cartes en light mode |
+| `tokens.shadows.cardHover` | Ombre accentuée au survol |
+
+### Règles d'utilisation
+
+- **Dark mode dans les pages** : `const dark = useTheme().palette.mode === 'dark'` — jamais de prop `darkMode`
+- **Glassmorphisme** : toujours `sx={glassCardSx(dark)}` — jamais `<Card variant="glassmorphism">`
+- **Tooltips Recharts** : toujours `contentStyle={getRechartsTooltipStyle(dark)}`
+- **CartesianGrid** : `horizontal={true} vertical={false}` avec `stroke` rgba faible — pas de grille pleine
+
+---
+
 ## Intégration dans l'Application
 
 ### Modèles de données
@@ -372,7 +444,7 @@ copy original.txt document_important.txt
 
 ## Résumé des Fonctionnalités
 
-**Version 1.0.0** - Release initiale
+**Version 2.0.0** — Avril 2026
 
 **Fonctionnalités principales :**
 - Détection des fichiers dupliqués par hash MD5
@@ -381,9 +453,13 @@ copy original.txt document_important.txt
 - Optimisation performance : calcul hash conditionnel (10-50x plus rapide)
 - 18 types de PII détectés automatiquement
 - Support de 7 formats de fichiers (.txt, .log, .csv, .json, .docx, .xlsx, .pdf)
-- Interface web moderne avec Material-UI v7
+- Interface web moderne avec Material-UI v7 — bilingue FR/EN
 - Authentification JWT et chiffrement AES-256
 - Protection CSRF, Rate Limiting, HTTPS/TLS
+- **Consentement éclairé APDP** — modal obligatoire avant tout scan, tracé en audit log
+- **Exports chiffrés AES-256-CBC** — tous les rapports chiffrés, mot de passe unique par téléchargement
+- **Déchiffrement intégré** — page /decrypt, Web Crypto API, 100% navigateur
+- **Droit à l'effacement** — DELETE /api/users/{id}/data, suppression en cascade conforme Art. 424
 
 **Composants principaux :**
 - `PiiScanner.Core/Scanner/FileScanner.cs` - Moteur de scan optimisé
@@ -398,6 +474,6 @@ copy original.txt document_important.txt
 
 ---
 
-**Dernière mise à jour** : 18 janvier 2026
-**Version** : 1.0.0
+**Dernière mise à jour** : 21 avril 2026
+**Version** : 2.0.0
 **Auteur** : Équipe PII Scanner - Cyberprevs
