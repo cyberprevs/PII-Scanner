@@ -556,7 +556,7 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
               variant="caption"
               sx={{ color: c.textTertiary, fontSize: '0.6rem', display: 'block', mt: 0.5 }}
             >
-              v1.0.0
+              v2.0.0
             </Typography>
           </Box>
         )}

@@ -294,13 +294,17 @@
       "q4": "Is my data sent to an external server?",
       "a4": "No, all analysis is performed locally on your machine. No data is transmitted externally.",
       "q5": "How do I export results?",
-      "a5": "Go to the \"Exports\" page and choose the desired format: CSV, JSON, HTML or Excel. The report will be downloaded automatically.",
+      "a5": "Go to the \"Exports\" page and choose the desired format: CSV, JSON, HTML or Excel. All reports are AES-256 encrypted (.enc extension). A one-time password is shown at download — save it, it will not be shown again. To open the file, use the \"Decrypt a report\" page.",
       "q6": "Can I back up my database?",
       "a6": "Yes, if you are an administrator, go to \"Database\" and click \"Create a backup\". You can restore or download backups at any time.",
       "q7": "How do I manage users?",
       "a7": "Administrators can create, edit or delete users from the \"Users\" page.",
       "q8": "Does the app work offline?",
-      "a8": "Yes, PII Scanner works entirely locally. An internet connection is not required to analyze your files."
+      "a8": "Yes, PII Scanner works entirely locally. An internet connection is not required to analyze your files.",
+      "q9": "How do I decrypt an exported report?",
+      "a9": "Reports are automatically encrypted on export. To open them, go to \"Decrypt a report\" in the menu, drag your .enc file, enter the password you received at download and click \"Decrypt\". Decryption is performed entirely in your browser.",
+      "q10": "How do I keep my data when updating to a new version?",
+      "a10": "To update PII Scanner without losing your data, copy piiscanner.db and db_encryption.key from the old folder to the new one. These two files always go together — never copy one without the other. See the installation guide for detailed steps."
     }
   },
   "decrypt": {

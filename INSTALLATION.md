@@ -91,6 +91,85 @@ Write-Host "Certificat installé !" -ForegroundColor Green
 
 ---
 
+## Mise à Jour vers une Nouvelle Version
+
+Cette section explique comment passer d'une version existante de PII Scanner à une version plus récente **sans perdre vos données**.
+
+### Ce qui est conservé lors d'une mise à jour
+
+| Données | Conservées ? |
+|---------|-------------|
+| Comptes utilisateurs et mots de passe | ✅ Oui |
+| Historique des scans | ✅ Oui |
+| Paramètres de l'application | ✅ Oui |
+| Journal d'audit | ✅ Oui |
+| Résultats de scan en mémoire (scan en cours) | ❌ Non — exportez avant de fermer |
+
+### Étapes de mise à jour (Version Standalone)
+
+> ⚠️ **Avant de commencer** : si un scan est en cours, exportez les résultats. Les données en mémoire sont perdues à la fermeture de l'application.
+
+**Étape 1 — Arrêtez l'ancienne version**
+
+Fermez `PiiScanner.Api.exe` (ou la fenêtre du terminal).
+
+**Étape 2 — Téléchargez la nouvelle version**
+
+Téléchargez et extrayez le nouveau ZIP dans un **nouveau dossier séparé** :
+
+```
+C:\PII-Scanner-v1.x\   ← ancien dossier (ne pas supprimer tout de suite)
+C:\PII-Scanner-v2.0\   ← nouveau dossier (ZIP extrait ici)
+```
+
+**Étape 3 — Copiez vos deux fichiers de données**
+
+Copiez ces deux fichiers depuis l'**ancien dossier** vers le **nouveau dossier** :
+
+```
+piiscanner.db        ← Base de données (utilisateurs, historique, paramètres)
+db_encryption.key    ← Clé de chiffrement (OBLIGATOIRE — sans elle, la base est illisible)
+```
+
+> ⚠️ **Ces deux fichiers vont toujours ensemble.** Ne copiez jamais l'un sans l'autre.
+
+**Étape 4 — Lancez la nouvelle version**
+
+Double-cliquez sur `PiiScanner.Api.exe` dans le nouveau dossier.
+
+L'application détecte automatiquement la version de la base de données et applique les mises à jour de schéma si nécessaire. Vos données sont immédiatement disponibles.
+
+**Étape 5 — Vérifiez que tout fonctionne**
+
+Connectez-vous avec vos identifiants habituels et vérifiez votre historique de scans. Une fois validé, vous pouvez supprimer l'ancien dossier.
+
+### Résumé visuel
+
+```
+Ancien dossier                    Nouveau dossier
+─────────────────                 ─────────────────
+PiiScanner.Api.exe (v1.x)         PiiScanner.Api.exe (v2.0)  ← nouveau
+piiscanner.db          ──────────→ piiscanner.db              ← copier
+db_encryption.key      ──────────→ db_encryption.key          ← copier
+appsettings.json                  appsettings.json            ← nouveau
+```
+
+### En cas de problème
+
+**"La base de données ne s'ouvre pas" ou "Invalid password"**
+
+→ La clé `db_encryption.key` est manquante ou ne correspond pas à la base. Vérifiez que vous avez bien copié les deux fichiers depuis le **même** ancien dossier.
+
+**"Mes utilisateurs ont disparu"**
+
+→ L'application a créé une nouvelle base vide. Copiez à nouveau `piiscanner.db` et `db_encryption.key` depuis l'ancien dossier et relancez.
+
+**"Je n'ai plus le fichier db_encryption.key"**
+
+→ Si le fichier a été perdu, la base de données chiffrée est irrécupérable. Cette clé doit être sauvegardée avec la base. Pour repartir, supprimez `piiscanner.db` et laissez l'application créer une nouvelle base au démarrage.
+
+---
+
 ## Option 2 : Installation depuis les Sources
 
 Pour les développeurs qui souhaitent compiler et modifier l'application.

@@ -294,13 +294,17 @@
       "q4": "Mes données sont-elles envoyées à un serveur externe ?",
       "a4": "Non, toutes les analyses sont effectuées localement sur votre machine. Aucune donnée n'est transmise à l'extérieur.",
       "q5": "Comment exporter les résultats ?",
-      "a5": "Rendez-vous sur la page \"Exports\" et choisissez le format souhaité : CSV, JSON, HTML ou Excel. Le rapport sera téléchargé automatiquement.",
+      "a5": "Rendez-vous sur la page \"Exports\" et choisissez le format souhaité : CSV, JSON, HTML ou Excel. Tous les rapports sont chiffrés en AES-256 (extension .enc). Un mot de passe à usage unique est affiché lors du téléchargement — notez-le, il ne sera plus visible ensuite. Pour ouvrir le fichier, utilisez la page \"Déchiffrer un rapport\".",
       "q6": "Puis-je sauvegarder ma base de données ?",
       "a6": "Oui, si vous êtes administrateur, accédez à \"Base de données\" et cliquez sur \"Créer une sauvegarde\". Vous pouvez restaurer ou télécharger les sauvegardes à tout moment.",
       "q7": "Comment gérer les utilisateurs ?",
       "a7": "Les administrateurs peuvent créer, modifier ou supprimer des utilisateurs depuis la page \"Utilisateurs\".",
       "q8": "L'application fonctionne-t-elle hors ligne ?",
-      "a8": "Oui, PII Scanner fonctionne entièrement en local. Une connexion Internet n'est pas nécessaire pour analyser vos fichiers."
+      "a8": "Oui, PII Scanner fonctionne entièrement en local. Une connexion Internet n'est pas nécessaire pour analyser vos fichiers.",
+      "q9": "Comment déchiffrer un rapport exporté ?",
+      "a9": "Les rapports sont chiffrés automatiquement à l'export. Pour les ouvrir, allez dans le menu \"Déchiffrer un rapport\", glissez votre fichier .enc, saisissez le mot de passe reçu lors du téléchargement et cliquez sur \"Déchiffrer\". Le déchiffrement s'effectue entièrement dans votre navigateur.",
+      "q10": "Comment conserver mes données lors d'une mise à jour ?",
+      "a10": "Pour mettre à jour PII Scanner sans perdre vos données, copiez les fichiers piiscanner.db et db_encryption.key depuis l'ancien dossier vers le nouveau. Ces deux fichiers vont toujours ensemble — ne copiez jamais l'un sans l'autre. Consultez le guide d'installation pour les étapes détaillées."
     }
   },
   "decrypt": {
