@@ -212,7 +212,7 @@ function App() {
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
-      setReportPassword({ password: 'MockPwd#Demo1234', format: format.toUpperCase() });
+      setReportPassword({ password: 'MockPwd#Demo1234!Zx@9', format: format.toUpperCase() });
       return;
     }
 

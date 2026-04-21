@@ -328,13 +328,10 @@ public record OpenFolderRequest(string FilePath);
 
 public static partial class ReportEncryption
 {
-    /// <summary>
-    /// Génère un mot de passe aléatoire de 16 caractères (alphanumérique + symboles).
-    /// </summary>
     public static string GenerateReportPassword()
     {
-        const string chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$";
-        var bytes = RandomNumberGenerator.GetBytes(16);
+        const string chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%^&*";
+        var bytes = RandomNumberGenerator.GetBytes(20);
         return new string(bytes.Select(b => chars[b % chars.Length]).ToArray());
     }
 
