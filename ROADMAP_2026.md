@@ -1,6 +1,6 @@
 # Roadmap PII Scanner — 2026
 
-**Cyberprevs** | Février 2026
+**Cyberprevs** | Avril 2026
 
 ---
 
@@ -10,102 +10,71 @@ Faire de PII Scanner **l'outil de référence pour la protection des données pe
 
 ---
 
-## Ce qui existe aujourd'hui — v1.0.0 (Janvier 2026)
+## Ce qui existe aujourd'hui — v2.0.0 (Avril 2026)
 
 - Détection de **18 types de données personnelles** adaptés au Bénin
 - Analyse de **7 formats de fichiers** (PDF, Word, Excel, CSV, JSON, TXT, LOG)
 - Analyse des **permissions NTFS** (qui a accès aux fichiers sensibles)
 - Analyse de **l'ancienneté** des fichiers (données oubliées depuis des années)
 - Détection des **fichiers dupliqués** contenant des PII
-- **4 formats de rapports** (CSV, Excel, JSON, HTML interactif)
-- Interface web moderne (React 19 + Material-UI v7)
-- Progression en temps réel (WebSocket)
-- **8 couches de sécurité** (JWT, CSRF, chiffrement AES-256, rate limiting...)
+- **4 formats de rapports chiffrés** (CSV, Excel, JSON, HTML — tous en `.enc` AES-256-CBC)
+- Interface web moderne (React 19 + Material-UI v7) — **bilingue FR/EN**
+- Progression en temps réel (WebSocket SignalR)
+- **10 couches de sécurité** (JWT, CSRF, AES-256 exports, consentement tracé, rate limiting...)
 - 100% local — aucune donnée ne quitte l'entreprise
-- Déploiement en **1 clic** (exécutable standalone, 73 MB)
+- Déploiement en **1 clic** (exécutable standalone, ~73 MB)
+- **Consentement éclairé APDP** — modal obligatoire, horodaté en audit log (Art. 424-426)
+- **Exports chiffrés AES-256-CBC** — mot de passe unique par téléchargement, jamais persisté
+- **Déchiffrement intégré** — page `/decrypt`, Web Crypto API, 100% navigateur
+- **Droit à l'effacement** — `DELETE /api/users/{id}/data`, suppression en cascade
+- **Raccourcis clavier** — `Ctrl+E` (export CSV), `Escape` (arrêt scan)
 
 ---
 
-## Q1 — Janvier → Mars 2026 : Consolidation
+## Q2 — Avril → Juin 2026 : Scan et performance
 
-### v1.1.0 — Qualité et ouverture aux contributeurs
-
-| Fonctionnalité | Description |
-|----------------|-------------|
-| Tests automatisés | Couverture backend et frontend pour garantir la fiabilité |
-| CI/CD GitHub Actions | Build et tests automatiques à chaque contribution |
-| Raccourcis clavier | Ctrl+S (scanner), Ctrl+E (exporter), Escape (annuler) |
-| Documentation contributeur | Guide complet pour intégrer facilement de nouveaux développeurs |
-| Audit de sécurité v1.1 | Pentest OWASP avant chaque release |
-
-**Objectif** : Un projet solide, testé, prêt à accueillir des contributeurs externes.
-
----
-
-## Q2 — Avril → Juin 2026 : Expérience utilisateur
-
-### v1.2.0 — Interface enrichie
+### v2.1.0 — Scan plus puissant
 
 | Fonctionnalité | Description |
 |----------------|-------------|
-| Annulation de scan | Pouvoir stopper un scan en cours |
-| Recherche et filtres avancés | Rechercher dans les résultats par type, fichier, risque |
-| Internationalisation (i18n) | Interface disponible en Français et Anglais |
-| Notifications améliorées | Retours visuels clairs sur chaque action |
-| Audit de sécurité v1.2 | Pentest OWASP avant release |
-
-### v1.3.0 — Scan plus puissant
-
-| Fonctionnalité | Description |
-|----------------|-------------|
-| Scan incrémental | Ne rescanner que les fichiers modifiés (gain de temps majeur) |
+| Scan incrémental | Ne rescanner que les fichiers modifiés depuis le dernier scan |
 | Support PowerPoint (.pptx) | Nouveau format de fichier supporté |
 | Support LibreOffice (.odt/.ods) | Compatibilité avec la suite libre |
-| Export PDF | Rapport PDF professionnel pour les audits |
-| Tableau de tendances | Évolution des résultats dans le temps |
-| Audit de sécurité v1.3 | Pentest OWASP avant release |
+| Notifications email | Alertes automatiques sur les scans terminés ou anomalies détectées |
+| Audit de sécurité v2.1 | Pentest OWASP avant release |
 
-**Objectif** : Une application plus rapide, plus complète, utilisable au quotidien.
+**Objectif** : Un scan plus rapide et des formats de fichiers supplémentaires.
 
 ---
 
 ## Q3 — Juillet → Septembre 2026 : Entreprise
 
-### v1.4.0 — Persistance et planification
+### v2.2.0 — Planification et intégrations
 
 | Fonctionnalité | Description |
 |----------------|-------------|
-| Historique persistant | Les résultats de scan sont conservés en base de données |
-| Comparaison de scans | Comparer deux scans pour voir l'évolution |
 | Scan planifié | Programmer des scans automatiques (quotidien, hebdomadaire) |
-| Notifications in-app | Alertes sur les scans terminés et les risques détectés |
-| Audit de sécurité v1.4 | Pentest OWASP avant release |
-
-### v1.5.0 — API et intégrations
-
-| Fonctionnalité | Description |
-|----------------|-------------|
+| Comparaison de scans | Comparer deux scans dans le temps pour voir l'évolution |
 | API publique documentée | Intégrer PII Scanner dans des outils tiers via API REST |
 | Webhooks | Notification automatique vers des services externes à la fin d'un scan |
 | Mode CLI | Lancer des scans en ligne de commande (scripts, automatisation) |
-| Audit de sécurité v1.5 | Pentest OWASP avant release |
+| Audit de sécurité v2.2 | Pentest OWASP avant release |
 
 **Objectif** : PII Scanner s'intègre dans l'écosystème IT des entreprises.
 
 ---
 
-## Q4 — Octobre → Décembre 2026 : Version majeure
+## Q4 — Octobre → Décembre 2026 : Nouvelles plateformes
 
-### v2.0.0 — Nouvelle génération
+### v2.3.0 — Multi-plateforme et IA
 
 | Fonctionnalité | Description |
 |----------------|-------------|
 | Support Linux | Déploiement sur serveurs Linux (Ubuntu, Debian) |
-| Patterns PII personnalisables | Chaque organisation peut définir ses propres types de données à détecter |
-| Multi-langues complet | Interface entièrement traduite (FR, EN, et base pour d'autres langues) |
+| Patterns PII personnalisables | Chaque organisation peut définir ses propres types à détecter |
+| OCR basique | Détection de PII dans les images et documents scannés (Tesseract) |
 | Tableau de bord exécutif | Vue résumée pour les directions et les décideurs |
-| OCR basique | Détection de PII dans les images et documents scannés |
-| Audit de sécurité v2.0 | Pentest externe complet avant release majeure |
+| Audit de sécurité v2.3 | Pentest externe complet avant release |
 
 **Objectif** : Un produit mature, multi-plateforme, adaptable à toute organisation.
 
@@ -114,10 +83,10 @@ Faire de PII Scanner **l'outil de référence pour la protection des données pe
 ## Calendrier des releases
 
 ```
-Jan       Mars       Mai       Juin       Août       Sept       Déc
- │         │          │         │          │          │          │
-v1.0      v1.1       v1.2     v1.3       v1.4       v1.5      v2.0
- ✅        🔒         🔒       🔒         🔒         🔒        🔒
+Jan 2026   Avril 2026   Juin       Sept       Déc
+ │              │          │          │          │
+v1.0           v2.0       v2.1       v2.2      v2.3
+ ✅             ✅          🔒         🔒        🔒
 
 ✅ Publiée    🔒 Audit de sécurité avant chaque release
 ```
@@ -163,12 +132,12 @@ Un kanban GitHub Projects organise les tâches avec des issues adaptées à chaq
 
 | Métrique | Mi-2026 | Fin 2026 |
 |----------|---------|----------|
-| Formats de fichiers supportés | 10 | 10+ images |
+| Formats de fichiers supportés | 7 | 10+ (pptx, odt, images) |
 | Types de PII détectés | 18 | 20+ (patterns custom) |
 | Plateformes | Windows | Windows + Linux |
 | Langues de l'interface | 2 (FR/EN) | 3+ |
-| Audits de sécurité réalisés | 3 | 6 |
-| Contributeurs actifs | 10+ | 20+ |
+| Audits de sécurité réalisés | 2 (v2.0 livré) | 5+ |
+| Contributeurs actifs | 5+ | 20+ |
 
 ---
 
