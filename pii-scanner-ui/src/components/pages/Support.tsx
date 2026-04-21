@@ -42,6 +42,8 @@ export default function Support() {
     { question: t('support.faq.q6'), answer: t('support.faq.a6') },
     { question: t('support.faq.q7'), answer: t('support.faq.a7') },
     { question: t('support.faq.q8'), answer: t('support.faq.a8') },
+    { question: t('support.faq.q9'), answer: t('support.faq.a9') },
+    { question: t('support.faq.q10'), answer: t('support.faq.a10') },
   ];
 
   return (

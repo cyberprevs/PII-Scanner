@@ -53,7 +53,7 @@ const About: React.FC = () => {
                 Détection automatisée de données personnelles (PII) dans vos fichiers
               </Typography>
               <Chip
-                label="Version 1.0.0"
+                label="Version 2.0.0"
                 sx={{
                   bgcolor: 'rgba(255,255,255,0.2)',
                   color: 'white',
@@ -84,7 +84,7 @@ const About: React.FC = () => {
                 Cyberprevs
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                © 2025 Cyberprevs. Tous droits réservés.
+                © 2026 Cyberprevs. Tous droits réservés.
               </Typography>
             </CardContent>
           </Card>
@@ -282,7 +282,7 @@ const About: React.FC = () => {
                   Documentation sécurité
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  13 protections : HTTPS, SQLCipher, JWT, CSRF, CSP
+                  10 couches de sécurité : HTTPS, SQLCipher, JWT, CSRF, AES-256, APDP
                 </Typography>
               </Card>
             </Link>

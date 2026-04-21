@@ -287,7 +287,7 @@ const Login: React.FC = () => {
               variant="caption"
               sx={{ color: c.textTertiary, fontSize: '0.65rem', display: 'block', mt: 0.5 }}
             >
-              v1.0.0
+              v2.0.0
             </Typography>
           </Box>
         </Box>
