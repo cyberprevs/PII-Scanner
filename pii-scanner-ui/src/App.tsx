@@ -380,7 +380,7 @@ function App() {
             />
             <Route path="risky-files" element={<RiskyFiles results={results} />} />
             <Route path="detections" element={<Detections results={results} />} />
-            <Route path="pii-category-analysis" element={<PiiCategoryAnalysis results={results} />} />
+            <Route path="pii-category-analysis" element={<PiiCategoryAnalysis results={results} onDownloadReport={handleDownloadReport} />} />
             <Route path="duplicate-files" element={<DuplicateFiles results={results} />} />
             <Route path="staleness" element={<Staleness results={results} />} />
             <Route path="exposure" element={<Exposure results={results} />} />
