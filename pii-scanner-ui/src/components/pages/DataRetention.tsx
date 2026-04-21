@@ -109,8 +109,9 @@ export default function DataRetention() {
       } else {
         setError('Erreur lors du scan des fichiers');
       }
-    } catch (err: any) {
-      setError(err.message || 'Erreur de connexion à l\'API');
+    } catch (err: unknown) {
+      const e = err as { message?: string };
+      setError(e.message || 'Erreur de connexion à l\'API');
       console.error('Scan error:', err);
     } finally {
       setScanning(false);
@@ -139,8 +140,9 @@ export default function DataRetention() {
         setError(`Suppression partielle : ${response.deletedCount} réussis, ${response.failedCount} échecs`);
         setDeletionInProgress(false);
       }
-    } catch (err: any) {
-      setError(err.message || 'Erreur lors de la suppression');
+    } catch (err: unknown) {
+      const e = err as { message?: string };
+      setError(e.message || 'Erreur lors de la suppression');
       setDeletionInProgress(false);
     }
   };

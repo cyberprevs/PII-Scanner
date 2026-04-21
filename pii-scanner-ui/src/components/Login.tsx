@@ -31,8 +31,8 @@ const Login: React.FC = () => {
     try {
       await login(username, password);
       navigate('/');
-    } catch (err: any) {
-      setError(err.message || 'Échec de la connexion');
+    } catch (err: unknown) {
+      setError((err as Error).message || 'Échec de la connexion');
     } finally {
       setIsLoading(false);
     }

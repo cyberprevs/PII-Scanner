@@ -114,9 +114,10 @@ const InitialSetup: React.FC<InitialSetupProps> = ({ onSetupComplete }) => {
           window.location.href = '/login';
         }, 100);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Setup error:', err);
-      setError(err.response?.data?.message || 'Erreur lors de l\'initialisation');
+      const e = err as { response?: { data?: { message?: string } } };
+      setError(e.response?.data?.message || 'Erreur lors de l\'initialisation');
     } finally {
       setLoading(false);
     }

@@ -88,13 +88,14 @@ const AuditTrail: React.FC = () => {
     loadAuditLogs();
     loadStats();
     loadFilters();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, rowsPerPage, actionFilter, entityTypeFilter, userIdFilter, startDate, endDate]);
 
   const loadAuditLogs = async () => {
     setLoading(true);
     setError('');
     try {
-      const params: any = {
+      const params: Record<string, string | number> = {
         page: page + 1,
         pageSize: rowsPerPage,
       };
@@ -108,8 +109,8 @@ const AuditTrail: React.FC = () => {
       const response = await axios.get<PagedResult>('/audit', { params });
       setLogs(response.data.items);
       setTotalCount(response.data.totalCount);
-    } catch (error: any) {
-      console.error('Error loading audit logs:', error);
+    } catch (err) {
+      console.error('Error loading audit logs:', err);
       setError('Erreur lors du chargement des logs d\'audit');
     } finally {
       setLoading(false);
@@ -118,14 +119,14 @@ const AuditTrail: React.FC = () => {
 
   const loadStats = async () => {
     try {
-      const params: any = {};
+      const params: Record<string, string> = {};
       if (startDate) params.startDate = startDate;
       if (endDate) params.endDate = endDate;
 
       const response = await axios.get<AuditStats>('/audit/stats', { params });
       setStats(response.data);
-    } catch (error) {
-      console.error('Error loading stats:', error);
+    } catch (err) {
+      console.error('Error loading stats:', err);
     }
   };
 
@@ -160,7 +161,7 @@ const AuditTrail: React.FC = () => {
 
   const handleExportCsv = async () => {
     try {
-      const params: any = {};
+      const params: Record<string, string> = {};
       if (actionFilter) params.action = actionFilter;
       if (entityTypeFilter) params.entityType = entityTypeFilter;
       if (userIdFilter) params.userId = userIdFilter;
@@ -181,7 +182,7 @@ const AuditTrail: React.FC = () => {
       link.remove();
       setSuccess('Export CSV réussi');
       setTimeout(() => setSuccess(''), 3000);
-    } catch (error) {
+    } catch {
       setError('Erreur lors de l\'export CSV');
       setTimeout(() => setError(''), 3000);
     }
@@ -205,8 +206,9 @@ const AuditTrail: React.FC = () => {
       }
 
       setTimeout(() => setSuccess(''), 5000);
-    } catch (error: any) {
-      setError(error.response?.data?.error || 'Erreur lors du nettoyage');
+    } catch (err: unknown) {
+      const e = err as { response?: { data?: { error?: string } } };
+      setError(e.response?.data?.error || 'Erreur lors du nettoyage');
       setTimeout(() => setError(''), 3000);
     }
   };

@@ -109,7 +109,7 @@ export default function Settings() {
               const validSensitivities: Array<'Critique' | 'Élevé' | 'Moyen' | 'Faible'> = ['Critique', 'Élevé', 'Moyen', 'Faible'];
 
               const validatedPiiTypes = DEFAULT_PII_TYPES.map(defaultPii => {
-                const savedPii = parsedPiiTypes.find((p: any) => p && p.id === defaultPii.id);
+                const savedPii = parsedPiiTypes.find((p: { id?: string; sensitivity?: string }) => p && p.id === defaultPii.id);
                 if (savedPii && typeof savedPii === 'object') {
                   const sensitivity = validSensitivities.includes(savedPii.sensitivity)
                     ? savedPii.sensitivity

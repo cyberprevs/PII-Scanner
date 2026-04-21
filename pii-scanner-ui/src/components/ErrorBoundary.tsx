@@ -9,7 +9,7 @@ interface Props {
 interface State {
   hasError: boolean;
   error: Error | null;
-  errorInfo: any;
+  errorInfo: { componentStack?: string } | null;
 }
 
 /**
@@ -30,7 +30,7 @@ export class ErrorBoundary extends Component<Props, State> {
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: any) {
+  componentDidCatch(error: Error, errorInfo: { componentStack?: string }) {
     // Log l'erreur pour debugging
     console.error('Error caught by boundary:', error);
     console.error('Error info:', errorInfo);

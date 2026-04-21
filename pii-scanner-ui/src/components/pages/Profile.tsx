@@ -67,8 +67,9 @@ const Profile: React.FC = () => {
         userObj.fullName = profileData.fullName;
         localStorage.setItem('user', JSON.stringify(userObj));
       }
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'Erreur lors de la mise à jour du profil');
+    } catch (err: unknown) {
+      const e = err as { response?: { data?: { error?: string } } };
+      setError(e.response?.data?.error || 'Erreur lors de la mise à jour du profil');
     } finally {
       setLoading(false);
     }
@@ -131,8 +132,9 @@ const Profile: React.FC = () => {
       });
 
       setTimeout(() => setPasswordSuccess(''), 3000);
-    } catch (err: any) {
-      setPasswordError(err.response?.data?.error || 'Erreur lors du changement de mot de passe');
+    } catch (err: unknown) {
+      const e = err as { response?: { data?: { error?: string } } };
+      setPasswordError(e.response?.data?.error || 'Erreur lors du changement de mot de passe');
     } finally {
       setPasswordLoading(false);
     }
