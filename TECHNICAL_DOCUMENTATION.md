@@ -1,6 +1,6 @@
-# Documentation Technique Complète - PII Scanner v1.0.0
+# Documentation Technique Complète - PII Scanner v2.0.0
 
-**Développé par Cyberprevs** | Licence MIT | Janvier 2026
+**Développé par Cyberprevs** | Licence MIT | Avril 2026
 
 ---
 
@@ -26,6 +26,7 @@
 18. [Modèle de données](#18-modèle-de-données)
 19. [Journal d'audit](#19-journal-daudit)
 20. [Limitations connues et roadmap](#20-limitations-connues-et-roadmap)
+21. [Conformité APDP (v2.0)](#21-conformité-apdp-v20)
 
 ---
 
@@ -62,11 +63,15 @@ PII Scanner répond à ces questions en fournissant un **audit complet et automa
 | Analyse des permissions | Audit NTFS (Everyone, groupes, partages réseau) |
 | Analyse d'ancienneté | Détection des fichiers obsolètes (6 mois → +5 ans) |
 | Détection de doublons | Identification des fichiers dupliqués via hash MD5 |
-| 4 formats de rapports | CSV, JSON, HTML interactif, Excel multi-feuilles |
-| Interface web moderne | React 19 + Material-UI v7 avec thème sombre |
+| 4 formats de rapports | CSV, JSON, HTML interactif, Excel multi-feuilles (chiffrés AES-256) |
+| Interface web moderne | React 19 + Material-UI v7 — 18 pages, thème sombre/clair, bilingue FR/EN |
 | Temps réel | Progression du scan via WebSocket (SignalR) |
-| Sécurité renforcée | JWT, CSRF, Rate Limiting, SQLCipher AES-256 |
+| Sécurité renforcée | 13 mécanismes : JWT, CSRF, Rate Limiting, SQLCipher AES-256, Path Traversal... |
 | 100% local | Aucune donnée envoyée sur Internet |
+| **Consentement éclairé** | **Modal obligatoire avant tout scan — tracé en audit log (v2.0)** |
+| **Exports chiffrés AES-256** | **Tous les rapports chiffrés, mot de passe unique par téléchargement (v2.0)** |
+| **Déchiffrement intégré** | **Page /decrypt — ouvre les .enc dans le navigateur sans serveur (v2.0)** |
+| **Droit à l'effacement** | **DELETE /api/users/{id}/data — suppression en cascade conforme APDP (v2.0)** |
 
 ---
 
@@ -637,8 +642,63 @@ Tous les lecteurs sont encapsulés dans des blocs try-catch qui retournent `stri
 ├─────────────────────────────────────────┤
 │         Couche 8 : Audit               │
 │  Journal complet de toutes les actions  │
+├─────────────────────────────────────────┤
+│  Couche 9 : Chiffrement des exports     │
+│  AES-256-CBC + PBKDF2-SHA256 (100k it.) │
+│  Mot de passe unique, jamais persisté   │
+├─────────────────────────────────────────┤
+│  Couche 10 : Consentement éclairé       │
+│  Modal obligatoire, case à cocher,      │
+│  horodaté en AuditLog (APDP Art. 424)  │
 └─────────────────────────────────────────┘
 ```
+
+### 9.7 Chiffrement des exports (v2.0)
+
+**Fichier** : `PiiScanner.Api/Controllers/ScanController.cs` → classe `ReportEncryption`
+
+Tous les rapports téléchargés sont **chiffrés automatiquement** avant envoi au client. Aucun rapport en clair n'est jamais transmis.
+
+**Algorithme** :
+```
+AES-256-CBC + PBKDF2-SHA256
+  ├── Salt : 16 bytes aléatoires (RandomNumberGenerator)
+  ├── Dérivation de clé : PBKDF2-SHA256, 100 000 itérations (NIST SP 800-132)
+  ├── Clé AES : 256 bits (32 bytes)
+  ├── IV : 16 bytes (dérivé du PBKDF2)
+  └── Padding : PKCS7
+```
+
+**Format du fichier `.enc`** :
+```
+┌────────────────────────────────────────┐
+│  Bytes 0-15    │  Salt (16 bytes)      │
+│  Bytes 16-31   │  IV (16 bytes)        │
+│  Bytes 32-N    │  Données chiffrées    │
+└────────────────────────────────────────┘
+```
+
+**Génération du mot de passe** :
+```csharp
+// Charset : A-Z, a-z, 0-9, !@#$%^&* (caractères ambigus exclus : O, 0, I, l)
+const string chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%^&*";
+var bytes = RandomNumberGenerator.GetBytes(20);   // 20 caractères = ~127 bits d'entropie
+```
+
+**Transmission** :
+- Le mot de passe est retourné **une seule fois** dans le header HTTP `X-Report-Password`
+- Il n'est **jamais stocké** côté serveur
+- Une fois le dialog fermé dans l'UI, le mot de passe est perdu définitivement
+
+### 9.8 Scans de sécurité
+
+L'application fait l'objet d'analyses de sécurité régulières :
+
+| Outil | Type | Couverture |
+|-------|------|-----------|
+| **Snyk** | SAST + SCA | Analyse statique du code + vulnérabilités des dépendances |
+| **OWASP ZAP** | DAST | Tests de pénétration dynamiques sur l'API REST |
+| **Burp Suite** | DAST | Analyse des vulnérabilités OWASP Top 10 |
 
 ### 9.2 Protection CSRF
 
@@ -783,7 +843,8 @@ BCrypt est résistant aux attaques par force brute grâce à son coût adaptatif
 | PUT | `/{id}` | Admin | Modifier un utilisateur |
 | DELETE | `/{id}` | Admin | Supprimer un utilisateur |
 | PUT | `/change-password` | JWT | Changer son propre mot de passe |
-| PUT | `/profile` | JWT | Modifier son profre profil |
+| PUT | `/profile` | JWT | Modifier son propre profil |
+| **DELETE** | **`/{id}/data`** | **Admin** | **Droit à l'effacement APDP — suppression en cascade (v2.0)** |
 
 **Protections** :
 - Impossible de modifier/supprimer l'admin par défaut (Id=1)
@@ -806,7 +867,7 @@ BCrypt est résistant aux attaques par force brute grâce à son coût adaptatif
 | POST | `/backup/restore/{fileName}` | Admin | Restaurer depuis une sauvegarde |
 | POST | `/reset` | Admin | Réinitialisation complète (mot de passe requis) |
 
-### 10.5 Audit (`/api/audit`) - Admin uniquement
+### 10.5 Audit (`/api/audit`)
 
 | Méthode | Endpoint | Auth | Description |
 |---------|----------|------|-------------|
@@ -817,8 +878,14 @@ BCrypt est résistant aux attaques par force brute grâce à son coût adaptatif
 | GET | `/entity-types` | Admin | Liste des types d'entités |
 | GET | `/export/csv` | Admin | Exporter les logs en CSV |
 | DELETE | `/cleanup` | Admin | Supprimer les anciens logs |
+| **POST** | **`/consent`** | **JWT** | **Enregistrer l'acceptation du consentement APDP (v2.0)** |
 
 **Filtres disponibles** : `action`, `userId`, `entityType`, `startDate`, `endDate`, `search` (full-text)
+
+L'endpoint `POST /api/audit/consent` est accessible à **tous les utilisateurs authentifiés** (pas uniquement les admins). Il enregistre dans la table `AuditLog` :
+- Action : `ConsentAccepted`
+- UserId, IP, timestamp UTC
+- Détails : version du consentement, texte accepté
 
 ### 10.6 Paramètres utilisateur (`/api/usersettings`)
 
@@ -1003,14 +1070,60 @@ CREATE UNIQUE INDEX IX_UserSettings_UserId ON UserSettings(UserId);
 
 ### 13.1 Formats disponibles
 
-| Format | Extension | Taille typique | Usage recommandé |
-|--------|-----------|----------------|------------------|
-| **CSV** | .csv | ~50 KB | Import dans Excel, traitement automatisé |
-| **JSON** | .json | ~80 KB | Intégration API, pipelines de données |
-| **HTML** | .html | ~120 KB | Rapport visuel interactif, présentation |
-| **Excel** | .xlsx | ~100 KB | Analyse approfondie, filtrage, multi-feuilles |
+| Format | Extension chiffrée | Taille typique | Usage recommandé |
+|--------|-------------------|----------------|------------------|
+| **CSV** | .csv.enc | ~50 KB | Import dans Excel, traitement automatisé |
+| **JSON** | .json.enc | ~80 KB | Intégration API, pipelines de données |
+| **HTML** | .html.enc | ~120 KB | Rapport visuel interactif, présentation |
+| **Excel** | .xlsx.enc | ~100 KB | Analyse approfondie, filtrage, multi-feuilles |
 
-### 13.2 Contenu des rapports
+> **v2.0** : Tous les rapports sont chiffrés AES-256-CBC avant d'être envoyés au client. L'extension `.enc` indique un fichier chiffré.
+
+### 13.2 Chiffrement des rapports (v2.0)
+
+**Fichier** : `PiiScanner.Api/Controllers/ScanController.cs` → `DownloadReport()`
+
+Lors de chaque téléchargement de rapport, le serveur :
+
+1. Génère un mot de passe aléatoire de **20 caractères** (~127 bits d'entropie)
+2. Chiffre le rapport avec **AES-256-CBC + PBKDF2-SHA256** (100 000 itérations)
+3. Retourne le fichier chiffré `.enc`
+4. Expose le mot de passe **une seule fois** dans le header `X-Report-Password`
+5. Ne stocke jamais le mot de passe côté serveur
+
+```
+Format du fichier .enc :
+  [0-15]   Salt 16 bytes (aléatoire)
+  [16-31]  IV 16 bytes (dérivé du PBKDF2)
+  [32-N]   Données chiffrées (AES-256-CBC, padding PKCS7)
+```
+
+**Le mot de passe est affiché dans un dialog une seule fois.** Une fois fermé, il est définitivement inaccessible — même pour l'administrateur.
+
+### 13.3 Déchiffrement (v2.0)
+
+**Option 1 — Page /decrypt (recommandée)** :
+L'application intègre une page de déchiffrement à `/decrypt`. Le déchiffrement s'effectue **100% dans le navigateur** via la Web Crypto API — aucune donnée n'est envoyée en ligne.
+
+```
+Processus de déchiffrement dans le navigateur :
+  1. Glisser-déposer le fichier .enc
+  2. Saisir le mot de passe
+  3. Web Crypto API :
+     - Lecture des 16 premiers bytes → salt
+     - Bytes 16-31 → IV
+     - PBKDF2-SHA256 (100 000 it.) → clé AES-256
+     - AES-CBC.decrypt() → données en clair
+  4. Téléchargement automatique du fichier déchiffré
+```
+
+**Option 2 — OpenSSL (ligne de commande)** :
+```bash
+# Extraction manuelle du salt et IV requis
+# → Utiliser la page /decrypt qui gère automatiquement le format
+```
+
+### 13.4 Contenu des rapports
 
 Chaque rapport contient :
 
@@ -1040,7 +1153,7 @@ Chaque rapport contient :
 - Type de PII
 - Valeur détectée
 
-### 13.3 Classification des risques
+### 13.5 Classification des risques
 
 | Niveau | Condition | Couleur |
 |--------|-----------|---------|
@@ -1048,7 +1161,7 @@ Chaque rapport contient :
 | **MOYEN** | 6-15 PII dans le fichier | Orange (#ff9800) |
 | **ÉLEVÉ** | 16+ PII dans le fichier | Rouge (#f44336) |
 
-### 13.4 Rapport HTML
+### 13.6 Rapport HTML
 
 Le rapport HTML est un fichier autonome (pas de dépendances externes) contenant :
 - CSS Grid responsive intégré
@@ -1089,11 +1202,14 @@ pii-scanner-ui/
 │   │   │   ├── UserManagement.tsx  # Admin : utilisateurs
 │   │   │   ├── AuditTrail.tsx      # Admin : audit
 │   │   │   ├── Support.tsx         # FAQ et contact
-│   │   │   └── About.tsx           # À propos
+│   │   │   ├── About.tsx           # À propos
+│   │   │   └── DecryptReport.tsx   # Déchiffrement .enc — Web Crypto API (v2.0)
 │   │   ├── Login.tsx               # Page de connexion
 │   │   ├── InitialSetup.tsx        # Setup initial
 │   │   ├── ProtectedRoute.tsx      # Guard de route
-│   │   └── ErrorBoundary.tsx       # Gestion d'erreurs
+│   │   ├── ErrorBoundary.tsx       # Gestion d'erreurs
+│   │   └── common/
+│   │       └── ConsentModal.tsx    # Modal APDP (v2.0)
 │   ├── contexts/
 │   │   └── AuthContext.tsx         # État d'authentification
 │   ├── services/
@@ -1191,6 +1307,7 @@ Menu (tous les utilisateurs) :
 │   └── Exposition
 ├── Rapports & Analytics
 ├── Exports
+├── Déchiffrer un rapport  ← (v2.0)
 ├── Rétention
 ├── Mon Profil
 ├── Support
@@ -1205,6 +1322,26 @@ Menu Admin uniquement :
 ```
 
 La sidebar est **rétractable** (240px → 65px) avec des sous-menus dépliables (Collapse).
+
+### 14.6 Internationalisation (i18n) (v2.0)
+
+L'interface est disponible en **français et en anglais**. La langue est auto-détectée via `i18next-browser-languagedetector` et stockée dans `localStorage` sous la clé `pii-scanner-language`.
+
+Les fichiers de traduction se trouvent dans `pii-scanner-ui/src/i18n/` :
+- `fr.json` — Français (langue par défaut)
+- `en.json` — Anglais
+
+Toutes les chaînes de l'interface utilisent le hook `useTranslation()` — aucune chaîne n'est codée en dur dans les composants.
+
+### 14.7 ConsentModal (v2.0)
+
+**Fichier** : `pii-scanner-ui/src/components/common/ConsentModal.tsx`
+
+Modal APDP affiché avant le premier scan de chaque utilisateur. Caractéristiques :
+- Impossible à contourner : touche Échap désactivée, clic hors modal bloqué
+- Case à cocher obligatoire (consentement actif, pas passif)
+- Explique les 4 modalités : accès fichiers, traitement local, stockage chiffré, droit à l'effacement
+- Lors de la validation : appel `POST /api/audit/consent`, stockage dans `localStorage` sous `scanConsent_<username>`
 
 ### 14.6 Dashboard (KPIs et graphiques)
 
@@ -1412,7 +1549,7 @@ JWT expiré (8h)
 ### 17.1 Architecture de déploiement
 
 ```
-PII-Scanner-v1.0.0-Windows-Standalone.zip (~73 MB)
+PII-Scanner-v2.0.0-Windows-Standalone.zip (~73 MB)
 │
 ├── PiiScanner.Api.exe          # Exécutable principal (double-cliquer)
 ├── PiiScanner.Api.dll          # Bibliothèque principale
@@ -1562,6 +1699,9 @@ interface ScanResult {
 | `UpdateDatabaseSettings` | AppSettings | Modification paramètres | Nouveaux paramètres |
 | `UpdateUserSettings` | UserSettings | Modification préférences | User ID |
 | `CleanupAuditLogs` | AuditLog | Nettoyage des logs | Nombre de logs supprimés |
+| **`ConsentAccepted`** | **Consent** | **Acceptation du modal APDP avant scan** | **Version consentement, timestamp (v2.0)** |
+| **`DownloadReport`** | **Report** | **Téléchargement d'un rapport chiffré** | **Format, ScanId, "Rapport chiffré" (v2.0)** |
+| **`DataErasure`** | **User** | **Droit à l'effacement APDP** | **"Suppression des données personnelles — droit à l'effacement APDP" (v2.0)** |
 
 ### Informations capturées
 
@@ -1587,23 +1727,177 @@ Chaque entrée du journal contient :
 | Limitation | Impact | Contournement |
 |-----------|--------|---------------|
 | Windows uniquement (standalone) | Pas de support Linux/macOS natif | Exécuter en dev mode avec `dotnet run` |
-| Pas d'arrêt de scan | Impossible d'annuler un scan en cours | Fermer l'application et relancer |
 | Résultats en mémoire | Perdus si l'application redémarre | Exporter les rapports dès la fin du scan |
-| Pas d'i18n | Interface en français uniquement | - |
-| Pas de scan planifié | Scans manuels uniquement | - |
-| Pas de mode sombre persistant | Reset au rechargement de page | - |
+| Pas de scan planifié | Scans manuels uniquement | Automatisation via l'API REST + PowerShell |
 | 7 formats de fichiers | Pas de support .pptx, .odt, .rtf | Convertir en format supporté |
+| Scan non interruptible une fois lancé | Impossible d'annuler proprement | Attendre la fin ou redémarrer l'application |
+
+**Fonctionnalités ajoutées en v2.0 (limitations résolues)** :
+- ~~Pas d'i18n~~ → Interface bilingue FR/EN (i18next)
+- ~~Pas de mode sombre persistant~~ → Persisté dans localStorage via le thème MUI
+- ~~Pas de raccourcis clavier~~ → `Ctrl+E` (export CSV), `Escape` (arrêt scan)
+- ~~Exports en clair~~ → Exports chiffrés AES-256-CBC
 
 ### Pistes d'évolution
 
-- **Scan planifié** : Tâches CRON pour les scans automatiques
-- **Raccourcis clavier** : Ctrl+S (Scanner), Ctrl+E (Exports), Escape (fermer notifications)
-- **Internationalisation** : Support multi-langue (FR, EN, etc.)
-- **Notifications email** : Alertes sur les scans terminés
-- **API publique** : Endpoints documentés pour intégration tierce
-- **Support Linux** : Package pour distributions Linux
+- **Scan planifié** : Tâches CRON intégrées pour les scans automatiques
+- **Notifications email** : Alertes sur les scans terminés ou les anomalies détectées
+- **Support Linux** : Package pour distributions Linux (Ubuntu, Debian)
 - **OCR** : Détection de PII dans les images (Tesseract)
-- **Scan incrémental** : Ne rescanner que les fichiers modifiés
+- **Scan incrémental** : Ne rescanner que les fichiers modifiés depuis le dernier scan
+- **Tableau de bord multi-scan** : Comparaison de scans dans le temps
+- **Support .pptx / .odt / .rtf** : Formats bureautiques supplémentaires
+
+---
+
+## 21. Conformité APDP (v2.0)
+
+PII Scanner v2.0 implémente quatre mesures de conformité spécifiques à la **Loi N°2017-20 portant Code du Numérique en République du Bénin** (articles 424, 425, 426) et au référentiel **PSSIE**.
+
+---
+
+### 21.1 Consentement éclairé (Art. 424-426)
+
+**Fichier** : `pii-scanner-ui/src/components/common/ConsentModal.tsx`
+
+Avant tout traitement de données personnelles, un modal de consentement est affiché. Ce modal est **impossible à contourner** :
+
+- La touche `Échap` est désactivée
+- Cliquer en dehors du modal ne le ferme pas
+- Une case à cocher doit être cochée explicitement (consentement actif)
+- Le bouton de confirmation est désactivé tant que la case n'est pas cochée
+
+**Contenu du modal** :
+
+Le modal explique en langage clair les 4 modalités de traitement :
+1. Accès aux fichiers du dossier sélectionné (lecture seule)
+2. Traitement 100% local — aucune donnée envoyée en ligne
+3. Stockage sécurisé AES-256 (base de données chiffrée)
+4. Droit à l'effacement disponible à tout moment
+
+**Traçabilité** :
+
+Lors de la validation, l'application :
+1. Stocke le consentement dans `localStorage` sous `scanConsent_<username>`
+2. Appelle `POST /api/audit/consent` pour enregistrer en base de données
+
+L'entrée AuditLog contient :
+- `Action` : `ConsentAccepted`
+- `UserId`, `IpAddress`, `CreatedAt` (UTC)
+- `Details` : texte horodaté avec version du consentement
+
+**Conformité** : Art. 424 (licéité du traitement), Art. 425 (information préalable), Art. 426 (consentement explicite).
+
+---
+
+### 21.2 Droit à l'effacement (Art. 424)
+
+**Endpoint** : `DELETE /api/users/{id}/data`  
+**Accès** : Administrateurs uniquement (RBAC)
+
+Lors de l'appel à cet endpoint, la suppression s'effectue en **cascade complète et irréversible** dans cet ordre :
+
+```
+1. Sessions (refresh tokens actifs)
+2. ScanRecords (historique des scans)
+3. UserSettings (préférences)
+4. AuditLogs (sauf le dernier — voir ci-dessous)
+5. User (compte)
+```
+
+**Dernier enregistrement d'audit conservé** :
+
+Conformément aux bonnes pratiques d'auditabilité, un dernier enregistrement est conservé après la suppression :
+```
+Action  : DataErasure
+Details : "Suppression des données personnelles — droit à l'effacement APDP"
+UserId  : null (l'utilisateur n'existe plus)
+```
+
+**Conformité** : Art. 424 al. 5 (droit à l'effacement), principe de traçabilité PSSIE.
+
+---
+
+### 21.3 Chiffrement des exports (PSSIE — Confidentialité)
+
+**Fichier** : `PiiScanner.Api/Controllers/ScanController.cs` → `ReportEncryption`
+
+Tous les rapports exportés contiennent des données personnelles identifiables. Ils sont chiffrés **avant transmission** via AES-256-CBC.
+
+**Paramètres cryptographiques** :
+
+| Paramètre | Valeur | Référence |
+|-----------|--------|-----------|
+| Algorithme | AES-256-CBC | NIST FIPS 197 |
+| Dérivation de clé | PBKDF2-SHA256 | NIST SP 800-132 |
+| Itérations PBKDF2 | 100 000 | Recommandation OWASP 2024 |
+| Salt | 16 bytes aléatoires (CSPRNG) | — |
+| IV | 16 bytes (dérivé PBKDF2) | — |
+| Entropie du mot de passe | ~127 bits (20 chars) | — |
+
+**Garanties** :
+- Le mot de passe est généré par `RandomNumberGenerator` (CSPRNG) — pas de `Random()`
+- Il est transmis **une seule fois** via le header `X-Report-Password`
+- Il n'est **jamais stocké** côté serveur (ni en base, ni en logs)
+- Une fois le dialog fermé dans l'UI, la récupération est impossible
+
+**Conformité** : PSSIE §4.3 (chiffrement des données sensibles en transit et au repos), Art. 424 (intégrité et confidentialité).
+
+---
+
+### 21.4 Déchiffrement intégré — Web Crypto API (v2.0)
+
+**Fichier** : `pii-scanner-ui/src/components/pages/DecryptReport.tsx`  
+**Route** : `/decrypt`
+
+Page dédiée au déchiffrement des fichiers `.enc`. Le déchiffrement s'effectue **intégralement dans le navigateur** — aucune donnée ne quitte le poste de travail pendant cette opération.
+
+**Implémentation** :
+```typescript
+// 1. Lecture du fichier .enc
+const data = await file.arrayBuffer();
+const salt = data.slice(0, 16);
+const iv   = data.slice(16, 32);
+const enc  = data.slice(32);
+
+// 2. Dérivation de la clé (PBKDF2)
+const keyMaterial = await crypto.subtle.importKey('raw', passwordBytes, 'PBKDF2', false, ['deriveKey']);
+const aesKey = await crypto.subtle.deriveKey(
+  { name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' },
+  keyMaterial,
+  { name: 'AES-CBC', length: 256 },
+  false, ['decrypt']
+);
+
+// 3. Déchiffrement AES-CBC
+const decrypted = await crypto.subtle.decrypt({ name: 'AES-CBC', iv }, aesKey, enc);
+```
+
+**Fonctionnalités UX** :
+- Zone de glisser-déposer (drag & drop) acceptant uniquement les fichiers `.enc`
+- Champ mot de passe avec affichage/masquage
+- Téléchargement automatique du fichier déchiffré avec le bon type MIME
+- Messages d'erreur clairs (mot de passe incorrect, format invalide)
+
+**Conformité** : Principe de minimisation (aucune donnée exposée en transit), PSSIE §4.3.
+
+---
+
+### 21.5 Tableau de conformité — Articles 424-426
+
+| Article | Exigence | Implémentation PII Scanner | Statut |
+|---------|----------|---------------------------|--------|
+| Art. 424 al. 1 | Licéité du traitement | Modal de consentement obligatoire avant tout scan | ✅ |
+| Art. 424 al. 2 | Finalité déterminée | Finalité expliquée dans le modal : audit de conformité PII | ✅ |
+| Art. 424 al. 3 | Minimisation des données | Résultats en RAM uniquement, non persistés en base | ✅ |
+| Art. 424 al. 4 | Exactitude | Validation avancée (Luhn, anti-faux positifs) — ~87% moins de FP | ✅ |
+| Art. 424 al. 5 | Droit à l'effacement | `DELETE /api/users/{id}/data` — suppression en cascade | ✅ |
+| Art. 424 al. 6 | Intégrité et confidentialité | AES-256 (SQLCipher + exports), BCrypt, JWT, HTTPS/TLS | ✅ |
+| Art. 425 | Information préalable | Modal détaillé avec les 4 modalités de traitement | ✅ |
+| Art. 426 | Consentement explicite | Case à cocher obligatoire, horodaté en AuditLog | ✅ |
+| PSSIE §4.3 | Chiffrement données sensibles | AES-256-CBC exports + AES-256 base de données (SQLCipher) | ✅ |
+| PSSIE §5.1 | Traçabilité | AuditLog complet : login, scan, rapport, consentement, effacement | ✅ |
+| PSSIE §6.2 | Contrôle d'accès | RBAC Admin/Operator, JWT, sessions révocables | ✅ |
 
 ---
 
@@ -1665,4 +1959,4 @@ Chaque entrée du journal contient :
 
 ---
 
-**Développé par Cyberprevs** | [cyberprevs.fr](https://cyberprevs.fr) | Licence MIT | v1.0.0 | Janvier 2026
+**Développé par Cyberprevs** | [cyberprevs.fr](https://cyberprevs.fr) | Licence MIT | v2.0.0 | Avril 2026
