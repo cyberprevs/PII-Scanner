@@ -46,6 +46,7 @@ const DecryptReport: React.FC = () => {
     setDragOver(false);
     const dropped = e.dataTransfer.files[0];
     if (dropped) handleFileSelect(dropped);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleDecrypt = async () => {

@@ -53,19 +53,20 @@ const UserManagement: React.FC = () => {
     isActive: true
   });
 
-  useEffect(() => {
-    loadUsers();
-  }, []);
-
   const loadUsers = async () => {
     try {
       const response = await axios.get('/users');
       setUsers(response.data);
-    } catch (error) {
-      console.error('Error loading users:', error);
+    } catch (err) {
+      console.error('Error loading users:', err);
       setError('Erreur lors du chargement des utilisateurs');
     }
   };
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    loadUsers();
+  }, []);
 
   const handleOpenDialog = (user?: User) => {
     if (user) {
@@ -144,8 +145,9 @@ const UserManagement: React.FC = () => {
       handleCloseDialog();
       loadUsers();
       setTimeout(() => setSuccess(''), 3000);
-    } catch (error: any) {
-      setError(error.response?.data?.error || 'Erreur lors de l\'enregistrement');
+    } catch (err: unknown) {
+      const e = err as { response?: { data?: { error?: string } } };
+      setError(e.response?.data?.error || 'Erreur lors de l\'enregistrement');
     }
   };
 
@@ -159,8 +161,9 @@ const UserManagement: React.FC = () => {
       setSuccess('Utilisateur supprimé avec succès');
       loadUsers();
       setTimeout(() => setSuccess(''), 3000);
-    } catch (error: any) {
-      setError(error.response?.data?.error || 'Erreur lors de la suppression');
+    } catch (err: unknown) {
+      const e = err as { response?: { data?: { error?: string } } };
+      setError(e.response?.data?.error || 'Erreur lors de la suppression');
       setTimeout(() => setError(''), 3000);
     }
   };

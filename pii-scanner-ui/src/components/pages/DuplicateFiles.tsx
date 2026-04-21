@@ -157,7 +157,7 @@ export default function DuplicateFiles({ results }: DuplicateFilesProps) {
       if (!detection.filePath || !detection.piiType) return;
 
       const key = detection.filePath;
-      const hash = (detection as any).fileHash || '';
+      const hash = (detection as { fileHash?: string }).fileHash || '';
 
       if (!hash) return;
 

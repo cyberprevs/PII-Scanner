@@ -9,7 +9,7 @@ export const logger = {
   /**
    * Log informatif (développement uniquement)
    */
-  info: (message: string, ...args: any[]) => {
+  info: (message: string, ...args: unknown[]) => {
     if (isDev) {
       console.log(`[INFO] ${message}`, ...args);
     }
@@ -18,7 +18,7 @@ export const logger = {
   /**
    * Log d'avertissement (développement uniquement)
    */
-  warn: (message: string, ...args: any[]) => {
+  warn: (message: string, ...args: unknown[]) => {
     if (isDev) {
       console.warn(`[WARN] ${message}`, ...args);
     }
@@ -27,14 +27,14 @@ export const logger = {
   /**
    * Log d'erreur (toujours actif, même en production)
    */
-  error: (message: string, ...args: any[]) => {
+  error: (message: string, ...args: unknown[]) => {
     console.error(`[ERROR] ${message}`, ...args);
   },
 
   /**
    * Log de debug (développement uniquement)
    */
-  debug: (message: string, ...args: any[]) => {
+  debug: (message: string, ...args: unknown[]) => {
     if (isDev) {
       console.debug(`[DEBUG] ${message}`, ...args);
     }
@@ -43,7 +43,7 @@ export const logger = {
   /**
    * Log de succès (développement uniquement)
    */
-  success: (message: string, ...args: any[]) => {
+  success: (message: string, ...args: unknown[]) => {
     if (isDev) {
       console.log(`%c[SUCCESS] ${message}`, 'color: green; font-weight: bold', ...args);
     }

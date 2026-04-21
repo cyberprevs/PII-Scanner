@@ -71,6 +71,9 @@ interface Backup {
   createdAt: string;
 }
 
+type ApiError = { response?: { data?: { error?: string; message?: string } } };
+const apiErr = (err: unknown) => err as ApiError;
+
 const DatabaseManagement: React.FC = () => {
   const [stats, setStats] = useState<DatabaseStats | null>(null);
   const [settings, setSettings] = useState<AppSettings | null>(null);
@@ -108,9 +111,9 @@ const DatabaseManagement: React.FC = () => {
       setStats(statsRes.data);
       setSettings(settingsRes.data);
       setBackups(backupsRes.data);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error loading data:', err);
-      setError(err.response?.data?.error || 'Erreur lors du chargement des données');
+      setError(apiErr(err).response?.data?.error || 'Erreur lors du chargement des données');
     } finally {
       setLoading(false);
     }
@@ -130,8 +133,8 @@ const DatabaseManagement: React.FC = () => {
 
       setSuccess('Paramètres mis à jour avec succès');
       setTimeout(() => setSuccess(''), 3000);
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'Erreur lors de la mise à jour des paramètres');
+    } catch (err: unknown) {
+      setError(apiErr(err).response?.data?.error || 'Erreur lors de la mise à jour des paramètres');
       setTimeout(() => setError(''), 3000);
     }
   };
@@ -142,8 +145,8 @@ const DatabaseManagement: React.FC = () => {
       setSuccess(`Nettoyage effectué: ${response.data.deleted.Scans} scans, ${response.data.deleted.AuditLogs} logs, ${response.data.deleted.Sessions} sessions supprimés`);
       setTimeout(() => setSuccess(''), 5000);
       loadData();
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'Erreur lors du nettoyage');
+    } catch (err: unknown) {
+      setError(apiErr(err).response?.data?.error || 'Erreur lors du nettoyage');
       setTimeout(() => setError(''), 3000);
     }
   };
@@ -154,8 +157,8 @@ const DatabaseManagement: React.FC = () => {
       setSuccess('Base de données optimisée avec succès');
       setTimeout(() => setSuccess(''), 3000);
       loadData();
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'Erreur lors de l\'optimisation');
+    } catch (err: unknown) {
+      setError(apiErr(err).response?.data?.error || 'Erreur lors de l\'optimisation');
       setTimeout(() => setError(''), 3000);
     }
   };
@@ -166,8 +169,8 @@ const DatabaseManagement: React.FC = () => {
       setSuccess(`Sauvegarde créée: ${response.data.backupFile}`);
       setTimeout(() => setSuccess(''), 3000);
       loadData();
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'Erreur lors de la sauvegarde');
+    } catch (err: unknown) {
+      setError(apiErr(err).response?.data?.error || 'Erreur lors de la sauvegarde');
       setTimeout(() => setError(''), 3000);
     }
   };
@@ -187,7 +190,7 @@ const DatabaseManagement: React.FC = () => {
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
-    } catch (err: any) {
+    } catch {
       setError('Erreur lors du téléchargement de la sauvegarde');
       setTimeout(() => setError(''), 3000);
     }
@@ -201,10 +204,10 @@ const DatabaseManagement: React.FC = () => {
       setSuccess(`Sauvegarde supprimée: ${fileName}`);
       setTimeout(() => setSuccess(''), 3000);
       loadData();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Delete backup error:', err);
-      console.error('Error response:', err.response);
-      setError(err.response?.data?.error || err.response?.data?.message || 'Erreur lors de la suppression de la sauvegarde');
+      console.error('Error response:', apiErr(err).response);
+      setError(apiErr(err).response?.data?.error || apiErr(err).response?.data?.message || 'Erreur lors de la suppression de la sauvegarde');
       setTimeout(() => setError(''), 3000);
     }
   };
@@ -219,9 +222,9 @@ const DatabaseManagement: React.FC = () => {
         localStorage.removeItem('refreshToken');
         window.location.href = '/login';
       }, 3000);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Restore backup error:', err);
-      setError(err.response?.data?.error || 'Erreur lors de la restauration de la sauvegarde');
+      setError(apiErr(err).response?.data?.error || 'Erreur lors de la restauration de la sauvegarde');
       setTimeout(() => setError(''), 5000);
     }
   };
@@ -252,8 +255,8 @@ const DatabaseManagement: React.FC = () => {
       setTimeout(() => {
         loadData();
       }, 2000);
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'Erreur lors de la réinitialisation');
+    } catch (err: unknown) {
+      setError(apiErr(err).response?.data?.error || 'Erreur lors de la réinitialisation');
       setTimeout(() => setError(''), 3000);
     }
   };

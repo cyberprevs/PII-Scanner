@@ -64,6 +64,7 @@ const ScanHistory: React.FC = () => {
   const [scanToDelete, setScanToDelete] = useState<ScanHistoryItem | null>(null);
   const [deleting, setDeleting] = useState(false);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { loadHistory(); }, []);
 
   useEffect(() => {

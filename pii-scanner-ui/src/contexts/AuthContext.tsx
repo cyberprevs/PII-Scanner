@@ -28,6 +28,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
@@ -82,9 +83,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       // Initialiser le token CSRF après connexion réussie
       await initializeCsrfToken();
-    } catch (error: any) {
-      console.error('Login error:', error);
-      throw new Error(error.response?.data?.error || 'Échec de la connexion');
+    } catch (err: unknown) {
+      console.error('Login error:', err);
+      const e = err as { response?: { data?: { error?: string } } };
+      throw new Error(e.response?.data?.error || 'Échec de la connexion');
     }
   };
 

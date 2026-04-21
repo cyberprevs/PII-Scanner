@@ -120,6 +120,7 @@ function App() {
     if (isInitialized === true && !checkingInit) {
       restoreLastScan();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isInitialized, checkingInit]);
 
   useEffect(() => {
@@ -189,9 +190,9 @@ function App() {
       } else {
         throw new Error(response.message || 'Échec du démarrage du scan');
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Start scan error:', err);
-      setError(err.message || 'Erreur lors du démarrage du scan');
+      setError((err as Error).message || 'Erreur lors du démarrage du scan');
       setScanning(false);
     }
   };
@@ -266,7 +267,7 @@ function App() {
       localStorage.removeItem('lastScanResults');
 
       setSuccessMessage('Scan arrêté avec succès');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Erreur lors de l\'arrêt du scan:', err);
       setError('Erreur lors de l\'arrêt du scan');
 

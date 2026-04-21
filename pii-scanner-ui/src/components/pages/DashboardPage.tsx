@@ -7,6 +7,6 @@ interface DashboardPageProps {
   onNewScan: () => void;
 }
 
-export default function DashboardPage({ results, onDownloadReport: _onDownloadReport, onNewScan: _onNewScan }: DashboardPageProps) {
+export default function DashboardPage({ results }: DashboardPageProps) {
   return <Dashboard results={results} />;
 }
