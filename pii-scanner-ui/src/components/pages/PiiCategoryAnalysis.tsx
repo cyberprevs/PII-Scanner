@@ -48,6 +48,7 @@ import { glassCardSx, getRechartsTooltipStyle, tokens } from '../../theme/design
 
 interface Props {
   results: ScanResultResponse | null;
+  onDownloadReport: (format: 'csv' | 'json' | 'html' | 'excel') => void;
 }
 
 const PII_CATEGORIES = {
@@ -102,7 +103,7 @@ const SEVERITY_COLORS = {
   Faible: '#4caf50',
 };
 
-const PiiCategoryAnalysis: React.FC<Props> = ({ results }) => {
+const PiiCategoryAnalysis: React.FC<Props> = ({ results, onDownloadReport }) => {
   const { t } = useTranslation();
   const theme = useTheme();
   const dark = theme.palette.mode === 'dark';
@@ -114,39 +115,12 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results }) => {
 
   const exportToCSV = () => {
     if (groupedFiles.length === 0) { alert(t('categoryAnalysis.noData')); return; }
-    const headers = ['Fichier', 'Types PII', 'Nombre de détections'];
-    const rows = groupedFiles.map((file) => [file.filePath, file.piiTypes.join(', '), file.detectionCount.toString()]);
-    const csvContent = [headers.join(';'), ...rows.map((row) => row.join(';'))].join('\n');
-    const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `analyse_pii_categories_${new Date().toISOString().split('T')[0]}.csv`;
-    link.click();
-    URL.revokeObjectURL(url);
+    onDownloadReport('csv');
   };
 
   const exportToExcel = () => {
     if (groupedFiles.length === 0) { alert(t('categoryAnalysis.noData')); return; }
-    const headers = ['Fichier', 'Types PII', 'Nombre de détections', 'Catégories', 'Niveau de sensibilité'];
-    const rows = groupedFiles.map((file) => {
-      const categories = new Set<string>();
-      const severities = new Set<string>();
-      file.piiTypes.forEach((type) => {
-        Object.entries(PII_CATEGORIES).forEach(([catName, catData]) => {
-          if (catData.types.includes(type)) { categories.add(catName); severities.add(catData.severity); }
-        });
-      });
-      return [file.filePath, file.piiTypes.join(', '), file.detectionCount.toString(), Array.from(categories).join(', '), Array.from(severities).join(', ')];
-    });
-    const csvContent = [headers.join(';'), ...rows.map((row) => row.join(';'))].join('\n');
-    const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `analyse_pii_categories_${new Date().toISOString().split('T')[0]}.xlsx`;
-    link.click();
-    URL.revokeObjectURL(url);
+    onDownloadReport('excel');
   };
 
   const categoryStats = useMemo(() => {

@@ -177,7 +177,10 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
   const sidebarBg = darkMode ? c.bgSurface : c.light.bgSurface;
   const sidebarBorder = darkMode ? c.borderDefault : c.light.borderDefault;
   const iconInactive = darkMode ? c.textTertiary : c.light.textTertiary;
-  const hoverBg = darkMode ? c.accentPrimaryMuted : 'rgba(0, 229, 153, 0.06)';
+  const hoverBg = darkMode ? c.accentPrimaryMuted : 'rgba(0, 229, 153, 0.08)';
+  const selectedBg = darkMode ? c.accentPrimaryMuted : 'rgba(0, 180, 110, 0.15)';
+  const selectedColor = darkMode ? c.accentPrimary : '#007a4d';
+  const selectedIndicator = darkMode ? c.accentPrimary : '#007a4d';
 
   return (
     <Drawer
@@ -243,10 +246,11 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
                         minHeight: 44,
                         justifyContent: collapsed ? 'center' : 'flex-start',
                         '&.Mui-selected': {
-                          backgroundColor: c.accentPrimaryMuted,
-                          color: c.accentPrimary,
-                          '&:hover': { backgroundColor: c.accentPrimaryMuted },
-                          '& .MuiListItemIcon-root': { color: c.accentPrimary },
+                          backgroundColor: selectedBg,
+                          color: selectedColor,
+                          fontWeight: 600,
+                          '&:hover': { backgroundColor: selectedBg },
+                          '& .MuiListItemIcon-root': { color: selectedColor },
                           '&::before': {
                             content: '""',
                             position: 'absolute',
@@ -254,9 +258,9 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
                             top: 6,
                             bottom: 6,
                             width: 3,
-                            bgcolor: c.accentPrimary,
+                            bgcolor: selectedIndicator,
                             borderRadius: '0 2px 2px 0',
-                            background: c.accentPrimary,
+                            background: selectedIndicator,
                           },
                         },
                         '&:hover': { backgroundColor: hoverBg },
@@ -268,7 +272,7 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
                           minWidth: 0,
                           mr: collapsed ? 0 : 2,
                           justifyContent: 'center',
-                          color: isSelected(item) ? c.accentPrimary : iconInactive,
+                          color: isSelected(item) ? selectedColor : iconInactive,
                         }}
                       >
                         {item.icon}
@@ -298,10 +302,11 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
                                 minHeight: 38,
                                 pl: 4,
                                 '&.Mui-selected': {
-                                  backgroundColor: c.accentPrimaryMuted,
-                                  color: c.accentPrimary,
-                                  '&:hover': { backgroundColor: c.accentPrimaryMuted },
-                                  '& .MuiListItemIcon-root': { color: c.accentPrimary },
+                                  backgroundColor: selectedBg,
+                                  color: selectedColor,
+                                  fontWeight: 600,
+                                  '&:hover': { backgroundColor: selectedBg },
+                                  '& .MuiListItemIcon-root': { color: selectedColor },
                                 },
                                 '&:hover': { backgroundColor: hoverBg },
                               }}
@@ -311,7 +316,7 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
                                   minWidth: 0,
                                   mr: 2,
                                   justifyContent: 'center',
-                                  color: location.pathname === subItem.path ? c.accentPrimary : iconInactive,
+                                  color: location.pathname === subItem.path ? selectedColor : iconInactive,
                                 }}
                               >
                                 {subItem.icon}
@@ -338,10 +343,11 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
                       minHeight: 44,
                       justifyContent: collapsed ? 'center' : 'flex-start',
                       '&.Mui-selected': {
-                        backgroundColor: c.accentPrimaryMuted,
-                        color: c.accentPrimary,
-                        '&:hover': { backgroundColor: c.accentPrimaryMuted },
-                        '& .MuiListItemIcon-root': { color: c.accentPrimary },
+                        backgroundColor: selectedBg,
+                        color: selectedColor,
+                        fontWeight: 600,
+                        '&:hover': { backgroundColor: selectedBg },
+                        '& .MuiListItemIcon-root': { color: selectedColor },
                       },
                       '&:hover': { backgroundColor: hoverBg },
                     }}
@@ -351,7 +357,7 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
                         minWidth: 0,
                         mr: collapsed ? 0 : 2,
                         justifyContent: 'center',
-                        color: location.pathname === item.path ? c.accentPrimary : iconInactive,
+                        color: location.pathname === item.path ? selectedColor : iconInactive,
                       }}
                     >
                       {item.icon}
