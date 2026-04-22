@@ -310,9 +310,26 @@ public class ScanController : ControllerBase
         try
         {
             if (System.IO.File.Exists(request.FilePath))
-                System.Diagnostics.Process.Start("explorer.exe", $"/select,\"{request.FilePath}\"");
+            {
+                var startInfo = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = "explorer.exe",
+                    UseShellExecute = false
+                };
+                startInfo.ArgumentList.Add("/select,");
+                startInfo.ArgumentList.Add(request.FilePath);
+                System.Diagnostics.Process.Start(startInfo);
+            }
             else
-                System.Diagnostics.Process.Start("explorer.exe", $"\"{folderPath}\"");
+            {
+                var startInfo = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = "explorer.exe",
+                    UseShellExecute = false
+                };
+                startInfo.ArgumentList.Add(folderPath);
+                System.Diagnostics.Process.Start(startInfo);
+            }
 
             return Ok();
         }
