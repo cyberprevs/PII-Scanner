@@ -23,7 +23,7 @@
     "@microsoft/signalr": "^10.0.0",
     "@mui/icons-material": "^7.3.6",
     "@mui/material": "^7.3.6",
-    "axios": "^1.13.5",
+    "axios": "^1.15.0",
     "i18next": "^25.8.18",
     "i18next-browser-languagedetector": "^8.2.1",
     "react": "^19.2.0",
