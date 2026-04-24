@@ -333,25 +333,19 @@ public class DatabaseController : ControllerBase
     {
         try
         {
-            // SÉCURITÉ: Valider le nom de fichier pour prévenir les attaques de type Path Traversal
-            if (!PathValidator.ValidateFileName(fileName, out var validationError))
+            // Strip any path component — only the bare filename is accepted
+            var bareFileName = Path.GetFileName(fileName);
+            if (!PathValidator.ValidateFileName(bareFileName, out var validationError))
             {
                 _logger.LogWarning("Tentative de téléchargement avec un nom de fichier invalide: {FileName} - Erreur: {Error}",
-                    fileName, validationError);
+                    LogSanitizer.Sanitize(fileName), validationError);
                 return BadRequest(new { error = $"Nom de fichier invalide: {validationError}" });
             }
 
+            // backupPath is constructed entirely from server-controlled values + sanitized bare name
             var dbPath = GetDatabasePath();
-            var backupDir = Path.Combine(Path.GetDirectoryName(dbPath) ?? "", "backups");
-            var backupPath = Path.GetFullPath(Path.Combine(backupDir, fileName));
-
-            // SÉCURITÉ: Vérifier que le fichier est bien dans le répertoire de sauvegarde
-            if (!PathValidator.ValidateFileInDirectory(backupPath, backupDir, out validationError))
-            {
-                _logger.LogWarning("Tentative d'accès à un fichier hors du répertoire de sauvegarde: {Path}",
-                    backupPath);
-                return BadRequest(new { error = "Accès non autorisé au fichier" });
-            }
+            var backupDir = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(dbPath) ?? "", "backups"));
+            var backupPath = Path.Combine(backupDir, bareFileName);
 
             if (!System.IO.File.Exists(backupPath))
             {
@@ -359,7 +353,7 @@ public class DatabaseController : ControllerBase
             }
 
             var bytes = System.IO.File.ReadAllBytes(backupPath);
-            return File(bytes, "application/octet-stream", fileName);
+            return File(bytes, "application/octet-stream", bareFileName);
         }
         catch (Exception ex)
         {
@@ -376,31 +370,22 @@ public class DatabaseController : ControllerBase
     {
         try
         {
-            // SÉCURITÉ: Valider le nom de fichier pour prévenir les attaques de type Path Traversal
-            if (!PathValidator.ValidateFileName(fileName, out var validationError))
+            // Strip any path component — only the bare filename is accepted
+            var bareFileName = Path.GetFileName(fileName);
+            if (!PathValidator.ValidateFileName(bareFileName, out var validationError))
             {
                 _logger.LogWarning("Tentative de suppression avec un nom de fichier invalide: {FileName} - Erreur: {Error}",
-                    fileName, validationError);
+                    LogSanitizer.Sanitize(fileName), validationError);
                 return BadRequest(new { error = $"Nom de fichier invalide: {validationError}" });
             }
 
+            // backupPath is constructed entirely from server-controlled values + sanitized bare name
             var dbPath = GetDatabasePath();
-            var backupDir = Path.Combine(Path.GetDirectoryName(dbPath) ?? "", "backups");
-            var backupPath = Path.GetFullPath(Path.Combine(backupDir, fileName));
-
-            // SÉCURITÉ: Vérifier que le fichier est bien dans le répertoire de sauvegarde
-            if (!PathValidator.ValidateFileInDirectory(backupPath, backupDir, out validationError))
-            {
-                _logger.LogWarning("Tentative de suppression d'un fichier hors du répertoire de sauvegarde: {Path}",
-                    backupPath);
-                return BadRequest(new { error = "Accès non autorisé au fichier" });
-            }
-
-            _logger.LogInformation("Attempting to delete backup: {BackupPath}", backupPath);
+            var backupDir = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(dbPath) ?? "", "backups"));
+            var backupPath = Path.Combine(backupDir, bareFileName);
 
             if (!System.IO.File.Exists(backupPath))
             {
-                _logger.LogWarning("Backup file not found: {BackupPath}", backupPath);
                 return NotFound(new { error = "Sauvegarde non trouvée" });
             }
 
@@ -415,11 +400,11 @@ public class DatabaseController : ControllerBase
                 EntityType = "Database",
                 EntityId = "backup",
                 IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
-                Details = $"Sauvegarde supprimée: {fileName}"
+                Details = $"Sauvegarde supprimée: {bareFileName}"
             });
             await _db.SaveChangesAsync();
 
-            _logger.LogInformation("Database backup deleted: {FileName} by user {UserId}", fileName, userId);
+            _logger.LogInformation("Database backup deleted: {FileName} by user {UserId}", bareFileName, userId);
 
             return Ok(new { message = "Sauvegarde supprimée avec succès" });
         }
@@ -438,25 +423,19 @@ public class DatabaseController : ControllerBase
     {
         try
         {
-            // SÉCURITÉ: Valider le nom de fichier pour prévenir les attaques de type Path Traversal
-            if (!PathValidator.ValidateFileName(fileName, out var validationError))
+            // Strip any path component — only the bare filename is accepted
+            var bareFileName = Path.GetFileName(fileName);
+            if (!PathValidator.ValidateFileName(bareFileName, out var validationError))
             {
                 _logger.LogWarning("Tentative de restauration avec un nom de fichier invalide: {FileName} - Erreur: {Error}",
-                    fileName, validationError);
+                    LogSanitizer.Sanitize(fileName), validationError);
                 return BadRequest(new { error = $"Nom de fichier invalide: {validationError}" });
             }
 
+            // backupPath is constructed entirely from server-controlled values + sanitized bare name
             var dbPath = GetDatabasePath();
-            var backupDir = Path.Combine(Path.GetDirectoryName(dbPath) ?? "", "backups");
-            var backupPath = Path.GetFullPath(Path.Combine(backupDir, fileName));
-
-            // SÉCURITÉ: Vérifier que le fichier est bien dans le répertoire de sauvegarde
-            if (!PathValidator.ValidateFileInDirectory(backupPath, backupDir, out validationError))
-            {
-                _logger.LogWarning("Tentative de restauration d'un fichier hors du répertoire de sauvegarde: {Path}",
-                    backupPath);
-                return BadRequest(new { error = "Accès non autorisé au fichier" });
-            }
+            var backupDir = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(dbPath) ?? "", "backups"));
+            var backupPath = Path.Combine(backupDir, bareFileName);
 
             if (!System.IO.File.Exists(backupPath))
             {
@@ -468,7 +447,7 @@ public class DatabaseController : ControllerBase
             if (backupFileInfo.Length < 45000) // Moins de 45KB = probablement vide
             {
                 _logger.LogWarning("Backup file too small ({Size} bytes), might be empty: {FileName}",
-                    backupFileInfo.Length, fileName);
+                    backupFileInfo.Length, bareFileName);
                 return BadRequest(new {
                     error = "Cette sauvegarde semble vide ou incomplète (taille trop petite). La restauration pourrait vous empêcher de vous reconnecter. Choisissez une autre sauvegarde ou créez-en une nouvelle.",
                     sizeBytes = backupFileInfo.Length
@@ -483,7 +462,7 @@ public class DatabaseController : ControllerBase
 
             // Log audit AVANT la restauration (car après on perd les logs)
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
-            _logger.LogInformation("Database restore initiated by user {UserId}: {FileName}", userId, fileName);
+            _logger.LogInformation("Database restore initiated by user {UserId}: {FileName}", userId, bareFileName);
 
             // Fermer les connexions à la base de données
             await _db.Database.CloseConnectionAsync();
@@ -491,13 +470,13 @@ public class DatabaseController : ControllerBase
             // Restaurer la sauvegarde
             System.IO.File.Copy(backupPath, dbPath, true);
 
-            _logger.LogInformation("Database restored successfully from: {FileName}", fileName);
+            _logger.LogInformation("Database restored successfully from: {FileName}", bareFileName);
 
             return Ok(new
             {
                 message = "Base de données restaurée avec succès. Veuillez vous reconnecter.",
                 preRestoreBackup = preRestoreBackupFileName,
-                restoredFrom = fileName
+                restoredFrom = bareFileName
             });
         }
         catch (Exception ex)

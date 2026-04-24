@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using PiiScanner.Api.Data;
 using PiiScanner.Api.Models;
 using PiiScanner.Api.Attributes;
+using PiiScanner.Api.Utils;
 using System.ComponentModel.DataAnnotations;
 
 namespace PiiScanner.Api.Controllers;
@@ -80,7 +81,7 @@ public class InitializationController : ControllerBase
             _context.Users.Add(adminUser);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation($"Application initialisée avec le compte administrateur: {adminUser.Username}");
+            _logger.LogInformation("Application initialisée avec le compte administrateur: {Username}", LogSanitizer.Sanitize(adminUser.Username));
 
             return Ok(new InitializationResponse
             {

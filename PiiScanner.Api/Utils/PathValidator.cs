@@ -280,8 +280,12 @@ public static class PathValidator
         var normalizedFilePath = Path.GetFullPath(filePath);
         var normalizedAllowedDir = Path.GetFullPath(allowedDirectory);
 
+        // Ensure the allowed dir ends with a separator so "backups_evil" can't match "backups"
+        var dirWithSeparator = normalizedAllowedDir.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+                               + Path.DirectorySeparatorChar;
+
         // Vérifier que le fichier est dans le répertoire autorisé ou un sous-répertoire
-        if (!normalizedFilePath.StartsWith(normalizedAllowedDir, StringComparison.OrdinalIgnoreCase))
+        if (!normalizedFilePath.StartsWith(dirWithSeparator, StringComparison.OrdinalIgnoreCase))
         {
             errorMessage = "Le fichier n'est pas dans le répertoire autorisé";
             return false;
@@ -332,7 +336,8 @@ public static class PathValidator
             var normalized = Path.GetFullPath(combined);
 
             // Vérifier que le résultat est toujours dans le basePath
-            var normalizedBase = Path.GetFullPath(basePath);
+            var normalizedBase = Path.GetFullPath(basePath).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+                                 + Path.DirectorySeparatorChar;
 
             if (!normalized.StartsWith(normalizedBase, StringComparison.OrdinalIgnoreCase))
             {
