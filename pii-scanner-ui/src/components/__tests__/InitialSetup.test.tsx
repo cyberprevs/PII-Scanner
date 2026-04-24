@@ -108,7 +108,7 @@ describe('InitialSetup Component', () => {
   });
 
   describe('Form Validation - Password', () => {
-    it('should show error for password less than 12 characters', async () => {
+    it('should show error for password less than 24 characters', async () => {
       renderInitialSetup();
       const user = userEvent.setup();
       const { usernameInput, emailInput, fullNameInput, passwordInput, confirmPasswordInput } = getFormFields();
@@ -121,7 +121,7 @@ describe('InitialSetup Component', () => {
       await user.click(screen.getByRole('button', { name: /créer le compte/i }));
 
       await waitFor(() => {
-        expect(screen.getByText(/au moins 12 caractères/i)).toBeInTheDocument();
+        expect(screen.getByText(/au moins 24 caractères/i)).toBeInTheDocument();
       });
     });
 

@@ -63,8 +63,8 @@ const InitialSetup: React.FC<InitialSetupProps> = ({ onSetupComplete }) => {
       return false;
     }
 
-    if (!formData.password || formData.password.length < 12) {
-      setError('Le mot de passe doit contenir au moins 12 caractères');
+    if (!formData.password || formData.password.length < 24) {
+      setError('Le mot de passe doit contenir au moins 24 caractères');
       return false;
     }
 
@@ -306,7 +306,7 @@ const InitialSetup: React.FC<InitialSetupProps> = ({ onSetupComplete }) => {
                 onChange={handleChange('password')}
                 required
                 disabled={loading}
-                helperText="Min. 12 caractères, majuscule, minuscule, chiffre, caractère spécial"
+                helperText="Min. 24 caractères, majuscule, minuscule, chiffre, caractère spécial"
                 sx={inputSx}
                 InputProps={{
                   endAdornment: (
