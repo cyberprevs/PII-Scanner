@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Net;
+using PiiScanner.Api.Utils;
 
 namespace PiiScanner.Api.Middleware;
 
@@ -71,7 +72,7 @@ public class RateLimitingMiddleware
 
                 _logger.LogWarning(
                     "Rate limit dépassé pour {IpAddress} sur {Endpoint} - Type: {Type} - Tentatives: {Count}/{Max}",
-                    ipAddress, endpoint, endpointType, counter.Requests.Count, maxRequests);
+                    LogSanitizer.Sanitize(ipAddress), LogSanitizer.Sanitize(endpoint), endpointType, counter.Requests.Count, maxRequests);
 
                 context.Response.StatusCode = (int)HttpStatusCode.TooManyRequests;
                 context.Response.Headers["Retry-After"] = retryAfterSeconds.ToString();

@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
+using PiiScanner.Api.Utils;
 
 namespace PiiScanner.Api.Middleware;
 
@@ -70,7 +71,7 @@ public class CsrfProtectionMiddleware
             {
                 _logger.LogWarning(
                     "Tentative CSRF détectée: Token manquant pour {Method} {Path} depuis {IpAddress}",
-                    method, path, GetClientIpAddress(context));
+                    LogSanitizer.Sanitize(method), LogSanitizer.Sanitize(path), LogSanitizer.Sanitize(GetClientIpAddress(context)));
 
                 context.Response.StatusCode = 403;
                 await context.Response.WriteAsJsonAsync(new
@@ -89,7 +90,7 @@ public class CsrfProtectionMiddleware
             {
                 _logger.LogWarning(
                     "Tentative CSRF détectée: Token invalide pour {Method} {Path} depuis {IpAddress}",
-                    method, path, GetClientIpAddress(context));
+                    LogSanitizer.Sanitize(method), LogSanitizer.Sanitize(path), LogSanitizer.Sanitize(GetClientIpAddress(context)));
 
                 context.Response.StatusCode = 403;
                 await context.Response.WriteAsJsonAsync(new

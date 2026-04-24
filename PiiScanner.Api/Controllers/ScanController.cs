@@ -48,7 +48,7 @@ public class ScanController : ControllerBase
             if (!PathValidator.ValidateDirectoryPath(request.DirectoryPath, out var validationError, mustExist: true))
             {
                 _logger.LogWarning("Tentative de scan avec un chemin invalide: {Path} - Erreur: {Error}",
-                    request.DirectoryPath, validationError);
+                    LogSanitizer.Sanitize(request.DirectoryPath), validationError);
 
                 return BadRequest(new ScanResponse
                 {
@@ -72,7 +72,7 @@ public class ScanController : ControllerBase
             });
             _db.SaveChanges();
 
-            _logger.LogInformation("Scan démarré: {ScanId} pour le dossier {Path} par utilisateur {UserId}", scanId, request.DirectoryPath, userId);
+            _logger.LogInformation("Scan démarré: {ScanId} pour le dossier {Path} par utilisateur {UserId}", scanId, LogSanitizer.Sanitize(request.DirectoryPath), userId);
 
             return Ok(new ScanResponse
             {
