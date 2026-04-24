@@ -117,8 +117,18 @@ public class DatabaseEncryptionService
                 // Ancien fichier en clair — migrer vers DPAPI
                 var plainKey = System.Text.Encoding.ASCII.GetString(fileBytes).Trim();
                 _logger.LogWarning("Migration de la clé de chiffrement vers DPAPI (protection renforcée)");
-                SaveKeyToFile(plainKey, keyFilePath);
-                if (OperatingSystem.IsWindows()) SecureKeyFile(keyFilePath);
+                try
+                {
+                    // Retirer ReadOnly avant de réécrire (SecureKeyFile l'avait positionné)
+                    var fi = new FileInfo(keyFilePath);
+                    if (fi.IsReadOnly) fi.IsReadOnly = false;
+                    SaveKeyToFile(plainKey, keyFilePath);
+                    if (OperatingSystem.IsWindows()) SecureKeyFile(keyFilePath);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Migration DPAPI impossible — le fichier reste en clair");
+                }
                 return plainKey;
             }
 
