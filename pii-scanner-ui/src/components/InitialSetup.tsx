@@ -116,8 +116,16 @@ const InitialSetup: React.FC<InitialSetupProps> = ({ onSetupComplete }) => {
       }
     } catch (err: unknown) {
       console.error('Setup error:', err);
-      const e = err as { response?: { data?: { message?: string } } };
-      setError(e.response?.data?.message || 'Erreur lors de l\'initialisation');
+      const e = err as { response?: { data?: { message?: string; errors?: Record<string, string[]> } } };
+      const data = e.response?.data;
+      // ASP.NET validation errors format: { errors: { Field: ["msg"] } }
+      const validationErrors = data?.errors;
+      if (validationErrors) {
+        const first = Object.values(validationErrors).flat()[0];
+        setError(first || 'Erreur de validation');
+      } else {
+        setError(data?.message || 'Erreur lors de l\'initialisation');
+      }
     } finally {
       setLoading(false);
     }
