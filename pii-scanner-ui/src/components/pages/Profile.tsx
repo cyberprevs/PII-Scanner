@@ -76,8 +76,8 @@ const Profile: React.FC = () => {
   };
 
   const validatePassword = (password: string): string | null => {
-    if (password.length < 12) {
-      return 'Le mot de passe doit contenir au moins 12 caractères';
+    if (password.length < 24) {
+      return 'Le mot de passe doit contenir au moins 24 caractères';
     }
     if (!/[A-Z]/.test(password)) {
       return 'Le mot de passe doit contenir au moins une majuscule';
@@ -367,7 +367,7 @@ const Profile: React.FC = () => {
               onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
               margin="normal"
               autoComplete="new-password"
-              helperText="Minimum 12 caractères avec majuscules, minuscules, chiffres et caractères spéciaux"
+              helperText="Minimum 24 caractères avec majuscules, minuscules, chiffres et caractères spéciaux"
               InputProps={{
                 sx: { bgcolor: 'background.paper' },
                 endAdornment: (

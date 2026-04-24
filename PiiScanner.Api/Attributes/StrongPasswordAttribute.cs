@@ -5,7 +5,7 @@ namespace PiiScanner.Api.Attributes;
 
 /// <summary>
 /// Attribut de validation pour exiger un mot de passe fort
-/// - Minimum 12 caractères
+/// - Minimum 24 caractères
 /// - Au moins une majuscule
 /// - Au moins une minuscule
 /// - Au moins un chiffre
@@ -13,11 +13,11 @@ namespace PiiScanner.Api.Attributes;
 /// </summary>
 public class StrongPasswordAttribute : ValidationAttribute
 {
-    private const int MinLength = 12;
+    private const int MinLength = 24;
 
     public StrongPasswordAttribute()
     {
-        ErrorMessage = "Le mot de passe doit contenir au moins 12 caractères, " +
+        ErrorMessage = "Le mot de passe doit contenir au moins 24 caractères, " +
                        "avec au moins une majuscule, une minuscule, un chiffre et un caractère spécial";
     }
 
