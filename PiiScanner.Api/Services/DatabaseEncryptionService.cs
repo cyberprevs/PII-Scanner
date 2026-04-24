@@ -42,9 +42,9 @@ public class DatabaseEncryptionService
         {
             try
             {
-                var existingKey = File.ReadAllText(keyFilePath);
+                var existingKey = LoadKeyFromFile(keyFilePath);
                 _logger.LogInformation("Clé de chiffrement chargée depuis le fichier");
-                return existingKey.Trim();
+                return existingKey;
             }
             catch (Exception ex)
             {
@@ -57,8 +57,8 @@ public class DatabaseEncryptionService
 
         try
         {
-            // Sauvegarder la clé pour une utilisation future
-            File.WriteAllText(keyFilePath, newKey);
+            // Sauvegarder la clé chiffrée avec DPAPI
+            SaveKeyToFile(newKey, keyFilePath);
 
             // Définir les permissions sécurisées (Windows)
             if (OperatingSystem.IsWindows())
@@ -77,6 +77,59 @@ public class DatabaseEncryptionService
         }
 
         return newKey;
+    }
+
+    /// <summary>
+    /// Sauvegarde la clé dans un fichier, chiffrée avec DPAPI sur Windows,
+    /// en clair sur les autres systèmes (protégée uniquement par les ACL).
+    /// </summary>
+    private void SaveKeyToFile(string keyHex, string keyFilePath)
+    {
+        if (OperatingSystem.IsWindows())
+        {
+            // Chiffrer avec DPAPI (lié à l'identité de l'utilisateur Windows actuel)
+            var keyBytes = Convert.FromHexString(keyHex);
+            var encrypted = ProtectedData.Protect(keyBytes, null, DataProtectionScope.CurrentUser);
+            File.WriteAllBytes(keyFilePath, encrypted);
+        }
+        else
+        {
+            // Sur Linux/Mac : stocker en clair, la protection vient des permissions fichier
+            File.WriteAllText(keyFilePath, keyHex);
+        }
+    }
+
+    /// <summary>
+    /// Charge la clé depuis le fichier, en la déchiffrant via DPAPI si disponible.
+    /// Gère aussi la migration transparente des anciens fichiers en clair.
+    /// </summary>
+    private string LoadKeyFromFile(string keyFilePath)
+    {
+        if (OperatingSystem.IsWindows())
+        {
+            var fileBytes = File.ReadAllBytes(keyFilePath);
+
+            // Détecter si le fichier est en clair (hexadécimal ASCII) ou chiffré DPAPI
+            // Un fichier hex de 32 bytes = 64 chars ASCII = 64 bytes en UTF8
+            // Un fichier DPAPI est toujours binaire et nettement plus grand
+            if (fileBytes.Length == 64 && fileBytes.All(b => (b >= '0' && b <= '9') || (b >= 'A' && b <= 'F') || (b >= 'a' && b <= 'f')))
+            {
+                // Ancien fichier en clair — migrer vers DPAPI
+                var plainKey = System.Text.Encoding.ASCII.GetString(fileBytes).Trim();
+                _logger.LogWarning("Migration de la clé de chiffrement vers DPAPI (protection renforcée)");
+                SaveKeyToFile(plainKey, keyFilePath);
+                if (OperatingSystem.IsWindows()) SecureKeyFile(keyFilePath);
+                return plainKey;
+            }
+
+            // Fichier chiffré DPAPI — déchiffrer
+            var decrypted = ProtectedData.Unprotect(fileBytes, null, DataProtectionScope.CurrentUser);
+            return Convert.ToHexString(decrypted);
+        }
+        else
+        {
+            return File.ReadAllText(keyFilePath).Trim();
+        }
     }
 
     /// <summary>

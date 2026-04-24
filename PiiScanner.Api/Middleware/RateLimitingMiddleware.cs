@@ -138,15 +138,26 @@ public class RateLimitingMiddleware
     }
 
     /// <summary>
-    /// Récupère l'adresse IP réelle du client (supporte les proxies)
+    /// Récupère l'adresse IP réelle du client.
+    /// Les en-têtes X-Forwarded-For et X-Real-IP ne sont acceptés que si la requête
+    /// provient d'un proxy de confiance (localhost uniquement), pour éviter le spoofing.
     /// </summary>
     private string GetClientIpAddress(HttpContext context)
     {
-        // Vérifier les en-têtes de proxy
+        var remoteIp = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+
+        // N'accepter les en-têtes proxy que d'une source de confiance (localhost)
+        var trustedProxyIps = new[] { "127.0.0.1", "::1" };
+        if (!trustedProxyIps.Contains(remoteIp))
+        {
+            // Requête directe : utiliser l'IP de connexion telle quelle
+            return remoteIp;
+        }
+
+        // Requête depuis un proxy de confiance : lire X-Forwarded-For
         var forwardedFor = context.Request.Headers["X-Forwarded-For"].FirstOrDefault();
         if (!string.IsNullOrEmpty(forwardedFor))
         {
-            // Prendre la première IP (client réel)
             return forwardedFor.Split(',')[0].Trim();
         }
 
@@ -156,8 +167,7 @@ public class RateLimitingMiddleware
             return realIp;
         }
 
-        // Fallback sur l'IP de connexion
-        return context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+        return remoteIp;
     }
 
     /// <summary>
