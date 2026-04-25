@@ -47,6 +47,7 @@ function App() {
   const [checkingInit, setCheckingInit] = useState(IS_MOCK ? false : true);
   const [reportPassword, setReportPassword] = useState<{ password: string; format: string } | null>(null);
   const scanIdRef = useRef<string | null>(null);
+  const scanHandledRef = useRef(false); // prevents double-handling by SignalR + fallback poll
 
   // Vérifier si l'application est initialisée et initialiser le token CSRF
   useEffect(() => {
@@ -140,15 +141,14 @@ function App() {
             console.log(`Progress: ${current}/${total}`);
           },
           async (sid) => {
-            console.log('Scan completed:', sid);
-            if (sid === scanIdRef.current) {
+            console.log('Scan completed via SignalR:', sid);
+            if (sid === scanIdRef.current && !scanHandledRef.current) {
+              scanHandledRef.current = true;
               try {
                 const scanResults = await scanApi.getResults(sid);
                 setResults(scanResults);
                 setScanning(false);
                 setSuccessMessage('Scan terminé avec succès !');
-
-                // Sauvegarder dans localStorage pour persistance
                 localStorage.setItem('lastScanId', sid);
                 localStorage.setItem('lastScanResults', JSON.stringify(scanResults));
               } catch (err) {
@@ -184,15 +184,43 @@ function App() {
       setScanning(true);
       setResults(null);
       setError(null);
+      scanHandledRef.current = false;
 
       const response = await scanApi.startScan({ directoryPath });
 
       if (response.status === 'started') {
-        setScanId(response.scanId);
-        // Sauvegarder le nouveau scanId immédiatement
-        localStorage.setItem('lastScanId', response.scanId);
-        // Supprimer les anciens résultats (nouveaux résultats seront sauvegardés à la fin du scan)
+        const newScanId = response.scanId;
+        setScanId(newScanId);
+        scanIdRef.current = newScanId;
+        localStorage.setItem('lastScanId', newScanId);
         localStorage.removeItem('lastScanResults');
+
+        // Fallback polling: if SignalR misses ScanComplete, detect via progress status
+        const pollInterval = setInterval(async () => {
+          try {
+            const prog = await scanApi.getProgress(newScanId);
+            if (prog.status === 'Completed') {
+              clearInterval(pollInterval);
+              if (!scanHandledRef.current) {
+                scanHandledRef.current = true;
+                console.log('Scan completed via fallback poll:', newScanId);
+                const scanResults = await scanApi.getResults(newScanId);
+                setResults(scanResults);
+                setScanning(false);
+                setSuccessMessage('Scan terminé avec succès !');
+                localStorage.setItem('lastScanId', newScanId);
+                localStorage.setItem('lastScanResults', JSON.stringify(scanResults));
+              }
+            } else if (prog.status === 'Failed') {
+              clearInterval(pollInterval);
+              if (!scanHandledRef.current) {
+                scanHandledRef.current = true;
+                setError('Le scan a échoué');
+                setScanning(false);
+              }
+            }
+          } catch { /* ignore transient errors */ }
+        }, 3000);
       } else {
         throw new Error(response.message || 'Échec du démarrage du scan');
       }
