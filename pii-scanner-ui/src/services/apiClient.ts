@@ -59,6 +59,7 @@ apiClient.interceptors.request.use(
 
 export class ScanApiClient {
   private hubConnection: signalR.HubConnection | null = null;
+  private connectingPromise: Promise<void> | null = null;
 
   async startScan(request: ScanRequest): Promise<ScanResponse> {
     const response = await apiClient.post<ScanResponse>('/scan/start', request);
@@ -92,7 +93,11 @@ export class ScanApiClient {
     onComplete: (scanId: string) => void,
     onError: (scanId: string, error: string) => void
   ): Promise<void> {
-    // Already connected or connecting — don't create a second connection
+    // If already connecting, wait for that promise (handles React StrictMode double-invoke)
+    if (this.connectingPromise) {
+      return this.connectingPromise;
+    }
+    // Already connected — nothing to do
     if (this.hubConnection && this.hubConnection.state !== signalR.HubConnectionState.Disconnected) {
       return;
     }
@@ -110,13 +115,12 @@ export class ScanApiClient {
     this.hubConnection.on('ScanComplete', onComplete);
     this.hubConnection.on('ScanError', onError);
 
-    try {
-      await this.hubConnection.start();
-      console.log('SignalR connected');
-    } catch (err) {
-      console.error('SignalR connection error:', err);
-      throw err;
-    }
+    this.connectingPromise = this.hubConnection.start()
+      .then(() => { console.log('SignalR connected'); })
+      .catch((err) => { console.error('SignalR connection error:', err); throw err; })
+      .finally(() => { this.connectingPromise = null; });
+
+    return this.connectingPromise;
   }
 
   async disconnectSignalR(): Promise<void> {
