@@ -163,7 +163,9 @@ export default function Scanner({ scanning, scanId, onStartScan, onStopScan, has
     if (pathError) setPathError('');
   };
 
-  const percentage = progress ? Math.floor((progress.processedFiles / progress.totalFiles) * 100) : 0;
+  const percentage = progress && progress.totalFiles > 0
+    ? Math.floor((progress.processedFiles / progress.totalFiles) * 100)
+    : 0;
 
   // ─── Scanning state ────────────────────────────────────────────────────────
   if (scanning) {

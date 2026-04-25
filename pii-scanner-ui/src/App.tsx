@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Alert, Snackbar, CircularProgress, Box, Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, IconButton } from '@mui/material';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
@@ -46,6 +46,7 @@ function App() {
   const [isInitialized, setIsInitialized] = useState<boolean | null>(IS_MOCK ? true : null);
   const [checkingInit, setCheckingInit] = useState(IS_MOCK ? false : true);
   const [reportPassword, setReportPassword] = useState<{ password: string; format: string } | null>(null);
+  const scanIdRef = useRef<string | null>(null);
 
   // Vérifier si l'application est initialisée et initialiser le token CSRF
   useEffect(() => {
@@ -123,10 +124,15 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isInitialized, checkingInit]);
 
+  // Keep ref in sync so SignalR callbacks always see the latest scanId without reconnecting
+  useEffect(() => {
+    scanIdRef.current = scanId;
+  }, [scanId]);
+
   useEffect(() => {
     if (IS_MOCK) return;
 
-    // Connecter SignalR au démarrage
+    // Connect SignalR once at mount — use ref to avoid reconnecting on every scan
     const connectSignalR = async () => {
       try {
         await scanApi.connectSignalR(
@@ -135,7 +141,7 @@ function App() {
           },
           async (sid) => {
             console.log('Scan completed:', sid);
-            if (sid === scanId) {
+            if (sid === scanIdRef.current) {
               try {
                 const scanResults = await scanApi.getResults(sid);
                 setResults(scanResults);
@@ -154,7 +160,7 @@ function App() {
           },
           (sid, errorMsg) => {
             console.error('Scan error:', sid, errorMsg);
-            if (sid === scanId) {
+            if (sid === scanIdRef.current) {
               setError(`Erreur: ${errorMsg}`);
               setScanning(false);
             }
@@ -171,7 +177,7 @@ function App() {
     return () => {
       scanApi.disconnectSignalR();
     };
-  }, [scanId]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleStartScan = async (directoryPath: string) => {
     try {

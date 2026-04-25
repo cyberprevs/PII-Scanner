@@ -33,6 +33,7 @@ interface InitialSetupProps {
 const InitialSetup: React.FC<InitialSetupProps> = ({ onSetupComplete }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>('');
+  const [success, setSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState<FormData>({
@@ -106,13 +107,14 @@ const InitialSetup: React.FC<InitialSetupProps> = ({ onSetupComplete }) => {
       });
 
       if (response.data.success) {
+        setSuccess(true);
         if (onSetupComplete) {
           onSetupComplete();
         }
 
         setTimeout(() => {
           window.location.href = '/login';
-        }, 100);
+        }, 3000);
       }
     } catch (err: unknown) {
       console.error('Setup error:', err);
@@ -245,6 +247,21 @@ const InitialSetup: React.FC<InitialSetupProps> = ({ onSetupComplete }) => {
                   '& .MuiLinearProgress-bar': { backgroundColor: c.accentPrimary },
                 }}
               />
+            )}
+
+            {success && (
+              <Alert
+                severity="success"
+                sx={{
+                  mb: 3,
+                  backgroundColor: 'rgba(0, 229, 153, 0.1)',
+                  color: c.accentPrimary,
+                  border: `1px solid ${c.accentPrimary}`,
+                  '& .MuiAlert-icon': { color: c.accentPrimary },
+                }}
+              >
+                Compte administrateur créé avec succès ! Redirection vers la page de connexion...
+              </Alert>
             )}
 
             {error && (

@@ -92,6 +92,11 @@ export class ScanApiClient {
     onComplete: (scanId: string) => void,
     onError: (scanId: string, error: string) => void
   ): Promise<void> {
+    // Already connected or connecting — don't create a second connection
+    if (this.hubConnection && this.hubConnection.state !== signalR.HubConnectionState.Disconnected) {
+      return;
+    }
+
     const token = localStorage.getItem('token');
 
     this.hubConnection = new signalR.HubConnectionBuilder()
@@ -116,8 +121,12 @@ export class ScanApiClient {
 
   async disconnectSignalR(): Promise<void> {
     if (this.hubConnection) {
-      await this.hubConnection.stop();
+      const conn = this.hubConnection;
       this.hubConnection = null;
+      // Only stop if fully connected — avoids "stopped during negotiation" race
+      if (conn.state === signalR.HubConnectionState.Connected) {
+        await conn.stop();
+      }
     }
   }
 
