@@ -152,8 +152,8 @@ function App() {
                 localStorage.setItem('lastScanId', sid);
                 localStorage.setItem('lastScanResults', JSON.stringify(scanResults));
               } catch (err) {
-                console.error('Error fetching results:', err);
-                setError('Erreur lors de la récupération des résultats');
+                // Results may have already been handled by fallback poll — don't show error
+                console.error('Error fetching results via SignalR (may be handled by poll):', err);
                 setScanning(false);
               }
             }
