@@ -59,8 +59,11 @@ builder.Services.AddSession(options =>
     options.IdleTimeout = TimeSpan.FromMinutes(30); // Session timeout
     options.Cookie.HttpOnly = true; // Security: JavaScript cannot access session cookie
     options.Cookie.IsEssential = true; // Required for GDPR compliance
-    // SameSite pour mode HTTP (serveurs sans certificat)
     options.Cookie.SecurePolicy = useHttpsOnly ? CookieSecurePolicy.Always : CookieSecurePolicy.SameAsRequest;
+    // SameSite=None required for cross-origin requests (dev: localhost:3000 → localhost:5001)
+    options.Cookie.SameSite = builder.Environment.IsDevelopment()
+        ? SameSiteMode.None
+        : SameSiteMode.Strict;
 });
 
 // Add Database Encryption Service
@@ -138,7 +141,8 @@ if (builder.Environment.IsDevelopment())
             )
             .AllowAnyHeader()
             .AllowAnyMethod()
-            .AllowCredentials();
+            .AllowCredentials()
+            .WithExposedHeaders("X-CSRF-Token", "X-Report-Password");
         });
     });
 }
