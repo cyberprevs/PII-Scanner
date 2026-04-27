@@ -17,6 +17,7 @@ import UploadFileIcon from '@mui/icons-material/UploadFile';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import DownloadIcon from '@mui/icons-material/Download';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import PageHeader from '../common/PageHeader';
 import { useTranslation } from 'react-i18next';
 
@@ -100,15 +101,29 @@ const DecryptReport: React.FC = () => {
 
       const blob = new Blob([decrypted], { type: mimeType });
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = outputName;
-      document.body.appendChild(a);
-      a.click();
-      URL.revokeObjectURL(url);
-      document.body.removeChild(a);
 
-      setSuccess(t('decrypt.success', { name: outputName }));
+      // Types that browsers can open directly — use window.open so the OS
+      // hands off to the associated application (Excel, browser viewer, etc.)
+      const openInBrowser = outputName.endsWith('.html')
+        || outputName.endsWith('.csv')
+        || outputName.endsWith('.json');
+
+      if (openInBrowser) {
+        window.open(url, '_blank');
+        // Revoke after a delay to give the new tab time to load the blob
+        setTimeout(() => URL.revokeObjectURL(url), 10000);
+        setSuccess(t('decrypt.success', { name: outputName }));
+      } else {
+        // xlsx and other binary formats: download so OS opens with default app
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = outputName;
+        document.body.appendChild(a);
+        a.click();
+        URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        setSuccess(t('decrypt.successDownload', { name: outputName }));
+      }
       setPassword('');
     } catch {
       setError(t('decrypt.errorWrongPassword'));
@@ -204,7 +219,9 @@ const DecryptReport: React.FC = () => {
             <Button
               variant="contained"
               size="large"
-              startIcon={<DownloadIcon />}
+              startIcon={file && (file.name.endsWith('.html.enc') || file.name.endsWith('.csv.enc') || file.name.endsWith('.json.enc'))
+                ? <OpenInNewIcon />
+                : <DownloadIcon />}
               onClick={handleDecrypt}
               disabled={!file || !password || decrypting}
               sx={{
