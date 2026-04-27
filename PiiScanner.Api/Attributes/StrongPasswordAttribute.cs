@@ -23,9 +23,10 @@ public class StrongPasswordAttribute : ValidationAttribute
 
     protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
     {
+        // Null/empty is allowed when updating an existing user (password unchanged)
         if (value == null || string.IsNullOrWhiteSpace(value.ToString()))
         {
-            return new ValidationResult("Le mot de passe est requis");
+            return ValidationResult.Success;
         }
 
         var password = value.ToString()!;

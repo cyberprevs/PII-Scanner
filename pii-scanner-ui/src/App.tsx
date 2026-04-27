@@ -219,7 +219,18 @@ function App() {
                 setScanning(false);
               }
             }
-          } catch { /* ignore transient errors */ }
+          } catch (pollErr: unknown) {
+            // Stop polling on 404 — scan no longer exists (e.g. backend restarted)
+            const status = (pollErr as { response?: { status?: number } })?.response?.status;
+            if (status === 404) {
+              clearInterval(pollInterval);
+              if (!scanHandledRef.current) {
+                scanHandledRef.current = true;
+                setScanning(false);
+              }
+            }
+            // Ignore other transient errors (network blip, etc.)
+          }
         }, 3000);
       } else {
         throw new Error(response.message || 'Échec du démarrage du scan');
