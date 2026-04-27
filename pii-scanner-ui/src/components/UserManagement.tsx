@@ -122,13 +122,13 @@ const UserManagement: React.FC = () => {
       return;
     }
 
-    if (!editingUser && (!formData.password || formData.password.length < 6)) {
-      setError('Le mot de passe doit contenir au moins 6 caractères');
+    if (!editingUser && (!formData.password || formData.password.length < 24)) {
+      setError('Le mot de passe doit contenir au moins 24 caractères');
       return;
     }
 
-    if (editingUser && formData.password && formData.password.length < 6) {
-      setError('Le mot de passe doit contenir au moins 6 caractères');
+    if (editingUser && formData.password && formData.password.length < 24) {
+      setError('Le mot de passe doit contenir au moins 24 caractères');
       return;
     }
 
@@ -146,8 +146,13 @@ const UserManagement: React.FC = () => {
       loadUsers();
       setTimeout(() => setSuccess(''), 3000);
     } catch (err: unknown) {
-      const e = err as { response?: { data?: { error?: string } } };
-      setError(e.response?.data?.error || 'Erreur lors de l\'enregistrement');
+      const e = err as { response?: { data?: { error?: string; errors?: Record<string, string[]> } } };
+      const data = e.response?.data;
+      // Handle both { error: "..." } and ASP.NET ValidationProblemDetails { errors: { Field: [...] } }
+      const message = data?.error
+        || (data?.errors ? Object.values(data.errors).flat().join(', ') : null)
+        || 'Erreur lors de l\'enregistrement';
+      setError(message);
     }
   };
 
