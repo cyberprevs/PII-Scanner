@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Card,
@@ -209,8 +209,8 @@ export default function RiskyFiles({ results }: RiskyFilesProps) {
             </TableHead>
             <TableBody>
               {filteredRiskyFiles.map((file, index) => (
-                <>
-                  <TableRow key={index} hover>
+                <React.Fragment key={file.filePath || index}>
+                  <TableRow hover>
                     <TableCell>
                       <Chip label={file.riskLevel} color={getRiskColor(file.riskLevel) as 'error' | 'warning' | 'success' | 'default'} size="small" />
                     </TableCell>
@@ -253,7 +253,7 @@ export default function RiskyFiles({ results }: RiskyFilesProps) {
                     </TableCell>
                   </TableRow>
                   {file.staleDataWarning && (
-                    <TableRow key={`${index}-staleness-warning`}>
+                    <TableRow>
                       <TableCell colSpan={6} sx={{ py: 0.5, bgcolor: 'rgba(255, 152, 0, 0.08)' }}>
                         <Alert severity="warning" sx={{ py: 0, '& .MuiAlert-message': { fontSize: '0.875rem' } }}>
                           {file.staleDataWarning}
@@ -262,7 +262,7 @@ export default function RiskyFiles({ results }: RiskyFilesProps) {
                     </TableRow>
                   )}
                   {file.exposureWarning && (
-                    <TableRow key={`${index}-exposure-warning`}>
+                    <TableRow>
                       <TableCell colSpan={6} sx={{ py: 0.5, bgcolor: 'rgba(244, 67, 54, 0.08)' }}>
                         <Alert severity={file.exposureLevel === 'Critique' ? 'error' : 'warning'} sx={{ py: 0, '& .MuiAlert-message': { fontSize: '0.875rem' } }}>
                           {file.exposureWarning}
@@ -270,7 +270,7 @@ export default function RiskyFiles({ results }: RiskyFilesProps) {
                       </TableCell>
                     </TableRow>
                   )}
-                </>
+                </React.Fragment>
               ))}
             </TableBody>
           </Table>
