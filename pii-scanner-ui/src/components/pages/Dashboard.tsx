@@ -18,10 +18,13 @@ import {
   Security as SecurityIcon,
   Warning as WarningIcon,
   CheckCircle as CheckCircleIcon,
-  Assessment as AssessmentIcon,
   Refresh as RefreshIcon,
   ArrowForward as ArrowForwardIcon,
   TrendingUp as TrendingUpIcon,
+  LockOpen as LockOpenIcon,
+  Category as CategoryIcon,
+  Analytics as AnalyticsIcon,
+  Assessment as AssessmentIcon,
 } from '@mui/icons-material';
 import {
   PieChart,
@@ -162,7 +165,24 @@ export default function Dashboard({ results }: DashboardProps) {
   const lowRiskFiles = statistics.topRiskyFiles.filter(f => f.riskLevel === 'FAIBLE').length;
   const totalRiskFiles = statistics.topRiskyFiles.length || 1;
 
-  const conformityPct = Math.round((1 - highRiskFiles / (statistics.totalFilesScanned || 1)) * 100);
+  // KPI 1 — Fichiers exposés : PII accessibles à tous (Everyone / partage réseau)
+  const exposedFiles = results.detections
+    .filter(d => d.accessibleToEveryone || d.exposureLevel === 'PUBLIC')
+    .map(d => d.filePath)
+    .filter((v, i, a) => a.indexOf(v) === i).length;
+
+  // KPI 2 — % fichiers sans PII (taux de fichiers "propres")
+  const cleanFilesPct = statistics.totalFilesScanned > 0
+    ? Math.round(((statistics.totalFilesScanned - statistics.filesWithPii) / statistics.totalFilesScanned) * 100)
+    : 100;
+
+  // KPI 3 — Types de PII distincts détectés (surface d'exposition)
+  const piiTypeCount = Object.keys(statistics.piiByType).length;
+
+  // KPI 4 — Densité PII : moyenne par fichier contaminé
+  const piiDensity = statistics.filesWithPii > 0
+    ? Math.round((statistics.totalPiiFound / statistics.filesWithPii) * 10) / 10
+    : 0;
 
   const axisStyle = { fontSize: 12, fill: dark ? c.textTertiary : c.light.textTertiary };
 
@@ -199,46 +219,105 @@ export default function Dashboard({ results }: DashboardProps) {
 
       {/* KPI Cards */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
+        {/* KPI 1 — Total PII */}
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <StatCard
             topBorderOnly
-            accentColor={c.accentPrimary}
+            accentColor={c.danger}
             value={totalPii.toLocaleString()}
-            label="Total PII détectées"
+            label="PII détectées"
             icon={<SecurityIcon />}
-            trend={{ direction: 'up', value: '+12% vs dernier scan' }}
+            subtext={`dans ${statistics.filesWithPii} fichier(s)`}
             sparkline={sparklinePii}
           />
         </Grid>
+
+        {/* KPI 2 — Fichiers exposés publiquement */}
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <StatCard
+            topBorderOnly
+            accentColor={exposedFiles > 0 ? c.danger : c.accentPrimary}
+            value={exposedFiles}
+            label="Fichiers exposés"
+            icon={<LockOpenIcon />}
+            subtext={exposedFiles > 0 ? 'PII accessibles à tous — action requise' : 'Aucune exposition publique détectée'}
+            trend={exposedFiles > 0 ? { direction: 'up', value: `${exposedFiles} exposition(s)` } : undefined}
+          />
+        </Grid>
+
+        {/* KPI 3 — Types PII distincts */}
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <StatCard
+            topBorderOnly
+            accentColor={c.warning}
+            value={piiTypeCount}
+            label="Types de PII distincts"
+            icon={<CategoryIcon />}
+            subtext="Catégories de données personnelles exposées"
+          />
+        </Grid>
+
+        {/* KPI 4 — Fichiers sans PII */}
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <StatCard
+            topBorderOnly
+            accentColor={cleanFilesPct >= 80 ? c.accentPrimary : c.warning}
+            value={`${cleanFilesPct}%`}
+            label="Fichiers sans PII"
+            icon={<CheckCircleIcon />}
+            subtext={`${statistics.totalFilesScanned - statistics.filesWithPii} fichier(s) propres sur ${statistics.totalFilesScanned}`}
+          />
+        </Grid>
+      </Grid>
+
+      {/* KPI Row 2 — Densité & Risques */}
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        {/* KPI 5 — Densité PII */}
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <StatCard
+            topBorderOnly
+            accentColor={piiDensity > 10 ? c.danger : piiDensity > 5 ? c.warning : c.accentPrimary}
+            value={piiDensity.toLocaleString()}
+            label="Densité PII moy."
+            icon={<AnalyticsIcon />}
+            subtext="PII par fichier contaminé"
+          />
+        </Grid>
+
+        {/* KPI 6 — Fichiers à risque élevé */}
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <StatCard
+            topBorderOnly
+            accentColor={highRiskFiles > 0 ? c.danger : c.accentPrimary}
+            value={highRiskFiles}
+            label="Risque élevé"
+            icon={<WarningIcon />}
+            subtext="Nécessitent une action immédiate"
+            trend={highRiskFiles > 0 ? { direction: 'up', value: `${highRiskFiles} fichier(s)` } : undefined}
+          />
+        </Grid>
+
+        {/* KPI 7 — Risque moyen */}
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <StatCard
+            topBorderOnly
+            accentColor={mediumRiskFiles > 0 ? c.warning : c.accentPrimary}
+            value={mediumRiskFiles}
+            label="Risque moyen"
+            icon={<WarningIcon />}
+            subtext="À traiter sous 30 jours"
+          />
+        </Grid>
+
+        {/* KPI 8 — Fichiers scannés */}
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <StatCard
             topBorderOnly
             accentColor={c.info}
             value={statistics.totalFilesScanned.toLocaleString()}
-            label="Fichiers scannés"
+            label="Fichiers analysés"
             icon={<FolderOpenIcon />}
-            subtext={`${statistics.filesWithPii.toLocaleString()} contiennent des PII`}
-          />
-        </Grid>
-        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <StatCard
-            topBorderOnly
-            accentColor={c.danger}
-            value={highRiskFiles}
-            label="Risque élevé"
-            icon={<WarningIcon />}
-            subtext="Nécessitent une attention immédiate"
-            trend={highRiskFiles > 0 ? { direction: 'up', value: `${highRiskFiles} fichier(s)` } : undefined}
-          />
-        </Grid>
-        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <StatCard
-            topBorderOnly
-            accentColor={c.accentPrimary}
-            value={`${conformityPct}%`}
-            label="Conformité"
-            icon={<CheckCircleIcon />}
-            subtext="Taux de fichiers conformes"
+            subtext={`Périmètre du scan`}
           />
         </Grid>
       </Grid>
