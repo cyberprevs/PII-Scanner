@@ -237,7 +237,7 @@ export default function Reports({ results, onDownloadReport }: ReportsProps) {
                 Distribution des données personnelles par catégorie
               </Typography>
               <Box sx={{ width: '100%' }}>
-                <ResponsiveContainer width="100%" height={450}>
+                <ResponsiveContainer width="100%" height={450} minWidth={0}>
                   <BarChart data={piiTypeData} layout="vertical">
                     <defs>
                       <linearGradient id="barGradient" x1="0" y1="0" x2="1" y2="0">
@@ -285,7 +285,7 @@ export default function Reports({ results, onDownloadReport }: ReportsProps) {
               </Typography>
               <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                 <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-                  <ResponsiveContainer width="100%" height={270}>
+                  <ResponsiveContainer width="100%" height={270} minWidth={0}>
                     <PieChart>
                       <Pie
                         data={riskData}
