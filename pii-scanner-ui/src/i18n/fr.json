@@ -313,9 +313,10 @@
     "dropZone": "Glissez votre fichier .enc ici ou cliquez pour sélectionner",
     "dropZoneHint": "Uniquement les fichiers .enc générés par PII Scanner",
     "passwordLabel": "Mot de passe du rapport",
-    "decrypt": "Déchiffrer et télécharger",
+    "decrypt": "Déchiffrer et ouvrir",
     "decrypting": "Déchiffrement en cours...",
-    "success": "Fichier déchiffré téléchargé : {{name}}",
+    "success": "Fichier déchiffré ouvert : {{name}}",
+    "successDownload": "Fichier déchiffré téléchargé : {{name}}",
     "errorNotEnc": "Le fichier doit avoir l'extension .enc",
     "errorWrongPassword": "Mot de passe incorrect ou fichier corrompu",
     "localNote": "Le déchiffrement s'effectue entièrement dans votre navigateur — aucune donnée n'est envoyée en ligne."
