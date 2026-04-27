@@ -177,7 +177,7 @@ function App() {
     return () => {
       scanApi.disconnectSignalR();
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleStartScan = async (directoryPath: string) => {
     try {

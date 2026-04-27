@@ -371,6 +371,16 @@ export function createAppTheme(darkMode: boolean) {
         },
       },
 
+      MuiDialog: {
+        defaultProps: {
+          // Blur the focused trigger before the Dialog applies aria-hidden to #root.
+          // Prevents the "aria-hidden on focused element" accessibility warning.
+          TransitionProps: {
+            onEnter: () => (document.activeElement as HTMLElement)?.blur?.(),
+          },
+        },
+      },
+
       MuiSwitch: {
         styleOverrides: {
           switchBase: {
