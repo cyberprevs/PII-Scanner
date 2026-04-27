@@ -22,7 +22,6 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogContentText,
   DialogActions,
   Button,
 } from '@mui/material';
@@ -302,14 +301,14 @@ const ScanHistory: React.FC = () => {
       <Dialog open={deleteDialogOpen} onClose={handleDeleteCancel} maxWidth="xs" fullWidth>
         <DialogTitle sx={{ fontWeight: 600 }}>{t('history.confirmDelete')}</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            {t('history.confirmDeleteMsg')}
+          <Box>
+            <Typography variant="body2" color="text.secondary" gutterBottom>{t('history.confirmDeleteMsg')}</Typography>
             <Box sx={{ mt: 2, p: 2, bgcolor: c.dangerMuted, borderRadius: 1, border: '1px solid', borderColor: 'rgba(244, 82, 82, 0.2)' }}>
               <Typography variant="body2" fontWeight={500} gutterBottom>{t('history.scanId', { id: scanToDelete?.scanId })}</Typography>
               <Typography variant="body2" color="text.secondary">{t('history.scanFolder', { path: scanToDelete?.directoryPath })}</Typography>
             </Box>
             <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>{t('history.deleteWarning')}</Typography>
-          </DialogContentText>
+          </Box>
         </DialogContent>
         <DialogActions sx={{ p: 2, pt: 0 }}>
           <Button onClick={handleDeleteCancel} disabled={deleting} sx={{ fontWeight: 600 }}>{t('history.cancel')}</Button>
