@@ -153,7 +153,7 @@ export default function Results({ results, onDownloadReport, onNewScan }: Result
               <Typography variant="h6" gutterBottom fontWeight={600}>
                 Répartition par type de PII
               </Typography>
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" height={300} minWidth={0}>
                 <BarChart data={chartData}>
                   <CartesianGrid horizontal={true} vertical={false} stroke={dark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)'} />
                   <XAxis dataKey="type" tick={axisStyle} angle={-45} textAnchor="end" height={80} axisLine={false} tickLine={false} />
@@ -167,7 +167,7 @@ export default function Results({ results, onDownloadReport, onNewScan }: Result
               <Typography variant="h6" gutterBottom fontWeight={600}>
                 Distribution
               </Typography>
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" height={300} minWidth={0}>
                 <PieChart>
                   <Pie
                     data={pieData}
@@ -194,7 +194,7 @@ export default function Results({ results, onDownloadReport, onNewScan }: Result
           <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap', mt: 3 }}>
             <Box sx={{ flex: '1 1 350px', minWidth: 0 }}>
               <Typography variant="h6" gutterBottom fontWeight={600}>Niveau de risque</Typography>
-              <ResponsiveContainer width="100%" height={260}>
+              <ResponsiveContainer width="100%" height={260} minWidth={0}>
                 <BarChart data={riskData}>
                   <CartesianGrid horizontal={true} vertical={false} stroke={dark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)'} />
                   <XAxis dataKey="level" tick={axisStyle} axisLine={false} tickLine={false} />
@@ -209,7 +209,7 @@ export default function Results({ results, onDownloadReport, onNewScan }: Result
 
             <Box sx={{ flex: '1 1 350px', minWidth: 0 }}>
               <Typography variant="h6" gutterBottom fontWeight={600}>Ancienneté (Stale Data)</Typography>
-              <ResponsiveContainer width="100%" height={260}>
+              <ResponsiveContainer width="100%" height={260} minWidth={0}>
                 <BarChart data={stalenessData.filter(d => d.count > 0)}>
                   <CartesianGrid horizontal={true} vertical={false} stroke={dark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)'} />
                   <XAxis dataKey="level" tick={axisStyle} axisLine={false} tickLine={false} />
@@ -224,7 +224,7 @@ export default function Results({ results, onDownloadReport, onNewScan }: Result
 
             <Box sx={{ flex: '1 1 350px', minWidth: 0 }}>
               <Typography variant="h6" gutterBottom fontWeight={600}>Exposition (Over-Exposed)</Typography>
-              <ResponsiveContainer width="100%" height={260}>
+              <ResponsiveContainer width="100%" height={260} minWidth={0}>
                 <BarChart data={exposureData.filter(d => d.count > 0)}>
                   <CartesianGrid horizontal={true} vertical={false} stroke={dark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)'} />
                   <XAxis dataKey="level" tick={axisStyle} axisLine={false} tickLine={false} />

@@ -234,7 +234,7 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results, onDownloadReport }) => 
                 </Typography>
               </Box>
               <Box sx={{ width: '100%', height: 360 }}>
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                   <BarChart data={categoryStats} layout="vertical" margin={{ top: 8, right: 24, bottom: 8, left: 110 }}>
                     <defs>
                       <linearGradient id="barGrad1" x1="0" y1="0" x2="1" y2="0">
@@ -269,7 +269,7 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results, onDownloadReport }) => 
                   {t('categoryAnalysis.bySeverity')}
                 </Typography>
               </Box>
-              <ResponsiveContainer width="100%" height={280}>
+              <ResponsiveContainer width="100%" height={280} minWidth={0}>
                 <PieChart>
                   <Pie
                     data={severityStats}

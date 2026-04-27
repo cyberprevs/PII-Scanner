@@ -114,7 +114,7 @@ export default function Staleness({ results }: StalenessProps) {
       {/* Chart */}
       <Card sx={{ mb: 3, ...glassCardSx(dark) }}>
         <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="100%" height={300} minWidth={0}>
             <BarChart data={stalenessData}>
               <CartesianGrid horizontal={true} vertical={false} stroke={dark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)'} />
               <XAxis dataKey="level" tick={axisStyle} axisLine={false} tickLine={false} />

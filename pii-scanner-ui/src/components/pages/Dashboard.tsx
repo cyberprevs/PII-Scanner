@@ -341,7 +341,7 @@ export default function Dashboard({ results }: DashboardProps) {
 
               <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
                 <Box sx={{ flex: '0 0 200px' }}>
-                  <ResponsiveContainer width="100%" height={200}>
+                  <ResponsiveContainer width="100%" height={200} minWidth={0}>
                     <PieChart>
                       <Pie
                         data={donutData}
@@ -416,7 +416,7 @@ export default function Dashboard({ results }: DashboardProps) {
                   sx={{ fontWeight: 600 }}
                 />
               </Box>
-              <ResponsiveContainer width="100%" height={220}>
+              <ResponsiveContainer width="100%" height={220} minWidth={0}>
                 <AreaChart data={trendData}>
                   <defs>
                     <linearGradient id="colorPii" x1="0" y1="0" x2="0" y2="1">

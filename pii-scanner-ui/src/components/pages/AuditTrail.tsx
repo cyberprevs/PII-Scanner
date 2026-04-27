@@ -308,7 +308,7 @@ const AuditTrail: React.FC = () => {
             <Typography variant="h6" gutterBottom>
               Actions
             </Typography>
-            <ResponsiveContainer width="100%" height={250}>
+            <ResponsiveContainer width="100%" height={250} minWidth={0}>
               <PieChart>
                 <Pie
                   data={stats.actionCounts.slice(0, 6)}
@@ -332,7 +332,7 @@ const AuditTrail: React.FC = () => {
             <Typography variant="h6" gutterBottom>
               Activité par Utilisateur (Top 10)
             </Typography>
-            <ResponsiveContainer width="100%" height={250}>
+            <ResponsiveContainer width="100%" height={250} minWidth={0}>
               <BarChart data={stats.userActivityCounts}>
                 <CartesianGrid horizontal={true} vertical={false} stroke="rgba(128,128,128,0.08)" />
                 <XAxis dataKey="username" />
