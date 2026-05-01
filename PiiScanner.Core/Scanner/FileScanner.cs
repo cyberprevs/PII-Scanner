@@ -17,13 +17,12 @@ public class FileScanner
 
     public event Action<int, int>? ProgressUpdated; // (current, total)
 
-    private static string CalculateFileHash(string filePath)
+    private static string CalculateContentHash(string content)
     {
         try
         {
-            using var md5 = MD5.Create();
-            using var stream = File.OpenRead(filePath);
-            var hashBytes = md5.ComputeHash(stream);
+            var bytes = System.Text.Encoding.UTF8.GetBytes(content);
+            var hashBytes = MD5.HashData(bytes);
             return BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
         }
         catch
@@ -94,20 +93,12 @@ public class FileScanner
                         // Si impossible d'analyser les permissions, continuer sans
                     }
 
-                    // Détecter les PII sans hash d'abord
-                    var detections = PiiDetector.Detect(content, file, lastAccessedDate, permissionInfo, null);
+                    var fileHash = CalculateContentHash(content);
+                    var detections = PiiDetector.Detect(content, file, lastAccessedDate, permissionInfo, fileHash);
 
-                    // Si des PII sont détectés, calculer le hash et mettre à jour les détections
-                    if (detections.Count > 0)
+                    foreach (var detection in detections)
                     {
-                        string? fileHash = CalculateFileHash(file);
-
-                        // Recréer les détections avec le hash
-                        var detectionsWithHash = PiiDetector.Detect(content, file, lastAccessedDate, permissionInfo, fileHash);
-                        foreach (var detection in detectionsWithHash)
-                        {
-                            results.Add(detection);
-                        }
+                        results.Add(detection);
                     }
                 }
             }

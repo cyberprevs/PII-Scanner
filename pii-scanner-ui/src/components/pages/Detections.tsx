@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import {
   Box,
   Card,
@@ -35,10 +35,13 @@ import type { ScanResultResponse } from '../../types';
 import { scanApi } from '../../services/apiClient';
 import { tokens } from '../../theme/designSystem';
 import { useTranslation } from 'react-i18next';
+import { useVirtualizer } from '@tanstack/react-virtual';
 
 interface DetectionsProps {
   results: ScanResultResponse | null;
 }
+
+const ROW_HEIGHT = 45;
 
 export default function Detections({ results }: DetectionsProps) {
   const [stalenessFilter, setStalenessFilter] = useState<string>('all');
@@ -47,6 +50,7 @@ export default function Detections({ results }: DetectionsProps) {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const { t } = useTranslation();
   const c = tokens.colors;
+  const tableContainerRef = useRef<HTMLDivElement>(null);
 
   const isFiltered = stalenessFilter !== 'all' || piiTypeFilter !== 'all' || riskFilter !== 'all' || searchQuery !== '';
 
@@ -85,7 +89,6 @@ export default function Detections({ results }: DetectionsProps) {
     return true;
   });
 
-  const displayedDetections = filteredDetections.slice(0, 500);
   const uniquePiiTypes = Array.from(new Set(detections.map(d => d.piiType))).sort();
   const uniqueFilesCount = new Set(detections.map(d => d.filePath)).size;
   const uniqueTypesCount = uniquePiiTypes.length;
@@ -172,12 +175,7 @@ export default function Detections({ results }: DetectionsProps) {
               </Select>
             </FormControl>
           </Box>
-          {filteredDetections.length > 500 && (
-            <Alert severity="info" sx={{ mt: 2 }}>
-              {t('detections.limitAlert', { total: filteredDetections.length })} {t('common.downloadReports')}
-            </Alert>
-          )}
-          {isFiltered && filteredDetections.length <= 500 && filteredDetections.length > 0 && (
+          {isFiltered && (
             <Alert severity="info" sx={{ mt: 2 }}>
               {t('detections.resultsCount', { count: filteredDetections.length })}
             </Alert>
@@ -185,56 +183,106 @@ export default function Detections({ results }: DetectionsProps) {
         </CardContent>
       </Card>
 
-      {/* Table */}
+      {/* Virtualized table */}
       {filteredDetections.length > 0 ? (
-        <TableContainer
-          component={Paper}
-          sx={{ maxHeight: 600, border: '1px solid', borderColor: 'divider', borderRadius: `${tokens.radii.lg}px` }}
-        >
-          <Table stickyHeader size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell><strong>{t('detections.colType')}</strong></TableCell>
-                <TableCell><strong>{t('detections.colValue')}</strong></TableCell>
-                <TableCell><strong>{t('detections.colFile')}</strong></TableCell>
-                <TableCell align="center"><strong>{t('detections.colFolder')}</strong></TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {displayedDetections.map((detection, index) => (
-                <TableRow key={index} hover>
-                  <TableCell>
-                    <Chip label={detection.piiType} size="small" color="secondary" variant="outlined" />
-                  </TableCell>
-                  <TableCell>
-                    <Box component="span" sx={{ fontFamily: 'monospace', fontSize: '0.875rem' }}>
-                      {detection.match}
-                    </Box>
-                  </TableCell>
-                  <TableCell>
-                    <Box component="span" sx={{ fontSize: '0.75rem', color: 'text.secondary', fontFamily: 'monospace' }}>
-                      {detection.filePath.length > 60 ? '...' + detection.filePath.slice(-60) : detection.filePath}
-                    </Box>
-                  </TableCell>
-                  <TableCell align="center">
-                    <Tooltip title={t('detections.openFolder')}>
-                      <IconButton
-                        size="small"
-                        onClick={() => scanApi.openFolder(detection.filePath)}
-                        sx={{ color: 'primary.main', '&:hover': { bgcolor: c.accentPrimaryMuted } }}
-                      >
-                        <FolderOpenIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <VirtualizedDetectionsTable
+          detections={filteredDetections}
+          tableContainerRef={tableContainerRef}
+          t={t}
+          c={c}
+        />
       ) : (
         <EmptyState icon={<SecurityIcon />} title={t('detections.noResults')} description={t('detections.noResultsSubtitle', { defaultValue: '' })} />
       )}
     </Container>
+  );
+}
+
+interface Detection {
+  filePath: string;
+  piiType: string;
+  match: string;
+}
+
+interface VirtualizedTableProps {
+  detections: Detection[];
+  tableContainerRef: React.RefObject<HTMLDivElement | null>;
+  t: (key: string, opts?: Record<string, unknown>) => string;
+  c: { accentPrimaryMuted: string };
+}
+
+function VirtualizedDetectionsTable({ detections, tableContainerRef, t, c }: VirtualizedTableProps) {
+  const rowVirtualizer = useVirtualizer({
+    count: detections.length,
+    getScrollElement: () => tableContainerRef.current,
+    estimateSize: () => ROW_HEIGHT,
+    overscan: 10,
+  });
+
+  const totalHeight = rowVirtualizer.getTotalSize();
+  const virtualItems = rowVirtualizer.getVirtualItems();
+  const paddingTop = virtualItems.length > 0 ? virtualItems[0].start : 0;
+  const paddingBottom = virtualItems.length > 0 ? totalHeight - virtualItems[virtualItems.length - 1].end : 0;
+
+  return (
+    <TableContainer
+      ref={tableContainerRef}
+      component={Paper}
+      sx={{ maxHeight: 600, border: '1px solid', borderColor: 'divider', borderRadius: `${tokens.radii.lg}px`, overflow: 'auto' }}
+    >
+      <Table stickyHeader size="small">
+        <TableHead>
+          <TableRow>
+            <TableCell><strong>{t('detections.colType')}</strong></TableCell>
+            <TableCell><strong>{t('detections.colValue')}</strong></TableCell>
+            <TableCell><strong>{t('detections.colFile')}</strong></TableCell>
+            <TableCell align="center"><strong>{t('detections.colFolder')}</strong></TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {paddingTop > 0 && (
+            <TableRow>
+              <TableCell colSpan={4} sx={{ height: paddingTop, p: 0, border: 0 }} />
+            </TableRow>
+          )}
+          {virtualItems.map(virtualRow => {
+            const detection = detections[virtualRow.index];
+            return (
+              <TableRow key={virtualRow.key} hover sx={{ height: ROW_HEIGHT }}>
+                <TableCell>
+                  <Chip label={detection.piiType} size="small" color="secondary" variant="outlined" />
+                </TableCell>
+                <TableCell>
+                  <Box component="span" sx={{ fontFamily: 'monospace', fontSize: '0.875rem' }}>
+                    {detection.match}
+                  </Box>
+                </TableCell>
+                <TableCell>
+                  <Box component="span" sx={{ fontSize: '0.75rem', color: 'text.secondary', fontFamily: 'monospace' }}>
+                    {detection.filePath.length > 60 ? '...' + detection.filePath.slice(-60) : detection.filePath}
+                  </Box>
+                </TableCell>
+                <TableCell align="center">
+                  <Tooltip title={t('detections.openFolder')}>
+                    <IconButton
+                      size="small"
+                      onClick={() => scanApi.openFolder(detection.filePath)}
+                      sx={{ color: 'primary.main', '&:hover': { bgcolor: c.accentPrimaryMuted } }}
+                    >
+                      <FolderOpenIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                </TableCell>
+              </TableRow>
+            );
+          })}
+          {paddingBottom > 0 && (
+            <TableRow>
+              <TableCell colSpan={4} sx={{ height: paddingBottom, p: 0, border: 0 }} />
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 }
