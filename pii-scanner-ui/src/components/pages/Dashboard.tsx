@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import {
   Box,
   Card,
@@ -21,10 +22,12 @@ import {
   Refresh as RefreshIcon,
   ArrowForward as ArrowForwardIcon,
   TrendingUp as TrendingUpIcon,
+  TrendingDown as TrendingDownIcon,
   LockOpen as LockOpenIcon,
   Category as CategoryIcon,
   Analytics as AnalyticsIcon,
   Assessment as AssessmentIcon,
+  ShowChart as ShowChartIcon,
 } from '@mui/icons-material';
 import {
   PieChart,
@@ -44,6 +47,16 @@ import StatCard from '../common/StatCard';
 import EmptyState from '../common/EmptyState';
 import PageHeader from '../common/PageHeader';
 import { glassCardSx, getRechartsTooltipStyle, tokens } from '../../theme/designSystem';
+import axios from '../../services/axios';
+import { IS_MOCK } from '../../config';
+
+interface ScanHistoryItem {
+  scanId: string;
+  status: string;
+  piiDetected: number | null;
+  filesScanned: number | null;
+  createdAt: string;
+}
 
 interface DashboardProps {
   results: ScanResultResponse | null;
@@ -108,6 +121,23 @@ export default function Dashboard({ results }: DashboardProps) {
   const dark = theme.palette.mode === 'dark';
   const c = tokens.colors;
 
+  const [history, setHistory] = useState<ScanHistoryItem[]>([]);
+
+  useEffect(() => {
+    if (IS_MOCK) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setHistory([
+        { scanId: 'mock-1', status: 'completed', piiDetected: 156, filesScanned: 80, createdAt: '2026-02-01T10:00:00Z' },
+        { scanId: 'mock-2', status: 'completed', piiDetected: 243, filesScanned: 95, createdAt: '2026-03-01T10:00:00Z' },
+        { scanId: 'mock-3', status: 'completed', piiDetected: 198, filesScanned: 102, createdAt: '2026-04-01T10:00:00Z' },
+      ]);
+      return;
+    }
+    axios.get('/scan/history')
+      .then(r => setHistory(r.data))
+      .catch(() => setHistory([]));
+  }, []);
+
   if (!results) {
     return (
       <Box>
@@ -151,14 +181,30 @@ export default function Dashboard({ results }: DashboardProps) {
 
   const totalPii = Object.values(statistics.piiByType).reduce((sum, count) => sum + count, 0);
 
+  // Historique réel : scans complétés triés par date, limité aux 6 derniers + actuel
+  const completedHistory = history
+    .filter(h => h.status.toLowerCase() === 'completed' && h.piiDetected !== null)
+    .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+    .slice(-6);
+
   const trendData = [
-    { name: 'Scan 1', pii: 156 },
-    { name: 'Scan 2', pii: 243 },
-    { name: 'Scan 3', pii: 198 },
-    { name: 'Scan 4', pii: 287 },
+    ...completedHistory.map(h => ({
+      name: new Date(h.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }),
+      pii: h.piiDetected as number,
+    })),
     { name: 'Actuel', pii: totalPii },
   ];
-  const sparklinePii = [156, 243, 198, 287, totalPii];
+
+  // Tendance réelle : variation entre avant-dernier et dernier scan historique
+  const hasTrend = completedHistory.length >= 1;
+  const prevPii = hasTrend ? (completedHistory[completedHistory.length - 1].piiDetected ?? 0) : null;
+  const trendPct = prevPii !== null && prevPii > 0
+    ? Math.round(((totalPii - prevPii) / prevPii) * 100)
+    : null;
+  const trendUp = trendPct !== null && trendPct >= 0;
+
+  // Le graphique n'est affiché que si au moins 2 points (1 historique + actuel)
+  const showTrendChart = completedHistory.length >= 1;
 
   const highRiskFiles = statistics.topRiskyFiles.filter(f => f.riskLevel === 'ÉLEVÉ').length;
   const mediumRiskFiles = statistics.topRiskyFiles.filter(f => f.riskLevel === 'MOYEN').length;
@@ -228,7 +274,6 @@ export default function Dashboard({ results }: DashboardProps) {
             label="PII détectées"
             icon={<SecurityIcon />}
             subtext={`dans ${statistics.filesWithPii} fichier(s)`}
-            sparkline={sparklinePii}
           />
         </Grid>
 
@@ -408,43 +453,57 @@ export default function Dashboard({ results }: DashboardProps) {
                 <Typography variant="h6" fontWeight={600}>
                   Évolution des détections
                 </Typography>
-                <Chip
-                  icon={<TrendingUpIcon />}
-                  label="+12%"
-                  size="small"
-                  color="success"
-                  sx={{ fontWeight: 600 }}
-                />
+                {trendPct !== null && (
+                  <Chip
+                    icon={trendUp ? <TrendingUpIcon /> : <TrendingDownIcon />}
+                    label={`${trendUp ? '+' : ''}${trendPct}% vs scan préc.`}
+                    size="small"
+                    color={trendUp ? 'error' : 'success'}
+                    sx={{ fontWeight: 600 }}
+                  />
+                )}
               </Box>
-              <ResponsiveContainer width="100%" height={220} minWidth={0}>
-                <AreaChart data={trendData}>
-                  <defs>
-                    <linearGradient id="colorPii" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#00E599" stopOpacity={0.8} />
-                      <stop offset="95%" stopColor="#00E599" stopOpacity={0.05} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid
-                    horizontal={true}
-                    vertical={false}
-                    stroke={dark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)'}
-                  />
-                  <XAxis dataKey="name" tick={axisStyle} axisLine={false} tickLine={false} />
-                  <YAxis tick={axisStyle} axisLine={false} tickLine={false} />
-                  <RechartsTooltip contentStyle={getRechartsTooltipStyle(dark)} />
-                  <Area
-                    type="monotone"
-                    dataKey="pii"
-                    stroke="#00E599"
-                    strokeWidth={2.5}
-                    fillOpacity={1}
-                    fill="url(#colorPii)"
-                    name="PII détectées"
-                    animationBegin={0}
-                    animationDuration={1200}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
+              {showTrendChart ? (
+                <ResponsiveContainer width="100%" height={220} minWidth={0}>
+                  <AreaChart data={trendData}>
+                    <defs>
+                      <linearGradient id="colorPii" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#00E599" stopOpacity={0.8} />
+                        <stop offset="95%" stopColor="#00E599" stopOpacity={0.05} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid
+                      horizontal={true}
+                      vertical={false}
+                      stroke={dark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)'}
+                    />
+                    <XAxis dataKey="name" tick={axisStyle} axisLine={false} tickLine={false} />
+                    <YAxis tick={axisStyle} axisLine={false} tickLine={false} />
+                    <RechartsTooltip contentStyle={getRechartsTooltipStyle(dark)} />
+                    <Area
+                      type="monotone"
+                      dataKey="pii"
+                      stroke="#00E599"
+                      strokeWidth={2.5}
+                      fillOpacity={1}
+                      fill="url(#colorPii)"
+                      name="PII détectées"
+                      animationBegin={0}
+                      animationDuration={1200}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              ) : (
+                <Box sx={{ height: 220, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 1.5 }}>
+                  <ShowChartIcon sx={{ fontSize: 40, color: 'text.disabled', opacity: 0.4 }} />
+                  <Typography variant="body2" color="text.secondary" textAlign="center">
+                    Effectuez au moins 2 scans pour voir l'évolution
+                  </Typography>
+                  <Button size="small" variant="outlined" onClick={() => navigate('/scanner')} sx={{ mt: 0.5 }}>
+                    Lancer un scan
+                  </Button>
+                </Box>
+              )}
             </CardContent>
           </Card>
         </Grid>
