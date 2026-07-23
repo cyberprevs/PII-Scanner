@@ -29,7 +29,7 @@ public class DataRetentionController : ControllerBase
             if (!PathValidator.ValidateDirectoryPath(request.DirectoryPath, out var validationError, mustExist: true))
             {
                 _logger.LogWarning("Tentative de scan de rétention avec un chemin invalide: {Path} - Erreur: {Error}",
-                    request.DirectoryPath, validationError);
+                    LogSanitizer.Sanitize(request.DirectoryPath), validationError);
 
                 return BadRequest(new { error = $"Répertoire invalide: {validationError}" });
             }
@@ -73,7 +73,7 @@ public class DataRetentionController : ControllerBase
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogWarning($"Erreur lors de l'analyse du fichier {fileGroup.Key}: {ex.Message}");
+                    _logger.LogWarning(ex, "Erreur lors de l'analyse du fichier {Path}", LogSanitizer.Sanitize(fileGroup.Key));
                     // Continuer avec le fichier suivant
                 }
             }
@@ -88,7 +88,7 @@ public class DataRetentionController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Erreur lors du scan de rétention: {ex.Message}");
+            _logger.LogError(ex, "Erreur lors du scan de rétention");
             return StatusCode(500, new { error = ex.Message });
         }
     }
@@ -112,7 +112,7 @@ public class DataRetentionController : ControllerBase
                     if (!PathValidator.ValidateFilePath(filePath, out var validationError, mustExist: false))
                     {
                         _logger.LogWarning("Tentative de suppression d'un fichier avec un chemin invalide: {Path} - Erreur: {Error}",
-                            filePath, validationError);
+                            LogSanitizer.Sanitize(filePath), validationError);
                         failedFiles.Add(filePath);
                         continue;
                     }
@@ -121,7 +121,7 @@ public class DataRetentionController : ControllerBase
                     {
                         System.IO.File.Delete(filePath);
                         deletedFiles.Add(filePath);
-                        _logger.LogInformation($"Fichier supprimé: {filePath}");
+                        _logger.LogInformation("Fichier supprimé: {Path}", LogSanitizer.Sanitize(filePath));
                     }
                     else
                     {
@@ -130,7 +130,7 @@ public class DataRetentionController : ControllerBase
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError($"Erreur lors de la suppression de {filePath}: {ex.Message}");
+                    _logger.LogError(ex, "Erreur lors de la suppression de {Path}", LogSanitizer.Sanitize(filePath));
                     failedFiles.Add(filePath);
                 }
             }

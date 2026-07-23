@@ -172,7 +172,7 @@ public class ScanController : ControllerBase
         });
         await _db.SaveChangesAsync();
 
-        _logger.LogInformation("Rapport {Format} chiffré téléchargé pour le scan {ScanId} par l'utilisateur {UserId}", format, scanId, userId);
+        _logger.LogInformation("Rapport {Format} chiffré téléchargé pour le scan {ScanId} par l'utilisateur {UserId}", LogSanitizer.Sanitize(format), LogSanitizer.Sanitize(scanId), userId);
 
         // Exposer le mot de passe dans un header CORS-accessible (affiché une seule fois dans l'UI)
         Response.Headers.Append("X-Report-Password", password);
@@ -245,7 +245,7 @@ public class ScanController : ControllerBase
         _db.Scans.Remove(scan);
         await _db.SaveChangesAsync();
 
-        _logger.LogInformation("Scan {ScanId} supprimé par l'utilisateur {UserId}", scanId, userId);
+        _logger.LogInformation("Scan {ScanId} supprimé par l'utilisateur {UserId}", LogSanitizer.Sanitize(scanId), userId);
 
         return NoContent();
     }
@@ -335,7 +335,7 @@ public class ScanController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erreur lors de l'ouverture du dossier {Path}", folderPath);
+            _logger.LogError(ex, "Erreur lors de l'ouverture du dossier {Path}", LogSanitizer.Sanitize(folderPath));
             return StatusCode(500, "Impossible d'ouvrir le dossier.");
         }
     }
