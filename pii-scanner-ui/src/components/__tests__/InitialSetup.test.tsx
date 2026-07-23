@@ -87,8 +87,10 @@ describe('InitialSetup Component', () => {
       await user.type(usernameInput, 'ab');
       await user.type(emailInput, 'test@example.com');
       await user.type(fullNameInput, 'John Doe');
-      await user.type(passwordInput, 'SecurePass123!');
-      await user.type(confirmPasswordInput, 'SecurePass123!');
+      await user.click(passwordInput);
+      await user.paste('SecurePassword123456789!');
+      await user.click(confirmPasswordInput);
+      await user.paste('SecurePassword123456789!');
       await user.click(screen.getByRole('button', { name: /créer le compte/i }));
 
       await waitFor(() => {
@@ -133,7 +135,7 @@ describe('InitialSetup Component', () => {
       const hasSpecialChar = (pwd: string) => /[!@#$%^&*(),.?":{}|<>]/.test(pwd);
 
       // Valid password
-      const validPwd = 'SecurePass123!';
+      const validPwd = 'SecurePassword123456789!';
       expect(hasUpperCase(validPwd)).toBe(true);
       expect(hasLowerCase(validPwd)).toBe(true);
       expect(hasNumber(validPwd)).toBe(true);
@@ -154,8 +156,10 @@ describe('InitialSetup Component', () => {
       await user.type(usernameInput, 'admin');
       await user.type(emailInput, 'admin@example.com');
       await user.type(fullNameInput, 'Admin User');
-      await user.type(passwordInput, 'SecurePass123!');
-      await user.type(confirmPasswordInput, 'DifferentPass123!');
+      await user.click(passwordInput);
+      await user.paste('SecurePassword123456789!');
+      await user.click(confirmPasswordInput);
+      await user.paste('DifferentPassword987654321!');
       await user.click(screen.getByRole('button', { name: /créer le compte/i }));
 
       await waitFor(() => {
@@ -193,8 +197,10 @@ describe('InitialSetup Component', () => {
       await user.type(usernameInput, 'admin');
       await user.type(emailInput, 'admin@example.com');
       await user.type(fullNameInput, 'Admin User');
-      await user.type(passwordInput, 'SecurePass123!');
-      await user.type(confirmPasswordInput, 'SecurePass123!');
+      await user.click(passwordInput);
+      await user.paste('SecurePassword123456789!');
+      await user.click(confirmPasswordInput);
+      await user.paste('SecurePassword123456789!');
       await user.click(screen.getByRole('button', { name: /créer le compte/i }));
 
       await waitFor(() => {
@@ -202,8 +208,8 @@ describe('InitialSetup Component', () => {
           username: 'admin',
           email: 'admin@example.com',
           fullName: 'Admin User',
-          password: 'SecurePass123!',
-          confirmPassword: 'SecurePass123!',
+          password: 'SecurePassword123456789!',
+          confirmPassword: 'SecurePassword123456789!',
         });
       });
     });
@@ -219,8 +225,10 @@ describe('InitialSetup Component', () => {
       await user.type(usernameInput, 'admin');
       await user.type(emailInput, 'admin@example.com');
       await user.type(fullNameInput, 'Admin User');
-      await user.type(passwordInput, 'SecurePass123!');
-      await user.type(confirmPasswordInput, 'SecurePass123!');
+      await user.click(passwordInput);
+      await user.paste('SecurePassword123456789!');
+      await user.click(confirmPasswordInput);
+      await user.paste('SecurePassword123456789!');
       await user.click(screen.getByRole('button', { name: /créer le compte/i }));
 
       await waitFor(() => {
@@ -242,8 +250,10 @@ describe('InitialSetup Component', () => {
       await user.type(usernameInput, 'admin');
       await user.type(emailInput, 'admin@example.com');
       await user.type(fullNameInput, 'Admin User');
-      await user.type(passwordInput, 'SecurePass123!');
-      await user.type(confirmPasswordInput, 'SecurePass123!');
+      await user.click(passwordInput);
+      await user.paste('SecurePassword123456789!');
+      await user.click(confirmPasswordInput);
+      await user.paste('SecurePassword123456789!');
       await user.click(screen.getByRole('button', { name: /créer le compte/i }));
 
       await waitFor(() => {
@@ -261,8 +271,10 @@ describe('InitialSetup Component', () => {
       await user.type(usernameInput, 'admin');
       await user.type(emailInput, 'admin@example.com');
       await user.type(fullNameInput, 'Admin User');
-      await user.type(passwordInput, 'SecurePass123!');
-      await user.type(confirmPasswordInput, 'SecurePass123!');
+      await user.click(passwordInput);
+      await user.paste('SecurePassword123456789!');
+      await user.click(confirmPasswordInput);
+      await user.paste('SecurePassword123456789!');
       await user.click(screen.getByRole('button', { name: /créer le compte/i }));
 
       await waitFor(() => {
@@ -294,8 +306,10 @@ describe('InitialSetup Component', () => {
       await user.type(usernameInput, 'admin');
       await user.type(emailInput, 'admin@example.com');
       await user.type(fullNameInput, 'Admin User');
-      await user.type(passwordInput, 'SecurePass123!');
-      await user.type(confirmPasswordInput, 'SecurePass123!');
+      await user.click(passwordInput);
+      await user.paste('SecurePassword123456789!');
+      await user.click(confirmPasswordInput);
+      await user.paste('SecurePassword123456789!');
       await user.click(screen.getByRole('button', { name: /créer le compte/i }));
 
       await waitFor(() => {
@@ -313,8 +327,10 @@ describe('InitialSetup Component', () => {
       await user.type(usernameInput, 'admin');
       await user.type(emailInput, 'admin@example.com');
       await user.type(fullNameInput, 'Admin User');
-      await user.type(passwordInput, 'SecurePass123!');
-      await user.type(confirmPasswordInput, 'SecurePass123!');
+      await user.click(passwordInput);
+      await user.paste('SecurePassword123456789!');
+      await user.click(confirmPasswordInput);
+      await user.paste('SecurePassword123456789!');
       await user.click(screen.getByRole('button', { name: /créer le compte/i }));
 
       await waitFor(() => {
