@@ -404,7 +404,7 @@ public class DatabaseController : ControllerBase
             });
             await _db.SaveChangesAsync();
 
-            _logger.LogInformation("Database backup deleted: {FileName} by user {UserId}", bareFileName, userId);
+            _logger.LogInformation("Database backup deleted: {FileName} by user {UserId}", LogSanitizer.Sanitize(bareFileName), userId);
 
             return Ok(new { message = "Sauvegarde supprimée avec succès" });
         }
@@ -447,7 +447,7 @@ public class DatabaseController : ControllerBase
             if (backupFileInfo.Length < 45000) // Moins de 45KB = probablement vide
             {
                 _logger.LogWarning("Backup file too small ({Size} bytes), might be empty: {FileName}",
-                    backupFileInfo.Length, bareFileName);
+                    backupFileInfo.Length, LogSanitizer.Sanitize(bareFileName));
                 return BadRequest(new {
                     error = "Cette sauvegarde semble vide ou incomplète (taille trop petite). La restauration pourrait vous empêcher de vous reconnecter. Choisissez une autre sauvegarde ou créez-en une nouvelle.",
                     sizeBytes = backupFileInfo.Length
@@ -462,7 +462,7 @@ public class DatabaseController : ControllerBase
 
             // Log audit AVANT la restauration (car après on perd les logs)
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
-            _logger.LogInformation("Database restore initiated by user {UserId}: {FileName}", userId, bareFileName);
+            _logger.LogInformation("Database restore initiated by user {UserId}: {FileName}", userId, LogSanitizer.Sanitize(bareFileName));
 
             // Fermer les connexions à la base de données
             await _db.Database.CloseConnectionAsync();
@@ -470,7 +470,7 @@ public class DatabaseController : ControllerBase
             // Restaurer la sauvegarde
             System.IO.File.Copy(backupPath, dbPath, true);
 
-            _logger.LogInformation("Database restored successfully from: {FileName}", bareFileName);
+            _logger.LogInformation("Database restored successfully from: {FileName}", LogSanitizer.Sanitize(bareFileName));
 
             return Ok(new
             {

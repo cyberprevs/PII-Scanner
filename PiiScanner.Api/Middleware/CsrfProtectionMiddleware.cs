@@ -102,7 +102,7 @@ public class CsrfProtectionMiddleware
             }
 
             // Token valide - continuer
-            _logger.LogDebug("Token CSRF validé pour {Method} {Path}", method, path);
+            _logger.LogDebug("Token CSRF validé pour {Method} {Path}", LogSanitizer.Sanitize(method), LogSanitizer.Sanitize(path));
         }
 
         await _next(context);
