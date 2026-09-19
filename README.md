@@ -13,7 +13,7 @@ Application web pour détecter et analyser les données personnelles identifiabl
 
 ### Version portable (Recommandée)
 
-1. Téléchargez `PII-Scanner-v2.0.0-Windows-Standalone.zip` : [Releases](https://github.com/cyberprevs/pii-scanner/releases)
+1. Téléchargez `PII-Scanner-v2.0.0-Windows-Standalone.zip` : [Releases](https://github.com/cyberprevs/PII-Scanner/releases)
 2. Extrayez le ZIP
 3. Double-cliquez sur **`PiiScanner.Api.exe`**
 4. Le navigateur s'ouvre automatiquement sur **http://localhost:5000**
@@ -40,8 +40,8 @@ Application web pour détecter et analyser les données personnelles identifiabl
 
 ```bash
 # Build automatique (recommandé)
-git clone https://github.com/cyberprevs/pii-scanner.git
-cd pii-scanner
+git clone https://github.com/cyberprevs/PII-Scanner.git
+cd PII-Scanner
 .\build-standalone-release.ps1
 
 # OU build manuel:
@@ -64,7 +64,7 @@ dotnet run
 
 ## Fonctionnalités principales
 
-### Détection de 18 types de PII spécifiques au Bénin
+### Détection de 17 types de PII spécifiques au Bénin
 
 **Identité** : IFU, CNI, Passeport, RCCM, Acte de naissance, NPI
 **Contact** : Email, Téléphone (+229), MTN MoMo, Moov Money
@@ -144,7 +144,6 @@ Fonctionnalités :
 |----------|-------------|
 | [INSTALLATION.md](INSTALLATION.md) | Guide d'installation complet (portable + sources) |
 | [SECURITY.md](SECURITY.md) | Documentation de sécurité détaillée |
-| [FEATURES.md](FEATURES.md) | Liste complète des fonctionnalités |
 | [CHANGELOG.md](CHANGELOG.md) | Historique des versions |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Guide de contribution |
 
@@ -178,8 +177,8 @@ PII-Scanner/
 ├── PiiScanner.Core/          # Bibliothèque de détection PII (17 types)
 ├── PiiScanner.Core.Tests/    # Tests unitaires (xUnit + FluentAssertions)
 ├── PiiScanner.Api/           # API REST + SignalR + Authentification
-├── PiiScanner/               # Application console (legacy)
-└── pii-scanner-ui/           # Interface React (15 pages) + Tests Vitest
+├── PiiScanner.Api.Tests/     # Tests d'intégration API (xUnit + FluentAssertions)
+└── pii-scanner-ui/           # Interface React + Tests Vitest
 ```
 
 ### API REST
@@ -322,7 +321,7 @@ L'application dispose d'une page Support complète avec :
 
 ### Ressources
 
-- Documentation : [SECURITY.md](SECURITY.md), [INSTALLATION.md](INSTALLATION.md), [FEATURES.md](FEATURES.md)
+- Documentation : [SECURITY.md](SECURITY.md), [INSTALLATION.md](INSTALLATION.md)
 - APDP Bénin : contact@apdp.bj
 - Loi N°2017-20 : Référence légale sur la protection des données
 

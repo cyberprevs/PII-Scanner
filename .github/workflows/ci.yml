@@ -26,11 +26,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Étape 2: Installer .NET 8
+      # Étape 2: Installer .NET 9
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '9.0.x'
 
       # Étape 3: Restaurer les dépendances
       - name: Restore dependencies
@@ -95,7 +95,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '9.0.x'
 
       - name: Setup Node.js
         uses: actions/setup-node@v4

@@ -701,8 +701,8 @@ Après analyse complète avec OWASP ZAP, les alertes suivantes sont **acceptées
 
 Pour signaler une vulnérabilité de sécurité :
 
-1. **GitHub Security Advisories** : https://github.com/cyberprevs/pii-scanner/security/advisories
-2. **GitHub Issues** : https://github.com/cyberprevs/pii-scanner/issues
+1. **GitHub Security Advisories** : https://github.com/cyberprevs/PII-Scanner/security/advisories
+2. **GitHub Issues** : https://github.com/cyberprevs/PII-Scanner/issues
 
 **Délai de réponse** : 48 heures maximum
 

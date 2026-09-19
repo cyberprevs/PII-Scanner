@@ -34,7 +34,7 @@ Fixes #(numéro de l'issue)
 
 **Environnement de test** :
 - OS : <!-- Windows 10/11, Windows Server 2022, etc. -->
-- .NET SDK : <!-- 8.0.x -->
+- .NET SDK : <!-- 9.0.x -->
 - Node.js : <!-- 18.x / 20.x -->
 
 ## 📸 Captures d'écran (si applicable)
