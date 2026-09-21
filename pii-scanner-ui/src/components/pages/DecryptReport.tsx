@@ -148,7 +148,7 @@ const DecryptReport: React.FC = () => {
             mb: 3,
             border: '2px dashed',
             borderColor: dragOver ? 'primary.main' : file ? 'success.main' : 'divider',
-            bgcolor: dragOver ? 'rgba(0,229,153,0.04)' : 'background.paper',
+            bgcolor: dragOver ? 'rgba(0, 212, 255, 0.04)' : 'background.paper',
             cursor: 'pointer',
             transition: 'all 0.2s',
           }}
