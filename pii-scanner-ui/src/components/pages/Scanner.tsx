@@ -367,7 +367,7 @@ export default function Scanner({ scanning, scanId, onStartScan, onStopScan, has
               boxShadow: directoryPath ? '0 4px 14px rgba(0, 212, 255, 0.3)' : 0,
               '&:hover': {
                 background: directoryPath
-                  ? gradients.primary
+                  ? gradients.primaryHover
                   : undefined,
                 boxShadow: directoryPath ? '0 6px 20px rgba(0, 212, 255, 0.4)' : 0,
                 transform: 'translateY(-1px)',

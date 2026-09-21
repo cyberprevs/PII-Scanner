@@ -152,7 +152,7 @@ export default function Dashboard({ results }: DashboardProps) {
               onClick={() => navigate('/scanner')}
               sx={{
                 background: gradients.primary,
-                '&:hover': { background: gradients.primary },
+                '&:hover': { background: gradients.primaryHover },
               }}
             >
               Nouveau scan
@@ -254,7 +254,7 @@ export default function Dashboard({ results }: DashboardProps) {
               onClick={() => navigate('/scanner')}
               sx={{
                 background: gradients.primary,
-                '&:hover': { background: gradients.primary },
+                '&:hover': { background: gradients.primaryHover },
               }}
             >
               Nouveau scan
@@ -662,7 +662,7 @@ export default function Dashboard({ results }: DashboardProps) {
                     flex: 1,
                     fontWeight: 600,
                     background: gradients.primary,
-                    '&:hover': { background: gradients.primary },
+                    '&:hover': { background: gradients.primaryHover },
                   }}
                 >
                   Rapports détaillés
