@@ -238,8 +238,8 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results, onDownloadReport }) => 
                   <BarChart data={categoryStats} layout="vertical" margin={{ top: 8, right: 24, bottom: 8, left: 110 }}>
                     <defs>
                       <linearGradient id="barGrad1" x1="0" y1="0" x2="1" y2="0">
-                        <stop offset="0%" stopColor="#00E599" stopOpacity={0.9} />
-                        <stop offset="100%" stopColor="#00B876" stopOpacity={0.7} />
+                        <stop offset="0%" stopColor={tokens.colors.accentPrimary} stopOpacity={0.9} />
+                        <stop offset="100%" stopColor="#33DDFF" stopOpacity={0.7} />
                       </linearGradient>
                       <linearGradient id="barGrad2" x1="0" y1="0" x2="1" y2="0">
                         <stop offset="0%" stopColor="#3B82F6" stopOpacity={0.9} />

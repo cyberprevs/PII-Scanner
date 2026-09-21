@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { scanApi, type OldFileInfo } from '../../services/apiClient';
+import { tokens, gradients } from '../../theme/designSystem';
 import {
   Box,
   Typography,
@@ -50,7 +51,7 @@ interface RetentionPolicy {
 export default function DataRetention() {
   const [retentionPolicies, setRetentionPolicies] = useState<RetentionPolicy[]>([
     { category: 'Données bancaires (IBAN, Carte, Mobile Money)', description: 'Transactions et informations bancaires', defaultPeriod: 5, currentPeriod: 5, color: '#f44336', icon: '•' },
-    { category: 'Données d\'identité (IFU, CNI, Passeport, RCCM)', description: 'Documents d\'identité et fiscaux', defaultPeriod: 3, currentPeriod: 3, color: '#00E599', icon: '•' },
+    { category: 'Données d\'identité (IFU, CNI, Passeport, RCCM)', description: 'Documents d\'identité et fiscaux', defaultPeriod: 3, currentPeriod: 3, color: tokens.colors.accentPrimary, icon: '•' },
     { category: 'Données santé (CNSS, RAMU)', description: 'Dossiers médicaux et assurance', defaultPeriod: 5, currentPeriod: 5, color: '#43e97b', icon: '•' },
     { category: 'Données éducation (INE, Matricule)', description: 'Dossiers scolaires et administratifs', defaultPeriod: 2, currentPeriod: 2, color: '#ff9800', icon: '•' },
     { category: 'Données contact (Email, Téléphone)', description: 'Coordonnées personnelles', defaultPeriod: 1, currentPeriod: 1, color: '#3B82F6', icon: '•' },
@@ -268,7 +269,7 @@ export default function DataRetention() {
             disabled={scanning}
             sx={{
               mt: 2,
-              background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
+              background: gradients.primary,
               '&:hover': {
                 background: 'linear-gradient(135deg, #00CC88 0%, #00A86B 100%)',
               },

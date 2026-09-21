@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
+import { gradients } from '../../theme/designSystem';
 import {
   Box,
   Card,
@@ -225,7 +226,7 @@ const DecryptReport: React.FC = () => {
               onClick={handleDecrypt}
               disabled={!file || !password || decrypting}
               sx={{
-                background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
+                background: gradients.primary,
                 fontWeight: 600,
                 '&:disabled': { opacity: 0.5 },
               }}
