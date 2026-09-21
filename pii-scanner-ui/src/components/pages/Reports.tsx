@@ -385,7 +385,7 @@ export default function Reports({ results, onDownloadReport }: ReportsProps) {
                         fontSize: '0.8rem',
                         py: 0.75,
                         backgroundColor: tokens.colors.accentPrimary,
-                        color: '#0A0A0A',
+                        color: tokens.colors.accentPrimaryText,
                         '&:hover': {
                           backgroundColor: tokens.colors.accentPrimaryHover,
                         },
