@@ -27,6 +27,7 @@ import {
 import SaveIcon from '@mui/icons-material/Save';
 import RestoreIcon from '@mui/icons-material/Restore';
 import axios from '../../services/axios';
+import { tokens } from '../../theme/designSystem';
 
 interface PiiTypeConfig {
   id: string;
@@ -212,7 +213,7 @@ export default function Settings() {
 
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case 'Identité': return '#00E599';
+      case 'Identité': return tokens.colors.accentPrimary;
       case 'Contact': return '#3B82F6';
       case 'Bancaire': return '#f44336';
       case 'Santé': return '#43e97b';
@@ -479,10 +480,10 @@ export default function Settings() {
           startIcon={<SaveIcon />}
           onClick={handleSave}
           sx={{
-            backgroundColor: '#00E599',
-            color: '#0A0A0A',
+            backgroundColor: tokens.colors.accentPrimary,
+            color: tokens.colors.accentPrimaryText,
             '&:hover': {
-              backgroundColor: '#00CC88',
+              backgroundColor: tokens.colors.accentPrimaryHover,
             },
           }}
         >

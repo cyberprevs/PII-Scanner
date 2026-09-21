@@ -21,6 +21,7 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { useTranslation } from 'react-i18next';
 import PageHeader from '../common/PageHeader';
+import { tokens } from '../../theme/designSystem';
 
 export default function Support() {
   const { t } = useTranslation();
@@ -144,7 +145,7 @@ export default function Support() {
           }}>
             <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <ArticleIcon sx={{ fontSize: 32, color: '#00E599', mr: 1.5 }} />
+                <ArticleIcon sx={{ fontSize: 32, color: tokens.colors.accentPrimary, mr: 1.5 }} />
                 <Typography variant="h6" fontWeight={600} fontSize="1.1rem">
                   {t('support.documentation')}
                 </Typography>
@@ -178,7 +179,7 @@ export default function Support() {
           }}>
             <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <EmailIcon sx={{ fontSize: 32, color: '#00E599', mr: 1.5 }} />
+                <EmailIcon sx={{ fontSize: 32, color: tokens.colors.accentPrimary, mr: 1.5 }} />
                 <Typography variant="h6" fontWeight={600} fontSize="1.1rem">
                   {t('support.contact')}
                 </Typography>
@@ -205,7 +206,7 @@ export default function Support() {
       {/* FAQ */}
       <Paper sx={{ p: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-          <HelpOutlineIcon sx={{ fontSize: 32, color: '#00E599', mr: 2 }} />
+          <HelpOutlineIcon sx={{ fontSize: 32, color: tokens.colors.accentPrimary, mr: 2 }} />
           <Typography variant="h6" fontWeight={600}>
             {t('support.faqTitle')}
           </Typography>

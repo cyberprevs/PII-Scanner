@@ -37,7 +37,7 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import type { ScanResultResponse } from '../types';
 import EmptyState from './common/EmptyState';
 import StatCard from './common/StatCard';
-import { getRechartsTooltipStyle, tokens } from '../theme/designSystem';
+import { chartColors, getRechartsTooltipStyle, tokens } from '../theme/designSystem';
 
 interface ResultsProps {
   results: ScanResultResponse | null;
@@ -45,7 +45,7 @@ interface ResultsProps {
   onNewScan: () => void;
 }
 
-const COLORS = ['#00E599', '#3B82F6', '#F0A000', '#F45252', '#A78BFA', '#EC4899', '#06B6D4', '#84CC16'];
+const COLORS = chartColors;
 
 const getRiskColor = (riskLevel: string) => {
   switch (riskLevel) {
@@ -159,7 +159,7 @@ export default function Results({ results, onDownloadReport, onNewScan }: Result
                   <XAxis dataKey="type" tick={axisStyle} angle={-45} textAnchor="end" height={80} axisLine={false} tickLine={false} />
                   <YAxis tick={axisStyle} axisLine={false} tickLine={false} />
                   <RechartsTooltip contentStyle={getRechartsTooltipStyle(dark)} />
-                  <Bar dataKey="count" fill="#00E599" name="Nombre de PII" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="count" fill={chartColors[0]} name="Nombre de PII" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </Box>
@@ -267,7 +267,7 @@ export default function Results({ results, onDownloadReport, onNewScan }: Result
                       <Chip label={file.riskLevel} color={getRiskColor(file.riskLevel) as 'error' | 'warning' | 'success' | 'default'} size="small" />
                     </TableCell>
                     <TableCell>
-                      <Box component="span" sx={{ fontFamily: 'monospace', fontSize: '0.8rem' }}>
+                      <Box component="span" sx={{ fontFamily: tokens.fontMono, fontSize: '0.8rem' }}>
                         {file.filePath.length > 70 ? '...' + file.filePath.slice(-70) : file.filePath}
                       </Box>
                     </TableCell>
@@ -325,10 +325,10 @@ export default function Results({ results, onDownloadReport, onNewScan }: Result
                       <Chip label={detection.piiType} size="small" color="secondary" variant="outlined" />
                     </TableCell>
                     <TableCell>
-                      <Box component="span" sx={{ fontFamily: 'monospace', fontSize: '0.875rem' }}>{detection.match}</Box>
+                      <Box component="span" sx={{ fontFamily: tokens.fontMono, fontSize: '0.875rem' }}>{detection.match}</Box>
                     </TableCell>
                     <TableCell>
-                      <Box component="span" sx={{ fontFamily: 'monospace', fontSize: '0.75rem', color: 'text.secondary' }}>
+                      <Box component="span" sx={{ fontFamily: tokens.fontMono, fontSize: '0.75rem', color: 'text.secondary' }}>
                         {detection.filePath.length > 70 ? '...' + detection.filePath.slice(-70) : detection.filePath}
                       </Box>
                     </TableCell>

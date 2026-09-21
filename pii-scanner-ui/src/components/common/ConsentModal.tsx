@@ -21,7 +21,7 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { tokens } from '../../theme/designSystem';
+import { tokens, gradients } from '../../theme/designSystem';
 
 interface ConsentModalProps {
   open: boolean;
@@ -149,7 +149,7 @@ export default function ConsentModal({ open, onAccept, onDecline }: ConsentModal
           onClick={onAccept}
           sx={{
             background: checked
-              ? 'linear-gradient(135deg, #00E599 0%, #00B876 100%)'
+              ? gradients.primary
               : undefined,
             fontWeight: 600,
           }}

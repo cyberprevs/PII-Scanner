@@ -177,10 +177,10 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
   const sidebarBg = darkMode ? c.bgSurface : c.light.bgSurface;
   const sidebarBorder = darkMode ? c.borderDefault : c.light.borderDefault;
   const iconInactive = darkMode ? c.textTertiary : c.light.textTertiary;
-  const hoverBg = darkMode ? c.accentPrimaryMuted : 'rgba(0, 229, 153, 0.08)';
-  const selectedBg = darkMode ? c.accentPrimaryMuted : 'rgba(0, 180, 110, 0.15)';
-  const selectedColor = darkMode ? c.accentPrimary : '#007a4d';
-  const selectedIndicator = darkMode ? c.accentPrimary : '#007a4d';
+  const hoverBg = darkMode ? c.accentPrimaryMuted : 'rgba(0, 146, 184, 0.08)';
+  const selectedBg = darkMode ? c.accentPrimaryMuted : 'rgba(0, 146, 184, 0.15)';
+  const selectedColor = darkMode ? c.accentPrimary : c.light.accentPrimary;
+  const selectedIndicator = darkMode ? c.accentPrimary : c.light.accentPrimary;
 
   return (
     <Drawer
@@ -402,13 +402,11 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
                   p: 1.5,
                   borderRadius: 2,
                   ...(darkMode ? {
-                    backgroundColor: 'rgba(255,255,255,0.03)',
-                    backdropFilter: 'blur(8px)',
-                    WebkitBackdropFilter: 'blur(8px)',
-                    border: '1px solid rgba(255,255,255,0.08)',
+                    backgroundColor: c.bgSurfaceRaised,
+                    border: `1px solid ${c.borderDefault}`,
                   } : {
-                    bgcolor: 'rgba(0, 229, 153, 0.06)',
-                    border: '1px solid rgba(0, 229, 153, 0.1)',
+                    bgcolor: 'rgba(0, 146, 184, 0.06)',
+                    border: '1px solid rgba(0, 146, 184, 0.1)',
                   }),
                 }}
               >
@@ -435,7 +433,7 @@ export default function Sidebar({ darkMode, onToggleDarkMode }: SidebarProps) {
                       fontSize: '0.7rem',
                       backgroundColor: user.role === 'Admin' ? c.accentPrimaryMuted : c.infoMuted,
                       color: user.role === 'Admin' ? c.accentPrimary : c.info,
-                      border: `1px solid ${user.role === 'Admin' ? 'rgba(0, 229, 153, 0.2)' : 'rgba(59, 130, 246, 0.2)'}`,
+                      border: `1px solid ${user.role === 'Admin' ? 'rgba(0, 146, 184, 0.2)' : 'rgba(59, 130, 246, 0.2)'}`,
                     }}
                   />
                 </Box>

@@ -21,6 +21,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { useAuth } from '../../contexts/AuthContext';
 import axios from '../../services/axios';
+import { gradients, tokens } from '../../theme/designSystem';
 
 const Profile: React.FC = () => {
   const { user } = useAuth();
@@ -171,7 +172,7 @@ const Profile: React.FC = () => {
       <Paper sx={{
         p: 3,
         mb: 3,
-        background: 'linear-gradient(135deg, rgba(0, 229, 153, 0.1) 0%, rgba(0, 229, 153, 0.1) 100%)',
+        background: 'linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(0, 212, 255, 0.1) 100%)',
         border: '1px solid',
         borderColor: 'divider',
       }}>
@@ -181,7 +182,7 @@ const Profile: React.FC = () => {
               width: 80,
               height: 80,
               borderRadius: '50%',
-              background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
+              background: gradients.primary,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -213,7 +214,7 @@ const Profile: React.FC = () => {
         <Grid size={{ xs: 12, md: 6 }}>
           <Paper sx={{
             p: 3,
-            background: 'linear-gradient(135deg, rgba(0, 229, 153, 0.02) 0%, rgba(0, 229, 153, 0.02) 100%)',
+            background: 'linear-gradient(135deg, rgba(0, 212, 255, 0.02) 0%, rgba(0, 212, 255, 0.02) 100%)',
             border: '1px solid',
             borderColor: 'divider',
             height: '100%',
@@ -297,9 +298,9 @@ const Profile: React.FC = () => {
                 mt: 3,
                 py: 1.5,
                 fontWeight: 600,
-                background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
+                background: gradients.primary,
                 '&:hover': {
-                  background: 'linear-gradient(135deg, #00CC88 0%, #00A86B 100%)',
+                  background: `linear-gradient(135deg, ${tokens.colors.accentPrimaryHover} 0%, ${tokens.colors.accentPrimary} 100%)`,
                 },
               }}
             >
@@ -312,7 +313,7 @@ const Profile: React.FC = () => {
         <Grid size={{ xs: 12, md: 6 }}>
           <Paper sx={{
             p: 3,
-            background: 'linear-gradient(135deg, rgba(0, 229, 153, 0.02) 0%, rgba(0, 229, 153, 0.02) 100%)',
+            background: 'linear-gradient(135deg, rgba(0, 212, 255, 0.02) 0%, rgba(0, 212, 255, 0.02) 100%)',
             border: '1px solid',
             borderColor: 'divider',
             height: '100%',
@@ -416,9 +417,9 @@ const Profile: React.FC = () => {
                 mt: 3,
                 py: 1.5,
                 fontWeight: 600,
-                background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
+                background: gradients.primary,
                 '&:hover': {
-                  background: 'linear-gradient(135deg, #00CC88 0%, #00A86B 100%)',
+                  background: `linear-gradient(135deg, ${tokens.colors.accentPrimaryHover} 0%, ${tokens.colors.accentPrimary} 100%)`,
                 },
               }}
             >

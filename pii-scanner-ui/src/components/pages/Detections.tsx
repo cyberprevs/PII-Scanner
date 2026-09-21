@@ -253,12 +253,12 @@ function VirtualizedDetectionsTable({ detections, tableContainerRef, t, c }: Vir
                   <Chip label={detection.piiType} size="small" color="secondary" variant="outlined" />
                 </TableCell>
                 <TableCell>
-                  <Box component="span" sx={{ fontFamily: 'monospace', fontSize: '0.875rem' }}>
+                  <Box component="span" sx={{ fontFamily: tokens.fontMono, fontSize: '0.875rem' }}>
                     {detection.match}
                   </Box>
                 </TableCell>
                 <TableCell>
-                  <Box component="span" sx={{ fontSize: '0.75rem', color: 'text.secondary', fontFamily: 'monospace' }}>
+                  <Box component="span" sx={{ fontSize: '0.75rem', color: 'text.secondary', fontFamily: tokens.fontMono }}>
                     {detection.filePath.length > 60 ? '...' + detection.filePath.slice(-60) : detection.filePath}
                   </Box>
                 </TableCell>

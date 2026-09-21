@@ -33,7 +33,7 @@ import { scanApi } from './services/apiClient';
 import type { ScanResultResponse } from './types';
 import axiosInstance, { initializeCsrfToken } from './services/axios';
 import { MOCK_SCAN_RESULTS } from './mocks/mockData';
-import { tokens } from './theme/designSystem';
+import { tokens, gradients } from './theme/designSystem';
 import { IS_MOCK } from './config';
 import { useKeyboardShortcut } from './hooks/useKeyboardShortcut';
 
@@ -507,7 +507,7 @@ function App() {
         >
           <DialogTitle sx={{ pb: 1 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-              <LockIcon sx={{ color: '#00E599' }} />
+              <LockIcon sx={{ color: tokens.colors.accentPrimary }} />
               <Typography variant="h6" fontWeight={700}>Rapport chiffré téléchargé</Typography>
             </Box>
           </DialogTitle>
@@ -518,13 +518,13 @@ function App() {
             <Box sx={{
               display: 'flex', alignItems: 'center', gap: 1,
               p: 1.5, borderRadius: 2,
-              bgcolor: 'rgba(0,229,153,0.08)',
-              border: '1px solid rgba(0,229,153,0.3)',
+              bgcolor: 'rgba(0, 212, 255, 0.08)',
+              border: '1px solid rgba(0, 212, 255, 0.3)',
             }}>
               <Typography
                 variant="h6"
                 fontWeight={700}
-                sx={{ flex: 1, fontFamily: 'monospace', letterSpacing: 2, color: '#00E599' }}
+                sx={{ flex: 1, fontFamily: tokens.fontMono, letterSpacing: 2, color: tokens.colors.accentPrimary }}
               >
                 {reportPassword?.password}
               </Typography>
@@ -544,7 +544,7 @@ function App() {
             <Button
               variant="contained"
               onClick={() => setReportPassword(null)}
-              sx={{ background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)', fontWeight: 600 }}
+              sx={{ background: gradients.primary, fontWeight: 600 }}
             >
               J'ai noté le mot de passe
             </Button>

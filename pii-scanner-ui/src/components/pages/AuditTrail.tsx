@@ -33,6 +33,7 @@ import {
 } from '@mui/icons-material';
 import axios from '../../services/axios';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
+import { chartColors, tokens } from '../../theme/designSystem';
 
 interface AuditLog {
   id: number;
@@ -62,7 +63,7 @@ interface AuditStats {
   dailyActivity: { date: string; count: number }[];
 }
 
-const COLORS = ['#00E599', '#3B82F6', '#F0A000', '#F45252', '#A78BFA', '#EC4899'];
+const COLORS = chartColors;
 
 const AuditTrail: React.FC = () => {
   const [logs, setLogs] = useState<AuditLog[]>([]);
@@ -338,7 +339,7 @@ const AuditTrail: React.FC = () => {
                 <XAxis dataKey="username" />
                 <YAxis />
                 <RechartsTooltip />
-                <Bar dataKey="count" fill="#00E599" />
+                <Bar dataKey="count" fill={chartColors[0]} />
               </BarChart>
             </ResponsiveContainer>
           </Paper>
@@ -468,7 +469,7 @@ const AuditTrail: React.FC = () => {
                   <TableCell>{log.entityType}</TableCell>
                   <TableCell>{log.entityId}</TableCell>
                   <TableCell>
-                    <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
+                    <Typography variant="body2" sx={{ fontFamily: tokens.fontMono }}>
                       {log.ipAddress}
                     </Typography>
                   </TableCell>

@@ -11,7 +11,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
-  background-color: #0A0A0A;
+  background-color: #07090D;
 }
 
 code {
@@ -86,5 +86,5 @@ code {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #00E599;
+  background: #00D4FF;
 }

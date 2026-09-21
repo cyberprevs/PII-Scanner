@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
+import { gradients } from '../../theme/designSystem';
 import {
   Box,
   Card,
@@ -147,7 +148,7 @@ const DecryptReport: React.FC = () => {
             mb: 3,
             border: '2px dashed',
             borderColor: dragOver ? 'primary.main' : file ? 'success.main' : 'divider',
-            bgcolor: dragOver ? 'rgba(0,229,153,0.04)' : 'background.paper',
+            bgcolor: dragOver ? 'rgba(0, 212, 255, 0.04)' : 'background.paper',
             cursor: 'pointer',
             transition: 'all 0.2s',
           }}
@@ -225,7 +226,7 @@ const DecryptReport: React.FC = () => {
               onClick={handleDecrypt}
               disabled={!file || !password || decrypting}
               sx={{
-                background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
+                background: gradients.primary,
                 fontWeight: 600,
                 '&:disabled': { opacity: 0.5 },
               }}

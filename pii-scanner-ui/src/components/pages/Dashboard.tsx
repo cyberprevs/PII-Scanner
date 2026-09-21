@@ -46,7 +46,7 @@ import type { ScanResultResponse } from '../../types';
 import StatCard from '../common/StatCard';
 import EmptyState from '../common/EmptyState';
 import PageHeader from '../common/PageHeader';
-import { glassCardSx, getRechartsTooltipStyle, tokens } from '../../theme/designSystem';
+import { glassCardSx, getRechartsTooltipStyle, tokens, chartColors, gradients } from '../../theme/designSystem';
 import axios from '../../services/axios';
 import { IS_MOCK } from '../../config';
 
@@ -62,7 +62,7 @@ interface DashboardProps {
   results: ScanResultResponse | null;
 }
 
-const DONUT_COLORS = ['#00E599', '#3B82F6', '#F0A000', '#F45252', '#A78BFA', '#EC4899', '#06B6D4', '#84CC16'];
+const DONUT_COLORS = chartColors;
 
 function RiskBar({
   label,
@@ -151,8 +151,8 @@ export default function Dashboard({ results }: DashboardProps) {
               startIcon={<FolderOpenIcon />}
               onClick={() => navigate('/scanner')}
               sx={{
-                background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
-                '&:hover': { background: 'linear-gradient(135deg, #00CC88 0%, #00A86B 100%)' },
+                background: gradients.primary,
+                '&:hover': { background: gradients.primaryHover },
               }}
             >
               Nouveau scan
@@ -243,7 +243,7 @@ export default function Dashboard({ results }: DashboardProps) {
             <Tooltip title="Actualiser">
               <IconButton
                 onClick={() => window.location.reload()}
-                sx={{ bgcolor: c.accentPrimaryMuted, '&:hover': { bgcolor: 'rgba(0,229,153,0.2)' } }}
+                sx={{ bgcolor: c.accentPrimaryMuted, '&:hover': { bgcolor: 'rgba(0, 212, 255, 0.2)' } }}
               >
                 <RefreshIcon />
               </IconButton>
@@ -253,8 +253,8 @@ export default function Dashboard({ results }: DashboardProps) {
               startIcon={<FolderOpenIcon />}
               onClick={() => navigate('/scanner')}
               sx={{
-                background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
-                '&:hover': { background: 'linear-gradient(135deg, #00CC88 0%, #00A86B 100%)' },
+                background: gradients.primary,
+                '&:hover': { background: gradients.primaryHover },
               }}
             >
               Nouveau scan
@@ -468,8 +468,8 @@ export default function Dashboard({ results }: DashboardProps) {
                   <AreaChart data={trendData}>
                     <defs>
                       <linearGradient id="colorPii" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#00E599" stopOpacity={0.8} />
-                        <stop offset="95%" stopColor="#00E599" stopOpacity={0.05} />
+                        <stop offset="5%" stopColor={tokens.colors.accentPrimary} stopOpacity={0.8} />
+                        <stop offset="95%" stopColor={tokens.colors.accentPrimary} stopOpacity={0.05} />
                       </linearGradient>
                     </defs>
                     <CartesianGrid
@@ -483,7 +483,7 @@ export default function Dashboard({ results }: DashboardProps) {
                     <Area
                       type="monotone"
                       dataKey="pii"
-                      stroke="#00E599"
+                      stroke={tokens.colors.accentPrimary}
                       strokeWidth={2.5}
                       fillOpacity={1}
                       fill="url(#colorPii)"
@@ -661,8 +661,8 @@ export default function Dashboard({ results }: DashboardProps) {
                   sx={{
                     flex: 1,
                     fontWeight: 600,
-                    background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
-                    '&:hover': { background: 'linear-gradient(135deg, #00CC88 0%, #00A86B 100%)' },
+                    background: gradients.primary,
+                    '&:hover': { background: gradients.primaryHover },
                   }}
                 >
                   Rapports détaillés

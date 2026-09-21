@@ -173,7 +173,7 @@ export default function Exposure({ results }: ExposureProps) {
                           <Chip label={file.exposureLevel} size="small" color={getExposureColor(file.exposureLevel) as 'error' | 'warning' | 'success' | 'default'} />
                         </TableCell>
                         <TableCell>
-                          <Box component="span" sx={{ fontFamily: 'monospace', fontSize: '0.85rem' }}>
+                          <Box component="span" sx={{ fontFamily: tokens.fontMono, fontSize: '0.85rem' }}>
                             {file.filePath.length > 80 ? '...' + file.filePath.slice(-80) : file.filePath}
                           </Box>
                         </TableCell>

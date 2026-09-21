@@ -29,6 +29,7 @@ import type { ScanResultResponse } from '../../types';
 import { useTranslation } from 'react-i18next';
 import PageHeader from '../common/PageHeader';
 import EmptyState from '../common/EmptyState';
+import { tokens } from '../../theme/designSystem';
 
 interface DuplicateFilesProps {
   results: ScanResultResponse | null;
@@ -83,7 +84,7 @@ function DuplicateRow({ group }: { group: DuplicateGroup }) {
             <Typography
               variant="body2"
               sx={{
-                fontFamily: 'monospace',
+                fontFamily: tokens.fontMono,
                 fontSize: '0.75rem',
                 maxWidth: 150,
                 overflow: 'hidden',
@@ -123,7 +124,7 @@ function DuplicateRow({ group }: { group: DuplicateGroup }) {
                         <Typography
                           variant="body2"
                           sx={{
-                            fontFamily: 'monospace',
+                            fontFamily: tokens.fontMono,
                             fontSize: '0.8rem',
                             wordBreak: 'break-all',
                           }}

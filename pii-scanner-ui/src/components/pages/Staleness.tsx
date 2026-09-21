@@ -159,7 +159,7 @@ export default function Staleness({ results }: StalenessProps) {
                           />
                         </TableCell>
                         <TableCell>
-                          <Box component="span" sx={{ fontFamily: 'monospace', fontSize: '0.85rem' }}>
+                          <Box component="span" sx={{ fontFamily: tokens.fontMono, fontSize: '0.85rem' }}>
                             {file.filePath.length > 80 ? '...' + file.filePath.slice(-80) : file.filePath}
                           </Box>
                         </TableCell>
