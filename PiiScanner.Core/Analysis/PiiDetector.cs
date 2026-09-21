@@ -93,14 +93,19 @@ public static class PiiDetector
         {
             foreach (Match match in pattern.Value.Matches(content))
             {
+                // Certains patterns (ex: Email) capturent parfois du texte adjacent
+                // quand le contenu source n'a pas de séparateur clair (ex: cellules de
+                // tableau Word collées) ; on normalise avant validation.
+                var value = pattern.Key == "Email" ? TruncateEmailAtTld(match.Value) : match.Value;
+
                 // Validation supplémentaire pour éviter les faux positifs
-                if (IsValidPii(pattern.Key, match.Value))
+                if (IsValidPii(pattern.Key, value))
                 {
                     results.Add(new ScanResult
                     {
                         FilePath = filePath,
                         PiiType = pattern.Key,
-                        Match = match.Value,
+                        Match = value,
                         LastAccessedDate = lastAccessedDate,
                         FileHash = fileHash,
                         ExposureLevel = permissionInfo != null ? FilePermissionAnalyzer.GetExposureLevelLabel(permissionInfo.ExposureLevel) : null,
@@ -144,6 +149,33 @@ public static class PiiDetector
             return parsedDate >= minDate && parsedDate <= maxDate;
         }
         return false;
+    }
+
+    private static readonly Regex TldPrefixPattern = new(@"^([a-z]{2,24}|[A-Z]{2,24})", RegexOptions.Compiled);
+
+    /// <summary>
+    /// Tronque un email capturé au dernier TLD à casse uniforme valide.
+    /// Le pattern regex Email n'a pas de frontière stricte après le TLD, donc dans un
+    /// texte sans séparateur (ex: cellule de tableau Word collée au mot suivant), il
+    /// peut capturer "cyberprevs.frContact" au lieu de "cyberprevs.fr". Un vrai TLD
+    /// est toujours dans une seule casse (fr, FR jamais frContact) — on utilise cette
+    /// propriété pour retrouver la coupure correcte plutôt que de rejeter la détection.
+    /// </summary>
+    private static string TruncateEmailAtTld(string email)
+    {
+        var atIndex = email.IndexOf('@');
+        if (atIndex < 0) return email;
+
+        var domain = email[(atIndex + 1)..];
+        var lastDotIndex = domain.LastIndexOf('.');
+        if (lastDotIndex < 0) return email;
+
+        var lastSegment = domain[(lastDotIndex + 1)..];
+        var tldMatch = TldPrefixPattern.Match(lastSegment);
+        if (!tldMatch.Success || tldMatch.Value == lastSegment)
+            return email; // Déjà propre (ou pas de préfixe valide — laisser IsValidEmail rejeter)
+
+        return email[..(atIndex + 1 + lastDotIndex + 1 + tldMatch.Value.Length)];
     }
 
     private static bool IsValidEmail(string email)

@@ -43,6 +43,21 @@ public class PiiDetectorTests
         results.Should().NotContain(r => r.PiiType == "Email");
     }
 
+    [Theory]
+    [InlineData("samir.ale@cyberprevs.frContact", "samir.ale@cyberprevs.fr")]
+    [InlineData("samir.ale@cyberprevs.frParametreValeurAdresse", "samir.ale@cyberprevs.fr")]
+    [InlineData("contact@cyberprevs.frCette", "contact@cyberprevs.fr")]
+    [InlineData("admin123@gouvernement.gouv.bjSection", "admin123@gouvernement.gouv.bj")]
+    public void Detect_Email_ShouldTruncateAtTldWhenGluedToFollowingWord(string content, string expectedEmail)
+    {
+        // Act
+        var results = PiiDetector.Detect(content, TestFilePath);
+
+        // Assert
+        results.Should().ContainSingle(r => r.PiiType == "Email");
+        results.Single(r => r.PiiType == "Email").Match.Should().Be(expectedEmail);
+    }
+
     [Fact]
     public void Detect_Email_ShouldRejectFileExtensions()
     {
