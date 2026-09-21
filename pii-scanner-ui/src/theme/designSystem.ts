@@ -7,48 +7,50 @@ import { createTheme } from '@mui/material';
 export const tokens = {
   colors: {
     // Backgrounds
-    bgPrimary: '#0A0A0A',
-    bgSurface: '#141414',
-    bgSurfaceRaised: '#1A1A1A',
-    bgInput: '#0A0A0A',
+    bgPrimary: '#07090D',
+    bgSurface: '#0D1117',
+    bgSurfaceRaised: '#111827',
+    bgInput: '#111827',
 
     // Borders
-    borderDefault: '#262626',
-    borderMuted: '#1F1F1F',
-    borderFocus: '#00E599',
+    borderDefault: 'rgba(255, 255, 255, 0.07)',
+    borderMuted: 'rgba(255, 255, 255, 0.04)',
+    borderFocus: '#00D4FF',
 
     // Accent
-    accentPrimary: '#00E599',
-    accentPrimaryHover: '#00CC88',
-    accentPrimaryMuted: 'rgba(0, 229, 153, 0.12)',
-    accentPrimaryText: '#0A0A0A', // text on accent buttons
+    accentPrimary: '#00D4FF',
+    accentPrimaryHover: '#33DDFF',
+    accentPrimaryMuted: 'rgba(0, 212, 255, 0.12)',
+    accentPrimaryText: '#07090D', // text on accent buttons
 
     // Text
-    textPrimary: '#FAFAFA',
-    textSecondary: '#A0A0A0',
-    textTertiary: '#6B6B6B',
+    textPrimary: '#E2E8F0',
+    textSecondary: '#94A3B8',
+    textTertiary: '#64748B',
 
     // Semantic
-    danger: '#F45252',
-    dangerMuted: 'rgba(244, 82, 82, 0.12)',
-    warning: '#F0A000',
-    warningMuted: 'rgba(240, 160, 0, 0.12)',
-    success: '#00E599',
-    successMuted: 'rgba(0, 229, 153, 0.12)',
-    info: '#3B82F6',
-    infoMuted: 'rgba(59, 130, 246, 0.12)',
+    danger: '#FF3366',
+    dangerMuted: 'rgba(255, 51, 102, 0.12)',
+    warning: '#FB923C',
+    warningMuted: 'rgba(251, 146, 60, 0.12)',
+    success: '#00FF87',
+    successMuted: 'rgba(0, 255, 135, 0.12)',
+    info: '#A78BFA',
+    infoMuted: 'rgba(167, 139, 250, 0.12)',
 
     // Light mode overrides
     light: {
-      bgPrimary: '#F4F6F8',
+      bgPrimary: '#F4F6FA',
       bgSurface: '#FFFFFF',
-      bgSurfaceRaised: '#FAFAFA',
-      bgInput: '#F4F6F8',
-      borderDefault: '#E5E7EB',
-      borderMuted: '#F0F0F0',
-      textPrimary: '#111111',
-      textSecondary: '#6B6B6B',
-      textTertiary: '#A0A0A0',
+      bgSurfaceRaised: '#F8FAFC',
+      bgInput: '#F4F6FA',
+      borderDefault: '#E2E8F0',
+      borderMuted: '#EEF2F6',
+      textPrimary: '#0F172A',
+      textSecondary: '#64748B',
+      textTertiary: '#94A3B8',
+      accentPrimary: '#0092B8',
+      accentPrimaryText: '#FFFFFF',
     },
   },
 
@@ -71,7 +73,7 @@ export const tokens = {
 
 // ─── Gradient helpers (for stat cards, charts, etc.) ────────────────────────
 export const gradients = {
-  primary: `linear-gradient(135deg, ${tokens.colors.accentPrimary} 0%, #00B876 100%)`,
+  primary: `linear-gradient(135deg, ${tokens.colors.accentPrimary} 0%, ${tokens.colors.accentPrimaryHover} 100%)`,
   danger: `linear-gradient(135deg, ${tokens.colors.danger} 0%, #D93636 100%)`,
   info: `linear-gradient(135deg, ${tokens.colors.info} 0%, #2563EB 100%)`,
   warning: `linear-gradient(135deg, ${tokens.colors.warning} 0%, #D48800 100%)`,
@@ -83,18 +85,15 @@ export const gradients = {
 
 // ─── Chart colors ───────────────────────────────────────────────────────────
 export const chartColors = [
-  '#00E599', '#3B82F6', '#F0A000', '#F45252',
-  '#A78BFA', '#EC4899', '#06B6D4', '#84CC16',
+  '#00D4FF', '#3B82F6', '#FB923C', '#FF3366',
+  '#A78BFA', '#EC4899', '#00FF87', '#84CC16',
 ];
 
 // ─── Glassmorphism helper ────────────────────────────────────────────────────
 export function glassCardSx(darkMode: boolean): Record<string, unknown> {
-  if (!darkMode) return {};
   return {
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
-    backdropFilter: 'blur(12px)',
-    WebkitBackdropFilter: 'blur(12px)',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
+    backgroundColor: darkMode ? tokens.colors.bgSurface : tokens.colors.light.bgSurface,
+    border: `1px solid ${darkMode ? tokens.colors.borderDefault : tokens.colors.light.borderDefault}`,
   };
 }
 
@@ -120,8 +119,8 @@ export function createAppTheme(darkMode: boolean) {
     palette: {
       mode: darkMode ? 'dark' : 'light',
       primary: {
-        main: c.accentPrimary,
-        contrastText: c.accentPrimaryText,
+        main: darkMode ? c.accentPrimary : light.accentPrimary,
+        contrastText: darkMode ? c.accentPrimaryText : light.accentPrimaryText,
       },
       secondary: {
         main: c.info,
@@ -191,17 +190,17 @@ export function createAppTheme(darkMode: boolean) {
             '&:hover': { boxShadow: 'none' },
           },
           contained: {
-            backgroundColor: c.accentPrimary,
-            color: c.accentPrimaryText,
+            backgroundColor: darkMode ? c.accentPrimary : light.accentPrimary,
+            color: darkMode ? c.accentPrimaryText : light.accentPrimaryText,
             '&:hover': {
-              backgroundColor: c.accentPrimaryHover,
+              backgroundColor: darkMode ? c.accentPrimaryHover : light.accentPrimary,
             },
           },
           outlined: {
             borderColor: darkMode ? c.borderDefault : light.borderDefault,
             color: darkMode ? c.textPrimary : light.textPrimary,
             '&:hover': {
-              borderColor: c.accentPrimary,
+              borderColor: darkMode ? c.accentPrimary : light.accentPrimary,
               backgroundColor: c.accentPrimaryMuted,
             },
           },
@@ -243,14 +242,14 @@ export function createAppTheme(darkMode: boolean) {
                 borderColor: darkMode ? '#3A3A3A' : '#CCCCCC',
               },
               '&.Mui-focused fieldset': {
-                borderColor: c.accentPrimary,
+                borderColor: darkMode ? c.accentPrimary : light.accentPrimary,
                 borderWidth: '1px',
               },
             },
             '& .MuiInputLabel-root': {
               color: darkMode ? c.textSecondary : light.textSecondary,
               '&.Mui-focused': {
-                color: c.accentPrimary,
+                color: darkMode ? c.accentPrimary : light.accentPrimary,
               },
             },
             '& .MuiOutlinedInput-input': {
@@ -385,9 +384,9 @@ export function createAppTheme(darkMode: boolean) {
         styleOverrides: {
           switchBase: {
             '&.Mui-checked': {
-              color: c.accentPrimary,
+              color: darkMode ? c.accentPrimary : light.accentPrimary,
               '& + .MuiSwitch-track': {
-                backgroundColor: c.accentPrimary,
+                backgroundColor: darkMode ? c.accentPrimary : light.accentPrimary,
               },
             },
           },
