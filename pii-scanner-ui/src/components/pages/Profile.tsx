@@ -21,7 +21,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { useAuth } from '../../contexts/AuthContext';
 import axios from '../../services/axios';
-import { gradients } from '../../theme/designSystem';
+import { gradients, tokens } from '../../theme/designSystem';
 
 const Profile: React.FC = () => {
   const { user } = useAuth();
@@ -300,7 +300,7 @@ const Profile: React.FC = () => {
                 fontWeight: 600,
                 background: gradients.primary,
                 '&:hover': {
-                  background: 'linear-gradient(135deg, #00CC88 0%, #00A86B 100%)',
+                  background: `linear-gradient(135deg, ${tokens.colors.accentPrimaryHover} 0%, ${tokens.colors.accentPrimary} 100%)`,
                 },
               }}
             >
@@ -419,7 +419,7 @@ const Profile: React.FC = () => {
                 fontWeight: 600,
                 background: gradients.primary,
                 '&:hover': {
-                  background: 'linear-gradient(135deg, #00CC88 0%, #00A86B 100%)',
+                  background: `linear-gradient(135deg, ${tokens.colors.accentPrimaryHover} 0%, ${tokens.colors.accentPrimary} 100%)`,
                 },
               }}
             >
