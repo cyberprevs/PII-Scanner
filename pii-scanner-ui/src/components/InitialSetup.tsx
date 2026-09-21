@@ -254,7 +254,7 @@ const InitialSetup: React.FC<InitialSetupProps> = ({ onSetupComplete }) => {
                 severity="success"
                 sx={{
                   mb: 3,
-                  backgroundColor: 'rgba(0, 229, 153, 0.1)',
+                  backgroundColor: 'rgba(0, 212, 255, 0.1)',
                   color: c.accentPrimary,
                   border: `1px solid ${c.accentPrimary}`,
                   '& .MuiAlert-icon': { color: c.accentPrimary },
@@ -390,7 +390,7 @@ const InitialSetup: React.FC<InitialSetupProps> = ({ onSetupComplete }) => {
                   fontSize: '0.9rem',
                   '&:hover': { backgroundColor: c.accentPrimaryHover },
                   '&.Mui-disabled': {
-                    backgroundColor: 'rgba(0, 229, 153, 0.3)',
+                    backgroundColor: 'rgba(0, 212, 255, 0.3)',
                     color: 'rgba(10, 10, 10, 0.5)',
                   },
                 }}

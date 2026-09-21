@@ -271,7 +271,7 @@ export default function DataRetention() {
               mt: 2,
               background: gradients.primary,
               '&:hover': {
-                background: 'linear-gradient(135deg, #00CC88 0%, #00A86B 100%)',
+                background: `linear-gradient(135deg, ${tokens.colors.accentPrimaryHover} 0%, ${tokens.colors.accentPrimary} 100%)`,
               },
             }}
           >

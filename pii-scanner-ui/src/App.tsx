@@ -518,8 +518,8 @@ function App() {
             <Box sx={{
               display: 'flex', alignItems: 'center', gap: 1,
               p: 1.5, borderRadius: 2,
-              bgcolor: 'rgba(0,229,153,0.08)',
-              border: '1px solid rgba(0,229,153,0.3)',
+              bgcolor: 'rgba(0, 212, 255, 0.08)',
+              border: '1px solid rgba(0, 212, 255, 0.3)',
             }}>
               <Typography
                 variant="h6"

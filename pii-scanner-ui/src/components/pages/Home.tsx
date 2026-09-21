@@ -5,6 +5,7 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import SecurityIcon from '@mui/icons-material/Security';
 import { useTranslation } from 'react-i18next';
+import { tokens, gradients } from '../../theme/designSystem';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -14,9 +15,9 @@ export default function Home() {
     {
       title: t('sidebar.newScan'),
       description: t('home.scanDesc'),
-      icon: <SearchIcon sx={{ fontSize: 48, color: '#00E599' }} />,
+      icon: <SearchIcon sx={{ fontSize: 48, color: tokens.colors.accentPrimary }} />,
       path: '/scanner',
-      color: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
+      color: gradients.primary,
     },
     {
       title: t('home.dashboardTitle'),
@@ -28,9 +29,9 @@ export default function Home() {
     {
       title: t('home.reportsTitle'),
       description: t('home.reportsDesc'),
-      icon: <AssessmentIcon sx={{ fontSize: 48, color: '#00E599' }} />,
+      icon: <AssessmentIcon sx={{ fontSize: 48, color: tokens.colors.accentPrimary }} />,
       path: '/reports',
-      color: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
+      color: gradients.primary,
     },
   ];
 
@@ -39,7 +40,7 @@ export default function Home() {
       {/* Hero Section */}
       <Box
         sx={{
-          background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
+          background: gradients.primary,
           borderRadius: 4,
           p: 6,
           color: 'white',
@@ -61,7 +62,7 @@ export default function Home() {
           sx={{
             mt: 3,
             backgroundColor: 'white',
-            color: '#00E599',
+            color: tokens.colors.accentPrimary,
             px: 4,
             py: 1.5,
             fontSize: '1.1rem',
@@ -126,7 +127,7 @@ export default function Home() {
         </Typography>
         <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mt: 2 }}>
           <Box sx={{ flex: '1 1 calc(25% - 12px)', minWidth: 200 }}>
-            <Card sx={{ background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)' }}>
+            <Card sx={{ background: gradients.primary }}>
               <CardContent>
                 <Typography variant="h4" fontWeight={700} color="white">
                   20
@@ -162,7 +163,7 @@ export default function Home() {
             </Card>
           </Box>
           <Box sx={{ flex: '1 1 calc(25% - 12px)', minWidth: 200 }}>
-            <Card sx={{ background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)' }}>
+            <Card sx={{ background: gradients.primary }}>
               <CardContent>
                 <Typography variant="h4" fontWeight={700} color="white">
                   ⚡

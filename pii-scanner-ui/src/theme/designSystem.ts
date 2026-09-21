@@ -326,8 +326,8 @@ export function createAppTheme(darkMode: boolean) {
             },
             '&:hover:not(.MuiTableRow-head)': {
               backgroundColor: darkMode
-                ? 'rgba(0, 229, 153, 0.04) !important'
-                : 'rgba(0, 229, 153, 0.03) !important',
+                ? 'rgba(0, 212, 255, 0.04) !important'
+                : 'rgba(0, 146, 184, 0.03) !important',
               cursor: 'pointer',
             },
           },

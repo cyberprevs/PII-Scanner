@@ -221,8 +221,8 @@ const About: React.FC = () => {
             mt: 3,
             p: 2,
             borderRadius: 2,
-            bgcolor: 'rgba(0, 229, 153, 0.1)',
-            border: '1px solid rgba(0, 229, 153, 0.3)',
+            bgcolor: 'rgba(0, 212, 255, 0.1)',
+            border: '1px solid rgba(0, 212, 255, 0.3)',
           }}
         >
           <Typography variant="body2" color="text.secondary" paragraph>
