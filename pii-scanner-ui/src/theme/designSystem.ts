@@ -201,7 +201,7 @@ export function createAppTheme(darkMode: boolean) {
             color: darkMode ? c.textPrimary : light.textPrimary,
             '&:hover': {
               borderColor: darkMode ? c.accentPrimary : light.accentPrimary,
-              backgroundColor: c.accentPrimaryMuted,
+              backgroundColor: darkMode ? c.accentPrimaryMuted : 'rgba(0, 146, 184, 0.12)',
             },
           },
           sizeLarge: { padding: '12px 24px', fontSize: '0.95rem' },
@@ -356,7 +356,7 @@ export function createAppTheme(darkMode: boolean) {
           root: {
             backgroundColor: c.accentPrimaryMuted,
             '& .MuiLinearProgress-bar': {
-              backgroundColor: c.accentPrimary,
+              backgroundColor: darkMode ? c.accentPrimary : light.accentPrimary,
             },
           },
         },
@@ -365,7 +365,7 @@ export function createAppTheme(darkMode: boolean) {
       MuiCircularProgress: {
         styleOverrides: {
           root: {
-            color: c.accentPrimary,
+            color: darkMode ? c.accentPrimary : light.accentPrimary,
           },
         },
       },
