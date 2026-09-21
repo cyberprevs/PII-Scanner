@@ -19,6 +19,7 @@ import {
 import InfoIcon from '@mui/icons-material/Info';
 import PageHeader from '../common/PageHeader';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { gradients } from '../../theme/designSystem';
 import SecurityIcon from '@mui/icons-material/Security';
 import GavelIcon from '@mui/icons-material/Gavel';
 import BusinessIcon from '@mui/icons-material/Business';
@@ -40,7 +41,7 @@ const About: React.FC = () => {
         <Grid size={{ xs: 12, md: 6 }}>
           <Card
             sx={{
-              background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
+              background: gradients.primary,
               color: 'white',
             }}
           >
@@ -75,7 +76,7 @@ const About: React.FC = () => {
                 variant="h5"
                 sx={{
                   fontWeight: 700,
-                  background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
+                  background: gradients.primary,
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                   mb: 2,
