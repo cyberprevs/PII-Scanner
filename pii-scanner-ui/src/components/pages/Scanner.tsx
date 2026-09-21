@@ -30,7 +30,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import type { ScanProgressResponse } from '../../types';
 import { useKeyboardShortcut } from '../../hooks/useKeyboardShortcut';
 import { useTranslation } from 'react-i18next';
-import { glassCardSx, tokens } from '../../theme/designSystem';
+import { glassCardSx, tokens, gradients } from '../../theme/designSystem';
 import { useNavigate } from 'react-router-dom';
 import ConsentModal from '../common/ConsentModal';
 import axios from '../../services/axios';
@@ -189,7 +189,7 @@ export default function Scanner({ scanning, scanId, onStartScan, onStopScan, has
             <SearchIcon sx={{ color: c.accentPrimary, fontSize: 28 }} />
           </Box>
           <Typography variant="h5" fontWeight={700} sx={{
-            background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
+            background: gradients.primary,
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
           }}>
             {t('scanner.titleScanning')}
@@ -209,7 +209,7 @@ export default function Scanner({ scanning, scanId, onStartScan, onStopScan, has
                 fontWeight={800}
                 sx={{
                   fontSize: '5rem', lineHeight: 1,
-                  background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
+                  background: gradients.primary,
                   WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
                 }}
               >
@@ -229,7 +229,7 @@ export default function Scanner({ scanning, scanId, onStartScan, onStopScan, has
                 bgcolor: c.accentPrimaryMuted,
                 '& .MuiLinearProgress-bar': {
                   borderRadius: 4,
-                  background: 'linear-gradient(90deg, #00E599 0%, #00B876 100%)',
+                  background: `linear-gradient(90deg, ${tokens.colors.accentPrimary} 0%, ${tokens.colors.accentPrimaryHover} 100%)`,
                 },
               }}
             />
@@ -315,7 +315,7 @@ export default function Scanner({ scanning, scanId, onStartScan, onStopScan, has
           <SecurityIcon sx={{ color: c.accentPrimary, fontSize: 28 }} />
         </Box>
         <Typography variant="h4" fontWeight={700} sx={{
-          background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)',
+          background: gradients.primary,
           WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
         }}>
           {t('scanner.title')}
@@ -362,14 +362,14 @@ export default function Scanner({ scanning, scanId, onStartScan, onStopScan, has
               fontSize: '1rem',
               fontWeight: 700,
               background: directoryPath
-                ? 'linear-gradient(135deg, #00E599 0%, #00B876 100%)'
+                ? gradients.primary
                 : undefined,
-              boxShadow: directoryPath ? '0 4px 14px rgba(0,229,153,0.3)' : 0,
+              boxShadow: directoryPath ? '0 4px 14px rgba(0, 212, 255, 0.3)' : 0,
               '&:hover': {
                 background: directoryPath
-                  ? 'linear-gradient(135deg, #00CC88 0%, #00A86B 100%)'
+                  ? gradients.primary
                   : undefined,
-                boxShadow: directoryPath ? '0 6px 20px rgba(0,229,153,0.4)' : 0,
+                boxShadow: directoryPath ? '0 6px 20px rgba(0, 212, 255, 0.4)' : 0,
                 transform: 'translateY(-1px)',
               },
               '&:active': { transform: 'scale(0.99)' },
@@ -463,7 +463,7 @@ export default function Scanner({ scanning, scanId, onStartScan, onStopScan, has
           flex: 1, display: 'flex', alignItems: 'center', gap: 1.5,
           p: 2, borderRadius: 2,
           border: '1px solid', borderColor: 'divider',
-          bgcolor: dark ? 'rgba(0,229,153,0.06)' : 'rgba(0,229,153,0.04)',
+          bgcolor: dark ? 'rgba(0, 212, 255, 0.06)' : 'rgba(0, 212, 255, 0.04)',
         }}>
           <LockIcon sx={{ color: c.accentPrimary, fontSize: 20, flexShrink: 0 }} />
           <Box>
