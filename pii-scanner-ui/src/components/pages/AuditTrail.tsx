@@ -33,7 +33,7 @@ import {
 } from '@mui/icons-material';
 import axios from '../../services/axios';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
-import { chartColors } from '../../theme/designSystem';
+import { chartColors, tokens } from '../../theme/designSystem';
 
 interface AuditLog {
   id: number;
@@ -469,7 +469,7 @@ const AuditTrail: React.FC = () => {
                   <TableCell>{log.entityType}</TableCell>
                   <TableCell>{log.entityId}</TableCell>
                   <TableCell>
-                    <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
+                    <Typography variant="body2" sx={{ fontFamily: tokens.fontMono }}>
                       {log.ipAddress}
                     </Typography>
                   </TableCell>

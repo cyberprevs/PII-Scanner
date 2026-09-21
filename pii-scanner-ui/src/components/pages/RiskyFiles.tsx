@@ -215,7 +215,7 @@ export default function RiskyFiles({ results }: RiskyFilesProps) {
                       <Chip label={file.riskLevel} color={getRiskColor(file.riskLevel) as 'error' | 'warning' | 'success' | 'default'} size="small" />
                     </TableCell>
                     <TableCell>
-                      <Box component="span" sx={{ fontFamily: 'monospace', fontSize: '0.85rem' }}>
+                      <Box component="span" sx={{ fontFamily: tokens.fontMono, fontSize: '0.85rem' }}>
                         {file.filePath.length > 80 ? '...' + file.filePath.slice(-80) : file.filePath}
                       </Box>
                     </TableCell>

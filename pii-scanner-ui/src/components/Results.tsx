@@ -267,7 +267,7 @@ export default function Results({ results, onDownloadReport, onNewScan }: Result
                       <Chip label={file.riskLevel} color={getRiskColor(file.riskLevel) as 'error' | 'warning' | 'success' | 'default'} size="small" />
                     </TableCell>
                     <TableCell>
-                      <Box component="span" sx={{ fontFamily: 'monospace', fontSize: '0.8rem' }}>
+                      <Box component="span" sx={{ fontFamily: tokens.fontMono, fontSize: '0.8rem' }}>
                         {file.filePath.length > 70 ? '...' + file.filePath.slice(-70) : file.filePath}
                       </Box>
                     </TableCell>
@@ -325,10 +325,10 @@ export default function Results({ results, onDownloadReport, onNewScan }: Result
                       <Chip label={detection.piiType} size="small" color="secondary" variant="outlined" />
                     </TableCell>
                     <TableCell>
-                      <Box component="span" sx={{ fontFamily: 'monospace', fontSize: '0.875rem' }}>{detection.match}</Box>
+                      <Box component="span" sx={{ fontFamily: tokens.fontMono, fontSize: '0.875rem' }}>{detection.match}</Box>
                     </TableCell>
                     <TableCell>
-                      <Box component="span" sx={{ fontFamily: 'monospace', fontSize: '0.75rem', color: 'text.secondary' }}>
+                      <Box component="span" sx={{ fontFamily: tokens.fontMono, fontSize: '0.75rem', color: 'text.secondary' }}>
                         {detection.filePath.length > 70 ? '...' + detection.filePath.slice(-70) : detection.filePath}
                       </Box>
                     </TableCell>

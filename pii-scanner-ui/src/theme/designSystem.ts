@@ -69,11 +69,15 @@ export const tokens = {
     card: '0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04)',
     cardHover: '0 4px 12px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.06)',
   },
+
+  // Monospace font for technical/badge text (IDs, timestamps, stat values)
+  fontMono: '"JetBrains Mono", "Roboto Mono", monospace',
 } as const;
 
 // ─── Gradient helpers (for stat cards, charts, etc.) ────────────────────────
 export const gradients = {
   primary: `linear-gradient(135deg, ${tokens.colors.accentPrimary} 0%, ${tokens.colors.accentPrimaryHover} 100%)`,
+  primaryHover: `linear-gradient(135deg, ${tokens.colors.accentPrimaryHover} 0%, ${tokens.colors.accentPrimary} 100%)`,
   danger: `linear-gradient(135deg, ${tokens.colors.danger} 0%, #D93636 100%)`,
   info: `linear-gradient(135deg, ${tokens.colors.info} 0%, #2563EB 100%)`,
   warning: `linear-gradient(135deg, ${tokens.colors.warning} 0%, #D48800 100%)`,

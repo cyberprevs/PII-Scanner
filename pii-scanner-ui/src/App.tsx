@@ -524,7 +524,7 @@ function App() {
               <Typography
                 variant="h6"
                 fontWeight={700}
-                sx={{ flex: 1, fontFamily: 'monospace', letterSpacing: 2, color: tokens.colors.accentPrimary }}
+                sx={{ flex: 1, fontFamily: tokens.fontMono, letterSpacing: 2, color: tokens.colors.accentPrimary }}
               >
                 {reportPassword?.password}
               </Typography>

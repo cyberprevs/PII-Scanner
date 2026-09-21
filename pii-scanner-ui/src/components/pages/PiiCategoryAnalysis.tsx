@@ -458,7 +458,7 @@ const PiiCategoryAnalysis: React.FC<Props> = ({ results, onDownloadReport }) => 
                 <TableBody>
                   {groupedFiles.map((file, index) => (
                     <TableRow key={index} hover>
-                      <TableCell sx={{ fontFamily: 'monospace', fontSize: '0.85rem' }}>{file.filePath}</TableCell>
+                      <TableCell sx={{ fontFamily: tokens.fontMono, fontSize: '0.85rem' }}>{file.filePath}</TableCell>
                       <TableCell align="center">
                         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, justifyContent: 'center' }}>
                           {file.piiTypes.map((type) => {

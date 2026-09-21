@@ -336,7 +336,7 @@ const ScanHistory: React.FC = () => {
             bgcolor: 'rgba(0, 212, 255, 0.08)',
             border: '1px solid rgba(0, 212, 255, 0.3)',
           }}>
-            <Typography variant="h6" fontWeight={700} sx={{ flex: 1, fontFamily: 'monospace', letterSpacing: 2, color: tokens.colors.accentPrimary }}>
+            <Typography variant="h6" fontWeight={700} sx={{ flex: 1, fontFamily: tokens.fontMono, letterSpacing: 2, color: tokens.colors.accentPrimary }}>
               {reportPassword?.password}
             </Typography>
             <IconButton size="small" onClick={() => { if (reportPassword) navigator.clipboard.writeText(reportPassword.password); }} title="Copier">
