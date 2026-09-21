@@ -35,7 +35,7 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import LockIcon from '@mui/icons-material/Lock';
 import axios from '../../services/axios';
 import PageHeader from '../common/PageHeader';
-import { tokens } from '../../theme/designSystem';
+import { tokens, gradients } from '../../theme/designSystem';
 import { useTranslation } from 'react-i18next';
 
 interface ScanHistoryItem {
@@ -322,7 +322,7 @@ const ScanHistory: React.FC = () => {
       <Dialog open={!!reportPassword} maxWidth="xs" fullWidth PaperProps={{ sx: { borderRadius: 3 } }}>
         <DialogTitle sx={{ pb: 1 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-            <LockIcon sx={{ color: '#00E599' }} />
+            <LockIcon sx={{ color: tokens.colors.accentPrimary }} />
             <Typography variant="h6" fontWeight={700}>Rapport chiffré téléchargé</Typography>
           </Box>
         </DialogTitle>
@@ -333,10 +333,10 @@ const ScanHistory: React.FC = () => {
           <Box sx={{
             display: 'flex', alignItems: 'center', gap: 1,
             p: 1.5, borderRadius: 2,
-            bgcolor: 'rgba(0,229,153,0.08)',
-            border: '1px solid rgba(0,229,153,0.3)',
+            bgcolor: 'rgba(0, 212, 255, 0.08)',
+            border: '1px solid rgba(0, 212, 255, 0.3)',
           }}>
-            <Typography variant="h6" fontWeight={700} sx={{ flex: 1, fontFamily: 'monospace', letterSpacing: 2, color: '#00E599' }}>
+            <Typography variant="h6" fontWeight={700} sx={{ flex: 1, fontFamily: 'monospace', letterSpacing: 2, color: tokens.colors.accentPrimary }}>
               {reportPassword?.password}
             </Typography>
             <IconButton size="small" onClick={() => { if (reportPassword) navigator.clipboard.writeText(reportPassword.password); }} title="Copier">
@@ -348,7 +348,7 @@ const ScanHistory: React.FC = () => {
           </Typography>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button variant="contained" onClick={() => setReportPassword(null)} sx={{ background: 'linear-gradient(135deg, #00E599 0%, #00B876 100%)', fontWeight: 600 }}>
+          <Button variant="contained" onClick={() => setReportPassword(null)} sx={{ background: gradients.primary, fontWeight: 600 }}>
             J'ai noté le mot de passe
           </Button>
         </DialogActions>

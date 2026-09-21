@@ -46,6 +46,7 @@ import type { ScanResultResponse } from '../../types';
 import EmptyState from '../common/EmptyState';
 import StatCard from '../common/StatCard';
 import PageHeader from '../common/PageHeader';
+import { tokens } from '../../theme/designSystem';
 
 interface ReportsProps {
   results: ScanResultResponse | null;
@@ -174,7 +175,7 @@ export default function Reports({ results, onDownloadReport }: ReportsProps) {
     },
     {
       format: 'json' as const,
-      icon: <DataObjectIcon sx={{ fontSize: 40, color: '#00E599' }} />,
+      icon: <DataObjectIcon sx={{ fontSize: 40, color: tokens.colors.accentPrimary }} />,
       title: 'JSON',
       description: 'Données brutes structurées',
       details: 'Format pour intégration API ou traitement automatisé',
@@ -209,7 +210,7 @@ export default function Reports({ results, onDownloadReport }: ReportsProps) {
 
           <Grid container spacing={3}>
             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-              <StatCard topBorderOnly accentColor="#00E599" value={statistics.totalFilesScanned.toLocaleString()} label="Fichiers analysés" />
+              <StatCard topBorderOnly accentColor={tokens.colors.accentPrimary} value={statistics.totalFilesScanned.toLocaleString()} label="Fichiers analysés" />
             </Grid>
             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <StatCard topBorderOnly accentColor="#F45252" value={totalPii.toLocaleString()} label="PII détectées" />
@@ -241,8 +242,8 @@ export default function Reports({ results, onDownloadReport }: ReportsProps) {
                   <BarChart data={piiTypeData} layout="vertical">
                     <defs>
                       <linearGradient id="barGradient" x1="0" y1="0" x2="1" y2="0">
-                        <stop offset="0%" stopColor="#00E599" />
-                        <stop offset="100%" stopColor="#00B876" />
+                        <stop offset="0%" stopColor={tokens.colors.accentPrimary} />
+                        <stop offset="100%" stopColor={tokens.colors.accentPrimaryHover} />
                       </linearGradient>
                     </defs>
                     <CartesianGrid horizontal={true} vertical={false} stroke="rgba(128,128,128,0.08)" />
@@ -383,10 +384,10 @@ export default function Reports({ results, onDownloadReport }: ReportsProps) {
                       sx={{
                         fontSize: '0.8rem',
                         py: 0.75,
-                        backgroundColor: '#00E599',
+                        backgroundColor: tokens.colors.accentPrimary,
                         color: '#0A0A0A',
                         '&:hover': {
-                          backgroundColor: '#00CC88',
+                          backgroundColor: tokens.colors.accentPrimaryHover,
                         },
                       }}
                     >
@@ -426,7 +427,7 @@ export default function Reports({ results, onDownloadReport }: ReportsProps) {
               </Alert>
             ))}
 
-            <Paper sx={{ p: 3, bgcolor: 'rgba(0, 229, 153, 0.05)', border: '1px solid rgba(0, 229, 153, 0.2)' }}>
+            <Paper sx={{ p: 3, bgcolor: 'rgba(0, 212, 255, 0.05)', border: '1px solid rgba(0, 212, 255, 0.2)' }}>
               <Typography variant="subtitle2" fontWeight={600} gutterBottom>
                 Actions suggérées :
               </Typography>
